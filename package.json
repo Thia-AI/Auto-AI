@@ -11,8 +11,8 @@
 		"build:win": "electron-builder build --win --x64"
 	},
 	"build": {
-		"appId": "com.devtography.electron_boilerplate",
-		"productName": "Electron+React+TypeScript Boilerplate",
+		"appId": "com.thea",
+		"productName": "Thea",
 		"directories": {
 			"app": "./dist/",
 			"output": "./out/"
@@ -30,6 +30,7 @@
 	"author": "Ritesh Ahlawat",
 	"license": "none",
 	"dependencies": {
+		"python-shell": "^2.0.3",
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1",
 		"react-router": "^5.2.0",
