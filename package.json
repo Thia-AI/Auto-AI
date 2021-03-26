@@ -1,5 +1,5 @@
 {
-	"name": "thea",
+	"name": "thia",
 	"version": "1.0.0",
 	"description": "Cloud AI but on your desktop",
 	"main": "./dist/main.bundle.js",
@@ -8,11 +8,14 @@
 		"dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color",
 		"prod": "rimraf dist && cross-env NODE_ENV=production webpack --progress --color",
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
-		"build:win": "electron-builder build --win --x64"
+		"build:win": "electron-builder build --win --x64",
+		"build:win-py": "npm run build:py && npm run build:win",
+		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec"
 	},
 	"build": {
-		"appId": "com.thea",
-		"productName": "Thea",
+		"appId": "com.electron.thia",
+		"productName": "Thia",
+		"copyright": "Copyright © 2021 Thia",
 		"directories": {
 			"app": "./dist/",
 			"output": "./out/"
@@ -23,12 +26,18 @@
 		},
 		"nsis": {
 			"oneClick": false,
-			"allowToChangeInstallationDirectory": true
+			"allowToChangeInstallationDirectory": true,
+			"deleteAppDataOnUninstall": true,
+			"license": "LICENSE",
+			"runAfterFinish": true
 		},
-		"buildVersion": "1"
+		"buildVersion": "1",
+		"extraResources": [
+			"./extraResources/**"
+		]
 	},
 	"author": "Ritesh Ahlawat",
-	"license": "none",
+	"license": "SEE LICENSE IN LICENSE",
 	"dependencies": {
 		"python-shell": "^2.0.3",
 		"react": "^17.0.1",

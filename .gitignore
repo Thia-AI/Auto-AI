@@ -2,7 +2,10 @@
 dist/
 node_modules/
 out/
-
+__pycache__
+build-py/**
+CUDA
+extraResources
 # Logs
 logs
 *.log
