@@ -8,7 +8,7 @@
 		"dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color",
 		"prod": "rimraf dist && cross-env NODE_ENV=production webpack --progress --color",
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
-		"build:win": "electron-builder build --win --x64",
+		"build:win": "rimraf out && electron-builder build --win --x64",
 		"build:win-py": "npm run build:py && npm run build:win",
 		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec"
 	},
@@ -29,7 +29,9 @@
 			"allowToChangeInstallationDirectory": true,
 			"deleteAppDataOnUninstall": true,
 			"license": "LICENSE",
-			"runAfterFinish": true
+			"runAfterFinish": true,
+			"installerIcon": "build/icon.ico",
+			"uninstallerIcon": "build/icon.ico"
 		},
 		"buildVersion": "1",
 		"extraResources": [
