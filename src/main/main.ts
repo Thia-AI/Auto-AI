@@ -4,27 +4,39 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { BrowserWindow, app, ipcMain, net } from 'electron';
 import { Options, PythonShell } from 'python-shell';
+import axios, { AxiosResponse } from 'axios';
+import { spawn } from 'child_process';
 
+import axiosEngine from './axiosEngineConfig';
 let mainWindow: Electron.BrowserWindow | null;
+
+let engine = spawn('ss');
 
 let options: Options = {
 	mode: 'text',
-	args: ['5', '2'],
 	pythonPath: 'python',
 	pythonOptions: ['-u'],
-	scriptPath: path.join(__dirname, '../src/py'),
+	// scriptPath: path.join(__dirname, '../src/py'),
 };
 
+const isDev = process.env.NODE_ENV == 'development';
+
+const engineShell = new PythonShell(
+	path.join(__dirname, '../src/py', 'main.py'),
+	options,
+);
+
 function createWindow(): void {
+	console.log('.on');
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		height: 600,
 		width: 800,
 		webPreferences: {
 			webSecurity: false,
-			devTools: process.env.NODE_ENV !== 'production',
+			devTools: isDev,
 			nodeIntegration: true,
 		},
 	});
@@ -49,18 +61,47 @@ function createWindow(): void {
 		// when you should delete the corresponding element.
 		mainWindow = null;
 	});
-
+	launchEngine();
 	initializeIPC();
+}
+
+function launchEngine(): void {
+	if (isDev) {
+		engineShell.on('message', (message) => {
+			console.log(message);
+		});
+
+		engineShell.end((err, exitCode, exitSignal) => {
+			if (err) throw err;
+			console.log(
+				`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`,
+			);
+		});
+	} else {
+		console.log('Production Mode');
+	}
 }
 
 const initializeIPC = (): void => {
 	ipcMain.on('test-python:run', (event) => {
-		PythonShell.run('calc.py', options, (err, results) => {
-			if (err) throw err;
-			// results is an array consisting of messages collected during execution
-			mainWindow?.webContents.send('test-python:run', results![0]);
-		});
+		getEngineRuntime()
+			.then((resp) => {
+				mainWindow?.webContents.send('test-python:run', resp.data);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	});
+};
+
+const getEngineRuntime = async (): Promise<AxiosResponse> => {
+	let resp: AxiosResponse | any;
+	try {
+		resp = await axiosEngine.get('/');
+	} catch (err) {
+		console.error(err);
+	}
+	return resp;
 };
 
 // This method will be called when Electron has finished
