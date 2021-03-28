@@ -17,13 +17,13 @@ export default class Main extends Component {
 	};
 
 	componentWillUnmount() {
-		// ipcRenderer.removeAllListeners('test-python:run');
+		ipcRenderer.removeAllListeners('test-python:run');
 	}
 
 	componentDidMount() {
 		ipcRenderer.on('test-python:run', (event, result) => {
 			this.setState({
-				output: result[0],
+				output: result,
 			});
 		});
 	}

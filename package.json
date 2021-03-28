@@ -41,6 +41,7 @@
 	"author": "Ritesh Ahlawat",
 	"license": "SEE LICENSE IN LICENSE",
 	"dependencies": {
+		"axios": "^0.21.1",
 		"python-shell": "^2.0.3",
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1",
