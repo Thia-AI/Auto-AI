@@ -10,7 +10,7 @@
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
 		"build:win": "rimraf out && electron-builder build --win --x64",
 		"build:win-py": "npm run build:py && npm run build:win",
-		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec"
+		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources --debug=all engine.spec"
 	},
 	"build": {
 		"appId": "com.electron.thia",
