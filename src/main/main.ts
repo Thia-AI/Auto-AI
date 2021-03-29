@@ -5,31 +5,18 @@ import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, net } from 'electron';
-import { Options, PythonShell } from 'python-shell';
 import axios, { AxiosResponse } from 'axios';
-import { spawn } from 'child_process';
 
-import axiosEngine from './axiosEngineConfig';
+import engineRequest from './engineRequestConfig';
+import { EngineShellDev } from './engine-shell/engineShellDev';
+import { EngineShellProd } from './engine-shell/engineShellProd';
+
 let mainWindow: Electron.BrowserWindow | null;
-
-let engine = spawn('ss');
-
-let options: Options = {
-	mode: 'text',
-	pythonPath: 'python',
-	pythonOptions: ['-u'],
-	// scriptPath: path.join(__dirname, '../src/py'),
-};
+let engineShell: EngineShellProd | null;
 
 const isDev = process.env.NODE_ENV == 'development';
 
-const engineShell = new PythonShell(
-	path.join(__dirname, '../src/py', 'main.py'),
-	options,
-);
-
 function createWindow(): void {
-	console.log('.on');
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		height: 600,
@@ -67,16 +54,10 @@ function createWindow(): void {
 
 function launchEngine(): void {
 	if (isDev) {
-		engineShell.on('message', (message) => {
-			console.log(message);
-		});
-
-		engineShell.end((err, exitCode, exitSignal) => {
-			if (err) throw err;
-			console.log(
-				`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`,
-			);
-		});
+		// engineShell = new EngineShellDev();
+		engineShell = new EngineShellProd(
+			path.join(__dirname, '..', 'extraResources', 'engine', 'engine.exe'),
+		);
 	} else {
 		console.log('Production Mode');
 	}
@@ -97,7 +78,7 @@ const initializeIPC = (): void => {
 const getEngineRuntime = async (): Promise<AxiosResponse> => {
 	let resp: AxiosResponse | any;
 	try {
-		resp = await axiosEngine.get('/');
+		resp = await engineRequest.get('/');
 	} catch (err) {
 		console.error(err);
 	}

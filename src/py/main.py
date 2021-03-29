@@ -19,6 +19,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     # print(os.environ['PATH'])
+    print('Received Request')
     return str(tf.config.list_physical_devices())
 
 
