@@ -7,14 +7,15 @@ import * as url from 'url';
 import { BrowserWindow, app, ipcMain, net } from 'electron';
 import axios, { AxiosResponse } from 'axios';
 
-import engineRequest from './engineRequestConfig';
+import engineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
+import { EngineHandler } from './engine-shell/engineHandler';
 
 let mainWindow: Electron.BrowserWindow | null;
-let engineShell: EngineShellProd | null;
+let engineShell: EngineShellProd | EngineShellDev;
 
-const isDev = process.env.NODE_ENV == 'development';
+const isDev = require('electron-is-dev');
 
 function createWindow(): void {
 	// Create the browser window.
@@ -54,12 +55,9 @@ function createWindow(): void {
 
 function launchEngine(): void {
 	if (isDev) {
-		// engineShell = new EngineShellDev();
-		engineShell = new EngineShellProd(
-			path.join(__dirname, '..', 'extraResources', 'engine', 'engine.exe'),
-		);
+		engineShell = EngineHandler.getInstance().createDevEngine();
 	} else {
-		console.log('Production Mode');
+		engineShell = EngineHandler.getInstance().createProdEngine();
 	}
 }
 
