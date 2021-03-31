@@ -53,11 +53,11 @@ const commonConfig = {
 };
 // #endregion
 
-const mainConfig = lodash.cloneDeep(commonConfig);
-mainConfig.entry = './src/main/main.ts';
-mainConfig.target = 'electron-main';
-mainConfig.output.filename = 'main.bundle.js';
-mainConfig.plugins = [
+const electronConfig = lodash.cloneDeep(commonConfig);
+electronConfig.entry = './src/electron/electron.ts';
+electronConfig.target = 'electron-main';
+electronConfig.output.filename = 'electron.bundle.js';
+electronConfig.plugins = [
 	new CopyPlugin({
 		patterns: [
 			{
@@ -71,8 +71,8 @@ mainConfig.plugins = [
 					delete jsonContent.scripts;
 					delete jsonContent.build;
 
-					jsonContent.main = './main.bundle.js';
-					jsonContent.scripts = { start: 'electron ./main.bundle.js' };
+					jsonContent.main = './electron.bundle.js';
+					jsonContent.scripts = { start: 'electron ./electron.bundle.js' };
 					jsonContent.postinstall = 'electron-builder install-app-deps';
 
 					return JSON.stringify(jsonContent, undefined, 2);
@@ -92,4 +92,4 @@ rendererConfig.plugins = [
 	}),
 ];
 
-module.exports = [mainConfig, rendererConfig];
+module.exports = [electronConfig, rendererConfig];
