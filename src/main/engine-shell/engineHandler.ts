@@ -28,14 +28,16 @@ export class EngineHandler {
 		return EngineHandler.instance;
 	}
 
-	public createDevEngine = (): EngineShellDev => {
-		return new EngineShellDev();
-	};
-
-	public createProdEngine = (simulateProd: boolean = false): EngineShellProd => {
+	public createDevEngine = (
+		simulateProd: boolean = false,
+	): EngineShellDev | EngineShellProd => {
 		if (simulateProd)
 			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated);
 
+		return new EngineShellDev();
+	};
+
+	public createProdEngine = (): EngineShellProd => {
 		return new EngineShellProd(EngineHandler.pathToEngineProd);
 	};
 }
