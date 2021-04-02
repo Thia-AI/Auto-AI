@@ -4,13 +4,14 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, net } from 'electron';
+import { BrowserWindow, app, ipcMain, Menu, MenuItem } from 'electron';
 import axios, { AxiosResponse } from 'axios';
 
 import engineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
+import { menu } from './menu/menu';
 
 let mainWindow: Electron.BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
@@ -22,12 +23,18 @@ function createWindow(): void {
 	mainWindow = new BrowserWindow({
 		height: 800,
 		width: 900,
+		frame: false,
+		backgroundColor: '#fff',
 		webPreferences: {
 			webSecurity: false,
 			devTools: isDev,
 			nodeIntegration: true,
 		},
 	});
+
+	mainWindow.removeMenu();
+
+	Menu.setApplicationMenu(menu);
 
 	// and load the index.html of the app.
 	mainWindow
