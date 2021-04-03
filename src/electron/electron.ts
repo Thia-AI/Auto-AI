@@ -12,9 +12,11 @@ import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
+import { MainWindowIPCActions } from './ipc/mainWindowIPCActions';
 
 let mainWindow: Electron.BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
+let mainWindowIPCActions: MainWindowIPCActions;
 
 const isDev = require('electron-is-dev');
 
@@ -58,6 +60,8 @@ function createWindow(): void {
 	});
 	launchEngine();
 	initializeIPC();
+	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
+	mainWindowIPCActions.initIPCActions();
 }
 
 function launchEngine(): void {

@@ -1,0 +1,15 @@
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+body {
+	background: #1a2933;
+	color: #fff;
+}
+
+.app {
+	height: calc(100% - 35px);
+	margin-top: calc(35px + 5px);
+	overflow-y: auto;
+}

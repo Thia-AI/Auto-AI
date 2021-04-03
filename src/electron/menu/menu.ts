@@ -11,6 +11,20 @@ if (isDev) {
 			accelerator: 'Ctrl+Shift+I',
 		}),
 	);
+
+	menu.append(
+		new MenuItem({
+			role: 'forceReload',
+			accelerator: 'Ctrl+Shift+R',
+		}),
+	);
+
+	menu.append(
+		new MenuItem({
+			role: 'reload',
+			accelerator: 'Ctrl+R',
+		}),
+	);
 }
 
 export { menu };
