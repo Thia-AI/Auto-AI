@@ -1,6 +1,6 @@
 import os
 import sys
-from flask import Flask
+from flask import Flask, jsonify
 
 from config import config
 from env import environment
@@ -16,12 +16,16 @@ print("MAIN:", config.DEVELOPMENT)
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/getDevices', methods=['GET'])
 def hello_world():
-    # print(os.environ['PATH'])
     print('Received Request')
-    return str(tf.config.list_physical_devices())
-
+    out = []
+    for device in tf.config.list_physical_devices():
+        out.append({
+            'name': device.name,
+            'type': device.device_type
+        })
+    return jsonify(out)
 
 if __name__ == '__main__':
     app.run(host='localhost', port=8442)
