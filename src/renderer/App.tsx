@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Main } from './pages/main/Main';
 import { Header } from './components/header/Header';
 import { Loader } from './components/loader/Loader';
-import { Modal } from './components/modal/Modal';
+import { EngineModal } from './components/engine-modal/EngineModal';
 
 import './App.css';
 
@@ -12,7 +12,7 @@ export default class App extends Component {
 			<React.Fragment>
 				<Header />
 				<Main />
-				<Modal loader={<Loader />} />
+				<EngineModal loader={<Loader />} />
 			</React.Fragment>
 		);
 	}

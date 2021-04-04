@@ -1,3 +1,4 @@
+import { BrowserWindow } from 'electron';
 import * as path from 'path';
 
 import { EngineShellDev } from './engineShellDev';
@@ -29,15 +30,16 @@ export class EngineHandler {
 	}
 
 	public createDevEngine = (
+		window: BrowserWindow | null,
 		simulateProd: boolean = false,
 	): EngineShellDev | EngineShellProd => {
 		if (simulateProd)
-			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated);
+			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window);
 
-		return new EngineShellDev();
+		return new EngineShellDev(window);
 	};
 
-	public createProdEngine = (): EngineShellProd => {
-		return new EngineShellProd(EngineHandler.pathToEngineProd);
+	public createProdEngine = (window: BrowserWindow | null): EngineShellProd => {
+		return new EngineShellProd(EngineHandler.pathToEngineProd, window);
 	};
 }

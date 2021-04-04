@@ -1,6 +1,9 @@
 import * as path from 'path';
 import { Options, PythonShell } from 'python-shell';
 import { EngineShell } from './base/engineShell';
+import { BrowserWindow } from 'electron';
+
+import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 
 export class EngineShellDev extends EngineShell {
 	private engine: PythonShell;
@@ -10,8 +13,8 @@ export class EngineShellDev extends EngineShell {
 		pythonOptions: ['-u'],
 	};
 
-	constructor() {
-		super();
+	constructor(window: BrowserWindow | null) {
+		super(window);
 
 		this.engine = new PythonShell(
 			path.join(__dirname, '..', 'src', 'py', 'main.py'),
@@ -24,6 +27,7 @@ export class EngineShellDev extends EngineShell {
 
 	protected onDataChangeSetup = () => {
 		this.engine.on('message', (message) => {
+			this.notifyOnceEngineHasStarted(message);
 			this.onDataChangeUniversal(message);
 		});
 	};

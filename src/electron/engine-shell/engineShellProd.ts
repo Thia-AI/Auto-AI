@@ -1,12 +1,13 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { BrowserWindow } from 'electron';
 
 import { EngineShell } from './base/engineShell';
 
 export class EngineShellProd extends EngineShell {
 	engine: ChildProcessWithoutNullStreams;
 	// path.join(__dirname, '..', 'extraResources', 'engine', 'engine.exe')
-	constructor(enginePath: string) {
-		super();
+	constructor(enginePath: string, window: BrowserWindow | null) {
+		super(window);
 
 		this.engine = spawn(enginePath);
 
@@ -17,6 +18,7 @@ export class EngineShellProd extends EngineShell {
 	onDataChangeSetup = () => {
 		this.engine.stdout.on('data', (data) => {
 			data = data.toString();
+			this.notifyOnceEngineHasStarted(data);
 			this.onDataChangeUniversal(data);
 		});
 	};

@@ -14,7 +14,7 @@ import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
 import { MainWindowIPCActions } from './ipc/mainWindowIPCActions';
 
-let mainWindow: Electron.BrowserWindow | null;
+let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
 let mainWindowIPCActions: MainWindowIPCActions;
 
@@ -66,14 +66,14 @@ function createWindow(): void {
 
 function launchEngine(): void {
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine();
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
 	} else {
-		engineShell = EngineHandler.getInstance().createProdEngine();
+		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}
 }
 
 const initializeIPC = (): void => {
-	ipcMain.on('test-python:run', (event) => {
+	ipcMain.on('test-python:run', () => {
 		getEngineRuntime()
 			.then((resp) => {
 				mainWindow?.webContents.send('test-python:run', resp.data);
