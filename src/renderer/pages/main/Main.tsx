@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
-
+import { Loader } from '../../components/loader/Loader';
 import './Main.css';
 
-export default class Main extends Component {
+class Main extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -37,3 +37,5 @@ export default class Main extends Component {
 		);
 	}
 }
+
+export { Main };

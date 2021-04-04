@@ -4,9 +4,9 @@
 	left: 0;
 	height: 32px;
 	width: calc(100% - 4px);
-	/* background: #254053; */
+	background: var(--eerie-black);
 	padding: 3px;
-	color: #fff;
+	color: var(--mint-cream);
 }
 
 #titlebar #drag-region {

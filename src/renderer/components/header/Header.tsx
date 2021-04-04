@@ -2,7 +2,7 @@ import React, { Component, MouseEvent } from 'react';
 import { ipcRenderer } from 'electron';
 import './Header.css';
 
-export default class Header extends Component {
+class Header extends Component {
 	constructor(props) {
 		super(props);
 		this.initToggleMaxRestoreButtons();
@@ -100,3 +100,5 @@ export default class Header extends Component {
 		);
 	}
 }
+
+export { Header };

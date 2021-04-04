@@ -4,8 +4,8 @@
 	border: 0;
 }
 body {
-	background: #1a2933;
-	color: #fff;
+	background: var(--mint-cream);
+	color: var(--eerie-black);
 }
 
 .app {
