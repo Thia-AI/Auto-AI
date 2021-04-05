@@ -29,7 +29,7 @@ class EngineActionHandler {
 		this.getDevicesEA = new GetDevicesEngineAction(this._engineRequest);
 	};
 
-	public getDevices = async () => {
+	public getDevices = async (): Promise<object[]> => {
 		return await this.getDevicesEA.run();
 	};
 }

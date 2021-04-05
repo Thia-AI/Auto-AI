@@ -8,7 +8,7 @@ class GetDevicesEngineAction implements IEngineAction {
 		this.engineRequest = engineRequest;
 		this.actionName = '';
 	}
-	async run(): Promise<Array<object>> {
+	async run(): Promise<object[]> {
 		try {
 			const res = await this.engineRequest.get('/getDevices');
 			return res.data;
