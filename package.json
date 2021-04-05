@@ -1,7 +1,7 @@
 {
 	"name": "thia",
 	"version": "1.0.0",
-	"description": "Cloud AI but on your desktop",
+	"description": "Cloud AI but on your desktop!",
 	"main": "./dist/main.bundle.js",
 	"scripts": {
 		"start": "electron ./dist/main.bundle.js",
