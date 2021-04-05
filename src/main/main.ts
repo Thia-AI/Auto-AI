@@ -33,9 +33,10 @@ function createWindow(): void {
 		height: 800,
 		width: 900,
 		frame: false,
+		icon: path.join(__dirname, '..', 'build', 'icon.ico'),
 		backgroundColor: '#fff',
 		webPreferences: {
-			webSecurity: false,
+			webSecurity: true,
 			devTools: isDev,
 			nodeIntegration: true,
 		},
@@ -94,15 +95,6 @@ const initializeIPC = (): void => {
 
 	engineIPCActionHandler = EngineIPCActionHandler.getInstance();
 	engineIPCActionHandler.initIPCListening(engineActionHandler);
-	// ipcMain.on('test-python:run', () => {
-	// 	getEngineRuntime()
-	// 		.then((resp) => {
-	// 			mainWindow?.webContents.send('test-python:run', resp.data);
-	// 		})
-	// 		.catch((err) => {
-	// 			console.error(err);
-	// 		});
-	// });
 };
 
 const getEngineRuntime = async (): Promise<AxiosResponse> => {
