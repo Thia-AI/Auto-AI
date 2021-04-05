@@ -3,8 +3,6 @@ import { Options, PythonShell } from 'python-shell';
 import { EngineShell } from './base/engineShell';
 import { BrowserWindow } from 'electron';
 
-import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
-
 export class EngineShellDev extends EngineShell {
 	private engine: PythonShell;
 	private options: Options = {
@@ -20,14 +18,13 @@ export class EngineShellDev extends EngineShell {
 			path.join(__dirname, '..', 'src', 'py', 'main.py'),
 			this.options,
 		);
-		this.notifyOnceEngineHasStarted2();
+		this.notifyOnceEngineHasStarted();
 		this.onDataChangeSetup();
 		this.onExitSetup();
 	}
 
 	protected onDataChangeSetup = () => {
 		this.engine.on('message', (message) => {
-			this.notifyOnceEngineHasStarted(message);
 			this.onDataChangeUniversal(message);
 		});
 	};

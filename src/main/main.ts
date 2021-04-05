@@ -15,6 +15,7 @@ import { menu } from './menu/menu';
 import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
 import { EngineActionHandler } from './ipc/engine-action/engineActionHandler';
 import { EngineIPCActionHandler } from './ipc/engine-action/engineIPCActionHandler';
+import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 
 let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
@@ -23,6 +24,8 @@ let engineActionHandler: EngineActionHandler;
 let engineIPCActionHandler: EngineIPCActionHandler;
 
 const isDev = require('electron-is-dev');
+
+initRendererDev(isDev);
 
 function createWindow(): void {
 	// Create the browser window.
@@ -41,6 +44,11 @@ function createWindow(): void {
 	mainWindow.removeMenu();
 
 	Menu.setApplicationMenu(menu);
+
+	initializeIPC();
+	launchEngine();
+	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
+	mainWindowIPCActions.initIPCActions();
 
 	// and load the index.html of the app.
 	mainWindow
@@ -62,10 +70,14 @@ function createWindow(): void {
 		// when you should delete the corresponding element.
 		mainWindow = null;
 	});
-	initializeIPC();
-	launchEngine();
-	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
-	mainWindowIPCActions.initIPCActions();
+}
+
+function initRendererDev(isDev: boolean): void {
+	if (isDev) {
+		ipcMain.handle('engine-dev:started', async () => {
+			return RUNTIME_GLOBALS.engineRunning;
+		});
+	}
 }
 
 function launchEngine(): void {

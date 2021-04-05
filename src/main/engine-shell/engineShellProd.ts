@@ -11,6 +11,7 @@ export class EngineShellProd extends EngineShell {
 
 		this.engine = spawn(enginePath);
 
+		this.notifyOnceEngineHasStarted();
 		this.onDataChangeSetup();
 		this.onExitSetup();
 	}
@@ -18,7 +19,6 @@ export class EngineShellProd extends EngineShell {
 	onDataChangeSetup = () => {
 		this.engine.stdout.on('data', (data) => {
 			data = data.toString();
-			this.notifyOnceEngineHasStarted(data);
 			this.onDataChangeUniversal(data);
 		});
 	};
