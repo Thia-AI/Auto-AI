@@ -13,19 +13,14 @@ class Main extends Component {
 	};
 
 	runPython = () => {
-		ipcRenderer.send('test-python:run');
+		console.log('SANT');
+		ipcRenderer.invoke('engine-action:getDevices').then((devices) => {
+			console.log(JSON.parse(devices));
+		});
 	};
 
 	componentWillUnmount() {
-		ipcRenderer.removeAllListeners('test-python:run');
-	}
-
-	componentDidMount() {
-		ipcRenderer.on('test-python:run', (event, result) => {
-			this.setState({
-				output: result,
-			});
-		});
+		ipcRenderer.removeAllListeners('engine-action:getDevices');
 	}
 
 	render() {

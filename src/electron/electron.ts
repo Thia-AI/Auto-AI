@@ -4,7 +4,7 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, Menu, MenuItem } from 'electron';
+import { BrowserWindow, app, ipcMain, Menu } from 'electron';
 import axios, { AxiosResponse } from 'axios';
 
 import engineRequest from './api/engineRequestConfig';
@@ -12,11 +12,15 @@ import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
-import { MainWindowIPCActions } from './ipc/mainWindowIPCActions';
+import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
+import { EngineActionHandler } from './ipc/engine-action/engineActionHandler';
+import { EngineIPCActionHandler } from './ipc/engine-action/engineIPCActionHandler';
 
 let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
 let mainWindowIPCActions: MainWindowIPCActions;
+let engineActionHandler: EngineActionHandler;
+let engineIPCActionHandler: EngineIPCActionHandler;
 
 const isDev = require('electron-is-dev');
 
@@ -73,15 +77,20 @@ function launchEngine(): void {
 }
 
 const initializeIPC = (): void => {
-	ipcMain.on('test-python:run', () => {
-		getEngineRuntime()
-			.then((resp) => {
-				mainWindow?.webContents.send('test-python:run', resp.data);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	});
+	engineActionHandler = EngineActionHandler.getInstance();
+	engineActionHandler.initInstances(engineRequest);
+
+	engineIPCActionHandler = EngineIPCActionHandler.getInstance();
+	engineIPCActionHandler.initIPCListening(engineActionHandler);
+	// ipcMain.on('test-python:run', () => {
+	// 	getEngineRuntime()
+	// 		.then((resp) => {
+	// 			mainWindow?.webContents.send('test-python:run', resp.data);
+	// 		})
+	// 		.catch((err) => {
+	// 			console.error(err);
+	// 		});
+	// });
 };
 
 const getEngineRuntime = async (): Promise<AxiosResponse> => {
