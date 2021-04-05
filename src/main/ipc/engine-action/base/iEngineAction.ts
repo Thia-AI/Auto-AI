@@ -1,10 +1,10 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 interface IEngineAction {
 	engineRequest: AxiosInstance;
 	actionName: string;
 	readonly apiName: string;
-	run(): Promise<any>;
+	run(config?: AxiosRequestConfig): Promise<any>;
 }
 
 export { IEngineAction };

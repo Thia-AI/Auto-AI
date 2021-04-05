@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
-import { Loader } from '../../components/loader/Loader';
 import './Main.css';
 
 class Main extends Component {
@@ -13,7 +12,6 @@ class Main extends Component {
 	};
 
 	runPython = () => {
-		console.log('SANT');
 		ipcRenderer.invoke('engine-action:getDevices').then((devices) => {
 			console.log(JSON.parse(devices));
 		});

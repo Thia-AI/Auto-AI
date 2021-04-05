@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 import { IEngineAction } from '../base/iEngineAction';
 
 class GetDevicesEngineAction implements IEngineAction {
@@ -10,14 +10,13 @@ class GetDevicesEngineAction implements IEngineAction {
 		this.actionName = 'Get Devices';
 		this.apiName = 'getDevices';
 	}
-	async run(): Promise<object[]> {
+	async run(config?: AxiosRequestConfig): Promise<object[]> {
 		try {
-			const res = await this.engineRequest.get(`/${this.apiName}`);
+			const res = await this.engineRequest.get(`/${this.apiName}`, config);
 			return res.data;
 		} catch (err) {
 			// return ErrorHandler(error);
-			console.log(err);
-			return [{ error: 'SERVER-ERROR' }];
+			throw err;
 		}
 	}
 }

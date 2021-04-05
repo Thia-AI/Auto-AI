@@ -62,8 +62,8 @@ function createWindow(): void {
 		// when you should delete the corresponding element.
 		mainWindow = null;
 	});
-	launchEngine();
 	initializeIPC();
+	launchEngine();
 	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
 	mainWindowIPCActions.initIPCActions();
 }

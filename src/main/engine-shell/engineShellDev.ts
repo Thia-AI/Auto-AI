@@ -20,7 +20,7 @@ export class EngineShellDev extends EngineShell {
 			path.join(__dirname, '..', 'src', 'py', 'main.py'),
 			this.options,
 		);
-
+		this.notifyOnceEngineHasStarted2();
 		this.onDataChangeSetup();
 		this.onExitSetup();
 	}

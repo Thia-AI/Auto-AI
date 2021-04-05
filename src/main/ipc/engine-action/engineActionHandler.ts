@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { GetDevicesEngineAction } from './actions/getDevicesEngineAction';
 import { IEngineAction } from './base/iEngineAction';
 
@@ -29,8 +29,8 @@ class EngineActionHandler {
 		this.getDevicesEA = new GetDevicesEngineAction(this._engineRequest);
 	};
 
-	public getDevices = async (): Promise<object[]> => {
-		return await this.getDevicesEA.run();
+	public getDevices = async (config?: AxiosRequestConfig): Promise<object[]> => {
+		return await this.getDevicesEA.run(config);
 	};
 }
 

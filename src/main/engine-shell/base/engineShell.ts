@@ -1,4 +1,5 @@
 import { BrowserWindow } from 'electron';
+import { EngineActionHandler } from '_/main/ipc/engine-action/engineActionHandler';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 export class EngineShell {
 	protected window: BrowserWindow | null;
@@ -30,6 +31,20 @@ export class EngineShell {
 				this.notifyRendererThatEngineHasStarted();
 			}
 		}
+	};
+
+	protected notifyOnceEngineHasStarted2 = () => {
+		// every 1 second, check with timeout
+		EngineActionHandler.getInstance()
+			.getDevices({
+				timeout: 100,
+			})
+			.then((data) => {
+				// console.log(data);
+			})
+			.catch((err) => {
+				console.log(err.code);
+			});
 	};
 
 	private notifyRendererThatEngineHasStarted = () => {
