@@ -2,6 +2,9 @@ import React, { Component, MouseEvent } from 'react';
 import { ipcRenderer } from 'electron';
 import './Header.css';
 
+/**
+ * Since we use a frameless **Electron** app, we have to implement a custom window top bar
+ */
 class Header extends Component {
 	constructor(props) {
 		super(props);
@@ -12,23 +15,42 @@ class Header extends Component {
 		titleBarClassName: '',
 	};
 
+	/**
+	 * Closes the **renderer**'s BrowserWindow
+	 * @param event click event
+	 */
 	closeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
 		await ipcRenderer.invoke('window:close');
 	};
+	/**
+	 * Unmaximizes the **renderer**'s BrowserWindow
+	 * @param event click event
+	 */
 	unmaximizeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
 		await ipcRenderer.invoke('window:unmaximize');
 	};
+	/**
+	 * Maximizes the **renderer**'s BrowserWindow
+	 * @param event click event
+	 */
 	maximizeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
 		await ipcRenderer.invoke('window:maximize');
 	};
+	/**
+	 * Minimizes the **renderer**'s BrowserWindow
+	 * @param event click event
+	 */
 	minimizeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
 		await ipcRenderer.invoke('window:minimize');
 	};
 
+	/**
+	 * Initializes IPC for switching maximize and unmazimize buttons
+	 */
 	initToggleMaxRestoreButtons() {
 		ipcRenderer.on('window:unmaximized', () => {
 			// console.log('unmaximized');

@@ -6,12 +6,16 @@ import { EngineModal } from './components/engine-modal/EngineModal';
 
 import './App.css';
 
+/**
+ * App component
+ */
 export default class App extends Component {
 	render() {
 		return (
 			<React.Fragment>
 				<Header />
 				<Main />
+				{/* Modal with loader */}
 				<EngineModal loader={<Loader />} />
 			</React.Fragment>
 		);

@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import './Main.css';
 
+/**
+ * Component for main portion of **renderer**
+ */
 class Main extends Component {
 	constructor(props) {
 		super(props);

@@ -7,6 +7,9 @@ interface ModalProps {
 	loader: JSX.Element;
 }
 
+/**
+ * Component for creating a Modal for when **Engine** is being staretd
+ */
 class EngineModal extends Component<ModalProps> {
 	constructor(props) {
 		super(props);
@@ -17,6 +20,9 @@ class EngineModal extends Component<ModalProps> {
 		engineStarted: false,
 	};
 
+	/**
+	 * Register IPC for checking for **Engine** being started at creation of component
+	 */
 	checkForEngineStart = () => {
 		// only for dev environment when you reload the app with Ctrl+R
 		// when engine has already started
