@@ -1,5 +1,8 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 
+/**
+ * Interface representing an EngineAction
+ */
 interface IEngineAction {
 	engineRequest: AxiosInstance;
 	actionName: string;

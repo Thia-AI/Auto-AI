@@ -7,7 +7,7 @@ import * as url from 'url';
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
 import axios, { AxiosResponse } from 'axios';
 
-import engineRequest from './api/engineRequestConfig';
+import EngineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
@@ -27,6 +27,9 @@ const isDev = require('electron-is-dev');
 
 initRendererDev(isDev);
 
+/**
+ * Creates the main window for **renderer**
+ */
 function createWindow(): void {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
@@ -41,17 +44,18 @@ function createWindow(): void {
 			nodeIntegration: true,
 		},
 	});
-
+	// replace menu with custom menu
 	mainWindow.removeMenu();
 
 	Menu.setApplicationMenu(menu);
 
+	// must initialize IPC handler and Engine loading renderer
 	initializeIPC();
 	launchEngine();
 	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
 	mainWindowIPCActions.initIPCActions();
 
-	// and load the index.html of the app.
+	// and load the index.html of the renderer
 	mainWindow
 		.loadURL(
 			url.format({
@@ -73,6 +77,11 @@ function createWindow(): void {
 	});
 }
 
+/**
+ * Initializes IPC handler for development engine running check (so that when **Engine** is
+ * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part)
+ * @param isDev is **App** in development mode
+ */
 function initRendererDev(isDev: boolean): void {
 	if (isDev) {
 		ipcMain.handle('engine-dev:started', async () => {
@@ -81,30 +90,26 @@ function initRendererDev(isDev: boolean): void {
 	}
 }
 
+/**
+ * Launches **Engine**
+ */
 function launchEngine(): void {
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}
 }
 
+/**
+ * Initializes EngineActionHandler and EngineIPCActionHandler
+ */
 const initializeIPC = (): void => {
 	engineActionHandler = EngineActionHandler.getInstance();
-	engineActionHandler.initInstances(engineRequest);
+	engineActionHandler.initInstances(EngineRequest);
 
 	engineIPCActionHandler = EngineIPCActionHandler.getInstance();
 	engineIPCActionHandler.initIPCListening(engineActionHandler);
-};
-
-const getEngineRuntime = async (): Promise<AxiosResponse> => {
-	let resp: AxiosResponse | any;
-	try {
-		resp = await engineRequest.get('/');
-	} catch (err) {
-		console.error(err);
-	}
-	return resp;
 };
 
 // This method will be called when Electron has finished
@@ -116,6 +121,8 @@ app.on('ready', createWindow);
 app.on('window-all-closed', () => {
 	// On OS X it is common for applications and their menu bar
 	// to stay active until the user quits explicitly with Cmd + Q
+	// not really needed since we aren't developing for darwin but it's fine
+	// to keep it here, not harming anyone
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}

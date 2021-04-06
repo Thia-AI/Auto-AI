@@ -2,8 +2,12 @@ import { Menu, MenuItem } from 'electron';
 
 const isDev = require('electron-is-dev');
 
+/**
+ * Electron menu
+ */
 const menu = new Menu();
 
+// only add toggleDevTools and reloading if in devleopment mode
 if (isDev) {
 	menu.append(
 		new MenuItem({
