@@ -5,7 +5,6 @@ import { Loader } from './components/loader/Loader';
 import { EngineModal } from './components/engine-modal/EngineModal';
 
 import './App.css';
-
 /**
  * App component
  */
@@ -14,9 +13,9 @@ export default class App extends Component {
 		return (
 			<React.Fragment>
 				<Header />
-				<Main />
 				{/* Modal with loader */}
 				<EngineModal loader={<Loader />} />
+				<Main />
 			</React.Fragment>
 		);
 	}

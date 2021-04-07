@@ -7,3 +7,8 @@
 	--big-dip-oruby: #9f2042;
 	--space-cadet: #383248;
 }
+
+#app {
+	width: 100%;
+	height: 100%;
+}

@@ -1,0 +1,17 @@
+/* * {
+	margin: 0;
+	padding: 0;
+	border: 0;
+} */
+
+body {
+	background: var(--mint-cream);
+	color: var(--eerie-black);
+	height: calc(100% - (30px + 2 * 3px));
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	height: 100%;
+}

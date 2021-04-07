@@ -1,0 +1,16 @@
+button {
+	margin: 0;
+	padding: 0;
+	padding: 3px 5px;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	background-color: var(--title-black);
+	color: var(--mint-cream);
+}
+
+button i {
+	font-size: 22px;
+	color: var(--mint-cream);
+	margin-right: 2px;
+}

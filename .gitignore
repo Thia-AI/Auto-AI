@@ -32,3 +32,5 @@ Thumbs.db
 # OS X files
 .DS_Store
 ._*
+
+!src/utils/line-awesome/dist

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import './Main.css';
+import { NewModel } from '_/renderer/components/new-model/NewModel';
 
 /**
  * Component for main portion of **renderer**
@@ -26,9 +27,8 @@ class Main extends Component {
 
 	render() {
 		return (
-			<div className='app'>
-				<button onClick={this.runPython}>Run Python</button>
-				<p>Output: {this.state.output}</p>
+			<div className='headerless-app'>
+				<NewModel />
 			</div>
 		);
 	}

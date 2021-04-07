@@ -41,6 +41,10 @@
 	"author": "Ritesh Ahlawat",
 	"license": "SEE LICENSE IN LICENSE",
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^1.2.35",
+		"@fortawesome/free-regular-svg-icons": "^5.15.3",
+		"@fortawesome/free-solid-svg-icons": "^5.15.3",
+		"@fortawesome/react-fontawesome": "^0.1.14",
 		"axios": "^0.21.1",
 		"electron-is-dev": "^2.0.0",
 		"python-shell": "^2.0.3",

@@ -1,15 +1,9 @@
-* {
-	margin: 0;
-	padding: 0;
-	border: 0;
-}
-body {
-	background: var(--mint-cream);
-	color: var(--eerie-black);
-}
-
-.app {
-	height: calc(100% - 35px);
-	margin-top: calc(35px + 5px);
+.headerless-app {
+	height: 100%;
+	width: 100%;
+	margin-top: calc(30px + 2 * 3px);
 	overflow-y: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
