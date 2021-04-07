@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,6 +13,16 @@ export class CreateModelButton extends Component {
 		this.baseButton = React.createRef<BaseButton>();
 	}
 	render() {
-		return <BaseButton ref={this.baseButton} text='Create Model' wantIcon={false} />;
+		return (
+			<BaseButton
+				ref={this.baseButton}
+				text='Create Model'
+				wantIcon={true}
+				icon={faCoffee}
+				pull={'left'}
+				className='button-icon'
+				size='lg'
+			/>
+		);
 	}
 }

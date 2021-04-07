@@ -7,10 +7,9 @@ button {
 	align-items: center;
 	background-color: var(--title-black);
 	color: var(--mint-cream);
+	font-family: 'Roboto:Italic', sans-serif;
 }
 
-button i {
-	font-size: 22px;
+.button-icon {
 	color: var(--mint-cream);
-	margin-right: 2px;
 }

@@ -8,6 +8,11 @@
 	--space-cadet: #383248;
 }
 
+* {
+	-webkit-font-smoothing: antialiased !important;
+	text-rendering: optimizeLegibility !important;
+}
+
 #app {
 	width: 100%;
 	height: 100%;
