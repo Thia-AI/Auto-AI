@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
+import { CSSTransition } from 'react-transition-group';
+
+import { Modal } from '../modal/Modal';
 
 import './EngineModal.css';
-import { Modal } from '../modal/Modal';
 
 interface ModalProps {
 	loader: JSX.Element;
@@ -37,11 +39,15 @@ class EngineModal extends Component<ModalProps> {
 	};
 
 	render() {
-		let { engineStarted } = this.state;
-		if (engineStarted) {
-			return null;
-		}
-		return <Modal opacity={0.3}>{this.props.loader}</Modal>;
+		return (
+			<CSSTransition
+				in={!this.state.engineStarted}
+				timeout={300}
+				classNames='engine-modal-transition'
+				unmountOnExit>
+				<Modal opacity={0.3}>{this.props.loader}</Modal>
+			</CSSTransition>
+		);
 	}
 }
 

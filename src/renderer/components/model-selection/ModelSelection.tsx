@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
+import { Modal } from '../modal/Modal';
 
 import './ModelSelection.css';
 
 export class ModelSelection extends Component {
 	render() {
 		return (
-			<div id='model-self'>
-				<div></div>
-			</div>
+			<Modal opacity={0.2}>
+				<div>
+					hihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihi
+				</div>
+			</Modal>
 		);
 	}
 }

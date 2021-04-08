@@ -30,7 +30,7 @@ class Main extends Component {
 		return (
 			<div className='headerless-app'>
 				<NewModel />
-				<ModelSelection />
+				{/* <ModelSelection /> */}
 			</div>
 		);
 	}
