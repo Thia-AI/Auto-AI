@@ -6,6 +6,7 @@ import './BaseButton.css';
 // Common props needed
 interface BaseButtonPropsCommon {
 	text: string;
+	onClick: () => void;
 }
 
 // Copy FontAwesomeIconProps without icon as we will add conditions for icon existing
@@ -61,7 +62,7 @@ export class BaseButton extends Component<BaseButtonProps> {
 			);
 		}
 		return (
-			<div className='button'>
+			<div className='button' onClick={this.props.onClick}>
 				{icon}
 				<div className='button-text'>{this.props.text}</div>
 			</div>

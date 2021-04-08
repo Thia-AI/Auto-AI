@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import { Modal } from '../modal/Modal';
 
 import './ModelSelection.css';
 
-export class ModelSelection extends Component {
+interface Props {
+	toggleModelState: boolean;
+}
+
+export class ModelSelection extends Component<Props> {
 	render() {
 		return (
-			<Modal opacity={0.2}>
-				<div>
-					hihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihihi
-				</div>
-			</Modal>
+			<CSSTransition
+				in={this.props.toggleModelState}
+				timeout={300}
+				classNames='toggle-select-model'
+				unmountOnExit>
+				<Modal opacity={0.2}>
+					<div>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</div>
+				</Modal>
+			</CSSTransition>
 		);
 	}
 }

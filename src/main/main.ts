@@ -5,8 +5,7 @@ import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
-import axios, { AxiosResponse } from 'axios';
-
+// import installerExtension, { REACT_DEV_TOOLS } from 'electron-devtools-installer';
 import EngineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
@@ -117,7 +116,9 @@ const initializeIPC = (): void => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', async () => {
+	createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

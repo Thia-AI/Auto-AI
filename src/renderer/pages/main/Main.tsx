@@ -14,6 +14,12 @@ class Main extends Component {
 
 	state = {
 		output: '',
+		toggleModel: false,
+	};
+
+	toggleCreatingModel = () => {
+		this.setState({ toggleModel: !this.state.toggleModel });
+		console.log(this.state.toggleModel);
 	};
 
 	runPython = () => {
@@ -29,8 +35,8 @@ class Main extends Component {
 	render() {
 		return (
 			<div className='headerless-app'>
-				<NewModel />
-				{/* <ModelSelection /> */}
+				<NewModel toggleCreatingModel={this.toggleCreatingModel} />
+				<ModelSelection toggleModelState={this.state.toggleModel} />
 			</div>
 		);
 	}

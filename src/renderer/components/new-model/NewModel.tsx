@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { CreateModelButton } from '../buttons/create-model/CreateModelButton';
 
 import './NewModel.css';
-
-export class NewModel extends Component {
+interface Props {
+	toggleCreatingModel: () => void;
+}
+export class NewModel extends Component<Props> {
 	render() {
 		return (
 			<div id='new-model'>
-				<CreateModelButton />
+				<CreateModelButton onClick={this.props.toggleCreatingModel} />
 			</div>
 		);
 	}

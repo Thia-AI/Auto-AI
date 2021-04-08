@@ -5,23 +5,24 @@ import { BaseButton } from '../base/BaseButton';
 
 import './CreateModelButton.css';
 
-export class CreateModelButton extends Component {
-	private baseButton: React.RefObject<BaseButton>;
+interface Props {
+	onClick: () => void;
+}
 
+export class CreateModelButton extends Component<Props> {
 	constructor(props) {
 		super(props);
-		this.baseButton = React.createRef<BaseButton>();
 	}
 	render() {
 		return (
 			<BaseButton
-				ref={this.baseButton}
 				text='Create Model'
 				wantIcon={true}
 				icon={square}
 				pull={'left'}
 				className='button-icon'
 				size='lg'
+				onClick={this.props.onClick}
 			/>
 		);
 	}
