@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 
 import './EngineModal.css';
+import { Modal } from '../modal/Modal';
 
 interface ModalProps {
 	loader: JSX.Element;
@@ -40,7 +41,7 @@ class EngineModal extends Component<ModalProps> {
 		if (engineStarted) {
 			return null;
 		}
-		return <div className='modal'>{this.props.loader}</div>;
+		return <Modal opacity={0.3}>{this.props.loader}</Modal>;
 	}
 }
 

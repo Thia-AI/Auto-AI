@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-
+import { faPlusSquare as square } from '@fortawesome/free-solid-svg-icons';
+import { faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 import { BaseButton } from '../base/BaseButton';
 
 import './CreateModelButton.css';
@@ -18,7 +18,7 @@ export class CreateModelButton extends Component {
 				ref={this.baseButton}
 				text='Create Model'
 				wantIcon={true}
-				icon={faCoffee}
+				icon={square}
 				pull={'left'}
 				className='button-icon'
 				size='lg'

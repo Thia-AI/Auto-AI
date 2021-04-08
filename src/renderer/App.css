@@ -5,7 +5,7 @@
 } */
 
 body {
-	background: var(--mint-cream);
+	background: var(--alternate-white);
 	color: var(--eerie-black);
 	height: calc(100% - (30px + 2 * 3px));
 	margin: 0;

@@ -61,10 +61,10 @@ export class BaseButton extends Component<BaseButtonProps> {
 			);
 		}
 		return (
-			<button>
+			<div className='button'>
 				{icon}
-				{this.props.text}
-			</button>
+				<div className='button-text'>{this.props.text}</div>
+			</div>
 		);
 	}
 }

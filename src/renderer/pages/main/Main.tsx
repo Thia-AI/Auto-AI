@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import './Main.css';
 import { NewModel } from '_/renderer/components/new-model/NewModel';
+import { ModelSelection } from '_/renderer/components/model-selection/ModelSelection';
 
 /**
  * Component for main portion of **renderer**
@@ -29,6 +30,7 @@ class Main extends Component {
 		return (
 			<div className='headerless-app'>
 				<NewModel />
+				<ModelSelection />
 			</div>
 		);
 	}
