@@ -4,6 +4,6 @@ import './SelectModelContent.css';
 
 export class SelectModelContent extends Component {
 	render() {
-		return <div>Content</div>;
+		return <div className='select-model-content'>Content</div>;
 	}
 }

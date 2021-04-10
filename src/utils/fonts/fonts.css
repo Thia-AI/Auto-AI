@@ -1,3 +1,7 @@
+/*
+	ROBOTO
+*/
+
 @font-face {
 	font-family: 'Roboto';
 	src: url('./roboto/Roboto-Regular.ttf') format('truetype');
@@ -46,4 +50,72 @@
 @font-face {
 	font-family: 'Roboto-Thin:Italic';
 	src: url('./roboto/Roboto-ThinItalic.ttf') format('truetype');
+}
+
+/*
+	BERLIN
+*/
+
+@font-face {
+	font-family: 'Berlin';
+	src: url('./berlin-rounded/Berlin.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Berlin:Italic';
+	src: url('./berlin-rounded/Berlin\ -\ Italic.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Berlin-Bold';
+	src: url('./berlin-rounded/Berlin\ Bold.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Berlin-Bold:X';
+	src: url('./berlin-rounded/Berlin\ X-Bold.ttf') format('truetype');
+}
+
+/*
+	VISBY
+*/
+
+@font-face {
+	font-family: 'Visby';
+	src: url('./visby-round/visby.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Light';
+	src: url('./visby-round/visby-light.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Medium';
+	src: url('./visby-round/visby-medium.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Heavy';
+	src: url('./visby-round/visby-heavy.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Bold';
+	src: url('./visby-round/visby-bold.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Demi-Bold';
+	src: url('./visby-round/visby-demi-bold.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Extra-Bold';
+	src: url('./visby-round/visby-extra-bold.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Visby-Extra-Light';
+	src: url('./visby-round/visby-extra-light.otf') format('opentype');
 }

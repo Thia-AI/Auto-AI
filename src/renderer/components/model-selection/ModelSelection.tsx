@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import { SimpleDivider } from '../divider/SimpleDivider';
 import { InnerModalContent } from '../modal/inner/content/InnerModalContent';
 import { InnerModalHeader } from '../modal/inner/header/InnerModalHeader';
 import { InnerModal } from '../modal/inner/InnerModal';
@@ -27,7 +28,7 @@ export class ModelSelection extends Component<Props> {
 						<InnerModalHeader>
 							<SelectModelHeader />
 						</InnerModalHeader>
-
+						<SimpleDivider />
 						<InnerModalContent>
 							<SelectModelContent />
 						</InnerModalContent>
