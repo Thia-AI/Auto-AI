@@ -1,0 +1,12 @@
+.inner-modal-div {
+	width: 90%;
+	height: 90%;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--alternate-white);
+}
+
+.inner-modal-div-shadow {
+	-webkit-box-shadow: 0px 0px 15px -3px rgba(0, 0, 0, 0.71);
+	box-shadow: 0px 0px 15px -3px rgba(0, 0, 0, 0.71);
+}
