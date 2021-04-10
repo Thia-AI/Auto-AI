@@ -20,7 +20,6 @@ export class SelectModelHeader extends Component<Props> {
 						icon={faTimesCircle}
 						pull='left'
 						className='exit-icon'
-						size='lg'
 						onClick={this.props.exitMethod}
 					/>
 				</div>
