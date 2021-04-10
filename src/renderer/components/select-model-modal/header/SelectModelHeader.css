@@ -4,11 +4,31 @@
 	height: 100%;
 	display: flex;
 	align-items: center;
-	padding-left: 10px;
+	margin-left: 10px;
 }
 
 .header-name {
 	font-family: Visby-Extra-Bold, sans-serif;
 	font-weight: normal;
 	font-size: 25px;
+}
+
+.header-actions {
+	width: 30%;
+	max-width: 50%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	margin-right: 10px;
+}
+
+.exit-icon {
+	cursor: pointer;
+	font-size: 23px;
+	transition: all 200ms ease;
+}
+
+.exit-icon:hover {
+	font-size: 24px;
 }

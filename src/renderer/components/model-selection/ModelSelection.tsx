@@ -26,7 +26,9 @@ export class ModelSelection extends Component<Props> {
 				<Modal opacity={0.2} modalClick={this.props.toggleCreatingModel}>
 					<InnerModal>
 						<InnerModalHeader>
-							<SelectModelHeader />
+							<SelectModelHeader
+								exitMethod={this.props.toggleCreatingModel}
+							/>
 						</InnerModalHeader>
 						<SimpleDivider />
 						<InnerModalContent>
