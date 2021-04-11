@@ -8,6 +8,22 @@
 	--alternate-white: #ffffff;
 	--big-dip-oruby: #9f2042;
 	--space-cadet: #383248;
+
+	/* CSS div properties */
+
+	/* Header */
+	--header-padding: 3px;
+	--header-height: 30px;
+	--maximized-window-title-margin-left: 12px;
+	--header-icon-width: 46px;
+
+	/* Model Selection */
+	--model-selection-container-padding-bottom: 9px;
+	--model-selection-container-padding-top: 12px;
+	--model-selection-container-height: 200px;
+
+	/* Modal */
+	--inner-modal-header-height: 35px;
 }
 
 * {

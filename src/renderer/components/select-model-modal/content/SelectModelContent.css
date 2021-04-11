@@ -1,4 +1,15 @@
 .select-model-content {
 	margin-right: 10px;
 	margin-left: 10px;
+	height: 100%;
+}
+
+.model-description-container {
+	width: 100%;
+	height: calc(
+		100% - var(--model-selection-container-height) -
+			var(--model-selection-container-padding-bottom) -
+			var(--model-selection-container-padding-top)
+	);
+	display: flex;
 }

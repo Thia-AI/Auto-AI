@@ -3,9 +3,9 @@
 	position: fixed;
 	z-index: 1;
 	left: 0;
-	top: calc(30px + 2 * 3px);
+	top: calc(var(--header-height) + 2 * var(--header-padding));
 	width: 100%;
-	height: calc(100% - (30px + 2 * 3px));
+	height: calc(100% - (var(--header-height) + 2 * var(--header-padding)));
 	overflow: auto;
 	align-items: center;
 	justify-content: center;

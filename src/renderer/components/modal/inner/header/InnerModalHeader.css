@@ -1,5 +1,5 @@
 .inner-modal-header {
-	height: 35px;
+	height: var(--inner-modal-header-height);
 	width: 100%;
 	display: flex;
 	justify-content: space-between;

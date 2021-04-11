@@ -2,10 +2,10 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	height: 30px;
-	width: calc(100% - 3px);
+	height: var(--header-height);
+	width: calc(100% - var(--header-padding));
 	background: var(--eerie-black);
-	padding: 3px;
+	padding: var(--header-padding);
 	color: var(--mint-cream);
 }
 
@@ -36,7 +36,7 @@
 
 #window-controls {
 	display: grid;
-	grid-template-columns: repeat(3, 46px);
+	grid-template-columns: repeat(3, var(--header-icon-width));
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -94,7 +94,7 @@
 }
 
 .maximized #window-title {
-	margin-left: 12px;
+	margin-left: var(--maximized-window-title-margin-left);
 }
 
 .maximized #restore-button {

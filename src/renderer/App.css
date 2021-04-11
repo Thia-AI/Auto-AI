@@ -1,7 +1,7 @@
 body {
 	background: var(--alternate-white);
 	color: var(--eerie-black);
-	height: calc(100% - (30px + 2 * 3px));
+	height: calc(100% - (var(--header-height) + 2 * var(--header-padding)));
 	margin: 0;
 	padding: 0;
 }
