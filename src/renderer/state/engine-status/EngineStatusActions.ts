@@ -1,8 +1,8 @@
 import { ipcRenderer } from 'electron';
 import { ThunkAction } from 'redux-thunk';
-import { EngineDevStatusAction, EngineStartedAction } from './model/actionTypes';
+import { IEngineDevStatusAction, IEngineStartedAction } from './model/actionTypes';
 
-export const listenForEngineStart = (): EngineStartedAction => {
+export const listenForEngineStart = (): IEngineStartedAction => {
 	return {
 		type: 'ENGINE_STARTED',
 	};
@@ -12,7 +12,7 @@ export const getDevReloadEngineStatus = (): ThunkAction<
 	void,
 	{},
 	undefined,
-	EngineDevStatusAction
+	IEngineDevStatusAction
 > => async (dispatch) => {
 	const engineStarted = (await ipcRenderer.invoke('engine-dev:started')) as boolean;
 	dispatch({

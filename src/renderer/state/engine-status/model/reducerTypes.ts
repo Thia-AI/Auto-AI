@@ -1,3 +1,3 @@
-export interface EngineStatusReducerType {
+export interface IEngineStatusReducer {
 	value: boolean;
 }

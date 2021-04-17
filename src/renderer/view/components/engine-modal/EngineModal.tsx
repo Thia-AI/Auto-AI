@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { CSSTransition } from 'react-transition-group';
-import { connect, ConnectedProps } from 'react-redux';
+import { connect } from 'react-redux';
+import { ThunkAction } from 'redux-thunk';
 
 import { IAppState } from '_state/reducers';
 import {
@@ -12,25 +13,24 @@ import {
 import { Modal } from '../modal/Modal';
 
 import './EngineModal.css';
-import { EngineStatusReducerType } from '_/renderer/state/engine-status/model/reducerTypes';
+import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import {
-	EngineDevStatusAction,
-	EngineStartedAction,
+	IEngineDevStatusAction,
+	IEngineStartedAction,
 } from '_/renderer/state/engine-status/model/actionTypes';
-import { ThunkAction } from 'redux-thunk';
 
 interface ModalProps {
 	loader: JSX.Element;
 	// action creators
-	listenForEngineStart: () => EngineStartedAction;
+	listenForEngineStart: () => IEngineStartedAction;
 	getDevReloadEngineStatus: () => ThunkAction<
 		void,
 		{},
 		undefined,
-		EngineDevStatusAction
+		IEngineDevStatusAction
 	>;
 	// reducers
-	engineStarted: EngineStatusReducerType;
+	engineStarted: IEngineStatusReducer;
 }
 
 /**

@@ -1,14 +1,14 @@
-import { EngineDevStatusAction, EngineStartedAction } from './model/actionTypes';
-import { EngineStatusReducerType } from './model/reducerTypes';
+import { IEngineDevStatusAction, IEngineStartedAction } from './model/actionTypes';
+import { IEngineStatusReducer } from './model/reducerTypes';
 
-const initialEngineStatusState: EngineStatusReducerType = {
+const initialEngineStatusState: IEngineStatusReducer = {
 	value: false,
 };
 
 const engineStatusReducer = (
 	state = initialEngineStatusState,
-	action: EngineStartedAction | EngineDevStatusAction,
-): EngineStatusReducerType => {
+	action: IEngineStartedAction | IEngineDevStatusAction,
+): IEngineStatusReducer => {
 	switch (action.type) {
 		case 'ENGINE_STARTED':
 			return {

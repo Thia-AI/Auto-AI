@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
 import engineStatusReducer from './engine-status/EngineStatusReducers';
-import { EngineStatusReducerType } from './engine-status/model/reducerTypes';
+import { IEngineStatusReducer } from './engine-status/model/reducerTypes';
 
 // define the root reducer
 const rootReducer = combineReducers({
@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
 
 // define the state of the App
 export interface IAppState {
-	engineStarted: EngineStatusReducerType;
+	engineStarted: IEngineStatusReducer;
 }
 
 export default rootReducer;

@@ -53,14 +53,12 @@ class Header extends Component {
 	 */
 	initToggleMaxRestoreButtons() {
 		ipcRenderer.on('window:unmaximized', () => {
-			// console.log('unmaximized');
 			this.setState({
 				titleBarClassName: '',
 			});
 		});
 
 		ipcRenderer.on('window:maximized', () => {
-			// console.log('maximized');
 			this.setState({
 				titleBarClassName: 'maximized',
 			});
