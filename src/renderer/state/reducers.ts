@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import engineStatusReducer from './engine-status/EngineStatusReducers';
+import { engineStatusReducer } from './engine-status/EngineStatusReducers';
 import { IEngineStatusReducer } from './engine-status/model/reducerTypes';
 
 // define the root reducer

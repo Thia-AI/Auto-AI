@@ -1,5 +1,4 @@
-export const ENGINE_STARTED = 'ENGINE_STARTED';
-export const ENGINE_DEV_STATUS = 'ENGINE_DEV_STATUS';
+import { ENGINE_STARTED, ENGINE_DEV_STATUS } from '_state/types';
 
 export interface IEngineStartedAction {
 	type: typeof ENGINE_STARTED;
