@@ -1,13 +1,36 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { CSSTransition } from 'react-transition-group';
+import { connect, ConnectedProps } from 'react-redux';
+
+import { IAppState } from '_state/reducers';
+import {
+	listenForEngineStart,
+	getDevReloadEngineStatus,
+} from '_state/engine-status/EngineStatusActions';
 
 import { Modal } from '../modal/Modal';
 
 import './EngineModal.css';
+import { EngineStatusReducerType } from '_/renderer/state/engine-status/model/reducerTypes';
+import {
+	EngineDevStatusAction,
+	EngineStartedAction,
+} from '_/renderer/state/engine-status/model/actionTypes';
+import { ThunkAction } from 'redux-thunk';
 
 interface ModalProps {
 	loader: JSX.Element;
+	// action creators
+	listenForEngineStart: () => EngineStartedAction;
+	getDevReloadEngineStatus: () => ThunkAction<
+		void,
+		{},
+		undefined,
+		EngineDevStatusAction
+	>;
+	// reducers
+	engineStarted: EngineStatusReducerType;
 }
 
 /**
@@ -19,29 +42,35 @@ class EngineModal extends Component<ModalProps> {
 		this.checkForEngineStart();
 	}
 
-	state = {
-		engineStarted: false,
-	};
-
 	/**
 	 * Register IPC for checking for **Engine** being started at creation of component
 	 */
 	checkForEngineStart = () => {
 		// only for dev environment when you reload the app with Ctrl+R
 		// when engine has already started
-		ipcRenderer.invoke('engine-dev:started').then((engineStarted: boolean) => {
-			this.setState({ engineStarted });
-		});
+		// ipcRenderer.invoke('engine-dev:started').then((engineStarted: boolean) => {
+		// 	this.setState({ engineStarted });
+		// });
+
+		// ipcRenderer.on('engine:started', () => {
+		// 	this.setState({ engineStarted: true });
+		// });
+
+		// ipcRenderer.invoke('engine-dev:started').then((engineStarted: boolean) => {
+		// this.setState({ engineStarted });
+		// });
+
+		this.props.getDevReloadEngineStatus();
 
 		ipcRenderer.on('engine:started', () => {
-			this.setState({ engineStarted: true });
+			this.props.listenForEngineStart();
 		});
 	};
 
 	render() {
 		return (
 			<CSSTransition
-				in={!this.state.engineStarted}
+				in={!this.props.engineStarted.value}
 				timeout={300}
 				classNames='engine-modal-transition'
 				unmountOnExit>
@@ -51,4 +80,13 @@ class EngineModal extends Component<ModalProps> {
 	}
 }
 
-export { EngineModal };
+const mapStateToProps = (state: IAppState) => {
+	return {
+		engineStarted: state.engineStarted,
+	};
+};
+
+export default connect(mapStateToProps, {
+	listenForEngineStart,
+	getDevReloadEngineStatus,
+})(EngineModal);

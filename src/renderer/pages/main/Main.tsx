@@ -19,6 +19,7 @@ class Main extends Component {
 
 	toggleCreatingModel = () => {
 		this.setState({ toggleModel: !this.state.toggleModel });
+		// this.runPython();
 	};
 
 	runPython = () => {

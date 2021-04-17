@@ -4,7 +4,7 @@
 
 .toggle-select-model-enter-active {
 	opacity: 1;
-	transition: opacity 300ms ease-out;
+	transition: opacity 300ms ease-in;
 }
 
 .toggle-select-model-exit {

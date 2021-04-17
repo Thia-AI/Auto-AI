@@ -110,7 +110,7 @@ function initRendererDev(isDev: boolean): void {
  */
 function launchEngine(): void {
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}

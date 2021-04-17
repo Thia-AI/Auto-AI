@@ -31,7 +31,6 @@ export class BaseButton extends Component<BaseButtonProps> {
 		super(props);
 	}
 
-	state = {};
 	render() {
 		let { wantIcon } = this.props;
 		let icon;
