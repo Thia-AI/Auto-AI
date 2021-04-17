@@ -10,7 +10,7 @@ import '_public/style.css';
 import '_fonts/fonts.css';
 
 import App from './App';
-import { store } from './state/store';
+import { store } from '../state/store';
 
 ReactDOM.render(
 	<Provider store={store}>
