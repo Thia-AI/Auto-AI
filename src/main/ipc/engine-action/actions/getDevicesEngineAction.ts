@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineAction } from '../base/iEngineAction';
 
 /**

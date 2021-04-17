@@ -4,11 +4,11 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, Menu, session } from 'electron';
-import installExtension, {
-	REACT_DEVELOPER_TOOLS,
-	REDUX_DEVTOOLS,
-} from 'electron-devtools-installer';
+import { BrowserWindow, app, ipcMain, Menu } from 'electron';
+// import installExtension, {
+// 	REACT_DEVELOPER_TOOLS,
+// 	REDUX_DEVTOOLS,
+// } from 'electron-devtools-installer';
 
 import EngineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
@@ -109,11 +109,13 @@ function initRendererDev(isDev: boolean): void {
  * Launches **Engine**
  */
 function launchEngine(): void {
+	/* eslint-disable  @typescript-eslint/no-unused-vars */
 	if (isDev) {
 		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}
+	/* eslint-enable  @typescript-eslint/no-unused-vars */
 }
 
 /**

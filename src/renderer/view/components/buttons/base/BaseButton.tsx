@@ -11,7 +11,7 @@ interface BaseButtonPropsCommon {
 
 // Copy FontAwesomeIconProps without icon as we will add conditions for icon existing
 // or not later
-interface OmitIcon extends Omit<FontAwesomeIconProps, 'icon'> {}
+type OmitIcon = Omit<FontAwesomeIconProps, 'icon'>;
 
 // Combine with common props
 type BaseButtonPropsOmmited = BaseButtonPropsCommon & OmitIcon;
@@ -32,7 +32,7 @@ export class BaseButton extends Component<BaseButtonProps> {
 	}
 
 	render() {
-		let { wantIcon } = this.props;
+		const { wantIcon } = this.props;
 		let icon;
 		if (wantIcon) {
 			icon = (

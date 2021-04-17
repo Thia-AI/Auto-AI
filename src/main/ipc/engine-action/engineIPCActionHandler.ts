@@ -56,7 +56,7 @@ class EngineIPCActionHandler {
 		this.initEngineActionHandler(engineActionHandler);
 
 		ipcMain.handle('engine-action:getDevices', async () => {
-			let devices = await this.actionHandler.getDevices();
+			const devices = await this.actionHandler.getDevices();
 
 			return JSON.stringify(devices);
 		});

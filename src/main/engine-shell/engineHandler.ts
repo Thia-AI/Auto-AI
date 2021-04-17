@@ -54,7 +54,7 @@ export class EngineHandler {
 	 */
 	public createDevEngine = (
 		window: BrowserWindow | null,
-		simulateProd: boolean = false,
+		simulateProd = false,
 	): EngineShellDev | EngineShellProd => {
 		if (simulateProd)
 			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window);

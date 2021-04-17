@@ -68,9 +68,9 @@ export class EngineShell {
 	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner)
 	 */
 	protected notifyOnceEngineHasStarted = async (
-		retries: number = 10,
+		retries = 10,
 	): Promise<boolean | undefined> => {
-		let timeout = this.engineCheckTimeout;
+		const timeout = this.engineCheckTimeout;
 		try {
 			await EngineActionHandler.getInstance().getDevices({ timeout });
 			console.log('Engine Connected');

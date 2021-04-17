@@ -26,8 +26,25 @@
 		"@typescript-eslint/ban-types": "off",
 		"react/prop-types": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",
-		"@typescript-eslint/no-unused-vars": ["error"]
+		"@typescript-eslint/no-unused-vars": ["error"],
+		"@typescript-eslint/no-var-requires": "off",
+		"@typescript-eslint/no-empty-function": "off",
+		"no-useless-catch": "off"
 	},
+	"overrides": [
+		{
+			"files": ["src/renderer/**/*.tsx"],
+			"rules": {
+				"@typescript-eslint/no-var-requires": ["error"]
+			}
+		},
+		{
+			"files": ["src/main/**/*.ts"],
+			"rules": {
+				"@typescript-eslint/no-var-requires": "off"
+			}
+		}
+	],
 	"settings": {
 		"import/parsers": {
 			"@typescript-eslint/parser": [".ts", ".tsx"]
