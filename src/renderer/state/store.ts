@@ -1,4 +1,4 @@
-import { applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 
 import AppActions from './appActions';
@@ -9,5 +9,8 @@ export type AppState = ReturnType<typeof reducers>;
 
 export const store = createStore(
 	reducers,
-	applyMiddleware(thunk as ThunkMiddleware<AppState, AppActions>),
+	compose(
+		applyMiddleware(thunk as ThunkMiddleware<AppState, AppActions>),
+		window['devToolsExtension'] ? window['devToolsExtension']() : (f) => f,
+	),
 );

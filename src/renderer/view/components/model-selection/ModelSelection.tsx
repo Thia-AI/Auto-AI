@@ -7,27 +7,34 @@ import { InnerModal } from '../modal/inner/InnerModal';
 import { Modal } from '../modal/Modal';
 import { SelectModelContent } from '../select-model-modal/content/SelectModelContent';
 import { SelectModelHeader } from '../select-model-modal/header/SelectModelHeader';
+import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/ChooseModelActions';
+import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import './ModelSelection.css';
+import { connect } from 'react-redux';
+import { IAppState } from '_/renderer/state/reducers';
+import { IOpenCloseModelSelectionReducer } from '_/renderer/state/choose-model/model/reducerTypes';
 
 interface Props {
-	modelSelectionState: boolean;
-	toggleCreatingModel: () => void;
+	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
+	modalOpenedState: IOpenCloseModelSelectionReducer;
 }
 
-export class ModelSelection extends Component<Props> {
+class ModelSelection extends Component<Props> {
 	render() {
 		return (
 			<CSSTransition
-				in={this.props.modelSelectionState}
+				in={this.props.modalOpenedState.value}
 				timeout={300}
 				classNames='toggle-select-model'
 				unmountOnExit>
-				<Modal opacity={0.2} modalClick={this.props.toggleCreatingModel}>
+				<Modal
+					opacity={0.2}
+					modalClick={this.props.openCloseModelSelectionAction}>
 					<InnerModal>
 						<InnerModalHeader>
 							<SelectModelHeader
-								exitMethod={this.props.toggleCreatingModel}
+								exitMethod={this.props.openCloseModelSelectionAction}
 							/>
 						</InnerModalHeader>
 						<SimpleDivider />
@@ -40,3 +47,13 @@ export class ModelSelection extends Component<Props> {
 		);
 	}
 }
+
+const mapStateToProps = (state: IAppState) => {
+	return {
+		modalOpenedState: state.openCloseModelSelection,
+	};
+};
+
+export default connect(mapStateToProps, {
+	openCloseModelSelectionAction,
+})(ModelSelection);

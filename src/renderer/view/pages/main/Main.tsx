@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import './Main.css';
-import { NewModel } from '_/renderer/view/components/new-model/NewModel';
-import { ModelSelection } from '_/renderer/view/components/model-selection/ModelSelection';
+import NewModel from '_/renderer/view/components/new-model/NewModel';
+import ModelSelection from '_/renderer/view/components/model-selection/ModelSelection';
+import { connect } from 'react-redux';
+import { IAppState } from '_/renderer/state/reducers';
+import { openCloseModelSelectionReducer } from '_state/choose-model/ChooseModelReducers';
 
 /**
  * Component for main portion of **renderer**
@@ -11,16 +14,6 @@ class Main extends Component {
 	constructor(props) {
 		super(props);
 	}
-
-	state = {
-		output: '',
-		toggleModel: false,
-	};
-
-	toggleCreatingModel = () => {
-		this.setState({ toggleModel: !this.state.toggleModel });
-		// this.runPython();
-	};
 
 	runPython = () => {
 		ipcRenderer.invoke('engine-action:getDevices').then((devices) => {
@@ -35,14 +28,11 @@ class Main extends Component {
 	render() {
 		return (
 			<div className='headerless-app'>
-				<NewModel toggleCreatingModel={this.toggleCreatingModel} />
-				<ModelSelection
-					toggleCreatingModel={this.toggleCreatingModel}
-					modelSelectionState={this.state.toggleModel}
-				/>
+				<NewModel />
+				<ModelSelection />
 			</div>
 		);
 	}
 }
 
-export { Main };
+export default Main;

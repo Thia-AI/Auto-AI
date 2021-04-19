@@ -48,18 +48,6 @@ class EngineModal extends Component<ModalProps> {
 	checkForEngineStart = () => {
 		// only for dev environment when you reload the app with Ctrl+R
 		// when engine has already started
-		// ipcRenderer.invoke('engine-dev:started').then((engineStarted: boolean) => {
-		// 	this.setState({ engineStarted });
-		// });
-
-		// ipcRenderer.on('engine:started', () => {
-		// 	this.setState({ engineStarted: true });
-		// });
-
-		// ipcRenderer.invoke('engine-dev:started').then((engineStarted: boolean) => {
-		// this.setState({ engineStarted });
-		// });
-
 		this.props.getDevReloadEngineStatus();
 
 		ipcRenderer.on('engine:started', () => {

@@ -5,10 +5,7 @@ import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
-// import installExtension, {
-// 	REACT_DEVELOPER_TOOLS,
-// 	REDUX_DEVTOOLS,
-// } from 'electron-devtools-installer';
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 import EngineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
@@ -32,12 +29,12 @@ initRendererDev(isDev);
 
 // need to fix react-developer-tools
 app.whenReady().then(async () => {
-	// const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-	// const extensions = [REACT_DEVELOPER_TOOLS];
-	// installExtension(extensions, {
-	// 	loadExtensionOptions: { allowFileAccess: true },
-	// 	forceDownload: forceDownload,
-	// }).catch(console.log);
+	const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+	const extensions = [REDUX_DEVTOOLS];
+	installExtension(extensions, {
+		loadExtensionOptions: { allowFileAccess: true },
+		forceDownload: forceDownload,
+	}).catch(console.log);
 });
 
 /**
