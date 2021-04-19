@@ -1,19 +1,25 @@
 import React, { Component, MouseEvent } from 'react';
 import { ipcRenderer } from 'electron';
 import './Header.css';
+import { connect } from 'react-redux';
+import { IAppState } from '_/renderer/state/reducers';
+import { changeHeaderMaximized } from '_state/header/HeaderActions';
+import { IHeaderMaximizedChangedReducer } from '_/renderer/state/header/model/reducerTypes';
+import { IHeaderMaximizeChangedAction } from '_/renderer/state/header/model/actionTypes';
+
+interface Props {
+	maximizedClass: IHeaderMaximizedChangedReducer;
+	changeHeaderMaximized: (maximizedClass: string) => IHeaderMaximizeChangedAction;
+}
 
 /**
  * Since we use a frameless **Electron** app, we have to implement a custom window top bar
  */
-class Header extends Component {
+class Header extends Component<Props> {
 	constructor(props) {
 		super(props);
 		this.initToggleMaxRestoreButtons();
 	}
-
-	state = {
-		titleBarClassName: '',
-	};
 
 	/**
 	 * Closes the **renderer**'s BrowserWindow
@@ -53,21 +59,17 @@ class Header extends Component {
 	 */
 	initToggleMaxRestoreButtons() {
 		ipcRenderer.on('window:unmaximized', () => {
-			this.setState({
-				titleBarClassName: '',
-			});
+			this.props.changeHeaderMaximized('');
 		});
 
 		ipcRenderer.on('window:maximized', () => {
-			this.setState({
-				titleBarClassName: 'maximized',
-			});
+			this.props.changeHeaderMaximized('maximized');
 		});
 	}
 
 	render() {
 		return (
-			<header id='titlebar' className={this.state.titleBarClassName}>
+			<header id='titlebar' className={this.props.maximizedClass.value}>
 				<div id='drag-region'>
 					<div id='window-title'>
 						<span>Thia Auto-ML</span>
@@ -121,4 +123,12 @@ class Header extends Component {
 	}
 }
 
-export { Header };
+const mapStateToProps = (state: IAppState) => {
+	return {
+		maximizedClass: state.headerMaximizedClass,
+	};
+};
+
+export default connect(mapStateToProps, {
+	changeHeaderMaximized,
+})(Header);

@@ -1,13 +1,13 @@
-import { HeaderMaximizeChangedAction } from './model/actionTypes';
+import { IHeaderMaximizeChangedAction } from './model/actionTypes';
 import { APP_MAXIMIZE_CHANGE } from '_state/types';
 
 export const changeHeaderMaximized = (
-	maximized: boolean,
-): HeaderMaximizeChangedAction => {
+	maximizedClass: string,
+): IHeaderMaximizeChangedAction => {
 	return {
 		type: APP_MAXIMIZE_CHANGE,
 		payload: {
-			maximized,
+			maximizedClass,
 		},
 	};
 };

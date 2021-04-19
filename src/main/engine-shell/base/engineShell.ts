@@ -68,7 +68,7 @@ export class EngineShell {
 	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner)
 	 */
 	protected notifyOnceEngineHasStarted = async (
-		retries = 10,
+		retries = 20,
 	): Promise<boolean | undefined> => {
 		const timeout = this.engineCheckTimeout;
 		try {

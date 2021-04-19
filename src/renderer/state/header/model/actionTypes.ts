@@ -1,8 +1,8 @@
 import { APP_MAXIMIZE_CHANGE } from '_state/types';
 
-export interface HeaderMaximizeChangedAction {
+export interface IHeaderMaximizeChangedAction {
 	type: typeof APP_MAXIMIZE_CHANGE;
 	payload: {
-		maximized: boolean;
+		maximizedClass: string;
 	};
 }

@@ -1,19 +1,19 @@
-import { IHeaderMaximizedReducerType } from './model/reducerTypes';
-import { HeaderMaximizeChangedAction } from './model/actionTypes';
+import { IHeaderMaximizedChangedReducer } from './model/reducerTypes';
+import { IHeaderMaximizeChangedAction } from './model/actionTypes';
 import { APP_MAXIMIZE_CHANGE } from '_state/types';
 
-const initialHeaderMaximizedState: IHeaderMaximizedReducerType = {
-	value: false,
+const initialHeaderMaximizedState: IHeaderMaximizedChangedReducer = {
+	value: '',
 };
 
-export const headerMaximizedReducer = (
+export const headerMaximizedChangedReducer = (
 	state = initialHeaderMaximizedState,
-	action: HeaderMaximizeChangedAction,
-): IHeaderMaximizedReducerType => {
+	action: IHeaderMaximizeChangedAction,
+): IHeaderMaximizedChangedReducer => {
 	switch (action.type) {
 		case APP_MAXIMIZE_CHANGE:
 			return {
-				value: action.payload.maximized,
+				value: action.payload.maximizedClass,
 			};
 		default:
 			return state;

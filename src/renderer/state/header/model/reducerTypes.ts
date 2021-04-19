@@ -1,3 +1,3 @@
-export interface IHeaderMaximizedReducerType {
-	value: boolean;
+export interface IHeaderMaximizedChangedReducer {
+	value: string;
 }
