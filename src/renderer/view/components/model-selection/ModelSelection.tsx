@@ -8,16 +8,17 @@ import { Modal } from '../modal/Modal';
 import SelectModelContent from '../select-model-modal/content/SelectModelContent';
 import { SelectModelHeader } from '../select-model-modal/header/SelectModelHeader';
 import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/ChooseModelActions';
-import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import './ModelSelection.css';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { IOpenCloseModelSelectionReducer } from '_/renderer/state/choose-model/model/reducerTypes';
+import { ThunkAction } from 'redux-thunk';
+import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 interface Props {
-	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
 	modalOpenedState: IOpenCloseModelSelectionReducer;
+	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
 }
 
 class ModelSelection extends Component<Props> {
@@ -34,7 +35,9 @@ class ModelSelection extends Component<Props> {
 					<InnerModal>
 						<InnerModalHeader>
 							<SelectModelHeader
-								exitMethod={this.props.openCloseModelSelectionAction}
+								exitMethod={() =>
+									this.props.openCloseModelSelectionAction()
+								}
 							/>
 						</InnerModalHeader>
 						<SimpleDivider />
