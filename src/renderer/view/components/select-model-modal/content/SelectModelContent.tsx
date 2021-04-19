@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
-import { HorizontalModelSelection } from '../../model-library-horizontal-selection/HorizontalModelSelection';
+import { connect } from 'react-redux';
+import { IAppState } from '_/renderer/state/reducers';
+import HorizontalModelSelection from '../../model-library-horizontal-selection/HorizontalModelSelection';
 import { GenerativeSelection } from '../../model-selection-descriptions/generative/GenerativeSelection';
 import { ImageClassificationSelection } from '../../model-selection-descriptions/image-classification/ImageClassificationSelection';
 import { ObjectDetectionSelection } from '../../model-selection-descriptions/object-detection/ObjectDetectionSelection';
 
 import './SelectModelContent.css';
+import { IChangeSelectedModelReducer } from '_/renderer/state/choose-model/model/reducerTypes';
 
-export class SelectModelContent extends Component {
-	state = {
-		selectedModel: 0,
-	};
+interface Props {
+	selectedModel: IChangeSelectedModelReducer;
+}
 
-	setSelectedModel = (model: number) => {
-		this.setState({ selectedModel: model });
-		console.log(`Model Changed To ${model}`);
-	};
+class SelectModelContent extends Component<Props> {
 	renderDescription = () => {
-		switch (this.state.selectedModel) {
+		// console.log(this.props.selectedModel.value);
+
+		switch (this.props.selectedModel.value) {
 			case 0:
 				return <ImageClassificationSelection />;
 			case 1:
@@ -28,7 +29,7 @@ export class SelectModelContent extends Component {
 	render() {
 		return (
 			<div className='select-model-content'>
-				<HorizontalModelSelection onClick={this.setSelectedModel} />
+				<HorizontalModelSelection />
 				<div className='model-description-container'>
 					{this.renderDescription()}
 				</div>
@@ -36,3 +37,11 @@ export class SelectModelContent extends Component {
 		);
 	}
 }
+
+const mapStateToProps = (state: IAppState) => {
+	return {
+		selectedModel: state.selectedModel,
+	};
+};
+
+export default connect(mapStateToProps)(SelectModelContent);

@@ -5,7 +5,7 @@ import { InnerModalContent } from '../modal/inner/content/InnerModalContent';
 import { InnerModalHeader } from '../modal/inner/header/InnerModalHeader';
 import { InnerModal } from '../modal/inner/InnerModal';
 import { Modal } from '../modal/Modal';
-import { SelectModelContent } from '../select-model-modal/content/SelectModelContent';
+import SelectModelContent from '../select-model-modal/content/SelectModelContent';
 import { SelectModelHeader } from '../select-model-modal/header/SelectModelHeader';
 import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/ChooseModelActions';
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
