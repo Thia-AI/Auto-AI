@@ -1,0 +1,37 @@
+{
+	"python.linting.pylintEnabled": true,
+	"git.autofetch": true,
+	"files.associations": {
+		"*.spec": "python"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"prettier.printWidth": 100,
+	"prettier.singleQuote": true,
+	"prettier.tabWidth": 4,
+	"prettier.trailingComma": "all",
+	"prettier.useTabs": true,
+	"prettier.jsxSingleQuote": true,
+	"prettier.jsxBracketSameLine": true,
+	"javascript.format.semicolons": "insert",
+	"javascript.updateImportsOnFileMove.enabled": "always",
+	"fileHeaderComment.parameter": {
+		"*": {
+			"commentbegin": "/*",
+			"commentprefix": " *",
+			"commentend": " */",
+			"company": "Thia AI",
+			"creator": "Ritesh Ahlawat"
+		}
+	},
+	"fileHeaderComment.template": {
+		"*": [
+			"${commentbegin} Copyright (c) ${year} ${company} - All Rights Reserved",
+			"${commentprefix}",
+			"${commentprefix} Unauthorized copying of this file, via any medium is strictly prohibited",
+			"${commentprefix} Proprietary and confidential",
+			"${commentprefix} Created on ${date} by ${creator}",
+			"${commentend}"
+		]
+	}
+}
