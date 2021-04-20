@@ -1,0 +1,11 @@
+{
+	"autorun": true,
+	"terminals": [
+		{
+			"name": "Webpack",
+			"focus": true,
+			"icon": "code",
+			"command": "npm run dev"
+		}
+	]
+}

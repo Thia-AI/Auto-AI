@@ -5,6 +5,14 @@
 	flex-direction: column;
 	background-color: var(--alternate-white);
 	border-radius: 10px;
+	will-change: width;
+	transition: width 125ms ease;
+}
+
+@media screen and (max-width: 1450px) {
+	.inner-modal-div {
+		width: 65%;
+	}
 }
 
 @media screen and (max-width: 1200px) {

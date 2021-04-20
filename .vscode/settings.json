@@ -33,5 +33,21 @@
 			"${commentprefix} Created on ${date} by ${creator}",
 			"${commentend}"
 		]
-	}
+	},
+	"terminal.integrated.copyOnSelection": true,
+	"restoreTerminals.keepExistingTerminalsOpen": false,
+	"restoreTerminals.artificialDelayMilliseconds": 500,
+	"restoreTerminals.terminals": [
+		{
+			"splitTerminals": [
+				{
+					"name": "Webpack",
+					"commands": ["npm run dev"]
+				},
+				{
+					"name": "Electron"
+				}
+			]
+		}
+	]
 }

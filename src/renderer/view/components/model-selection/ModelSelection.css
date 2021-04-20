@@ -5,6 +5,7 @@
 .toggle-select-model-enter-active {
 	opacity: 1;
 	transition: opacity 300ms ease-in;
+	will-change: opacity;
 }
 
 .toggle-select-model-exit {
@@ -14,4 +15,5 @@
 .toggle-select-model-exit-active {
 	opacity: 0;
 	transition: opacity 200ms ease-in;
+	will-change: opacity;
 }
