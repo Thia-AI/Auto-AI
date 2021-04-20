@@ -1,6 +1,6 @@
 .inner-modal-div {
 	width: 55%;
-	height: 90%;
+	height: 95%;
 	display: flex;
 	flex-direction: column;
 	background-color: var(--alternate-white);
@@ -9,13 +9,13 @@
 
 @media screen and (max-width: 1200px) {
 	.inner-modal-div {
-		width: 66%;
+		width: 75%;
 	}
 }
 
 @media screen and (max-width: 950px) {
 	.inner-modal-div {
-		width: 75%;
+		width: 85%;
 	}
 }
 

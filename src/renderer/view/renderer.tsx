@@ -6,8 +6,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import '_public/style.css';
 import '_fonts/fonts.css';
+import '_public/style.css';
 
 import App from './App';
 import { store } from '../state/store';

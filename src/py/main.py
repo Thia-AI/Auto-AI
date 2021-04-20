@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 
 from config import config
 from env import environment
+
 # from env import environment
 
 environment.init_environment()
@@ -18,7 +19,7 @@ app = Flask(__name__)
 
 @app.route('/getDevices', methods=['GET'])
 def hello_world():
-    print('Received Request')
+    print('Received Request', flush=True)
     out = []
     for device in tf.config.list_physical_devices():
         out.append({

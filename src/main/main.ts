@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
-import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 import EngineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
@@ -26,17 +25,6 @@ let engineIPCActionHandler: EngineIPCActionHandler;
 const isDev = require('electron-is-dev');
 
 initRendererDev(isDev);
-
-// need to fix react-developer-tools
-app.whenReady().then(async () => {
-	const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-	const extensions = [REDUX_DEVTOOLS];
-	installExtension(extensions, {
-		loadExtensionOptions: { allowFileAccess: true },
-		forceDownload: forceDownload,
-	}).catch(console.log);
-});
-
 /**
  * Creates the main window for **renderer**
  */
@@ -108,7 +96,7 @@ function initRendererDev(isDev: boolean): void {
 function launchEngine(): void {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}

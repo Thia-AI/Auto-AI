@@ -12,7 +12,7 @@ export class EngineShellDev extends EngineShell {
 	private options: Options = {
 		mode: 'text',
 		pythonPath: 'python',
-		pythonOptions: ['-u'],
+		// pythonOptions: ['-u'],
 	};
 
 	/**

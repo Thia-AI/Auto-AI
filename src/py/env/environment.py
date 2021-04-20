@@ -1,6 +1,7 @@
 import sys 
 import os
 from pathlib import Path
+import msvcrt
 
 from config import config
 
@@ -22,6 +23,7 @@ def init_environment() -> None:
         os.environ['PATH'] = str(config.current_dir.parent.parent.parent / 'CUDA') + os.pathsep + os.environ['PATH']
     else:
         os.environ['PATH'] = str(config.current_dir / 'CUDA') + os.pathsep + os.environ['PATH']
-    
-    print("ENV:", config.PRODUCTION)
-    print("ENV:", config.DEVELOPMENT)
+
+    msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+    print("ENV:", config.PRODUCTION, flush=True)
+    print("ENV:", config.DEVELOPMENT, flush=True)

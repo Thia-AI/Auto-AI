@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import HorizontalModelSelection from '../../model-library-horizontal-selection/HorizontalModelSelection';
 import { GenerativeSelection } from '../../model-selection-descriptions/generative/GenerativeSelection';
-import { ImageClassificationSelection } from '../../model-selection-descriptions/image-classification/ImageClassificationSelection';
+import ImageClassificationSelection from '../../model-selection-descriptions/image-classification/ImageClassificationSelection';
 import { ObjectDetectionSelection } from '../../model-selection-descriptions/object-detection/ObjectDetectionSelection';
 
 import './SelectModelContent.css';

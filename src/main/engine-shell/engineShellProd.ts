@@ -16,7 +16,7 @@ export class EngineShellProd extends EngineShell {
 	constructor(enginePath: string, window: BrowserWindow | null) {
 		super(window);
 
-		this.engine = spawn(enginePath);
+		this.engine = spawn(enginePath, ['--line-buffered']);
 
 		this.notifyOnceEngineHasStarted();
 		this.onDataChangeSetup();
