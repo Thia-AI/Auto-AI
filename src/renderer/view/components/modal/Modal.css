@@ -6,7 +6,6 @@
 	top: calc(var(--header-height) + 2 * var(--header-padding));
 	width: 100%;
 	height: calc(100% - (var(--header-height) + 2 * var(--header-padding)));
-	overflow: auto;
 	align-items: center;
 	justify-content: center;
 }

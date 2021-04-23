@@ -31,9 +31,9 @@ initRendererDev(isDev);
 function createWindow(): void {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
-		height: 750,
+		height: 768,
 		width: 950,
-		minHeight: 600,
+		minHeight: 768,
 		minWidth: 825,
 		frame: false,
 		icon: path.join(__dirname, '..', 'build', 'icon.ico'),

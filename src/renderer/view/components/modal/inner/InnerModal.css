@@ -9,19 +9,19 @@
 	transition: width 125ms ease;
 }
 
-@media screen and (max-width: 1450px) {
+@media screen and (max-width: 1550px) {
 	.inner-modal-div {
 		width: 65%;
 	}
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1350px) {
 	.inner-modal-div {
 		width: 75%;
 	}
 }
 
-@media screen and (max-width: 950px) {
+@media screen and (max-width: 1150px) {
 	.inner-modal-div {
 		width: 85%;
 	}

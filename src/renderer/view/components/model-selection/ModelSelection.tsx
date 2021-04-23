@@ -29,22 +29,24 @@ class ModelSelection extends Component<Props> {
 				timeout={300}
 				classNames='toggle-select-model'
 				unmountOnExit>
-				<Modal
-					opacity={0.2}
-					modalClick={this.props.openCloseModelSelectionAction}>
-					<InnerModal>
-						<InnerModalHeader>
-							<SelectModelHeader
-								exitMethod={() =>
-									this.props.openCloseModelSelectionAction()
-								}
-							/>
-						</InnerModalHeader>
-						<SimpleDivider />
-						<InnerModalContent>
-							<SelectModelContent />
-						</InnerModalContent>
-					</InnerModal>
+				<Modal opacity={0.2} modalClick={this.props.openCloseModelSelectionAction}>
+					<CSSTransition
+						in={this.props.modalOpenedState.value}
+						timeout={300}
+						classNames='toggle-select-model-inner'
+						unmountOnExit>
+						<InnerModal>
+							<InnerModalHeader>
+								<SelectModelHeader
+									exitMethod={() => this.props.openCloseModelSelectionAction()}
+								/>
+							</InnerModalHeader>
+							<SimpleDivider />
+							<InnerModalContent>
+								<SelectModelContent />
+							</InnerModalContent>
+						</InnerModal>
+					</CSSTransition>
 				</Modal>
 			</CSSTransition>
 		);

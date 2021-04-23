@@ -13,7 +13,6 @@
 }
 
 .model-selection-container::-webkit-scrollbar {
-	width: 8px;
 	height: 8px;
 	margin-top: 2px;
 }

@@ -17,3 +17,13 @@
 	transition: opacity 200ms ease-in;
 	will-change: opacity;
 }
+
+.toggle-select-model-inner-exit {
+	transform: scale(1);
+}
+
+.toggle-select-model-inner-exit-active {
+	transform: scale(0.7);
+	transition: transform 350ms ease-out;
+	will-change: transform;
+}
