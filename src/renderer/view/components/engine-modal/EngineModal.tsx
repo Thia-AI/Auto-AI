@@ -6,7 +6,7 @@ import { ThunkAction } from 'redux-thunk';
 
 import { IAppState } from '_state/reducers';
 import {
-	listenForEngineStart,
+	notifyEngineStart,
 	getDevReloadEngineStatus,
 } from '_state/engine-status/EngineStatusActions';
 
@@ -23,12 +23,7 @@ interface ModalProps {
 	loader: JSX.Element;
 	// action creators
 	listenForEngineStart: () => IEngineStartedAction;
-	getDevReloadEngineStatus: () => ThunkAction<
-		void,
-		{},
-		undefined,
-		IEngineDevStatusAction
-	>;
+	getDevReloadEngineStatus: () => ThunkAction<void, {}, undefined, IEngineDevStatusAction>;
 	// reducers
 	engineStarted: IEngineStatusReducer;
 }
@@ -75,6 +70,6 @@ const mapStateToProps = (state: IAppState) => {
 };
 
 export default connect(mapStateToProps, {
-	listenForEngineStart,
+	listenForEngineStart: notifyEngineStart,
 	getDevReloadEngineStatus,
 })(EngineModal);
