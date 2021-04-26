@@ -13,11 +13,11 @@ import {
 import { Modal } from '../modal/Modal';
 
 import './EngineModal.css';
-import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
+import { IEngineStatusReducer } from '_state/engine-status/model/reducerTypes';
 import {
 	IEngineDevStatusAction,
 	IEngineStartedAction,
-} from '_/renderer/state/engine-status/model/actionTypes';
+} from '_state/engine-status/model/actionTypes';
 
 interface ModalProps {
 	loader: JSX.Element;
