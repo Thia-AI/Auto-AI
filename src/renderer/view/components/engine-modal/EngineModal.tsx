@@ -6,7 +6,7 @@ import { ThunkAction } from 'redux-thunk';
 
 import { IAppState } from '_state/reducers';
 import {
-	notifyEngineStart,
+	notifyEngineStarted,
 	getDevReloadEngineStatus,
 } from '_state/engine-status/EngineStatusActions';
 
@@ -70,6 +70,6 @@ const mapStateToProps = (state: IAppState) => {
 };
 
 export default connect(mapStateToProps, {
-	listenForEngineStart: notifyEngineStart,
+	listenForEngineStart: notifyEngineStarted,
 	getDevReloadEngineStatus,
 })(EngineModal);

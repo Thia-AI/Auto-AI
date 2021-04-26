@@ -3,7 +3,7 @@ import { ThunkAction } from 'redux-thunk';
 import { IEngineDevStatusAction, IEngineStartedAction } from './model/actionTypes';
 import { ENGINE_STARTED, ENGINE_DEV_STATUS } from '_state/types';
 
-export const notifyEngineStart = (): IEngineStartedAction => {
+export const notifyEngineStarted = (): IEngineStartedAction => {
 	return {
 		type: ENGINE_STARTED,
 	};
