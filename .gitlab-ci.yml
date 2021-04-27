@@ -16,8 +16,6 @@ stages:
 
 Build:
   stage: build
-  tags:
-    - node
   before_script:
     - npm config set cache .npm
     - npm install
