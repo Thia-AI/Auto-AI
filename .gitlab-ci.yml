@@ -1,0 +1,25 @@
+image: node:latest
+
+cache:
+  paths:
+    - node_modules/
+    - .npm
+
+# We tell GitLab to install all the packages before running anything
+
+before_script:
+  - apt-get update -qq && apt-get install
+
+stages:
+  - build
+  - test
+
+Build:
+  stage: build
+  tags:
+    - node
+  before_script:
+    - npm config set cache .npm
+    - npm install
+  script:
+    - npm run prod
