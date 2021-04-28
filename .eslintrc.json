@@ -19,8 +19,8 @@
 	"plugins": ["react", "@typescript-eslint", "import"],
 	"rules": {
 		"indent": "off",
-		"linebreak-style": ["error", "windows"],
-		"quotes": ["error", "single"],
+		"linebreak-style": "off",
+		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],
 		"import/no-unresolved": "error",
 		"@typescript-eslint/ban-types": "off",

@@ -1,23 +1,41 @@
 image: node:latest
 
 cache:
-  paths:
-    - node_modules/
-    - .npm
+    paths:
+        - node_modules/
+        - .npm
 
 # We tell GitLab to install all the packages before running anything
 
 before_script:
-  - apt-get update -qq && apt-get install
+    - apt-get update -qq && apt-get install
 
 stages:
-  - build
-  - test
+    - build
+    - code-quality
 
-Build:
-  stage: build
-  before_script:
-    - npm config set cache .npm
-    - npm install
-  script:
-    - npm run prod
+compile-project:
+    stage: build
+    before_script:
+        - npm config set cache .npm
+        - npm install
+    script:
+        - npm run prod
+
+lint-main:
+    stage: code-quality
+    before_script:
+        - npm config set cache .npm
+    script:
+        - npm run lint-main
+        - echo -e "\e[32mLint-Main \e[32mPassed!"
+    when: always
+
+lint-renderer:
+    stage: code-quality
+    before_script:
+        - npm config set cache .npm
+    script:
+        - npm run lint-renderer
+        - echo -e "\e[32mLint-Renderer \e[32mPassed!"
+    when: always
