@@ -13,7 +13,6 @@ import './ModelSelection.css';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { IOpenCloseModelSelectionReducer } from '_/renderer/state/choose-model/model/reducerTypes';
-import { ThunkAction } from 'redux-thunk';
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 interface Props {

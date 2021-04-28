@@ -11,7 +11,7 @@ class ImageClassificationSelection extends Component {
 						<div
 							className='description-header-image'
 							style={{
-								backgroundImage: `url('https://i.pinimg.com/originals/68/7c/ea/687cea8aabd579611223b9f6332f1cbb.gif')`,
+								backgroundImage: 'url(\'https://i.pinimg.com/originals/68/7c/ea/687cea8aabd579611223b9f6332f1cbb.gif\')',
 							}}
 						/>
 					</div>
