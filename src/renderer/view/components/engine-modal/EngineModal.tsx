@@ -5,10 +5,7 @@ import { connect } from 'react-redux';
 import { ThunkAction } from 'redux-thunk';
 
 import { IAppState } from '_state/reducers';
-import {
-	notifyEngineStarted,
-	getDevReloadEngineStatus,
-} from '_state/engine-status/EngineStatusActions';
+import { notifyEngineStarted, getDevEngineStatus } from '_state/engine-status/EngineStatusActions';
 
 import { Modal } from '../modal/Modal';
 
@@ -71,5 +68,5 @@ const mapStateToProps = (state: IAppState) => {
 
 export default connect(mapStateToProps, {
 	listenForEngineStart: notifyEngineStarted,
-	getDevReloadEngineStatus,
+	getDevReloadEngineStatus: getDevEngineStatus,
 })(EngineModal);

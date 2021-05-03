@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { changeSelectedModel } from '_/renderer/state/choose-model/ChooseModelActions';
+import { changeSelectedModelAction } from '_/renderer/state/choose-model/ChooseModelActions';
 import { IChangeSelectedModelAction } from '_/renderer/state/choose-model/model/actionTypes';
 import { ModelSelectionItem } from '../model-selection-item/ModelSelectionItem';
 
@@ -39,5 +39,5 @@ const mapStateToProps = () => {
 	return {};
 };
 export default connect(mapStateToProps, {
-	changeSelectedModel,
+	changeSelectedModel: changeSelectedModelAction,
 })(HorizontalModelSelection);

@@ -42,6 +42,7 @@ function createWindow(): void {
 			webSecurity: true,
 			devTools: isDev,
 			nodeIntegration: true,
+			contextIsolation: false,
 		},
 	});
 	// replace menu with custom menu

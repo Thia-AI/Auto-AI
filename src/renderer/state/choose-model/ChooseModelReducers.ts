@@ -1,17 +1,12 @@
 import { CHANGE_SELECTED_MODEL, CLICK_CHOOSE_MODEL_BUTTON } from '../types';
-import {
-	IChangeSelectedModelAction,
-	IOpenCloseModelSelectionAction,
-} from './model/actionTypes';
-import {
-	IChangeSelectedModelReducer,
-	IOpenCloseModelSelectionReducer,
-} from './model/reducerTypes';
+import { IChangeSelectedModelAction, IOpenCloseModelSelectionAction } from './model/actionTypes';
+import { IChangeSelectedModelReducer, IOpenCloseModelSelectionReducer } from './model/reducerTypes';
 
 const initialOpenCloseModelSelectionState: IOpenCloseModelSelectionReducer = {
 	value: false,
 };
 
+// State for whether model selection modal is opened or not
 export const openCloseModelSelectionReducer = (
 	state = initialOpenCloseModelSelectionState,
 	action: IOpenCloseModelSelectionAction,
@@ -30,6 +25,7 @@ const initialChangeSelectedModelState: IChangeSelectedModelReducer = {
 	value: 0,
 };
 
+// State for which model is selected (for description viewing)
 export const changeSelectedModelReducer = (
 	state = initialChangeSelectedModelState,
 	action: IChangeSelectedModelAction,

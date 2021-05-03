@@ -6,6 +6,7 @@ const initialHeaderMaximizedState: IHeaderMaximizedChangedReducer = {
 	value: '',
 };
 
+// State for maximized class for maximized header button
 export const headerMaximizedChangedReducer = (
 	state = initialHeaderMaximizedState,
 	action: IHeaderMaximizeChangedAction,

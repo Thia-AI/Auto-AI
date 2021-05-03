@@ -39,9 +39,7 @@ export class EngineShell {
 		exitSignal: string | NodeJS.Signals | null,
 	) => {
 		RUNTIME_GLOBALS.engineRunning = false;
-		console.log(
-			`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`,
-		);
+		console.log(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
 	};
 
 	/**
@@ -50,7 +48,8 @@ export class EngineShell {
 	 * @param data message that was outputted from stdout
 	 */
 	protected onDataChangeUniversal = (data: string) => {
-		console.log(data);
+		const date = new Date();
+		console.log(`Engine[${date.toLocaleDateString()}-${date.toLocaleTimeString()}]: ${data}`);
 	};
 
 	/**
@@ -67,9 +66,7 @@ export class EngineShell {
 	 * (either due to the **Engine** process not starting in the first place, latency between **Engine** server
 	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner)
 	 */
-	protected notifyOnceEngineHasStarted = async (
-		retries = 20,
-	): Promise<boolean | undefined> => {
+	protected notifyOnceEngineHasStarted = async (retries = 20): Promise<boolean | undefined> => {
 		const timeout = this.engineCheckTimeout;
 		try {
 			await EngineActionHandler.getInstance().getDevices({ timeout });
