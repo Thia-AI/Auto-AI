@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-	changeSelectedModel,
+	changeSelectedModelAction,
 	openCloseModelSelectionAction,
 } from '_/renderer/state/choose-model/ChooseModelActions';
 import {
@@ -37,5 +37,5 @@ const mapStateToProps = () => {
 
 export default connect(mapStateToProps, {
 	openCloseModelSelectionAction,
-	changeSelectedModel,
+	changeSelectedModel: changeSelectedModelAction,
 })(NewModel);

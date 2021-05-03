@@ -12,7 +12,7 @@ const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
 // #region Common settings
 const commonConfig = {
-	devtool: isEnvDevelopment ? 'eval-cheap-source-map' : false,
+	devtool: isEnvDevelopment ? 'eval-source-map' : false,
 	mode: isEnvProduction ? 'production' : 'development',
 	output: { path: srcPaths('dist') },
 	node: { __dirname: false, __filename: false },

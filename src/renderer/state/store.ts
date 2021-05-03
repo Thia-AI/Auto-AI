@@ -5,8 +5,10 @@ import AppActions from './appActions';
 
 import reducers from './reducers';
 
+// AppState will contain the ReducerTypes for all reducers
 export type AppState = ReturnType<typeof reducers>;
 
+// create our store
 export const store = createStore(
 	reducers,
 	compose(

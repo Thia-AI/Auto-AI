@@ -3,13 +3,15 @@ import { ThunkAction } from 'redux-thunk';
 import { IEngineDevStatusAction, IEngineStartedAction } from './model/actionTypes';
 import { ENGINE_STARTED, ENGINE_DEV_STATUS } from '_state/types';
 
+// Action to be called once engine has started
 export const notifyEngineStarted = (): IEngineStartedAction => {
 	return {
 		type: ENGINE_STARTED,
 	};
 };
 
-export const getDevReloadEngineStatus = (): ThunkAction<
+// Action for checking the status of engine at any time (only used in development)
+export const getDevEngineStatus = (): ThunkAction<
 	void,
 	{},
 	undefined,
