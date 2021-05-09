@@ -4,7 +4,7 @@ from pathlib import Path
 import msvcrt
 
 from config import config
-
+from log.logger import log
 
 def init_environment() -> None:
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
@@ -25,5 +25,5 @@ def init_environment() -> None:
         os.environ['PATH'] = str(config.current_dir / 'CUDA') + os.pathsep + os.environ['PATH']
 
     msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-    print("ENV:", config.PRODUCTION, flush=True)
-    print("ENV:", config.DEVELOPMENT, flush=True)
+    log("ENV:", config.PRODUCTION)
+    log("ENV:", config.DEVELOPMENT)

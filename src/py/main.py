@@ -1,6 +1,8 @@
 import os
 import sys
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from log.logger import log
+import logging
 
 from config import config
 from env import environment
@@ -11,15 +13,15 @@ environment.init_environment()
 
 import tensorflow as tf
 
-print("MAIN:", config.PRODUCTION)
-print("MAIN:", config.DEVELOPMENT)
-
 app = Flask(__name__)
+# Disable default logger that comes with flask
+flaskLogger = logging.getLogger('werkzeug')
+flaskLogger.disabled = True
 
 
 @app.route('/getDevices', methods=['GET'])
 def hello_world():
-    print('Received Request', flush=True)
+    log("Received Request")
     out = []
     for device in tf.config.list_physical_devices():
         out.append({
@@ -28,5 +30,13 @@ def hello_world():
         })
     return jsonify(out)
 
+
+@app.route('/test_data', methods=['POST'])
+def train():
+    if request.method == 'POST':
+        log("POSTed")
+    return {'retard': 200}, 200
+
+
 if __name__ == '__main__':
-    app.run(host='localhost', port=8442)
+    app.run(host='localhost', port=8442, threaded=True)
