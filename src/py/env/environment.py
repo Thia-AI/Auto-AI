@@ -1,14 +1,18 @@
-import sys 
+import sys
 import os
 from pathlib import Path
 import msvcrt
+import logging
 
 from config import config
 from log.logger import log
+from job.job import JobManager
+from db.database import DBManager
+
 
 def init_environment() -> None:
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        config.bundle_dir = Path(sys._MEIPASS) # pylint: disable=no-member,protected-access
+        config.bundle_dir = Path(sys._MEIPASS)  # pylint: disable=no-member,protected-access
         config.PRODUCTION = True
         config.DEVELOPMENT = False
     else:
@@ -25,5 +29,14 @@ def init_environment() -> None:
         os.environ['PATH'] = str(config.current_dir / 'CUDA') + os.pathsep + os.environ['PATH']
 
     msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-    log("ENV:", config.PRODUCTION)
-    log("ENV:", config.DEVELOPMENT)
+    log(f"ENV: {config.PRODUCTION}")
+    log(f"ENV: {config.DEVELOPMENT}")
+
+    # Disable default logger that comes with flask
+    flask_logger = logging.getLogger('werkzeug')
+    flask_logger.disabled = True
+
+    # Connect DBManager
+    DBManager.get_instance()
+    # Start the job manager
+    JobManager.get_instance().start()
