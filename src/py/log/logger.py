@@ -1,2 +1,2 @@
-def log(*args) -> None:
-    print(args, flush=True)
+def log(data: str) -> None:
+    print(data, flush=True)
