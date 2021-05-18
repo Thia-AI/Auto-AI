@@ -53,7 +53,7 @@ class EngineActionHandler {
 
 	/**
 	 * Calls GetDevicesEngineAction's `run()` method
-	 * @param config configuration to use for running `/getDevices` EngineAction
+	 * @param config configuration to use for running `/devices` EngineAction
 	 * @returns data returned by GetDevicesEngineAction
 	 */
 	public getDevices = async (config?: AxiosRequestConfig): Promise<object[]> => {

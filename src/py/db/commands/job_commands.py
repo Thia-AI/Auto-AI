@@ -1,18 +1,21 @@
 from db.commands.base_command import DBCommand
 from db.database import DBManager
-from job.base_job import BaseJob
+# from job.base_job import BaseJob
+import job.base_job as base
 
 
-def add_job(job: BaseJob) -> None:
-    cmd = DBCommand(name=f"Add Job {str(job)}", command='''INSERT INTO jobs (id, job_name, has_started, has_finished, status) 
-    values (?, ?, ?, ?, ?)''',
+def add_job(j: base.BaseJob) -> None:
+    cmd = DBCommand(name=f"Add Job {str(j)}",
+                    command='''INSERT INTO jobs (id, job_name, has_started, has_finished, status, date_started, date_finished) 
+                    values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        job.id().hex, job.job_name(), int(job.has_started()), int(job.has_finished()), job.status()))
+                        j.id().hex, j.job_name(), int(j.has_started()), int(j.has_finished()), j.status(),
+                        str(j.date_started()), str(j.date_finished())))
     DBManager.get_instance().execute(cmd)
 
 
 def get_jobs():
-    cmd = DBCommand(name="Get Jobs", command='''SELECT * FROM jobs''')
+    cmd = DBCommand(name="Get Jobs", command='''SELECT * FROM jobs ORDER BY date_started DESC''')
     return DBManager.get_instance().execute(cmd)
 
 
@@ -21,8 +24,10 @@ def get_job(uuid: str):
     return DBManager.get_instance().execute(cmd)
 
 
-def update_job(job: BaseJob):
-    cmd = DBCommand(name=f"Update Job {str(job)}",
-                    command=f"UPDATE jobs SET has_started = ?, has_finished = ?, status = ? WHERE id = ?",
-                    values=(job.has_started(), job.has_finished(), job.status(), job.id().hex))
+def update_job(j: base.BaseJob):
+    cmd = DBCommand(name=f"Update Job {str(j)}",
+                    command=f'''UPDATE jobs SET has_started = ?, has_finished = ?, status = ?, 
+                                date_started = ?, date_finished = ? WHERE id = ?''',
+                    values=(j.has_started(), j.has_finished(), j.status(), str(j.date_started()),
+                            str(j.date_finished()), j.id().hex))
     return DBManager.get_instance().execute(cmd)

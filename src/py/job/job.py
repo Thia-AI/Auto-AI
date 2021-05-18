@@ -39,10 +39,10 @@ class JobManager:
     @staticmethod
     def get_instance():
         if JobManager.__instance is None:
-            JobManager(0.5)
+            JobManager(0.5, log_jobs=False)
         return JobManager.__instance
 
-    def __init__(self, interval):
+    def __init__(self, interval, log_jobs=False):
         """Virtually private constructor."""
 
         if JobManager.__instance is not None:
@@ -54,6 +54,7 @@ class JobManager:
         self.job_queue: Deque[BaseJob] = deque()
         self.interval = interval
         self.is_running = False
+        self.logging = log_jobs
 
     # Actual job that is ran each interval
     def task(self):
@@ -62,10 +63,10 @@ class JobManager:
             if job.has_started() and job.has_finished():
                 self.job_queue.remove(job)
         """Then run all jobs in the queue if they have not already started"""
-        log(f"Job Queue Length: {len(self.job_queue)}")
+        log(f"Job Queue Length: {len(self.job_queue)}", log_it=self.logging)
         for job in list(self.job_queue):
             if not job.has_started():
-                log(f"Starting Job {str(job)}")
+                log(f"Starting Job {str(job)}", log_it=self.logging)
                 job.start()
 
     def _run(self):
