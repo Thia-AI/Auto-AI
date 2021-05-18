@@ -6,8 +6,6 @@ from env import environment
 from job.job import JobCreator
 from log.logger import log
 
-# from env import environment
-
 environment.init_environment()
 
 import tensorflow as tf
@@ -17,7 +15,7 @@ app = Flask(__name__)
 
 @app.route('/devices', methods=['GET'])
 def get_devices_route():
-    log(f"[{request.method}] /getDevices")
+    log(f"[{request.method}] /devices")
     out = []
     for device in tf.config.list_physical_devices():
         out.append({
@@ -54,7 +52,9 @@ def get_jobs_route():
             'job_name': row['job_name'],
             'has_started': bool(row['has_started']),
             'has_finished': bool(row['has_finished']),
-            'status': row['status']
+            'status': row['status'],
+            'date_started': row['date_started'],
+            'date_finished': row['date_finished']
         }
         jobs.append(job)
 
@@ -70,12 +70,14 @@ def get_job_route(uuid):
     if row is None:
         return {'Error': "ID of job does not exist"}, 400
     return {
-               'id': row['id'],
-               'job_name': row['job_name'],
-               'has_started': row['has_started'],
-               'has_finished': row['has_finished'],
-               'status': row['status']
-           }, 200
+        'id': row['id'],
+        'job_name': row['job_name'],
+        'has_started': bool(row['has_started']),
+        'has_finished': bool(row['has_finished']),
+        'status': row['status'],
+        'date_started': row['date_started'],
+        'date_finished': row['date_finished']
+    }, 200
 
 
 if __name__ == '__main__':

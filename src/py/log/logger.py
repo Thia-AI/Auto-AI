@@ -1,2 +1,3 @@
-def log(data: str) -> None:
-    print(data, flush=True)
+def log(data: str, log_it=True) -> None:
+    if log_it:
+        print(data, flush=True)

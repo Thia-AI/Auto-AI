@@ -1,9 +1,10 @@
-import sqlite3
-import os
 import atexit
+import os
+import sqlite3
 
-from log.logger import log
 from db.commands.base_command import DBCommand
+from db.sqlite_worker import Sqlite3Worker
+from log.logger import log
 
 
 class DBManager(object):
@@ -28,7 +29,8 @@ class DBManager(object):
 
         # Create directories for database file if not already exists
         os.makedirs(os.path.dirname(DBManager.__DB_LOCATION), exist_ok=True)
-        self.__connection = sqlite3.connect(DBManager.__DB_LOCATION, check_same_thread=False)
+        # self.__connection = sqlite3.connect(DBManager.__DB_LOCATION)
+        self.__connection = Sqlite3Worker(DBManager.__DB_LOCATION)
         # Row factory allows us to access rows via keys instead of indices
         self.__connection.row_factory = sqlite3.Row
         # Register connection to close at exit
@@ -38,9 +40,14 @@ class DBManager(object):
 
     def __create_tables_if_not_exist(self):
         try:
-            c = self.__connection.cursor()
-            c.execute('''CREATE TABLE IF NOT EXISTS jobs
-                       (id varchar(32), job_name text, has_started integer, has_finished integer, status text)''')
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS jobs
+                       (id varchar(32) not null, 
+                       job_name text not null, 
+                       has_started integer not null, 
+                       has_finished integer not null, 
+                       status text,
+                       date_started datetime,
+                       date_finished datetime)''')
         except sqlite3.Error as e:
             log("SQLITE - failed to create table")
             log(str(e))
@@ -55,12 +62,10 @@ class DBManager(object):
     def execute(self, command: DBCommand):
         result = None
         try:
-            c = self.__connection.cursor()
-            result = c.execute(command.exec_string(), command.values())
+            result = self.__connection.execute(command.exec_string(), command.values())
         except sqlite3.Error as e:
             log(f"SQLITE - DBCommand '{command.name()}' failed")
             log(str(e))
-        self.__connection.commit()
         return result
 
     def __call__(self, *args, **kwargs):

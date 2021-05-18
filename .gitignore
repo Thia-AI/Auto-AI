@@ -5,6 +5,7 @@ __pycache__
 build-py/**
 CUDA
 extraResources
+cache
 # Logs
 logs
 *.log

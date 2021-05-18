@@ -17,5 +17,3 @@ class DataAugmentationJob(BaseJob):
         files = self.arg
         log(str(len(files)))
         super().clean_up_job()
-        self.set_status("Done")
-        update_job(self)

@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from log.logger import log
 from threading import Thread
 from uuid import UUID
 from overrides import EnforceOverrides, overrides
+from datetime import datetime
+
+from log.logger import log
 
 
 class BaseJob(ABC, Thread, EnforceOverrides):
@@ -10,17 +12,21 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         Thread.__init__(self, name=job_name, daemon=True)
         self.arg = arg
         self.__job_name: str = job_name
-        self._has_started = False
-        self._has_finished = False
-        self._id: UUID = None
-        self._status = initial_status
+        self.__has_started = False
+        self.__has_finished = False
+        self.__id: UUID = None
+        self.__status = initial_status
+        self.__date_started = None
+        self.__date_finished = None
 
     @abstractmethod
     @overrides
     def run(self):
-        log(f"Started Job: {self.job_name()}")
-        self._has_started = True
-        pass
+        log(f"Started Job: {str(self)}")
+        self.__has_started = True
+        self.__date_started = datetime.now()
+        from db.commands.job_commands import update_job
+        update_job(self)
 
     def run_async(self):
         self.run()
@@ -29,25 +35,35 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         return self.__job_name
 
     def has_started(self):
-        return self._has_started
+        return self.__has_started
 
     def has_finished(self):
-        return self._has_finished
+        return self.__has_finished
 
     def clean_up_job(self):
-        self._has_finished = True
+        self.__has_finished = True
+        self.__date_finished = datetime.now()
+        self.__status = "Done"
+        from db.commands.job_commands import update_job
+        update_job(self)
+
+    def date_started(self):
+        return self.__date_started
+
+    def date_finished(self):
+        return self.__date_finished
 
     def set_id(self, uuid: UUID):
-        self._id = uuid
+        self.__id = uuid
 
     def id(self):
-        return self._id
+        return self.__id
 
     def status(self):
-        return self._status
+        return self.__status
 
     def set_status(self, new_status: str):
-        self._status = new_status
+        self.__status = new_status
 
     def __str__(self):
-        return f"(JOB: {self.job_name()} | ID: {self.id()})"
+        return f"(JOB: {self.job_name()} | ID: {self.id().hex})"

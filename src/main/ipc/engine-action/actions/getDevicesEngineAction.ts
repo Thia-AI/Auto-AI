@@ -2,20 +2,20 @@ import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineAction } from '../base/iEngineAction';
 
 /**
- * EngineAction class for to run 'GET /getDevices' route on **Engine**
+ * EngineAction class for to run 'GET /devices' route on **Engine**
  */
 class GetDevicesEngineAction implements IEngineAction {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
 	/**
-	 * Instantiates `/getDevices` request
+	 * Instantiates `/devices` request
 	 * @param engineRequest an AxiosInstance representing an EngineRequest
 	 */
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
 		this.actionName = 'Get Devices';
-		this.apiName = 'getDevices';
+		this.apiName = 'devices';
 	}
 	/**
 	 * Gets devices that are connected to **Engine**
