@@ -1,16 +1,22 @@
 from flask import Flask, jsonify, request
 
-from data_handler.data_aug import DataAugmentationJob
-from db.commands.job_commands import get_jobs, get_job
 from env import environment
+
+# First thing we do is initialize file paths, env variables, etc.
+environment.init_environment_pre_gpu()
+
+from data_handler.jobs.data_aug_job import DataAugmentationJob
+from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
+from db.commands.job_commands import get_jobs, get_job
 from job.job import JobCreator
 from log.logger import log
-
-environment.init_environment()
+from config import config
 
 import tensorflow as tf
 
 app = Flask(__name__)
+
+environment.init_environment_post_gpu()
 
 
 @app.route('/devices', methods=['GET'])
@@ -37,7 +43,7 @@ def train_route():
     if len(files) == 0:
         return {'Error': "Didn't receive any input, try again with input"}, 400
 
-    ids = JobCreator().create(DataAugmentationJob(files)).queue()
+    ids = JobCreator().create(BulkFileTransferJob(files)).queue()
     return {'ids': ids}, 202
 
 
@@ -54,7 +60,9 @@ def get_jobs_route():
             'has_finished': bool(row['has_finished']),
             'status': row['status'],
             'date_started': row['date_started'],
-            'date_finished': row['date_finished']
+            'date_finished': row['date_finished'],
+            'progress': row['progress'],
+            'progress_max': row['progress_max']
         }
         jobs.append(job)
 
@@ -66,18 +74,21 @@ def get_job_route(uuid):
     log(f"[{request.method}] /jobs/{uuid}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
-    row = get_job(uuid).fetchone()
-    if row is None:
+    rows = get_job(uuid)
+    if rows is None:
         return {'Error': "ID of job does not exist"}, 400
-    return {
-        'id': row['id'],
-        'job_name': row['job_name'],
-        'has_started': bool(row['has_started']),
-        'has_finished': bool(row['has_finished']),
-        'status': row['status'],
-        'date_started': row['date_started'],
-        'date_finished': row['date_finished']
-    }, 200
+    for row in rows:
+        return {
+                   'id': row['id'],
+                   'job_name': row['job_name'],
+                   'has_started': bool(row['has_started']),
+                   'has_finished': bool(row['has_finished']),
+                   'status': row['status'],
+                   'date_started': row['date_started'],
+                   'date_finished': row['date_finished'],
+                   'progress': row['progress'],
+                   'progress_max': row['progress_max']
+               }, 200
 
 
 if __name__ == '__main__':

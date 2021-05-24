@@ -6,6 +6,8 @@ tensorflow-datasets==4.2.0
 tensorflow-estimator==2.4.0
 tensorflow-gpu-estimator==2.3.0
 tensorflow-metadata==0.28.0
+# Torch
+--find-links https://download.pytorch.org/whl/torch_stable.html
 torch==1.7.1+cu110
 torchaudio==0.7.2
 torchvision==0.8.2+cu110

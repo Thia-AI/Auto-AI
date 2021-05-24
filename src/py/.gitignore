@@ -2,3 +2,4 @@ test_data/**
 test.py
 test.json
 cache/**
+models/

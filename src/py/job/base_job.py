@@ -3,12 +3,13 @@ from threading import Thread
 from uuid import UUID
 from overrides import EnforceOverrides, overrides
 from datetime import datetime
+import time
 
 from log.logger import log
 
 
 class BaseJob(ABC, Thread, EnforceOverrides):
-    def __init__(self, arg, job_name: str, initial_status: str):
+    def __init__(self, arg, job_name: str, initial_status: str, progress_max: int):
         Thread.__init__(self, name=job_name, daemon=True)
         self.arg = arg
         self.__job_name: str = job_name
@@ -18,6 +19,10 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         self.__status = initial_status
         self.__date_started = None
         self.__date_finished = None
+        self.__progress = 0
+        self.__progress_max = progress_max
+        self.time_started = 0
+        self.time_finished = 0
 
     @abstractmethod
     @overrides
@@ -27,6 +32,7 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         self.__date_started = datetime.now()
         from db.commands.job_commands import update_job
         update_job(self)
+        self.time_started = time.time()
 
     def run_async(self):
         self.run()
@@ -37,10 +43,21 @@ class BaseJob(ABC, Thread, EnforceOverrides):
     def has_started(self):
         return self.__has_started
 
+    def progress(self):
+        return self.__progress
+
+    def set_progress(self, p):
+        self.__progress = p
+
+    def progress_max(self):
+        return self.__progress_max
+
     def has_finished(self):
         return self.__has_finished
 
     def clean_up_job(self):
+        self.time_finished = time.time()
+        log(f"Finished Job: {str(self)} in {round(self.time_finished - self.time_started, 2)} seconds")
         self.__has_finished = True
         self.__date_finished = datetime.now()
         self.__status = "Done"
