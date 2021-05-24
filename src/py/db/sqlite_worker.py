@@ -20,6 +20,7 @@ class Sqlite3Worker(threading.Thread):
         )
         self._sqlite3_conn.row_factory = sqlite3.Row
         self._sqlite3_cursor = self._sqlite3_conn.cursor()
+        log("[SQLite] - Connected to DB")
         self._sql_queue = queue.Queue(maxsize=max_queue_size)
         self._results = {}
         self._max_queue_size = max_queue_size
@@ -44,7 +45,7 @@ class Sqlite3Worker(threading.Thread):
 
         :return: None
         """
-        log("Sqlite Worker Started", log_it=self.log_worker)
+        log("[SQLite] - Worker Started")
         execute_count = 0
         for token, query, values in iter(self._sql_queue.get, None):
             if query:

@@ -12,11 +12,16 @@ export class EngineShellProd extends EngineShell {
 	 * Instantiates a production EngineShell and starts a production **Engine** process
 	 * @param enginePath path to the location of engine.exe
 	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications
+	 * @param simulatedProd Whether production is being simulated or not
 	 */
-	constructor(enginePath: string, window: BrowserWindow | null) {
+	constructor(enginePath: string, window: BrowserWindow | null, simulatedProd = false) {
 		super(window);
 
-		this.engine = spawn(enginePath, ['--line-buffered']);
+		if (simulatedProd) {
+			this.engine = spawn(enginePath, ['simulated']);
+		} else {
+			this.engine = spawn(enginePath);
+		}
 
 		this.notifyOnceEngineHasStarted();
 		this.onDataChangeSetup();

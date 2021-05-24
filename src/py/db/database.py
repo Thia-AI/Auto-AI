@@ -5,12 +5,12 @@ import sqlite3
 from db.commands.base_command import DBCommand
 from db.sqlite_worker import Sqlite3Worker
 from log.logger import log
+from config import config
 
 
 class DBManager(object):
     """sqlite3 database class that manages one connection"""
 
-    __DB_LOCATION = os.path.abspath(os.path.join('cache', 'engine.db'))
     __instance = None
 
     @staticmethod
@@ -28,9 +28,9 @@ class DBManager(object):
             DBManager.__instance = self
 
         # Create directories for database file if not already exists
-        os.makedirs(os.path.dirname(DBManager.__DB_LOCATION), exist_ok=True)
+        os.makedirs(os.path.dirname(config.DATABASE_LOCATION.absolute()), exist_ok=True)
         # self.__connection = sqlite3.connect(DBManager.__DB_LOCATION)
-        self.__connection = Sqlite3Worker(DBManager.__DB_LOCATION)
+        self.__connection = Sqlite3Worker(config.DATABASE_LOCATION.absolute())
         # Row factory allows us to access rows via keys instead of indices
         self.__connection.row_factory = sqlite3.Row
         # Register connection to close at exit
@@ -46,10 +46,12 @@ class DBManager(object):
                        has_started integer not null, 
                        has_finished integer not null, 
                        status text,
+                       progress integer,
+                       progress_max integer,
                        date_started datetime,
                        date_finished datetime)''')
         except sqlite3.Error as e:
-            log("SQLITE - failed to create table")
+            log("[SQLITE] - failed to create table")
             log(str(e))
 
     def close(self):
@@ -64,7 +66,7 @@ class DBManager(object):
         try:
             result = self.__connection.execute(command.exec_string(), command.values())
         except sqlite3.Error as e:
-            log(f"SQLITE - DBCommand '{command.name()}' failed")
+            log(f"[SQLITE] - DBCommand '{command.name()}' failed")
             log(str(e))
         return result
 

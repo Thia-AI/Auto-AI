@@ -57,7 +57,7 @@ export class EngineHandler {
 		simulateProd = false,
 	): EngineShellDev | EngineShellProd => {
 		if (simulateProd)
-			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window);
+			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true);
 
 		return new EngineShellDev(window);
 	};
