@@ -31,6 +31,17 @@
 	text-rendering: optimizeLegibility !important;
 	user-select: none;
 }
+body {
+	background: var(--alternate-white);
+	color: var(--eerie-black);
+	height: calc(100% - var(--header-height));
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	height: calc(100vh - var(--header-height));
+}
 
 #app {
 	width: 100%;

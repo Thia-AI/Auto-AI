@@ -1,7 +1,0 @@
-.inner-modal-header {
-	height: var(--inner-modal-header-height);
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}

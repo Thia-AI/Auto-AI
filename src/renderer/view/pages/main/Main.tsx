@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
+import { Box } from '@chakra-ui/react';
+
 import './Main.css';
-import NewModel from '_/renderer/view/components/new-model/NewModel';
-import ModelSelection from '_/renderer/view/components/model-selection/ModelSelection';
+import { NewModel } from '_/renderer/view/components/new-model/NewModel';
+import { ModelSelection } from '_/renderer/view/components/model-selection/ModelSelection';
 
 /**
  * Component for main portion of **renderer**
  */
-class Main extends Component {
+export class Main extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -24,12 +26,10 @@ class Main extends Component {
 
 	render() {
 		return (
-			<div className='headerless-app'>
+			<Box className='headerless-app'>
 				<NewModel />
 				<ModelSelection />
-			</div>
+			</Box>
 		);
 	}
 }
-
-export default Main;

@@ -41,7 +41,18 @@ const commonConfig = {
 				use: ['style-loader', 'css-loader'],
 			},
 			{
-				test: /\.(jpg|png|svg|ico|icns|woff(2)?|ttf|otf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+				test: /\.(png|jpg|jpeg|gif|svg)$/i,
+				use: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: 12000,
+						},
+					},
+				],
+			},
+			{
+				test: /\.(ico|icns|woff(2)?|ttf|otf|eot)(\?v=\d+\.\d+\.\d+)?$/,
 				loader: 'file-loader',
 				options: {
 					name: '[path][name].[ext]',

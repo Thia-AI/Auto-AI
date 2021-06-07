@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import {
-	changeSelectedModelReducer,
+	selectedModelReducer,
 	openCloseModelSelectionReducer,
 } from './choose-model/ChooseModelReducers';
 import {
-	IChangeSelectedModelReducer,
+	ISelectedModelReducer,
 	IOpenCloseModelSelectionReducer,
 } from './choose-model/model/reducerTypes';
 
@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
 	engineStarted: engineStatusReducer,
 	headerMaximizedClass: headerMaximizedChangedReducer,
 	openCloseModelSelection: openCloseModelSelectionReducer,
-	selectedModel: changeSelectedModelReducer,
+	selectedModel: selectedModelReducer,
 });
 
 // define the state of the App
@@ -26,7 +26,7 @@ export interface IAppState {
 	engineStarted: IEngineStatusReducer;
 	headerMaximizedClass: IHeaderMaximizedChangedReducer;
 	openCloseModelSelection: IOpenCloseModelSelectionReducer;
-	selectedModel: IChangeSelectedModelReducer;
+	selectedModel: ISelectedModelReducer;
 }
 
 export default rootReducer;

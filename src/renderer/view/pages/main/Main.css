@@ -1,7 +1,7 @@
 .headerless-app {
 	height: 100%;
 	width: 100%;
-	margin-top: calc(30px + 2 * 3px);
+	margin-top: var(--header-height);
 	overflow-y: auto;
 	display: flex;
 	justify-content: center;

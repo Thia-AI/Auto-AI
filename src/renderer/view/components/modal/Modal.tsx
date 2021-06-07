@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Box } from '@chakra-ui/react';
 
 import './Modal.css';
 
@@ -12,7 +13,7 @@ interface Props {
 export class Modal extends Component<Props> {
 	render() {
 		return (
-			<div
+			<Box
 				className={`
 					modal 
 					${this.props.className} 
@@ -21,7 +22,7 @@ export class Modal extends Component<Props> {
 				style={{ backgroundColor: `rgba(0, 0, 0, ${this.props.opacity})` }}
 				onClick={this.props.modalClick}>
 				{this.props.children}
-			</div>
+			</Box>
 		);
 	}
 }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import Main from './pages/main/Main';
+import { Spinner } from '@chakra-ui/react';
+
+import { Main } from './pages/main/Main';
 import Header from './components/header/Header';
-import { Loader } from './components/loader/Loader';
 import EngineModal from './components/engine-modal/EngineModal';
 
 import './App.css';
@@ -14,7 +15,7 @@ export default class App extends Component {
 			<React.Fragment>
 				<Header />
 				{/* Modal with loader */}
-				<EngineModal loader={<Loader />} />
+				<EngineModal loader={<Spinner size='xl' color='red.500' thickness='2px' />} />
 				<Main />
 			</React.Fragment>
 		);

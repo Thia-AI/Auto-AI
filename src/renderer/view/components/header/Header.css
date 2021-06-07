@@ -3,7 +3,7 @@
 	top: 0;
 	left: 0;
 	height: var(--header-height);
-	width: calc(100% - var(--header-padding));
+	width: calc(100%);
 	background: var(--eerie-black);
 	padding: var(--header-padding);
 	color: var(--mint-cream);

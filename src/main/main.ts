@@ -33,7 +33,7 @@ function createWindow(): void {
 	mainWindow = new BrowserWindow({
 		height: 768,
 		width: 955,
-		minHeight: 768,
+		minHeight: 650,
 		minWidth: 825,
 		frame: false,
 		icon: path.join(__dirname, '..', 'build', 'icon.ico'),

@@ -4,6 +4,6 @@ export interface IOpenCloseModelSelectionReducer {
 }
 
 // State for which model is selected (for description viewing)
-export interface IChangeSelectedModelReducer {
+export interface ISelectedModelReducer {
 	value: number;
 }
