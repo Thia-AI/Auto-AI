@@ -5,6 +5,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { ChakraProvider, extendTheme, ColorModeScript } from '@chakra-ui/react';
 
 import '_fonts/fonts.css';
 import '_public/style.css';
@@ -12,9 +13,28 @@ import '_public/style.css';
 import App from './App';
 import { store } from '../state/store';
 
+const theme = extendTheme({
+	styles: {
+		global: {
+			body: {
+				backgroundColor: 'gray.800',
+			},
+		},
+	},
+	config: {
+		initialColorMode: 'dark',
+		useSystemColorMode: false,
+	},
+});
+
 ReactDOM.render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
+	<>
+		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+		<Provider store={store}>
+			<ChakraProvider theme={theme}>
+				<App />
+			</ChakraProvider>
+		</Provider>
+	</>,
 	document.getElementById('app'),
 );

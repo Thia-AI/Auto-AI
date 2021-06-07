@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Button, Center } from '@chakra-ui/react';
+
 import {
 	changeSelectedModelAction,
 	openCloseModelSelectionAction,
@@ -8,25 +10,25 @@ import {
 	IChangeSelectedModelAction,
 	IOpenCloseModelSelectionAction,
 } from '_/renderer/state/choose-model/model/actionTypes';
-import { CreateModelButton } from '../buttons/create-model/CreateModelButton';
 
 import './NewModel.css';
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
 	changeSelectedModel: (modelNumber: number) => IChangeSelectedModelAction;
 }
-class NewModel extends Component<Props> {
+class NewModelC extends Component<Props> {
 	render() {
 		return (
-			<div id='new-model'>
-				<CreateModelButton
+			<Center w='50%' h='50%'>
+				<Button
+					colorScheme='purple'
 					onClick={() => {
-						// reset selected model first
 						this.props.changeSelectedModel(0);
 						this.props.openCloseModelSelectionAction();
-					}}
-				/>
-			</div>
+					}}>
+					Create Model
+				</Button>
+			</Center>
 		);
 	}
 }
@@ -35,7 +37,7 @@ const mapStateToProps = () => {
 	return {};
 };
 
-export default connect(mapStateToProps, {
+export const NewModel = connect(mapStateToProps, {
 	openCloseModelSelectionAction,
 	changeSelectedModel: changeSelectedModelAction,
-})(NewModel);
+})(NewModelC);

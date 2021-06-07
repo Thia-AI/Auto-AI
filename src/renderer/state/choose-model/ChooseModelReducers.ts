@@ -1,6 +1,6 @@
 import { CHANGE_SELECTED_MODEL, CLICK_CHOOSE_MODEL_BUTTON } from '../types';
 import { IChangeSelectedModelAction, IOpenCloseModelSelectionAction } from './model/actionTypes';
-import { IChangeSelectedModelReducer, IOpenCloseModelSelectionReducer } from './model/reducerTypes';
+import { ISelectedModelReducer, IOpenCloseModelSelectionReducer } from './model/reducerTypes';
 
 const initialOpenCloseModelSelectionState: IOpenCloseModelSelectionReducer = {
 	value: false,
@@ -21,15 +21,15 @@ export const openCloseModelSelectionReducer = (
 	}
 };
 
-const initialChangeSelectedModelState: IChangeSelectedModelReducer = {
+const initialChangeSelectedModelState: ISelectedModelReducer = {
 	value: 0,
 };
 
 // State for which model is selected (for description viewing)
-export const changeSelectedModelReducer = (
+export const selectedModelReducer = (
 	state = initialChangeSelectedModelState,
 	action: IChangeSelectedModelAction,
-): IChangeSelectedModelReducer => {
+): ISelectedModelReducer => {
 	switch (action.type) {
 		case CHANGE_SELECTED_MODEL:
 			return {
