@@ -4,7 +4,7 @@
 	left: 0;
 	height: var(--header-height);
 	width: calc(100%);
-	background: var(--eerie-black);
+	background: '#1A202C';
 	padding: var(--header-padding);
 	color: var(--mint-cream);
 }
@@ -42,6 +42,7 @@
 	right: 0;
 	height: 100%;
 	-webkit-app-region: no-drag;
+	background: var(--eerie-black);
 }
 
 #window-controls .title-button {

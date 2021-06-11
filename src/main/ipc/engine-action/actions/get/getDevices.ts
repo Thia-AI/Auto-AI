@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../base/iEngineAction';
+import { IEngineAction } from '../../base/iEngineAction';
 
 /**
  * EngineAction class for to run 'GET /devices' route on **Engine**
@@ -15,7 +15,7 @@ class GetDevicesEngineAction implements IEngineAction {
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
 		this.actionName = 'Get Devices';
-		this.apiName = 'devices';
+		this.apiName = '/devices';
 	}
 	/**
 	 * Gets devices that are connected to **Engine**
@@ -24,7 +24,7 @@ class GetDevicesEngineAction implements IEngineAction {
 	 */
 	async run(config?: AxiosRequestConfig): Promise<object[]> {
 		try {
-			const res = await this.engineRequest.get(`/${this.apiName}`, config);
+			const res = await this.engineRequest.get(`${this.apiName}`, config);
 			return res.data;
 		} catch (err) {
 			// return ErrorHandler(error);

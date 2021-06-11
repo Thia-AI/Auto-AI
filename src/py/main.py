@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 
 from env import environment
@@ -5,12 +6,17 @@ from env import environment
 # First thing we do is initialize file paths, env variables, etc.
 environment.init_environment_pre_gpu()
 
+# Jobs
 from data_handler.jobs.data_aug_job import DataAugmentationJob
 from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
+from model_config.jobs.model_config_jobs import ModelCreationJob
+
 from db.commands.job_commands import get_jobs, get_job
 from job.job import JobCreator
 from log.logger import log
 from config import config
+from config import route_helper_constants as req_constants
+from helpers import route_helpers
 
 import tensorflow as tf
 
@@ -21,7 +27,7 @@ environment.init_environment_post_gpu()
 
 @app.route('/devices', methods=['GET'])
 def get_devices_route():
-    log(f"[{request.method}] /devices")
+    log(f"ACCEPTED [{request.method}] /devices")
     out = []
     for device in tf.config.list_physical_devices():
         out.append({
@@ -33,7 +39,7 @@ def get_devices_route():
 
 @app.route('/train', methods=['POST'])
 def train_route():
-    log(f"[{request.method}] /train")
+    log(f"ACCEPTED [{request.method}] /train")
     req_data = request.get_json()
     # Check to see if files key exists
     try:
@@ -49,7 +55,7 @@ def train_route():
 
 @app.route('/jobs', methods=['GET'])
 def get_jobs_route():
-    log(f"[{request.method}] /jobs")
+    log(f"ACCEPTED [{request.method}] /jobs")
     rows = get_jobs()
     jobs = []
     for row in rows:
@@ -71,7 +77,7 @@ def get_jobs_route():
 
 @app.route('/job/<string:uuid>', methods=['GET'])
 def get_job_route(uuid):
-    log(f"[{request.method}] /jobs/{uuid}")
+    log(f"ACCEPTED [{request.method}] /jobs/{uuid}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
@@ -89,6 +95,25 @@ def get_job_route(uuid):
                    'progress': row['progress'],
                    'progress_max': row['progress_max']
                }, 200
+
+
+@app.route('/model/create', methods=['POST'])
+def create_model():
+    log(f"ACCEPTED [{request.method}]")
+    req_data = request.get_json()
+    req_data_format = {
+        'model_name': req_constants.REQUIRED + req_constants.NON_EMPTY,
+        'model_type': req_constants.REQUIRED + req_constants.NON_EMPTY,
+        'model_type_extra': req_constants.REQUIRED + req_constants.NON_EMPTY
+    }
+    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    # check to see if model already exists
+    if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
+        return {'Error': 'Model already exists'}, 400
+    ids = JobCreator().create(ModelCreationJob(req_data)).queue()
+    return {'ids': ids}, 202
 
 
 if __name__ == '__main__':

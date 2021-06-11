@@ -10,7 +10,7 @@ import { ChakraProvider, extendTheme, ColorModeScript } from '@chakra-ui/react';
 import '_fonts/fonts.css';
 import '_public/style.css';
 
-import App from './App';
+import { App } from './App';
 import { store } from '../state/store';
 
 const theme = extendTheme({
@@ -24,6 +24,14 @@ const theme = extendTheme({
 	config: {
 		initialColorMode: 'dark',
 		useSystemColorMode: false,
+	},
+	colors: {
+		gray: {
+			850: '#171d29',
+		},
+		red: {
+			450: '#f25757',
+		},
 	},
 });
 

@@ -1,5 +1,6 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { GetDevicesEngineAction } from './actions/getDevicesEngineAction';
+import { GetDevicesEngineAction } from './actions/get/getDevices';
+import { CreateModelEngineAction } from './actions/post/createModel';
 import { IEngineAction } from './base/iEngineAction';
 
 /**
@@ -8,6 +9,7 @@ import { IEngineAction } from './base/iEngineAction';
 class EngineActionHandler {
 	private static instance: EngineActionHandler;
 	private getDevicesEA!: IEngineAction;
+	private createModelEA!: IEngineAction;
 	private _engineRequest!: AxiosInstance;
 
 	/**
@@ -49,6 +51,7 @@ class EngineActionHandler {
 	public initInstances = (eR: AxiosInstance) => {
 		this.engineRequest = eR;
 		this.getDevicesEA = new GetDevicesEngineAction(this._engineRequest);
+		this.createModelEA = new CreateModelEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -57,7 +60,11 @@ class EngineActionHandler {
 	 * @returns data returned by GetDevicesEngineAction
 	 */
 	public getDevices = async (config?: AxiosRequestConfig): Promise<object[]> => {
-		return await this.getDevicesEA.run(config);
+		return this.getDevicesEA.run(config);
+	};
+
+	public createModel = async (data: JSON, config?: AxiosRequestConfig) => {
+		return this.createModelEA.run(config, data);
 	};
 }
 
