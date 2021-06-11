@@ -7,7 +7,7 @@ interface IEngineAction {
 	engineRequest: AxiosInstance;
 	actionName: string;
 	readonly apiName: string;
-	run(config?: AxiosRequestConfig): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+	run(config?: AxiosRequestConfig, data?: any): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export { IEngineAction };

@@ -4,9 +4,10 @@ import os
 from pathlib import Path
 import shutil
 import time
+from overrides import overrides
+
 
 from job.base_job import BaseJob
-from overrides import overrides
 from log.logger import log
 from config import config
 from db.commands.job_commands import update_job

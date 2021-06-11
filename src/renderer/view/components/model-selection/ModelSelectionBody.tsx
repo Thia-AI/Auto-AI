@@ -29,7 +29,7 @@ class ModelSelectionBodyC extends Component<Props> {
 	};
 
 	render() {
-		return <Box mt='1'>{this.renderBody(this.props.selectedModel.value)}</Box>;
+		return <Box mt='6'>{this.renderBody(this.props.selectedModel.value)}</Box>;
 	}
 }
 

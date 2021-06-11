@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Box, Image, Divider, Flex, Badge, Tooltip } from '@chakra-ui/react';
 import { connect } from 'react-redux';
+import LazyLoad from 'react-lazyload';
 
 import { changeSelectedModelAction } from '_renderer/state/choose-model/ChooseModelActions';
 
@@ -24,24 +25,29 @@ class ModelPreviewCardC extends Component<Props> {
 		return (
 			<Tooltip label={this.props.toolTipInfo} placement='bottom' fontSize='xs' hasArrow>
 				<Box
+					boxShadow='xl'
 					minW='275px'
 					maxH='lg'
-					borderWidth='1px'
+					// borderWidth='1px'
+					borderTopWidth='1px'
 					borderRadius='lg'
 					overflow='hidden'
 					cursor='pointer'
 					onClick={() =>
 						this.props.changeSelectedModelAction(this.props.selectedModelNumber)
 					}>
-					<Image
-						src={this.props.imageSrc}
-						alt='Reeee'
-						htmlWidth='275px'
-						fit='cover'
-						borderTopRadius='lg'
-						borderColor='gray.900'
-					/>
-					<Divider mt='2px' />
+					<LazyLoad>
+						<Image
+							src={this.props.imageSrc}
+							alt='Reeee'
+							htmlWidth='275px'
+							fit='cover'
+							borderTopRadius='lg'
+							borderColor='gray.900'
+						/>
+					</LazyLoad>
+
+					<Divider />
 					<Box pt='6' pb='4' px='6'>
 						<Flex align='baseline' justify='center'>
 							<Badge

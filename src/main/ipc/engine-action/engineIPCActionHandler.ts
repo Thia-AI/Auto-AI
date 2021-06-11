@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from 'axios';
 import { ipcMain } from 'electron';
 import { EngineActionHandler } from './engineActionHandler';
 
@@ -58,8 +59,17 @@ class EngineIPCActionHandler {
 		ipcMain.handle('engine-action:getDevices', async () => {
 			const devices = await this.actionHandler.getDevices();
 
-			return JSON.stringify(devices);
+			return devices;
 		});
+
+		ipcMain.handle(
+			'engine-action:createModel',
+			async (_, data: JSON, config: AxiosRequestConfig) => {
+				const [error, resData] = await this.actionHandler.createModel(data, config);
+
+				return [error, resData];
+			},
+		);
 	};
 }
 

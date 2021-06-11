@@ -11,17 +11,13 @@ export const notifyEngineStarted = (): IEngineStartedAction => {
 };
 
 // Action for checking the status of engine at any time (only used in development)
-export const getDevEngineStatus = (): ThunkAction<
-	void,
-	{},
-	undefined,
-	IEngineDevStatusAction
-> => async (dispatch) => {
-	const engineStarted = (await ipcRenderer.invoke('engine-dev:started')) as boolean;
-	dispatch({
-		type: ENGINE_DEV_STATUS,
-		payload: {
-			engineStarted,
-		},
-	});
-};
+export const getDevEngineStatus =
+	(): ThunkAction<void, {}, undefined, IEngineDevStatusAction> => async (dispatch) => {
+		const engineStarted = (await ipcRenderer.invoke('engine-dev:started')) as boolean;
+		dispatch({
+			type: ENGINE_DEV_STATUS,
+			payload: {
+				engineStarted,
+			},
+		});
+	};
