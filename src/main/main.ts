@@ -36,8 +36,9 @@ function createWindow(): void {
 		minHeight: 650,
 		minWidth: 825,
 		frame: false,
+		show: false,
 		icon: path.join(__dirname, '..', 'build', 'icon.ico'),
-		backgroundColor: '#fff',
+		backgroundColor: '#1A202C',
 		webPreferences: {
 			webSecurity: true,
 			devTools: isDev,
@@ -45,6 +46,12 @@ function createWindow(): void {
 			contextIsolation: false,
 		},
 	});
+
+	// Shows BrowerWindow once page is fully loaded 
+	mainWindow.once('ready-to-show', () => {
+		mainWindow?.show();
+	});
+
 	// replace menu with custom menu
 	mainWindow.removeMenu();
 
