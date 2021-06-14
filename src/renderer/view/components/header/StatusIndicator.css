@@ -1,0 +1,79 @@
+.pulse-green {
+	animation: pulse-green 2s infinite;
+}
+
+.pulse-green-once {
+	animation: pulse-green 2s 1;
+}
+
+.pulse-teal {
+	animation: pulse-teal 2s infinite;
+}
+
+.pulse-teal-once {
+	animation: pulse-teal 2s 1;
+}
+
+.pulse-red {
+	animation: pulse-red 2s infinite;
+}
+
+.pulse-red-once {
+	animation: pulse-red 2s 1;
+}
+
+@keyframes pulse-red {
+	0% {
+		box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+	}
+}
+
+@keyframes pulse-black {
+	0% {
+		box-shadow: 0 0 0 0 rgba(97, 67, 67, 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+	}
+}
+
+@keyframes pulse-green {
+	0% {
+		box-shadow: 0 0 0 0 rgba(51, 217, 178, 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(51, 217, 178, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
+	}
+}
+
+@keyframes pulse-teal {
+	0% {
+		box-shadow: 0 0 0 0 rgba(42, 150, 223, 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(42, 150, 223, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(42, 150, 223, 0);
+	}
+}

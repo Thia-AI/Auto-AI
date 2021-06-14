@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Spinner } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
 import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
@@ -7,7 +6,6 @@ import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
 
 import { Main } from './pages/main/Main';
 import Header from './components/header/Header';
-import EngineModal from './components/engine-modal/EngineModal';
 import { SideMenu } from './components/side-menu/SideMenu';
 
 import './App.css';
@@ -37,8 +35,6 @@ const AppC = (props: Props) => {
 	return (
 		<React.Fragment>
 			<Header />
-			{/* Modal with loader */}
-			<EngineModal loader={<Spinner size='xl' color='red.500' thickness='2px' />} />
 			<Main />
 			<SideMenu />
 		</React.Fragment>
