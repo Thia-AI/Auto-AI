@@ -1,51 +1,10 @@
 #titlebar {
-	position: fixed;
-	top: 0;
-	left: 0;
 	height: var(--header-height);
-	width: calc(100%);
-	background: '#1A202C';
 	padding: var(--header-padding);
 	color: var(--mint-cream);
 }
 
-#titlebar #drag-region {
-	width: 100%;
-	height: 100%;
-	display: grid;
-	-webkit-app-region: drag;
-	grid-template-columns: auto 138px;
-}
-
-#window-title {
-	grid-column: 1;
-	display: flex;
-	align-items: center;
-	margin-left: 8px;
-	overflow: hidden;
-	font-family: 'Sogoe UI', sans-serif;
-	font-size: 12px;
-}
-
-#window-title span {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	line-height: 1.5;
-}
-
-#window-controls {
-	display: grid;
-	grid-template-columns: repeat(3, var(--header-icon-width));
-	position: absolute;
-	top: 0;
-	right: 0;
-	height: 100%;
-	-webkit-app-region: no-drag;
-	background: var(--eerie-black);
-}
-
-#window-controls .title-button {
+.title-button {
 	grid-row: 1 / span 1;
 	display: flex;
 	justify-content: center;
@@ -64,29 +23,12 @@
 	background: rgba(255, 255, 255, 0.2);
 }
 
-#min-button {
-	grid-column: 1;
-}
-
-#max-button,
-#restore-button {
-	grid-column: 2;
-}
-
-#close-button {
-	grid-column: 3;
-}
-
 #close-button:hover {
 	background: rgba(232, 17, 35, 0.95) !important;
 }
 
 #close-button:active {
 	background: rgba(232, 16, 36, 0.67) !important;
-}
-
-#restore-button {
-	display: none !important;
 }
 
 .maximized {
@@ -104,4 +46,41 @@
 
 .maximized #max-button {
 	display: none;
+}
+
+.engine-status-loading-enter {
+	opacity: 0;
+}
+
+.engine-status-loading-enter-active {
+	opacity: 1;
+	transition: opacity 300ms ease-out;
+}
+
+.engine-status-loading-exit {
+	opacity: 1;
+}
+
+.engine-status-loading-exit-active {
+	opacity: 0;
+	transition: opacity 300ms ease-in;
+}
+
+/* Loaded */
+.engine-status-loaded-enter {
+	opacity: 0;
+}
+
+.engine-status-loaded-enter-active {
+	opacity: 1;
+	transition: opacity 300ms ease-out;
+}
+
+.engine-status-loaded-exit {
+	opacity: 1;
+}
+
+.engine-status-loaded-exit-active {
+	opacity: 0;
+	transition: opacity 300ms ease-in;
 }
