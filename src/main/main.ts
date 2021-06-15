@@ -47,7 +47,7 @@ function createWindow(): void {
 		},
 	});
 
-	// Shows BrowerWindow once page is fully loaded 
+	// Shows BrowerWindow once page is fully loaded
 	mainWindow.once('ready-to-show', () => {
 		mainWindow?.show();
 	});
@@ -122,12 +122,31 @@ const initializeIPC = (): void => {
 	engineIPCActionHandler.initIPCListening(engineActionHandler);
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', async () => {
-	createWindow();
-});
+// Returns true if this instance of the App is the primary,
+// false if an instance already exists.
+const isSingleInstance = app.requestSingleInstanceLock();
+
+if (!isSingleInstance) {
+	app.quit();
+} else {
+	// This method focuses/maximized the primary instance
+	// if the user tires to run a second instance.
+	app.on('second-instance', () => {
+		if (mainWindow) {
+			if (mainWindow.isMaximized()) {
+				mainWindow.restore();
+			}
+			mainWindow.focus();
+		}
+	});
+
+	// This method will be called when Electron has finished
+	// initialization and is ready to create browser windows.
+	// Some APIs can only be used after this event occurs.
+	app.on('ready', async () => {
+		createWindow();
+	});
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -137,13 +156,5 @@ app.on('window-all-closed', () => {
 	// to keep it here, not harming anyone
 	if (process.platform !== 'darwin') {
 		app.quit();
-	}
-});
-
-app.on('activate', () => {
-	// On OS X it"s common to re-create a window in the app when the
-	// dock icon is clicked and there are no other windows open.
-	if (mainWindow === null) {
-		createWindow();
 	}
 });
