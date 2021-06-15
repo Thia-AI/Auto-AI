@@ -1,19 +1,20 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineAction } from '../../base/iEngineAction';
 
-class CreateModelEngineAction implements IEngineAction {
+class GetJobEngineAction implements IEngineAction {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
+
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
-		this.actionName = 'Create Model';
-		this.apiName = '/model/create';
+		this.actionName = 'Get Job';
+		this.apiName = '/job';
 	}
-	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-	run = async (config?: AxiosRequestConfig, data?: JSON): Promise<[boolean, any]> => {
+
+	run = async (config?: AxiosRequestConfig, data?: string): Promise<[boolean, any]> => {
 		try {
-			const res = await this.engineRequest.post(`${this.apiName}`, data, config);
+			const res = await this.engineRequest.get(`${this.apiName}/${data}`, config);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;
@@ -22,4 +23,4 @@ class CreateModelEngineAction implements IEngineAction {
 	};
 }
 
-export { CreateModelEngineAction };
+export { GetJobEngineAction };

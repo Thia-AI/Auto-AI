@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
+import { ipcRenderer } from 'electron';
+
 import {
 	Box,
 	VStack,
@@ -15,15 +17,20 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
+import { push, Push } from 'connected-react-router';
 
 import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/ChooseModelActions';
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import { RadioCard } from './ICModelRadio';
-import { ipcRenderer } from 'electron';
-
+import { waitTillEngineJobComplete } from '_view_helpers/engineJobHelper';
+import { changeSelectedPage } from '_state/side-menu/SideModelAction';
+import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
+import { MODELS_PAGE } from '_view_helpers/pageConstants';
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
+	push: Push;
+	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 
 const ICModelContentC = (props: Props) => {
@@ -33,6 +40,9 @@ const ICModelContentC = (props: Props) => {
 	const [modelNameValue, setModelNameValue] = useState('');
 	const [modelNameValid, setModelNameValid] = useState(false);
 	const [modelNameError, setModelNameError] = useState('Enter A Name');
+
+	// Model Creation Status
+	const [modelCreating, setModelCreating] = useState(false);
 
 	// Errors
 	const validList = [[modelNameValid, modelNameError]];
@@ -91,29 +101,42 @@ const ICModelContentC = (props: Props) => {
 		});
 		if (wasError) return;
 		// No error, send create model action
-		const [errorExists, res] = await ipcRenderer.invoke('engine-action:createModel', {
-			model_name: modelNameValue,
-			model_type: 'image_classification',
-			model_type_extra: modelTypeValue.toLowerCase(),
-		});
-		if (errorExists) {
+		setModelCreating(true);
+		const [createModelErr, createModelRes] = await ipcRenderer.invoke(
+			'engine-action:createModel',
+			{
+				model_name: modelNameValue,
+				model_type: 'image_classification',
+				model_type_extra: modelTypeValue.toLowerCase(),
+			},
+		);
+		// If error occurred when sending the Engine Action
+		if (createModelErr) {
 			toast({
 				title: 'Error',
-				description: `${res['Error']}`,
+				description: `${createModelRes['Error']}`,
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
 			});
+			setModelCreating(false);
 			return;
 		}
+		// Wait until the creation job has completed
+		await waitTillEngineJobComplete(createModelRes['ids'][0]);
+		// Complete! Send a notification to user
+		setModelCreating(false);
 		toast({
 			title: 'Success',
-			description: `Model [${res['ids'][0]}] Created Successfully`,
+			description: `Model Created Successfully`,
 			status: 'success',
 			duration: 1500,
 			isClosable: false,
 		});
+		// Close model selection modal and navigate to models page
 		props.openCloseModelSelectionAction();
+		props.changeSelectedPage(MODELS_PAGE);
+		props.push('/models');
 	};
 	return (
 		<VStack spacing='2'>
@@ -159,7 +182,11 @@ const ICModelContentC = (props: Props) => {
 
 			<Center pt='8'>
 				<HStack spacing='3'>
-					<Button colorScheme='teal' onClick={createModel}>
+					<Button
+						isLoading={modelCreating}
+						loadingText='Creating'
+						colorScheme='teal'
+						onClick={createModel}>
 						Create
 					</Button>
 					<Button
@@ -176,4 +203,6 @@ const ICModelContentC = (props: Props) => {
 const mapStateToProps = () => ({});
 export const ICModelContent = connect(mapStateToProps, {
 	openCloseModelSelectionAction,
+	push,
+	changeSelectedPage,
 })(ICModelContentC);

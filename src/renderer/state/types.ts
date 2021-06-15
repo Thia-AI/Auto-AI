@@ -11,6 +11,7 @@ export const CHANGE_SELECTED_MODEL = 'CHANGE_SELECTED_MODEL';
 
 // Side Menu
 export const OPEN_CLOSE_SIDE_MENU = 'OPEN_SIDE_MENU';
+export const CHANGE_SELECTED_PAGE = 'CHANGE_SELECTED_PAGE';
 
 // Create Model
 export const CREATE_MODEL = 'CREATE_MODEL';

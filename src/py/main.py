@@ -99,7 +99,7 @@ def get_job_route(uuid):
 
 @app.route('/model/create', methods=['POST'])
 def create_model():
-    log(f"ACCEPTED [{request.method}]")
+    log(f"ACCEPTED [{request.method}] /model/create")
     req_data = request.get_json()
     req_data_format = {
         'model_name': req_constants.REQUIRED + req_constants.NON_EMPTY,

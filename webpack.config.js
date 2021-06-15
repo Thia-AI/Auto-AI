@@ -12,7 +12,7 @@ const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
 // #region Common settings
 const commonConfig = {
-	devtool: isEnvDevelopment ? 'eval-source-map' : false,
+	devtool: isEnvDevelopment ? 'inline-source-map' : false,
 	mode: isEnvProduction ? 'production' : 'development',
 	output: { path: srcPaths('dist') },
 	node: { __dirname: false, __filename: false },
@@ -26,6 +26,7 @@ const commonConfig = {
 			_utils: srcPaths(path.join('src', 'utils')),
 			_fonts: srcPaths(path.join('src', 'utils', 'fonts')),
 			_state: srcPaths(path.join('src', 'renderer', 'state')),
+			_view_helpers: srcPaths(path.join('src', 'renderer', 'view', 'helpers')),
 		},
 		extensions: ['.js', '.json', '.ts', '.tsx'],
 	},

@@ -11,7 +11,7 @@ import '_fonts/fonts.css';
 import '_public/style.css';
 
 import { App } from './App';
-import { store } from '../state/store';
+import { configureStore } from '../state/store';
 
 const theme = extendTheme({
 	styles: {
@@ -34,6 +34,8 @@ const theme = extendTheme({
 		},
 	},
 });
+
+const store = configureStore();
 
 ReactDOM.render(
 	<>

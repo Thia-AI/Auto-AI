@@ -62,10 +62,16 @@ class EngineIPCActionHandler {
 			return devices;
 		});
 
+		ipcMain.handle('engine-action:createModel', async (_, data: JSON) => {
+			const [error, resData] = await this.actionHandler.createModel(data);
+
+			return [error, resData];
+		});
+
 		ipcMain.handle(
-			'engine-action:createModel',
-			async (_, data: JSON, config: AxiosRequestConfig) => {
-				const [error, resData] = await this.actionHandler.createModel(data, config);
+			'engine-action:getJob',
+			async (_, uuid: string, config?: AxiosRequestConfig) => {
+				const [error, resData] = await this.actionHandler.getJob(uuid, config);
 
 				return [error, resData];
 			},

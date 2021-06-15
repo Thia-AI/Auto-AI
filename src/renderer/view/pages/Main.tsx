@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Center } from '@chakra-ui/react';
 
-import './Main.css';
 import { NewModel } from '_/renderer/view/components/new-model/NewModel';
 import { ModelSelection } from '_/renderer/view/components/model-selection/ModelSelection';
 
@@ -15,10 +14,10 @@ export class Main extends Component {
 
 	render() {
 		return (
-			<Box className='headerless-app'>
+			<Center w='full' h='full' overflowY='auto' marginTop='var(--header-height)'>
 				<NewModel />
 				<ModelSelection />
-			</Box>
+			</Center>
 		);
 	}
 }
