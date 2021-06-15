@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { ipcRenderer } from 'electron';
+import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 
 /**
  * Helper method that waits until an Engine job has completed
@@ -13,7 +13,7 @@ export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) =
 			timeout,
 		};
 		let initialTime = new Date().getTime();
-		const [err, resData] = await ipcRenderer.invoke('engine-action:getJob', jobId, config);
+		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobId, config);
 		if (err || resData.has_finished) {
 			return [err, resData];
 		}

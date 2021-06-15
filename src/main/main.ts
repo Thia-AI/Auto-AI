@@ -6,20 +6,17 @@ import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
 
-import EngineRequest from './api/engineRequestConfig';
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
 import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
-import { EngineActionHandler } from './ipc/engine-action/engineActionHandler';
-import { EngineIPCActionHandler } from './ipc/engine-action/engineIPCActionHandler';
+import { EngineIPCActionHandler } from './ipc/engine-ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 
 let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
 let mainWindowIPCActions: MainWindowIPCActions;
-let engineActionHandler: EngineActionHandler;
 let engineIPCActionHandler: EngineIPCActionHandler;
 
 const isDev = require('electron-is-dev');
@@ -47,7 +44,7 @@ function createWindow(): void {
 		},
 	});
 
-	// Shows BrowerWindow once page is fully loaded 
+	// Shows BrowerWindow once page is fully loaded
 	mainWindow.once('ready-to-show', () => {
 		mainWindow?.show();
 	});
@@ -115,11 +112,8 @@ function launchEngine(): void {
  * Initializes EngineActionHandler and EngineIPCActionHandler
  */
 const initializeIPC = (): void => {
-	engineActionHandler = EngineActionHandler.getInstance();
-	engineActionHandler.initInstances(EngineRequest);
-
 	engineIPCActionHandler = EngineIPCActionHandler.getInstance();
-	engineIPCActionHandler.initIPCListening(engineActionHandler);
+	engineIPCActionHandler.initIPCListening();
 };
 
 // This method will be called when Electron has finished

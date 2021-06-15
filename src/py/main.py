@@ -12,6 +12,8 @@ from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from model_config.jobs.model_config_jobs import ModelCreationJob
 
 from db.commands.job_commands import get_jobs, get_job
+from db.commands.model_commands import get_models, get_model
+
 from job.job import JobCreator
 from log.logger import log
 from config import config
@@ -76,8 +78,8 @@ def get_jobs_route():
 
 
 @app.route('/job/<string:uuid>', methods=['GET'])
-def get_job_route(uuid):
-    log(f"ACCEPTED [{request.method}] /jobs/{uuid}")
+def get_job_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] /job/{uuid}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
@@ -98,7 +100,7 @@ def get_job_route(uuid):
 
 
 @app.route('/model/create', methods=['POST'])
-def create_model():
+def create_model_route():
     log(f"ACCEPTED [{request.method}] /model/create")
     req_data = request.get_json()
     req_data_format = {
@@ -114,6 +116,40 @@ def create_model():
         return {'Error': 'Model already exists'}, 400
     ids = JobCreator().create(ModelCreationJob(req_data)).queue()
     return {'ids': ids}, 202
+
+
+@app.route('/models', methods=['GET'])
+def get_models_route():
+    log(f"ACCEPTED [{request.method}] /models")
+    rows = get_models()
+    models = []
+    for row in rows:
+        model = {
+            'id': row['id'],
+            'model_name': row['model_name'],
+            'model_type': row['model_type'],
+            'model_type_extra': row['model_type_extra']
+        }
+        models.append(model)
+
+    return {'models': models}, 200
+
+
+@app.route('/model/<string:uuid>', methods=['GET'])
+def get_model_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] /model/{uuid}")
+    if len(uuid) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(uuid)
+    if rows is None:
+        return {'Error': "ID of model does not exist"}, 400
+    for row in rows:
+        return {
+                   'id': row['id'],
+                   'model_name': row['model_name'],
+                   'model_type': row['model_type'],
+                   'model_type_extra': row['model_type_extra']
+               }, 200
 
 
 if __name__ == '__main__':

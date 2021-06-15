@@ -27,6 +27,7 @@ const commonConfig = {
 			_fonts: srcPaths(path.join('src', 'utils', 'fonts')),
 			_state: srcPaths(path.join('src', 'renderer', 'state')),
 			_view_helpers: srcPaths(path.join('src', 'renderer', 'view', 'helpers')),
+			_engine_requests: srcPaths(path.join('src', 'renderer', 'engine-requests')),
 		},
 		extensions: ['.js', '.json', '.ts', '.tsx'],
 	},
