@@ -11,7 +11,9 @@ import '_fonts/fonts.css';
 import '_public/style.css';
 
 import { App } from './App';
-import { store } from '../state/store';
+import { configureStore } from '../state/store';
+import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import EngineRequestConfig from '_engine_requests/engineRequestConfig';
 
 const theme = extendTheme({
 	styles: {
@@ -34,6 +36,11 @@ const theme = extendTheme({
 		},
 	},
 });
+
+const store = configureStore();
+
+const engineActionHandler = EngineActionHandler.getInstance();
+engineActionHandler.initInstances(EngineRequestConfig);
 
 ReactDOM.render(
 	<>

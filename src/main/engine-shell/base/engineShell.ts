@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import { BrowserWindow } from 'electron';
-import { EngineActionHandler } from '_/main/ipc/engine-action/engineActionHandler';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
+import EngineRequestConfig from '_engine_requests/engineRequestConfig';
 
 /**
  * Base class for creating an EngineShell to deploy and manage **Engine**'s state
@@ -69,7 +69,7 @@ export class EngineShell {
 	protected notifyOnceEngineHasStarted = async (retries = 20): Promise<boolean | undefined> => {
 		const timeout = this.engineCheckTimeout;
 		try {
-			await EngineActionHandler.getInstance().getDevices({ timeout });
+			await EngineRequestConfig.get('/devices', { timeout });
 			console.log('Engine Connected');
 			this.notifyRendererThatEngineHasStarted();
 			this.engineCheckTimeoutId = undefined;

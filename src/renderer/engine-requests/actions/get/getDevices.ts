@@ -22,7 +22,7 @@ class GetDevicesEngineAction implements IEngineAction {
 	 * @param config configuration to append to engineRequest
 	 * @returns devices that are connected to **Engine**
 	 */
-	async run(config?: AxiosRequestConfig): Promise<object[]> {
+	run = async (config?: AxiosRequestConfig): Promise<object[]> => {
 		try {
 			const res = await this.engineRequest.get(`${this.apiName}`, config);
 			return res.data;
@@ -30,7 +30,7 @@ class GetDevicesEngineAction implements IEngineAction {
 			// return ErrorHandler(error);
 			throw err;
 		}
-	}
+	};
 }
 
 export { GetDevicesEngineAction };

@@ -1,13 +1,17 @@
 import { applyMiddleware, compose, createStore } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createLogger } from 'redux-logger';
+import { createHashHistory } from 'history';
+import { routerMiddleware } from 'connected-react-router';
 
 import AppActions from './appActions';
 
-import reducers from './reducers';
+import createRootReducer from './reducers';
+
+export const history = createHashHistory();
 
 // AppState will contain the ReducerTypes for all reducers
-export type AppState = ReturnType<typeof reducers>;
+export type AppState = ReturnType<typeof createRootReducer>;
 
 const logger = createLogger({
 	duration: true,
@@ -15,15 +19,17 @@ const logger = createLogger({
 	collapsed: true,
 });
 
-let middleWare = [thunk as ThunkMiddleware<AppState, AppActions>];
+let middleWare = [thunk as ThunkMiddleware<AppState, AppActions>, routerMiddleware(history)];
 if (process.env.NODE_ENV === 'development') {
 	middleWare = [...middleWare, logger];
 }
 // create our store
-export const store = createStore(
-	reducers,
-	compose(
-		applyMiddleware(...middleWare),
-		window['devToolsExtension'] ? window['devToolsExtension']() : (f) => f,
-	),
-);
+
+export const configureStore = () =>
+	createStore(
+		createRootReducer(history),
+		compose(
+			applyMiddleware(...middleWare),
+			window['devToolsExtension'] ? window['devToolsExtension']() : (f) => f,
+		),
+	);
