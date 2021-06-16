@@ -9,15 +9,15 @@ import { EngineActionHandler } from '_engine_requests/engineActionHandler';
  */
 export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) => {
 	do {
-		let config: AxiosRequestConfig = {
+		const config: AxiosRequestConfig = {
 			timeout,
 		};
-		let initialTime = new Date().getTime();
+		const initialTime = new Date().getTime();
 		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobId, config);
 		if (err || resData.has_finished) {
 			return [err, resData];
 		}
-		let afterTime = new Date().getTime();
+		const afterTime = new Date().getTime();
 		// sleep for difference
 		await sleep(Math.abs(timeout - (afterTime - initialTime)));
 	} while (true);

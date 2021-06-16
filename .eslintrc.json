@@ -19,6 +19,7 @@
 	"plugins": ["react", "@typescript-eslint", "import"],
 	"rules": {
 		"indent": "off",
+		"no-constant-condition": ["error", { "checkLoops": false }],
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],

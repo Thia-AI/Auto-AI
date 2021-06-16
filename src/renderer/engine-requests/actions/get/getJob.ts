@@ -12,7 +12,7 @@ class GetJobEngineAction implements IEngineAction {
 		this.apiName = '/job';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: string): Promise<[boolean, any]> => {
+	run = async (config?: AxiosRequestConfig, data?: string) => {
 		try {
 			const res = await this.engineRequest.get(`${this.apiName}/${data}`, config);
 			return [false, res.data];

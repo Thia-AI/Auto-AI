@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
 import { ipcMain } from 'electron';
 
 /**

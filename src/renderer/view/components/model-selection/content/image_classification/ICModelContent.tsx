@@ -126,7 +126,7 @@ const ICModelContentC = (props: Props) => {
 		setModelCreating(false);
 		toast({
 			title: 'Success',
-			description: `Model Created Successfully`,
+			description: 'Model Created Successfully',
 			status: 'success',
 			duration: 1500,
 			isClosable: false,

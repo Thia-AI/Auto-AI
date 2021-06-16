@@ -12,7 +12,7 @@ class GetModelsEngineAction implements IEngineAction {
 		this.apiName = '/models';
 	}
 
-	run = async (config?: AxiosRequestConfig): Promise<[boolean, any]> => {
+	run = async (config?: AxiosRequestConfig) => {
 		try {
 			const res = await this.engineRequest.get(`${this.apiName}`, config);
 			return [false, res.data];
