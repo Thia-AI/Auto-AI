@@ -34,6 +34,9 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         update_job(self)
         self.time_started = time.time()
 
+    def get_date_started(self):
+        return self.__date_started
+
     def run_async(self):
         self.run()
 

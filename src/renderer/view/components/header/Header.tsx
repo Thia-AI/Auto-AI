@@ -114,6 +114,7 @@ class Header extends Component<Props> {
 	render() {
 		return (
 			<Box
+				zIndex='99'
 				as='header'
 				id='titlebar'
 				pos='fixed'

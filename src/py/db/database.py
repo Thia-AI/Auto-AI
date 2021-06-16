@@ -2,7 +2,7 @@ import atexit
 import os
 import sqlite3
 
-from db.commands.base_command import DBCommand
+from db.commands.base_commands import DBCommand
 from db.sqlite_worker import Sqlite3Worker
 from log.logger import log
 from config import config
@@ -50,6 +50,13 @@ class DBManager(object):
                        progress_max integer,
                        date_started datetime,
                        date_finished datetime)''')
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS models
+                    (id varchar(32) not null,
+                    model_name text not null, 
+                    model_type text not null,
+                    model_type_extra text not null,
+                    date_created datetime,
+                    date_last_accessed datetime)''')
         except sqlite3.Error as e:
             log("[SQLITE] - failed to create table")
             log(str(e))

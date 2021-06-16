@@ -1,6 +1,5 @@
-from db.commands.base_command import DBCommand
+from db.commands.base_commands import DBCommand
 from db.database import DBManager
-# from job.base_job import BaseJob
 import job.base_job as base
 
 

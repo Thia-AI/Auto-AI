@@ -52,7 +52,9 @@
 			"_renderer/*": ["src/renderer/*"],
 			"_utils/*": ["src/utils/*"],
 			"_state/*": ["src/renderer/state/*"],
-			"_fonts/*": ["src/utils/fonts/*"]
+			"_fonts/*": ["src/utils/fonts/*"],
+			"_view_helpers/*": ["src/renderer/view/helpers/*"],
+			"_engine_requests/*": ["src/renderer/engine-requests/*"]
 		} /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */,
 		// "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
 		// "typeRoots": [],                       /* List of folders to include type definitions from. */
