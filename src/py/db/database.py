@@ -56,7 +56,8 @@ class DBManager(object):
                     model_type text not null,
                     model_type_extra text not null,
                     date_created datetime,
-                    date_last_accessed datetime)''')
+                    date_last_accessed datetime,
+                    model_status text not null )''')
         except sqlite3.Error as e:
             log("[SQLITE] - failed to create table")
             log(str(e))

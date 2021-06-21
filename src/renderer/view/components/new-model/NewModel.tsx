@@ -17,7 +17,7 @@ interface Props {
 	changeSelectedModel: (modelNumber: number) => IChangeSelectedModelAction;
 }
 
-const NewModelC = (props: Props) => {
+const NewModelC = React.memo((props: Props) => {
 	return (
 		<Center w='50%' h='50%'>
 			<Button
@@ -32,7 +32,7 @@ const NewModelC = (props: Props) => {
 			</Button>
 		</Center>
 	);
-};
+});
 
 const mapStateToProps = () => {
 	return {};

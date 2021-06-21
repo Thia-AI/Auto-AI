@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Box } from '@chakra-ui/react';
 
@@ -14,7 +14,7 @@ interface Props {
 	selectedModel: ISelectedModelReducer;
 }
 
-class ModelSelectionBodyC extends Component<Props> {
+class ModelSelectionBodyC extends PureComponent<Props> {
 	renderBody = (selectedModel: number) => {
 		switch (selectedModel) {
 			case 0:

@@ -28,7 +28,7 @@ interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
 }
 
-const ModelSelectionC = (props: Props) => {
+const ModelSelectionC = React.memo((props: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	return (
 		<Modal
@@ -47,14 +47,14 @@ const ModelSelectionC = (props: Props) => {
 					mt='2'
 					sx={{
 						'&::-webkit-scrollbar': {
-							width: '10px',
-							backgroundColor: 'gray.600',
+							w: '8px',
+							bg: 'gray.600',
 						},
 						'&::-webkit-scrollbar-thumb': {
-							backgroundColor: 'gray.800',
+							bg: 'gray.800',
 						},
 						'&::-webkit-scrollbar-thumb:hover': {
-							backgroundColor: 'gray.850',
+							bg: 'gray.850',
 						},
 					}}>
 					<HStack
@@ -63,14 +63,14 @@ const ModelSelectionC = (props: Props) => {
 						pb='3'
 						sx={{
 							'&::-webkit-scrollbar': {
-								height: '10px',
-								backgroundColor: 'gray.600',
+								h: '8px',
+								bg: 'gray.600',
 							},
 							'&::-webkit-scrollbar-thumb': {
-								backgroundColor: 'gray.800',
+								bg: 'gray.800',
 							},
 							'&::-webkit-scrollbar-thumb:hover': {
-								backgroundColor: 'gray.850',
+								bg: 'gray.850',
 							},
 						}}>
 						<ModelPreviewCard
@@ -119,7 +119,7 @@ const ModelSelectionC = (props: Props) => {
 			</ModalContent>
 		</Modal>
 	);
-};
+});
 
 const mapStateToProps = (state: IAppState) => {
 	return {

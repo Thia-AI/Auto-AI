@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Box } from '@chakra-ui/react';
 
 import './Modal.css';
@@ -10,7 +10,7 @@ interface Props {
 	modalClick?: () => void;
 }
 
-export class Modal extends Component<Props> {
+export class Modal extends PureComponent<Props> {
 	render() {
 		return (
 			<Box

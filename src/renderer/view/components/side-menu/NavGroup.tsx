@@ -6,7 +6,7 @@ interface NavGroupProps {
 	children: React.ReactNode;
 }
 
-export const NavGroup = (props: NavGroupProps) => {
+export const NavGroup = React.memo((props: NavGroupProps) => {
 	const { label, children } = props;
 	return (
 		<Box>
@@ -23,4 +23,4 @@ export const NavGroup = (props: NavGroupProps) => {
 			<Stack spacing='1'>{children}</Stack>
 		</Box>
 	);
-};
+});

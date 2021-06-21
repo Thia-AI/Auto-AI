@@ -10,7 +10,7 @@ interface Props {
 	openCloseSideMenu: () => IMenuOpenCloseAction;
 }
 
-const HamburgerC = (props: Props) => {
+const HamburgerC = React.memo((props: Props) => {
 	return (
 		<Icon
 			css={{ '-webkit-app-region': 'no-drag' }}
@@ -22,7 +22,7 @@ const HamburgerC = (props: Props) => {
 			onClick={props.openCloseSideMenu}
 		/>
 	);
-};
+});
 
 const mapStateToProps = () => ({});
 
