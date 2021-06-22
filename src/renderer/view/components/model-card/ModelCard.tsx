@@ -10,27 +10,17 @@ import {
 	Spacer,
 	VStack,
 	Divider,
-	Box,
 	Skeleton,
 	Tooltip,
 } from '@chakra-ui/react';
 
-import {
-	ERROR,
-	GENERATIVE,
-	IDLE,
-	IMAGE_CLASSIFICATION,
-	OBJECT_DETECTION,
-	OBJECT_TRACKING,
-	TRAINING,
-} from '_view_helpers/modelConstants';
+import { ERROR, IDLE, TRAINING } from '_view_helpers/modelConstants';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 
 import Preview from '_utils/images/placeholder-dark.jpg';
 import './ModelCard.css';
 import { useRef } from 'react';
-import { useState } from 'react';
 
 interface Props {
 	isLoaded: boolean;

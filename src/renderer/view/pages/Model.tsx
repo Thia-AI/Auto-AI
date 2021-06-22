@@ -1,18 +1,6 @@
 import React, { useEffect } from 'react';
 
-import {
-	Center,
-	Box,
-	VStack,
-	Text,
-	HStack,
-	Badge,
-	Skeleton,
-	useColorModeValue as mode,
-	useMediaQuery,
-	Spacer,
-	Button,
-} from '@chakra-ui/react';
+import { Center, VStack, Text, HStack, Badge, Skeleton, Spacer, Button } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 

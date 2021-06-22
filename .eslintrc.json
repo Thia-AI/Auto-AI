@@ -20,6 +20,7 @@
 	"rules": {
 		"indent": "off",
 		"no-constant-condition": ["error", { "checkLoops": false }],
+		"react/display-name": "off",
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],

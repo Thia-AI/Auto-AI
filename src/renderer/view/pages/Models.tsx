@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { Switch, Route, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import { Box, VStack } from '@chakra-ui/react';
 import { push, Push } from 'connected-react-router';
 import { connect } from 'react-redux';
 
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { ModelCard } from '../components/model-card/ModelCard';
-import { IAppState } from '_/renderer/state/reducers';
 
 interface Props {
 	push: Push;
@@ -96,7 +95,7 @@ const ModelsC = (props: Props) => {
 	);
 };
 
-const mapStateToProps = (state: IAppState) => ({});
+const mapStateToProps = () => ({});
 
 export default connect(mapStateToProps, {
 	push,
