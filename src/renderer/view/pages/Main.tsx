@@ -7,7 +7,7 @@ import { ModelSelection } from '_/renderer/view/components/model-selection/Model
 /**
  * Component for main portion of **renderer**
  */
-export class Main extends Component {
+class Main extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -21,3 +21,5 @@ export class Main extends Component {
 		);
 	}
 }
+
+export default Main;

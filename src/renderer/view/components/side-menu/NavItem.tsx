@@ -14,7 +14,7 @@ interface NavItemProps {
 	onClick: () => any;
 }
 
-export const NavItem = (props: NavItemProps) => {
+export const NavItem = React.memo((props: NavItemProps) => {
 	const { active, subtle, icon, children, label, endElement } = props;
 	return (
 		<HStack
@@ -39,4 +39,4 @@ export const NavItem = (props: NavItemProps) => {
 			{children && <Box fontSize='xs' flexShrink={0} as={BsCaretRightFill} />}
 		</HStack>
 	);
-};
+});

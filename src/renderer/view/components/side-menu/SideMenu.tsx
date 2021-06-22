@@ -47,7 +47,7 @@ interface Props {
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 	selectedPage: ISelectedPageReducer;
 }
-const SideMenuC = (props: Props) => {
+const SideMenuC = React.memo((props: Props) => {
 	return (
 		<Drawer
 			isOpen={props.sideMenuOpen.value}
@@ -70,14 +70,14 @@ const SideMenuC = (props: Props) => {
 							pr='6'
 							sx={{
 								'&::-webkit-scrollbar': {
-									width: '10px',
-									backgroundColor: 'gray.600',
+									w: '8px',
+									bg: 'gray.600',
 								},
 								'&::-webkit-scrollbar-thumb': {
-									backgroundColor: 'gray.800',
+									bg: 'gray.800',
 								},
 								'&::-webkit-scrollbar-thumb:hover': {
-									backgroundColor: 'gray.850',
+									bg: 'gray.850',
 								},
 							}}>
 							<Stack spacing='1'>
@@ -210,7 +210,7 @@ const SideMenuC = (props: Props) => {
 			</DrawerContent>
 		</Drawer>
 	);
-};
+});
 
 const mapStateToProps = (state: IAppState) => ({
 	sideMenuOpen: state.sideMenuOpen,

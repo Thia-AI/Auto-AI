@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
+
+import { useRouteMatch } from 'react-router-dom';
 import { Box, VStack } from '@chakra-ui/react';
+import { push, Push } from 'connected-react-router';
+import { connect } from 'react-redux';
+
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { ModelCard } from '../components/model-card/ModelCard';
 
-export const Models = () => {
+interface Props {
+	push: Push;
+}
+
+const ModelsC = (props: Props) => {
+	const match = useRouteMatch();
 	const [models, setModels] = useState([]);
 	const [isLoaded, setIsLoaded] = useState(false);
 
@@ -12,7 +22,6 @@ export const Models = () => {
 			const [error, resData] = await EngineActionHandler.getInstance().getModels();
 			setIsLoaded(true);
 			if (!error) {
-				console.log(resData['models']);
 				setModels(resData['models']);
 			}
 		};
@@ -26,10 +35,13 @@ export const Models = () => {
 				return (
 					<ModelCard
 						key={i}
-						isLoaded={false}
+						modelID=''
+						isLoaded={isLoaded}
 						modelTitle=''
 						modelStatus=''
-						dateLastAccessed=''
+						dateCreated=''
+						modelType=''
+						onClick={() => {}}
 					/>
 				);
 			});
@@ -40,10 +52,13 @@ export const Models = () => {
 			return (
 				<ModelCard
 					key={model['id']}
-					isLoaded={true}
+					isLoaded={isLoaded}
+					modelID={model['id']}
 					modelTitle={model['model_name']}
-					modelStatus='IDLE'
-					dateLastAccessed='69/69/6969'
+					modelStatus={model['model_status']}
+					dateCreated={model['date_created']}
+					modelType={model['model_type']}
+					onClick={() => props.push(`${match.path}/${model['id']}`)}
 				/>
 			);
 		});
@@ -63,17 +78,25 @@ export const Models = () => {
 			overflowY='auto'
 			sx={{
 				'&::-webkit-scrollbar': {
-					width: '10px',
-					backgroundColor: 'gray.700',
+					w: '8px',
+					bg: 'gray.700',
 				},
 				'&::-webkit-scrollbar-thumb': {
-					backgroundColor: 'gray.900',
+					bg: 'gray.900',
 				},
 				'&::-webkit-scrollbar-thumb:hover': {
-					backgroundColor: 'gray.900',
+					bg: 'gray.900',
 				},
 			}}>
-			<VStack spacing='2'>{render()}</VStack>
+			<VStack spacing='4' pb='4'>
+				{render()}
+			</VStack>
 		</Box>
 	);
 };
+
+const mapStateToProps = () => ({});
+
+export default connect(mapStateToProps, {
+	push,
+})(ModelsC);

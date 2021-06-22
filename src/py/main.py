@@ -1,4 +1,5 @@
 import os
+
 from flask import Flask, jsonify, request
 
 from env import environment
@@ -7,7 +8,6 @@ from env import environment
 environment.init_environment_pre_gpu()
 
 # Jobs
-from data_handler.jobs.data_aug_job import DataAugmentationJob
 from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from model_config.jobs.model_config_jobs import ModelCreationJob
 
@@ -128,7 +128,10 @@ def get_models_route():
             'id': row['id'],
             'model_name': row['model_name'],
             'model_type': row['model_type'],
-            'model_type_extra': row['model_type_extra']
+            'model_type_extra': row['model_type_extra'],
+            'date_created': row['date_created'],
+            'date_last_accessed': row['date_last_accessed'],
+            'model_status': row['model_status']
         }
         models.append(model)
 
@@ -148,7 +151,10 @@ def get_model_route(uuid: str):
                    'id': row['id'],
                    'model_name': row['model_name'],
                    'model_type': row['model_type'],
-                   'model_type_extra': row['model_type_extra']
+                   'model_type_extra': row['model_type_extra'],
+                   'date_created': row['date_created'],
+                   'date_last_accessed': row['date_last_accessed'],
+                   'model_status': row['model_status']
                }, 200
 
 

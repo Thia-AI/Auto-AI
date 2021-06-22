@@ -22,7 +22,7 @@ interface Props {
 	engineStarted: IEngineStatusReducer;
 }
 
-const StatusIndicatorC = (props: Props) => {
+const StatusIndicatorC = React.memo((props: Props) => {
 	return (
 		<Popover
 			isLazy
@@ -61,7 +61,7 @@ const StatusIndicatorC = (props: Props) => {
 			</PopoverContent>
 		</Popover>
 	);
-};
+});
 
 const mapStateToProps = (state: IAppState) => ({
 	engineStarted: state.engineStarted,

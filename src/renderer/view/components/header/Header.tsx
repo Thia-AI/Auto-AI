@@ -1,4 +1,4 @@
-import React, { Component, MouseEvent } from 'react';
+import React, { PureComponent, MouseEvent } from 'react';
 import { ipcRenderer } from 'electron';
 import { connect } from 'react-redux';
 import { Box, Center, Flex, Spacer, Spinner } from '@chakra-ui/react';
@@ -32,7 +32,7 @@ interface Props {
 /**
  * Since we use a frameless **Electron** app, we have to implement a custom window top bar
  */
-class Header extends Component<Props> {
+class Header extends PureComponent<Props> {
 	constructor(props) {
 		super(props);
 		this.initToggleMaxRestoreButtons();

@@ -1,0 +1,15 @@
+@keyframes copy-bounce {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.08);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.copy-bounce {
+	animation: copy-bounce 215ms ease;
+}

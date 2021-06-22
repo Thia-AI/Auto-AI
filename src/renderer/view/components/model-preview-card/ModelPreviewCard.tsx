@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Box, Image, Divider, Flex, Badge, Tooltip } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
@@ -20,7 +20,7 @@ interface Props {
 	changeSelectedModelAction: (modelNumber: number) => IChangeSelectedModelAction;
 }
 
-class ModelPreviewCardC extends Component<Props> {
+class ModelPreviewCardC extends PureComponent<Props> {
 	render() {
 		return (
 			<Tooltip label={this.props.toolTipInfo} placement='bottom' fontSize='xs' hasArrow>

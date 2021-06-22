@@ -33,7 +33,7 @@ interface Props {
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 
-const ICModelContentC = (props: Props) => {
+const ICModelContentC = React.memo((props: Props) => {
 	// Toast
 	const toast = useToast();
 	// Model Name
@@ -197,7 +197,7 @@ const ICModelContentC = (props: Props) => {
 			</Center>
 		</VStack>
 	);
-};
+});
 const mapStateToProps = () => ({});
 export const ICModelContent = connect(mapStateToProps, {
 	openCloseModelSelectionAction,

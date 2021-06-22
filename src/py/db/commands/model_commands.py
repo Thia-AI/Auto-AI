@@ -5,10 +5,10 @@ from db.database import DBManager
 def create_model(uuid: str, model_name: str, model_type: str, model_type_extra: str, date_created: str,
                  date_last_accessed: str) -> None:
     cmd = DBCommand(name=f"Create Model {model_name}",
-                    command='''INSERT INTO models (id, model_name, model_type, model_type_extra, date_created, date_last_accessed)
-                    values (?, ?, ?, ?, ?, ?)''',
+                    command='''INSERT INTO models (id, model_name, model_type, model_type_extra, date_created, date_last_accessed, model_status)
+                    values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed
+                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, 'IDLE'
                     ))
     DBManager.get_instance().execute(cmd)
 
