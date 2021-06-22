@@ -14,6 +14,12 @@ MODEL_DIR = Path('.')
 # Model directory name
 MODEL_DIR_NAME = 'models'
 
+"""Datasets"""
+# Dataset directory path
+DATASET_DIR = Path('.')
+# Dataset directory name
+DATASET_DIR_NAME = 'datasets'
+
 """Database"""
 # DB path
 DATABASE_LOCATION = Path('.')

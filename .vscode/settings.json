@@ -49,5 +49,13 @@
 				}
 			]
 		}
+	],
+	"VSCodeCounter.exclude": [
+		"**/.gitignore",
+		"**/.vscode/**",
+		"**/node_modules/**",
+		"**/package-lock.json",
+		"**/models/**",
+		"**/cache/**"
 	]
 }

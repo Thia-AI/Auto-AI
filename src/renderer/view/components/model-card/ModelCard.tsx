@@ -11,6 +11,8 @@ import {
 	VStack,
 	Divider,
 	Box,
+	Skeleton,
+	Tooltip,
 } from '@chakra-ui/react';
 
 import {
@@ -23,7 +25,12 @@ import {
 	TRAINING,
 } from '_view_helpers/modelConstants';
 
-import Preview from '_utils/images/placeholder-nn-blurred.jpg';
+import { getVerboseModelType } from '_view_helpers/modelHelper';
+
+import Preview from '_utils/images/placeholder-dark.jpg';
+import './ModelCard.css';
+import { useRef } from 'react';
+import { useState } from 'react';
 
 interface Props {
 	isLoaded: boolean;
@@ -31,24 +38,12 @@ interface Props {
 	modelStatus: string;
 	dateCreated: string;
 	modelType: string;
+	modelID: string;
 	onClick: () => void;
 }
 
 export const ModelCard = React.memo((props: Props) => {
-	const modelType = () => {
-		switch (props.modelType) {
-			case IMAGE_CLASSIFICATION[0]:
-				return IMAGE_CLASSIFICATION[1];
-			case GENERATIVE[0]:
-				return GENERATIVE[1];
-			case OBJECT_DETECTION[0]:
-				return OBJECT_DETECTION[1];
-			case OBJECT_TRACKING[0]:
-				return OBJECT_TRACKING[1];
-			default:
-				return 'Other Model';
-		}
-	};
+	const badgeIDRef = useRef<HTMLDivElement>(null);
 
 	const statusColor = () => {
 		switch (props.modelStatus.toLowerCase()) {
@@ -66,11 +61,11 @@ export const ModelCard = React.memo((props: Props) => {
 			cursor='pointer'
 			onClick={props.onClick}
 			_hover={{
-				transform: `${props.isLoaded ? 'scale(1.03)' : ''}`,
+				transform: `${props.isLoaded ? 'scale(1.01)' : ''}`,
 			}}
 			transition={props.isLoaded ? 'all 250ms' : ''}
 			w='80%'
-			h='100px'
+			h='125px'
 			pt='2'
 			pb='1'
 			px='4'
@@ -87,7 +82,7 @@ export const ModelCard = React.memo((props: Props) => {
 					/>
 				</SkeletonCircle>
 				<Spacer />
-				<SkeletonText w='80px' isLoaded={props.isLoaded} noOfLines={1}>
+				<SkeletonText w='80px' isLoaded={props.isLoaded} noOfLines={2}>
 					<HStack>
 						<Text alignItems='baseline' fontSize='xs'>
 							Status:
@@ -96,27 +91,59 @@ export const ModelCard = React.memo((props: Props) => {
 							{props.modelStatus}
 						</Badge>
 					</HStack>
+					<Tooltip label='Copy ID' aria-label='A tooltip' fontSize='xs' placement='left'>
+						<Badge
+							ref={badgeIDRef}
+							my='2'
+							px='1'
+							opacity='0.6'
+							bg='gray.900'
+							color='gray.600'
+							onClick={(e) => {
+								// Prevent onclick from propogating up
+								e.stopPropagation();
+								// Notify via tooltip of copy
+								// Add bouncing animation and copy model ID to clipboard
+								badgeIDRef.current?.classList.add('copy-bounce');
+								navigator.clipboard.writeText(props.modelID);
+								// remove bouncing animation after it's finished
+								setTimeout(() => {
+									if (badgeIDRef.current) {
+										badgeIDRef.current.classList.remove('copy-bounce');
+									}
+								}, 215);
+								// Clear tooltip some time after
+								// setTimeout(() => setCopyTooltipLabel('Copy ID'), 285);
+							}}>
+							{props.modelID.substring(0, 10)}
+						</Badge>
+					</Tooltip>
 				</SkeletonText>
 			</VStack>
 			<Divider orientation='vertical' />
-			<SkeletonText w='full' h='full' isLoaded={props.isLoaded} noOfLines={4} spacing='4'>
+			<Skeleton w='full' h='full' isLoaded={props.isLoaded}>
 				<VStack bgImage={Preview} bgPos='center' bgSize='cover' borderRadius='lg' h='full'>
 					<Center pb='4' w='full'>
 						<Text color='gray.100' fontWeight='semibold' letterSpacing='0.15rem'>
-							{props.modelTitle} -
+							{props.modelTitle}:
 						</Text>
 						<Badge ml='2' colorScheme='purple'>
-							{modelType()}
+							{getVerboseModelType(props.modelType)}
 						</Badge>
 					</Center>
 					<Spacer />
-					<HStack px='2' h='full' w='full' justifyContent='flex-end'>
-						<Text pt='2' color='gray.400' fontSize='xs'>
+					<HStack
+						px='2'
+						h='full'
+						w='full'
+						justifyContent='flex-end'
+						alignItems='flex-end'>
+						<Text mb='1' color='gray.400' fontSize='xs'>
 							{new Date(props.dateCreated).toDateString()}
 						</Text>
 					</HStack>
 				</VStack>
-			</SkeletonText>
+			</Skeleton>
 		</HStack>
 	);
 });

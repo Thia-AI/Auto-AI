@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { Box, VStack } from '@chakra-ui/react';
 import { push, Push } from 'connected-react-router';
@@ -22,7 +23,6 @@ const ModelsC = (props: Props) => {
 			const [error, resData] = await EngineActionHandler.getInstance().getModels();
 			setIsLoaded(true);
 			if (!error) {
-				console.log(resData['models']);
 				setModels(resData['models']);
 			}
 		};
@@ -36,6 +36,7 @@ const ModelsC = (props: Props) => {
 				return (
 					<ModelCard
 						key={i}
+						modelID=''
 						isLoaded={isLoaded}
 						modelTitle=''
 						modelStatus=''
@@ -53,6 +54,7 @@ const ModelsC = (props: Props) => {
 				<ModelCard
 					key={model['id']}
 					isLoaded={isLoaded}
+					modelID={model['id']}
 					modelTitle={model['model_name']}
 					modelStatus={model['model_status']}
 					dateCreated={model['date_created']}
@@ -69,33 +71,28 @@ const ModelsC = (props: Props) => {
 		} else return renderSkeleton();
 	};
 	return (
-		<>
-			<Box
-				w='full'
-				h='full'
-				marginTop='var(--header-height)'
-				pt='4'
-				overflowY='auto'
-				sx={{
-					'&::-webkit-scrollbar': {
-						w: '8px',
-						bg: 'gray.700',
-					},
-					'&::-webkit-scrollbar-thumb': {
-						bg: 'gray.900',
-					},
-					'&::-webkit-scrollbar-thumb:hover': {
-						bg: 'gray.900',
-					},
-				}}>
-				<VStack spacing='4'>{render()}</VStack>
-			</Box>
-			{/* <Switch>
-				<Route path={`${match.path}/:id`}>
-					<Model />
-				</Route>
-			</Switch> */}
-		</>
+		<Box
+			w='full'
+			h='full'
+			marginTop='var(--header-height)'
+			pt='4'
+			overflowY='auto'
+			sx={{
+				'&::-webkit-scrollbar': {
+					w: '8px',
+					bg: 'gray.700',
+				},
+				'&::-webkit-scrollbar-thumb': {
+					bg: 'gray.900',
+				},
+				'&::-webkit-scrollbar-thumb:hover': {
+					bg: 'gray.900',
+				},
+			}}>
+			<VStack spacing='4' pb='4'>
+				{render()}
+			</VStack>
+		</Box>
 	);
 };
 

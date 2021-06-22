@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { GetDevicesEngineAction } from './actions/get/getDevices';
 import { GetJobEngineAction } from './actions/get/getJob';
+import { GetModelEngineAction } from './actions/get/getModel';
 import { GetModelsEngineAction } from './actions/get/getModels';
 import { CreateModelEngineAction } from './actions/post/createModel';
 import { IEngineAction } from './base/iEngineAction';
@@ -15,6 +16,7 @@ class EngineActionHandler {
 	private createModelEA!: IEngineAction;
 	private getJobEA!: IEngineAction;
 	private getModelsEA!: IEngineAction;
+	private getModelEA!: IEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -60,6 +62,7 @@ class EngineActionHandler {
 		this.createModelEA = new CreateModelEngineAction(this._engineRequest);
 		this.getJobEA = new GetJobEngineAction(this._engineRequest);
 		this.getModelsEA = new GetModelsEngineAction(this._engineRequest);
+		this.getModelEA = new GetModelEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -81,6 +84,10 @@ class EngineActionHandler {
 
 	public getModels = async (config?: AxiosRequestConfig) => {
 		return this.getModelsEA.run(config);
+	};
+
+	public getModel = async (uuid: string, config?: AxiosRequestConfig) => {
+		return this.getModelEA.run(config, uuid);
 	};
 }
 

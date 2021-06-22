@@ -55,9 +55,16 @@ class DBManager(object):
                     model_name text not null, 
                     model_type text not null,
                     model_type_extra text not null,
-                    date_created datetime,
-                    date_last_accessed datetime,
+                    date_created datetime not null,
+                    date_last_accessed datetime not null,
                     model_status text not null )''')
+
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS datasets
+            (id varchar(32) not null,
+             name text not null,
+             date_created datetime not null,
+             date_last_accessed datetime not null,
+             misc_data text)''')
         except sqlite3.Error as e:
             log("[SQLITE] - failed to create table")
             log(str(e))

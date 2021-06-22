@@ -40,7 +40,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 			isCentered
 			scrollBehavior='inside'>
 			<ModalOverlay />
-			<ModalContent overflow='hidden'>
+			<ModalContent transition='all 200ms' overflow='hidden'>
 				<ModalHeader>Select Model</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody

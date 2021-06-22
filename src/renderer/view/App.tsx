@@ -2,7 +2,7 @@ import React, { useEffect, Suspense, lazy } from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import { ConnectedRouter as Router } from 'connected-react-router';
-import { Spinner } from '@chakra-ui/react';
+import { Center, Spinner } from '@chakra-ui/react';
 
 import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
 import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
@@ -51,7 +51,12 @@ const AppC = React.memo((props: Props) => {
 		<>
 			<Header />
 			<Router history={history}>
-				<Suspense fallback={<Spinner size='xl' />}>
+				<Suspense
+					fallback={
+						<Center color='gray.600' w='full' h='full' marginTop='var(--header-height)'>
+							<Spinner size='lg' />
+						</Center>
+					}>
 					<Switch>
 						<Route exact path='/' component={Main} />
 						<Route exact path='/models' component={Models} />
