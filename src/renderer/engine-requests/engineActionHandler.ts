@@ -1,10 +1,7 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { GetDevicesEngineAction } from './actions/get/getDevices';
 import { GetJobEngineAction } from './actions/get/getJob';
-<<<<<<< HEAD:src/renderer/engine-requests/engineActionHandler.ts
-=======
 import { GetModelEngineAction } from './actions/get/getModel';
->>>>>>> ENG-110:src/main/ipc/engine-action/engineActionHandler.ts
 import { GetModelsEngineAction } from './actions/get/getModels';
 import { CreateModelEngineAction } from './actions/post/createModel';
 import { IEngineAction } from './base/iEngineAction';
@@ -19,10 +16,7 @@ class EngineActionHandler {
 	private createModelEA!: IEngineAction;
 	private getJobEA!: IEngineAction;
 	private getModelsEA!: IEngineAction;
-<<<<<<< HEAD:src/renderer/engine-requests/engineActionHandler.ts
-=======
 	private getModelEA!: IEngineAction;
->>>>>>> ENG-110:src/main/ipc/engine-action/engineActionHandler.ts
 
 	private _engineRequest!: AxiosInstance;
 
