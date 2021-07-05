@@ -11,7 +11,6 @@ import {
 	VStack,
 	Divider,
 	Skeleton,
-	Tooltip,
 } from '@chakra-ui/react';
 
 import { ERROR, IDLE, TRAINING } from '_view_helpers/constants/modelConstants';
@@ -20,7 +19,6 @@ import { getVerboseModelType } from '_view_helpers/modelHelper';
 
 import Preview from '_utils/images/placeholder-dark.jpg';
 import './ModelCard.css';
-import { useRef } from 'react';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
 
 interface Props {
@@ -34,8 +32,6 @@ interface Props {
 }
 
 export const ModelCard = React.memo((props: Props) => {
-	const badgeIDRef = useRef<HTMLDivElement>(null);
-
 	const statusColor = () => {
 		switch (props.modelStatus.toLowerCase()) {
 			case IDLE:

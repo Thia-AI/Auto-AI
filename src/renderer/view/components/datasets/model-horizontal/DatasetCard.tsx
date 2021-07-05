@@ -1,17 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import {
-	Box,
-	Center,
-	Spinner,
-	Text,
-	Image,
-	HStack,
-	Spacer,
-	VStack,
-	Icon,
-	Tooltip,
-} from '@chakra-ui/react';
+import { Box, Center, Spinner, Text, Image, HStack, Spacer, VStack, Icon } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { FiEdit } from 'react-icons/fi';
@@ -49,9 +38,9 @@ const DatasetCardC = React.memo((props: Props) => {
 	const [imageRetrived, setImageRetrieved] = useState(false);
 
 	const fetchFirstImage = useCallback(async () => {
-		const [error, resData] = await EngineActionHandler.getInstance().getFirstImageOfDataset(
+		const resData = await EngineActionHandler.getInstance().getFirstImageOfDataset(
 			props.dataset.id,
-		);
+		)[1];
 		// Don't check for error because imageSrc can take
 		// an undefined value (because it gets substituted
 		// with the fallbackSrc)

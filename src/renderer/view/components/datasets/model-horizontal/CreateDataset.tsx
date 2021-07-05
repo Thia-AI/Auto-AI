@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useState } from 'react';
 import {
-	Box,
 	Flex,
 	Modal,
 	ModalBody,
@@ -8,13 +7,10 @@ import {
 	ModalContent,
 	ModalHeader,
 	ModalOverlay,
-	useMediaQuery,
 	Text,
 	VStack,
 	Input,
-	HStack,
 	Button,
-	Spacer,
 	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
@@ -65,9 +61,9 @@ const CreateDatasetC = React.memo((props: Props) => {
 
 		// Wait until the creation job has completed
 		await waitTillEngineJobComplete(createDatasetRes['ids'][0]);
-		const [_, datasetData] = await EngineActionHandler.getInstance().getDatasetByName(
+		const datasetData = await EngineActionHandler.getInstance().getDatasetByName(
 			datasetName,
-		);
+		)[1];
 		// Complete! Send a notification to user
 		setDatasetCreating(false);
 		toast({
