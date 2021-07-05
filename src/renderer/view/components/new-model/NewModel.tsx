@@ -21,7 +21,6 @@ const NewModelC = React.memo((props: Props) => {
 	return (
 		<Center w='50%' h='50%'>
 			<Button
-				_focus={{ outline: 'none' }}
 				variant='outline'
 				colorScheme='teal'
 				onClick={() => {

@@ -3,7 +3,7 @@
 		transform: scale(1);
 	}
 	50% {
-		transform: scale(1.08);
+		transform: scale(1.07);
 	}
 	100% {
 		transform: scale(1);
@@ -11,5 +11,5 @@
 }
 
 .copy-bounce {
-	animation: copy-bounce 215ms ease;
+	animation: copy-bounce 150ms ease;
 }

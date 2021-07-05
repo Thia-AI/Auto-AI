@@ -24,7 +24,7 @@ import { RadioCard } from './ICModelRadio';
 import { waitTillEngineJobComplete } from '_view_helpers/engineJobHelper';
 import { changeSelectedPage } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
-import { MODELS_PAGE } from '_view_helpers/pageConstants';
+import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 
 interface Props {
@@ -81,8 +81,7 @@ const ICModelContentC = React.memo((props: Props) => {
 		} else setModelNameValid(true);
 	};
 
-	// eslint-disable-next-line  @typescript-eslint/no-unused-vars
-	const createModel = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const createModel = async () => {
 		// check errors
 		let wasError = false;
 		validList.forEach((validPair) => {
@@ -145,15 +144,21 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Center>
 			<Flex direction='row' w='full'>
 				<Box>
-					<Text color={inputColor} as='h4' fontSize='sm' pl='1' mb='1'>
-						Name:
+					<Text
+						fontWeight='semibold'
+						color={inputColor}
+						as='h4'
+						fontSize='sm'
+						pl='1'
+						mb='1'>
+						Name
 					</Text>
 					<Input
 						isInvalid={!modelNameValid}
 						onChange={handleModelNameChange}
 						value={modelNameValue}
 						variant='filled'
-						placeholder="Enter your model's name"
+						placeholder="Enter the model's name"
 					/>
 					<SlideFade offsetY='10px' in={!modelNameValid}>
 						<Badge colorScheme='red'>{modelNameError}</Badge>
@@ -162,7 +167,13 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Flex>
 			<Flex direction='row' w='full' pt='4'>
 				<Box w='full'>
-					<Text color={inputColor} as='h4' fontSize='sm' pl='1' mb='1'>
+					<Text
+						fontWeight='semibold'
+						color={inputColor}
+						as='h4'
+						fontSize='sm'
+						pl='1'
+						mb='1'>
 						Model Type:
 					</Text>
 					<VStack {...group} alignItems='flex-start' w='full'>

@@ -45,7 +45,7 @@ const StatusIndicatorC = React.memo((props: Props) => {
 				/>
 			</PopoverTrigger>
 
-			<PopoverContent mt='1' w='fit-content' _focus={{ outline: 'none' }}>
+			<PopoverContent mt='1' w='fit-content'>
 				<PopoverArrow />
 				<PopoverBody>
 					<HStack spacing='2'>

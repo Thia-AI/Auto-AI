@@ -4,11 +4,9 @@ import { IEngineDevStatusAction, IEngineStartedAction } from './model/actionType
 import { ENGINE_STARTED, ENGINE_DEV_STATUS } from '_state/types';
 
 // Action to be called once engine has started
-export const notifyEngineStarted = (): IEngineStartedAction => {
-	return {
-		type: ENGINE_STARTED,
-	};
-};
+export const notifyEngineStarted = (): IEngineStartedAction => ({
+	type: ENGINE_STARTED,
+});
 
 // Action for checking the status of engine at any time (only used in development)
 export const getDevEngineStatus =

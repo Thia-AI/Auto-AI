@@ -1,6 +1,9 @@
+import base64
 import os
 
 from flask import Flask, jsonify, request
+
+import glob
 
 from env import environment
 
@@ -10,9 +13,11 @@ environment.init_environment_pre_gpu()
 # Jobs
 from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from model_config.jobs.model_config_jobs import ModelCreationJob
+from dataset.jobs.create_dataset_job import CreateDatasetJob
 
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
+from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
 
 from job.job import JobCreator
 from log.logger import log
@@ -21,6 +26,7 @@ from config import route_helper_constants as req_constants
 from helpers import route_helpers
 
 import tensorflow as tf
+import pyvips
 
 app = Flask(__name__)
 
@@ -156,6 +162,103 @@ def get_model_route(uuid: str):
                    'date_last_accessed': row['date_last_accessed'],
                    'model_status': row['model_status']
                }, 200
+
+
+@app.route('/dataset/create', methods=['POST'])
+def create_dataset_route():
+    log(f"ACCEPTED [{request.method}] /dataset/create")
+    req_data = request.get_json()
+    req_data_format = {
+        'name': req_constants.REQUIRED + req_constants.NON_EMPTY,
+        'type': req_constants.REQUIRED + req_constants.NON_EMPTY
+    }
+    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    # Check to see if dataset already exists
+    if os.path.isdir(config.DATASET_DIR / req_data['name']):
+        return {'Error': 'Dataset already exists'}, 400
+    ids = JobCreator().create(CreateDatasetJob(req_data)).queue()
+    return {'ids': ids}, 202
+
+
+@app.route('/datasets', methods=['GET'])
+def get_datasets_route():
+    log(f"ACCEPTED [{request.method}] /datasets")
+    rows = get_datasets()
+    datasets = []
+    for row in rows:
+        dataset = {
+            'id': row['id'],
+            'name': row['name'],
+            'type': row['type'],
+            'date_created': row['date_created'],
+            'date_last_accessed': row['date_last_accessed'],
+            'misc_data': row['misc_data']
+        }
+        datasets.append(dataset)
+    return {'datasets': datasets}, 200
+
+
+@app.route('/dataset/<string:uuid>', methods=['GET'])
+def get_dataset_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] /dataset/{uuid}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    for row in rows:
+        return {
+                   'id': row['id'],
+                   'name': row['name'],
+                   'type': row['type'],
+                   'date_created': row['date_created'],
+                   'date_last_accessed': row['date_last_accessed'],
+                   'misc_data': row['misc_data']
+               }, 200
+
+
+@app.route('/dataset/by-name/<string:name>', methods=['GET'])
+def get_dataset_by_name_route(name: str):
+    log(f"ACCEPTED [{request.method}] /dataset/by-name/{name}")
+    if name is None or len(name) == 0:
+        return {'Error': "Please enter an ID"}, 400
+
+    rows = get_dataset_by_name(name)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    for row in rows:
+        return {
+                   'id': row['id'],
+                   'name': row['name'],
+                   'type': row['type'],
+                   'date_created': row['date_created'],
+                   'date_last_accessed': row['date_last_accessed'],
+                   'misc_data': row['misc_data']
+               }, 200
+
+
+@app.route('/dataset/first-image/<string:uuid>', methods=['GET'])
+def get_dataset_first_image(uuid: str):
+    log(f"ACCEPTED [{request.method}] /dataset/first-image/{uuid}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    for row in rows:
+        # Only 1 row in rows but we access via iteration
+        # Get images in dataset's input directory
+        input_dir = (config.DATASET_DIR / row['name'] / config.DATASET_INPUT_DIR_NAME).absolute()
+        files = glob.glob(str(input_dir) + os.path.sep + '*.jpg')
+        if len(files) == 0:
+            return {'image': ''}, 200
+        with open(files[0], 'rb') as image:
+            # Return base64 encoded image that we can pass directly as src to <img /> tag
+            encoded = base64.b64encode(image.read()).decode('utf-8')
+            base64_output = 'data:image/jpg;base64,{}'.format(encoded)
+            return {'image': base64_output}, 200
 
 
 if __name__ == '__main__':

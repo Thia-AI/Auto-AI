@@ -12,5 +12,3 @@ export interface IChangeSelectedPageAction {
 		newPage: number;
 	};
 }
-
-export type SideModelActionTypes = IMenuOpenCloseAction | IChangeSelectedPageAction;

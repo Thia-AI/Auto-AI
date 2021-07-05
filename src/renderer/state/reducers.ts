@@ -16,6 +16,8 @@ import { headerMaximizedChangedReducer } from './header/HeaderReducers';
 import { IHeaderMaximizedChangedReducer } from './header/model/reducerTypes';
 import { IMenuOpenReducer, ISelectedPageReducer } from './side-menu/model/reducerTypes';
 import { changeSelectedPageReducer, openSideMenuReducer } from './side-menu/SideModelReducers';
+import { selectedDatasetReducer } from './choose-dataset-train/ChooseDatasetReducers';
+import { ISelectedDatasetReducer } from './choose-dataset-train/model/reducerTypes';
 
 // define the root reducer
 const createRootReducer = (history) =>
@@ -27,6 +29,7 @@ const createRootReducer = (history) =>
 		selectedModel: selectedModelReducer,
 		sideMenuOpen: openSideMenuReducer,
 		selectedPage: changeSelectedPageReducer,
+		selectedDataset: selectedDatasetReducer,
 	});
 
 // define the state of the App
@@ -37,6 +40,7 @@ export interface IAppState {
 	selectedModel: ISelectedModelReducer;
 	sideMenuOpen: IMenuOpenReducer;
 	selectedPage: ISelectedPageReducer;
+	selectedDataset: ISelectedDatasetReducer;
 }
 
 export default createRootReducer;

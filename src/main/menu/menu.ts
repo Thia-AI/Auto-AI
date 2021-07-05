@@ -1,6 +1,5 @@
 import { Menu, MenuItem } from 'electron';
-
-const isDev = require('electron-is-dev');
+import { isEmulatedDev } from '../helpers/dev';
 
 /**
  * Electron menu
@@ -8,7 +7,7 @@ const isDev = require('electron-is-dev');
 const menu = new Menu();
 
 // only add toggleDevTools and reloading if in devleopment mode
-if (isDev) {
+if (isEmulatedDev) {
 	menu.append(
 		new MenuItem({
 			role: 'toggleDevTools',

@@ -14,7 +14,8 @@ const HamburgerC = React.memo((props: Props) => {
 	return (
 		<Icon
 			css={{ '-webkit-app-region': 'no-drag' }}
-			transition='all 100ms'
+			transition='all 200ms'
+			color='gray.300'
 			_hover={{ color: 'teal.500', transform: 'scale(1.1)' }}
 			w={6}
 			h={6}

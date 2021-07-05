@@ -15,3 +15,7 @@ export const CHANGE_SELECTED_PAGE = 'CHANGE_SELECTED_PAGE';
 
 // Create Model
 export const CREATE_MODEL = 'CREATE_MODEL';
+
+// Choose Dataset for Training
+export const CHANGE_SELECTED_DATASET = 'CHOOSE_DATASET_TRAINING';
+export const RESET_SELECTED_DATASET = 'RESET_SELECTED_DATASET';

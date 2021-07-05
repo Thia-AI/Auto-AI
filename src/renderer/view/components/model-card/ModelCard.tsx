@@ -11,16 +11,15 @@ import {
 	VStack,
 	Divider,
 	Skeleton,
-	Tooltip,
 } from '@chakra-ui/react';
 
-import { ERROR, IDLE, TRAINING } from '_view_helpers/modelConstants';
+import { ERROR, IDLE, TRAINING } from '_view_helpers/constants/modelConstants';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 
 import Preview from '_utils/images/placeholder-dark.jpg';
 import './ModelCard.css';
-import { useRef } from 'react';
+import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
 
 interface Props {
 	isLoaded: boolean;
@@ -33,8 +32,6 @@ interface Props {
 }
 
 export const ModelCard = React.memo((props: Props) => {
-	const badgeIDRef = useRef<HTMLDivElement>(null);
-
 	const statusColor = () => {
 		switch (props.modelStatus.toLowerCase()) {
 			case IDLE:
@@ -81,33 +78,7 @@ export const ModelCard = React.memo((props: Props) => {
 							{props.modelStatus}
 						</Badge>
 					</HStack>
-					<Tooltip label='Copy ID' aria-label='A tooltip' fontSize='xs' placement='left'>
-						<Badge
-							ref={badgeIDRef}
-							my='2'
-							px='1'
-							opacity='0.6'
-							bg='gray.900'
-							color='gray.600'
-							onClick={(e) => {
-								// Prevent onclick from propogating up
-								e.stopPropagation();
-								// Notify via tooltip of copy
-								// Add bouncing animation and copy model ID to clipboard
-								badgeIDRef.current?.classList.add('copy-bounce');
-								navigator.clipboard.writeText(props.modelID);
-								// remove bouncing animation after it's finished
-								setTimeout(() => {
-									if (badgeIDRef.current) {
-										badgeIDRef.current.classList.remove('copy-bounce');
-									}
-								}, 215);
-								// Clear tooltip some time after
-								// setTimeout(() => setCopyTooltipLabel('Copy ID'), 285);
-							}}>
-							{props.modelID.substring(0, 10)}
-						</Badge>
-					</Tooltip>
+					<InteractiveCopyBadge badgeID={props.modelID} />
 				</SkeletonText>
 			</VStack>
 			<Divider orientation='vertical' />
