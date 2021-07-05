@@ -29,15 +29,26 @@ const theme = extendTheme({
 	},
 	colors: {
 		gray: {
+			750: '#242d3b',
 			850: '#171d29',
 		},
 		red: {
 			450: '#f25757',
 		},
 	},
+
+	components: {
+		Button: {
+			baseStyle: {
+				_focus: {
+					boxShadow: 'none',
+				},
+			},
+		},
+	},
 });
 
-const store = configureStore();
+export const store = configureStore();
 
 const engineActionHandler = EngineActionHandler.getInstance();
 engineActionHandler.initInstances(EngineRequestConfig);

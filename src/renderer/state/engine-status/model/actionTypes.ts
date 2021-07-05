@@ -12,5 +12,3 @@ export interface IEngineDevStatusAction {
 		engineStarted: boolean;
 	};
 }
-
-export type EngineStatusActionTypes = IEngineStartedAction | IEngineDevStatusAction;

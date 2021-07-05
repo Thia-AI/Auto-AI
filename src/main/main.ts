@@ -41,6 +41,7 @@ function createWindow(): void {
 			devTools: isDev,
 			nodeIntegration: true,
 			contextIsolation: false,
+			backgroundThrottling: false,
 		},
 	});
 

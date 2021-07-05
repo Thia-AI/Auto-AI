@@ -7,5 +7,3 @@ export interface IHeaderMaximizeChangedAction {
 		maximizedClass: string;
 	};
 }
-
-export type HeaderActionTypes = IHeaderMaximizeChangedAction;

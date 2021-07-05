@@ -38,7 +38,7 @@ import {
 	SUBSCRIPTION_PAGE,
 	SETTINGS_PAGE,
 	HELP_PAGE,
-} from '_view_helpers/pageConstants';
+} from '_/renderer/view/helpers/constants/pageConstants';
 
 interface Props {
 	sideMenuOpen: IMenuOpenReducer;

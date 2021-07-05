@@ -22,7 +22,7 @@ export const SideMenuProfile = () => {
 				<MenuItem
 					bg='red.400'
 					_active={{ bg: 'red.500' }}
-					_focus={{ shadow: 'outline', bg: 'red.450' }}
+					_focus={{ bg: 'red.450' }}
 					rounded='md'>
 					Logout
 				</MenuItem>

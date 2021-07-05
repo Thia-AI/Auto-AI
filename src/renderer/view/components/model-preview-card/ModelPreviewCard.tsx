@@ -39,7 +39,7 @@ class ModelPreviewCardC extends PureComponent<Props> {
 					<LazyLoad>
 						<Image
 							src={this.props.imageSrc}
-							alt='Reeee'
+							alt='Image'
 							htmlWidth='275px'
 							fit='cover'
 							borderTopRadius='lg'
@@ -47,7 +47,7 @@ class ModelPreviewCardC extends PureComponent<Props> {
 						/>
 					</LazyLoad>
 
-					<Divider />
+					<Divider w='full' />
 					<Box pt='6' pb='4' px='6'>
 						<Flex align='baseline' justify='center'>
 							<Badge

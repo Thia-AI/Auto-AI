@@ -10,8 +10,8 @@ class CreateModelEngineAction implements IEngineAction {
 		this.actionName = 'Create Model';
 		this.apiName = '/model/create';
 	}
-	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-	run = async (config?: AxiosRequestConfig, data?: JSON): Promise<[boolean, any]> => {
+
+	run = async (config?: AxiosRequestConfig, data?: object) => {
 		try {
 			const res = await this.engineRequest.post(`${this.apiName}`, data, config);
 			return [false, res.data];

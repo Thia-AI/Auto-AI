@@ -4,8 +4,6 @@ import { createLogger } from 'redux-logger';
 import { createHashHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 
-import AppActions from './appActions';
-
 import createRootReducer from './reducers';
 
 export const history = createHashHistory();
@@ -19,7 +17,7 @@ const logger = createLogger({
 	collapsed: true,
 });
 
-let middleWare = [thunk as ThunkMiddleware<AppState, AppActions>, routerMiddleware(history)];
+let middleWare = [thunk as ThunkMiddleware, routerMiddleware(history)];
 if (process.env.NODE_ENV === 'development') {
 	middleWare = [...middleWare, logger];
 }

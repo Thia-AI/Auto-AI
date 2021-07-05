@@ -16,7 +16,6 @@ const Model = React.memo(() => {
 		const fetchModel = async () => {
 			const [error, resData] = await EngineActionHandler.getInstance().getModel(modelID);
 			if (!error) {
-				console.log(resData);
 				setModel(resData);
 			}
 		};

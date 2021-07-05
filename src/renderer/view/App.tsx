@@ -47,6 +47,8 @@ const AppC = React.memo((props: Props) => {
 	const Subscription = lazy(() => import('./pages/Subscription'));
 	const Settings = lazy(() => import('./pages/Settings'));
 	const Help = lazy(() => import('./pages/Help'));
+	const Dataset = lazy(() => import('./pages/Dataset'));
+
 	return (
 		<>
 			<Header />
@@ -61,6 +63,7 @@ const AppC = React.memo((props: Props) => {
 						<Route exact path='/' component={Main} />
 						<Route exact path='/models' component={Models} />
 						<Route exact path='/models/:id' component={Model} />
+						<Route exact path='/dataset/:id' component={Dataset} />
 						<Route exact path='/jobs' component={Jobs} />
 						<Route exact path='/exports' component={Exports} />
 						<Route exact path='/deployments' component={Deployments} />

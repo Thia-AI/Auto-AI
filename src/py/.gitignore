@@ -3,3 +3,4 @@ test.py
 test.json
 cache/**
 models/
+datasets/

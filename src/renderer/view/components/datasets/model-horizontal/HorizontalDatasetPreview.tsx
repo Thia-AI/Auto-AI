@@ -1,33 +1,124 @@
-import React from 'react';
-import { Box, Text, useMediaQuery, useColorModeValue as mode } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import {
+	Box,
+	Text,
+	useMediaQuery,
+	useColorModeValue as mode,
+	HStack,
+	Spacer,
+	Button,
+	useDisclosure,
+	Spinner,
+	Center,
+} from '@chakra-ui/react';
+import { connect } from 'react-redux';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
-
+import { CreateDataset } from './CreateDataset';
+import { DatasetCard, FillerDatasetCard } from './DatasetCard';
+import { Dataset } from '_view_helpers/constants/engineDBTypes';
+import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { isFirstLetterVowel } from '_/renderer/view/helpers/textHelper';
+import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetTrainActions';
+import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 interface Props {
 	modelType: string;
+	resetSelectedDatasetAction: () => IResetSelectedDatasetAction;
 }
-export const HorizontalDatasetPreview = React.memo((props: Props) => {
+const HorizontalDatasetPreviewC = React.memo((props: Props) => {
+	const [datasets, setDatasets] = useState<Dataset[]>([]);
+	const [datasetRetrieved, setDatasetRetrieved] = useState(false);
+
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const verboseModelType = getVerboseModelType(props.modelType);
+
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 
+	useEffect(() => {
+		const fetchDataset = async () => {
+			const [error, resData] = await EngineActionHandler.getInstance().getDatasets();
+			if (!error) {
+				setDatasetRetrieved(true);
+				setDatasets(resData['datasets']);
+			}
+		};
+		props.resetSelectedDatasetAction();
+		fetchDataset();
+	}, []);
+
+	const renderCards = () => {
+		if (!datasetRetrieved) {
+			return (
+				<Center w='full' h='full'>
+					<Spinner size='xl' color='gray.200' />
+				</Center>
+			);
+		}
+		if (datasets.length < 1) {
+			return <FillerDatasetCard />;
+		}
+		return datasets.map((dataset, i) => {
+			return <DatasetCard dataset={dataset} key={i} />;
+		});
+	};
+
 	return (
-		<Box
-			w={isLargerThan1280 ? '90%' : 'full'}
-			py='6'
-			willChange='width'
-			transition='width 200ms'
-			alignSelf='center'
-			px='8'
-			rounded='lg'
-			bg={mode('white', 'gray.700')}
-			shadow='base'>
-			<Box mb='8'>
-				<Text as='h3' fontWeight='bold' fontSize='lg'>
-					Datasets
-				</Text>
-				<Text color='gray.500' fontSize='sm'>
-					Your datasets for {getVerboseModelType(props.modelType)}
-				</Text>
+		<>
+			<Box
+				w={isLargerThan1280 ? '90%' : 'full'}
+				py='6'
+				willChange='width'
+				transition='width 200ms'
+				alignSelf='center'
+				px='8'
+				rounded='lg'
+				bg={mode('white', 'gray.700')}
+				shadow='base'>
+				<Box mb='8' w='full'>
+					<HStack>
+						<Box>
+							<Text as='h3' fontWeight='bold' fontSize='lg'>
+								Datasets
+							</Text>
+							<Text color='gray.500' fontSize='sm'>
+								Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'}{' '}
+								{verboseModelType} dataset to train on
+							</Text>
+						</Box>
+						<Spacer />
+						<Button onClick={onOpen} variant='ghost' colorScheme='green'>
+							Add
+						</Button>
+					</HStack>
+				</Box>
+				<HStack
+					pl='2'
+					w='full'
+					minH='325px'
+					spacing='4'
+					overflowX='auto'
+					pb='4'
+					sx={{
+						'&::-webkit-scrollbar': {
+							h: '8px',
+							bg: 'gray.600',
+						},
+						'&::-webkit-scrollbar-thumb': {
+							bg: 'gray.800',
+						},
+						'&::-webkit-scrollbar-thumb:hover': {
+							bg: 'gray.850',
+						},
+					}}>
+					{renderCards()}
+				</HStack>
 			</Box>
-		</Box>
+			<CreateDataset onClose={onClose} isOpen={isOpen} />
+		</>
 	);
 });
+
+export const HorizontalDatasetPreview = connect(null, {
+	resetSelectedDatasetAction,
+})(HorizontalDatasetPreviewC);

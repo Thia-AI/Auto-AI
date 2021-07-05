@@ -23,6 +23,21 @@ def extra_datas(mydir):
 
     return extra_datas
 
+def get_binaries(mydir):
+    def rec_glob(p, files):
+        import os
+        import glob
+        for d in glob.glob(p):
+            if os.path.isfile(d):
+                files.append(d)
+            rec_glob("%s/*" % d, files)
+    files = []
+    rec_glob("%s/*" % mydir, files)
+    binaries = []
+    for f in files:
+        binaries.append((f, f, 'BINARY'))
+    return binaries
+
 a = Analysis(['src\\py\\main.py'],
              pathex=[spec_root],
              binaries=[],
@@ -37,7 +52,7 @@ a = Analysis(['src\\py\\main.py'],
              noarchive=False)
 
 a.datas += extra_datas('CUDA')
-
+a.binaries += get_binaries('external_dependencies\\vips')
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,

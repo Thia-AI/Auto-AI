@@ -21,8 +21,7 @@ export const ProfileSelectButton = React.memo((props: FlexProps) => {
 			cursor='pointer'
 			outline='0'
 			transition='all 0.2s'
-			_active={{ bg: 'gray.600' }}
-			_focus={{ shadow: 'outline' }}>
+			_active={{ bg: 'gray.600' }}>
 			<HStack flex='1' spacing='3'>
 				<Image
 					w='8'

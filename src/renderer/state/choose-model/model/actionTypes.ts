@@ -12,5 +12,3 @@ export interface IChangeSelectedModelAction {
 		selectedModelNumber: number;
 	};
 }
-
-export type ChooseModelActions = IOpenCloseModelSelectionAction | IChangeSelectedModelAction;

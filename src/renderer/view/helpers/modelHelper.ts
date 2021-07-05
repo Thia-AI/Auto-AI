@@ -3,7 +3,7 @@ import {
 	IMAGE_CLASSIFICATION,
 	OBJECT_DETECTION,
 	OBJECT_TRACKING,
-} from './modelConstants';
+} from './constants/modelConstants';
 
 export const getVerboseModelType = (modelType: string) => {
 	switch (modelType) {
@@ -16,6 +16,6 @@ export const getVerboseModelType = (modelType: string) => {
 		case OBJECT_TRACKING[0]:
 			return OBJECT_TRACKING[1];
 		default:
-			return 'Other Model';
+			return ' ';
 	}
 };

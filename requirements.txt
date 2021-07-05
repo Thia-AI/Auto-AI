@@ -13,3 +13,4 @@ torchaudio==0.7.2
 torchvision==0.8.2+cu110
 Flask==1.1.2
 overrides==6.1.0
+pyvips==2.1.15

@@ -1,8 +1,13 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { GetDatasetEngineAction } from './actions/get/getDataset';
+import { GetDatasetByNameEngineAction } from './actions/get/getDatasetByName';
+import { GetDatasetsEngineAction } from './actions/get/getDatasets';
 import { GetDevicesEngineAction } from './actions/get/getDevices';
+import { GetFirstImageOfDatasetEngineAction } from './actions/get/getFirstImageOfDataset';
 import { GetJobEngineAction } from './actions/get/getJob';
 import { GetModelEngineAction } from './actions/get/getModel';
 import { GetModelsEngineAction } from './actions/get/getModels';
+import { CreateDatasetEngineAction } from './actions/post/createDataset';
 import { CreateModelEngineAction } from './actions/post/createModel';
 import { IEngineAction } from './base/iEngineAction';
 
@@ -12,11 +17,20 @@ import { IEngineAction } from './base/iEngineAction';
 class EngineActionHandler {
 	private static instance: EngineActionHandler;
 
+	// Engine status
 	private getDevicesEA!: IEngineAction;
-	private createModelEA!: IEngineAction;
+	// Jobs
 	private getJobEA!: IEngineAction;
+	// Models
+	private createModelEA!: IEngineAction;
 	private getModelsEA!: IEngineAction;
 	private getModelEA!: IEngineAction;
+	// Datasets
+	private createDatasetEA!: IEngineAction;
+	private getDatasetsEA!: IEngineAction;
+	private getDatasetEA!: IEngineAction;
+	private getDatasetByNameEA!: IEngineAction;
+	private getFirstImageOfDatasetEA!: IEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -58,11 +72,20 @@ class EngineActionHandler {
 	 */
 	public initInstances = (eR: AxiosInstance) => {
 		this.engineRequest = eR;
+		// Engine status
 		this.getDevicesEA = new GetDevicesEngineAction(this._engineRequest);
-		this.createModelEA = new CreateModelEngineAction(this._engineRequest);
+		// Jobs
 		this.getJobEA = new GetJobEngineAction(this._engineRequest);
+		// Models
+		this.createModelEA = new CreateModelEngineAction(this._engineRequest);
 		this.getModelsEA = new GetModelsEngineAction(this._engineRequest);
 		this.getModelEA = new GetModelEngineAction(this._engineRequest);
+		// Datasets
+		this.createDatasetEA = new CreateDatasetEngineAction(this._engineRequest);
+		this.getDatasetsEA = new GetDatasetsEngineAction(this._engineRequest);
+		this.getDatasetEA = new GetDatasetEngineAction(this._engineRequest);
+		this.getDatasetByNameEA = new GetDatasetByNameEngineAction(this._engineRequest);
+		this.getFirstImageOfDatasetEA = new GetFirstImageOfDatasetEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -74,12 +97,12 @@ class EngineActionHandler {
 		return this.getDevicesEA.run(config);
 	};
 
-	public createModel = async (data: object, config?: AxiosRequestConfig) => {
-		return this.createModelEA.run(config, data);
-	};
-
 	public getJob = async (uuid: string, config?: AxiosRequestConfig) => {
 		return this.getJobEA.run(config, uuid);
+	};
+
+	public createModel = async (data: object, config?: AxiosRequestConfig) => {
+		return this.createModelEA.run(config, data);
 	};
 
 	public getModels = async (config?: AxiosRequestConfig) => {
@@ -88,6 +111,26 @@ class EngineActionHandler {
 
 	public getModel = async (uuid: string, config?: AxiosRequestConfig) => {
 		return this.getModelEA.run(config, uuid);
+	};
+
+	public createDataset = async (data: object, config?: AxiosRequestConfig) => {
+		return this.createDatasetEA.run(config, data);
+	};
+
+	public getDatasets = async (config?: AxiosRequestConfig) => {
+		return this.getDatasetsEA.run(config);
+	};
+
+	public getDataset = async (uuid: string, config?: AxiosRequestConfig) => {
+		return this.getDatasetEA.run(config, uuid);
+	};
+
+	public getDatasetByName = async (name: string, config?: AxiosRequestConfig) => {
+		return this.getDatasetByNameEA.run(config, name);
+	};
+
+	public getFirstImageOfDataset = async (uuid: string, config?: AxiosRequestConfig) => {
+		return this.getFirstImageOfDatasetEA.run(config, uuid);
 	};
 }
 
