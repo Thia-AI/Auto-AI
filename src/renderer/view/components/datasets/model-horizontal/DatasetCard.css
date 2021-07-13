@@ -1,4 +1,4 @@
-.edit-tooltip {
+.tooltip {
 	font-size: 12px;
 	transition: all 200ms;
 	border-radius: 5px !important;
@@ -6,4 +6,9 @@
 	padding-bottom: 3px !important;
 	padding-left: 10px !important;
 	padding-right: 10px !important;
+}
+
+.red-tooltip {
+	color: whitesmoke !important;
+	background-color: #f55858 !important;
 }

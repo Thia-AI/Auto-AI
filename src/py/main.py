@@ -14,6 +14,7 @@ environment.init_environment_pre_gpu()
 from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from model_config.jobs.model_config_jobs import ModelCreationJob
 from dataset.jobs.create_dataset_job import CreateDatasetJob
+from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
@@ -240,7 +241,7 @@ def get_dataset_by_name_route(name: str):
 
 
 @app.route('/dataset/first-image/<string:uuid>', methods=['GET'])
-def get_dataset_first_image(uuid: str):
+def get_dataset_first_image_route(uuid: str):
     log(f"ACCEPTED [{request.method}] /dataset/first-image/{uuid}")
     if len(uuid) != 32:
         return {'Error': "ID of dataset is of incorrect length"}, 400
@@ -259,6 +260,18 @@ def get_dataset_first_image(uuid: str):
             encoded = base64.b64encode(image.read()).decode('utf-8')
             base64_output = 'data:image/jpg;base64,{}'.format(encoded)
             return {'image': base64_output}, 200
+
+
+@app.route('/dataset/<string:uuid>', methods=['DELETE'])
+def delete_dataset_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] /dataset/first-image/{uuid}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    ids = JobCreator().create(DeleteDatasetJob(uuid)).queue()
+    return {'ids': ids}, 202
 
 
 if __name__ == '__main__':

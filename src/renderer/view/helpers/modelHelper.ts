@@ -5,7 +5,7 @@ import {
 	OBJECT_TRACKING,
 } from './constants/modelConstants';
 
-export const getVerboseModelType = (modelType: string) => {
+export const getVerboseModelType = (modelType: string | undefined) => {
 	switch (modelType) {
 		case IMAGE_CLASSIFICATION[0]:
 			return IMAGE_CLASSIFICATION[1];

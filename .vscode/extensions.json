@@ -4,7 +4,6 @@
 		"dsznajder.es7-react-js-snippets",
 		"doi.fileheadercomment",
 		"knisterpeter.vscode-github",
-		"esbenp.prettier-vscode",
-		"ethansk.restore-terminals"
+		"esbenp.prettier-vscode"
 	]
 }

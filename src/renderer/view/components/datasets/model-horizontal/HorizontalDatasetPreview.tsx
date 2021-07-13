@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
 	Box,
 	Text,
@@ -16,49 +16,43 @@ import { connect } from 'react-redux';
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { CreateDataset } from './CreateDataset';
 import { DatasetCard, FillerDatasetCard } from './DatasetCard';
-import { Dataset } from '_view_helpers/constants/engineDBTypes';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { isFirstLetterVowel } from '_/renderer/view/helpers/textHelper';
 import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetTrainActions';
 import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
+import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
+import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActionts';
+import { IAppState } from '_/renderer/state/reducers';
+import { IDatasetListReducer } from '_/renderer/state/dataset-list/model/reducerTypes';
+
 interface Props {
 	modelType: string;
 	resetSelectedDatasetAction: () => IResetSelectedDatasetAction;
+	refreshDataset: () => void;
+	datasetList: IDatasetListReducer;
+	datasetLoading: boolean;
 }
 const HorizontalDatasetPreviewC = React.memo((props: Props) => {
-	const [datasets, setDatasets] = useState<Dataset[]>([]);
-	const [datasetRetrieved, setDatasetRetrieved] = useState(false);
-
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const verboseModelType = getVerboseModelType(props.modelType);
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
-
 	useEffect(() => {
-		const fetchDataset = async () => {
-			const [error, resData] = await EngineActionHandler.getInstance().getDatasets();
-			if (!error) {
-				setDatasetRetrieved(true);
-				setDatasets(resData['datasets']);
-			}
-		};
-		props.resetSelectedDatasetAction();
-		fetchDataset();
+		props.refreshDataset();
 	}, []);
 
 	const renderCards = () => {
-		if (!datasetRetrieved) {
+		if (props.datasetLoading) {
 			return (
 				<Center w='full' h='full'>
 					<Spinner size='xl' color='gray.200' />
 				</Center>
 			);
 		}
-		if (datasets.length < 1) {
+		if (props.datasetList.value.length < 1) {
 			return <FillerDatasetCard />;
 		}
-		return datasets.map((dataset, i) => {
+		return props.datasetList.value.map((dataset, i) => {
 			return <DatasetCard dataset={dataset} key={i} />;
 		});
 	};
@@ -75,23 +69,21 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 				rounded='lg'
 				bg={mode('white', 'gray.700')}
 				shadow='base'>
-				<Box mb='8' w='full'>
-					<HStack>
-						<Box>
-							<Text as='h3' fontWeight='bold' fontSize='lg'>
-								Datasets
-							</Text>
-							<Text color='gray.500' fontSize='sm'>
-								Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'}{' '}
-								{verboseModelType} dataset to train on
-							</Text>
-						</Box>
-						<Spacer />
-						<Button onClick={onOpen} variant='ghost' colorScheme='green'>
-							Add
-						</Button>
-					</HStack>
-				</Box>
+				<HStack mb='8' w='full'>
+					<Box>
+						<Text as='h3' fontWeight='bold' fontSize='lg'>
+							Datasets
+						</Text>
+						<Text color='gray.500' fontSize='sm'>
+							Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'}{' '}
+							{verboseModelType} dataset to train on
+						</Text>
+					</Box>
+					<Spacer />
+					<Button onClick={onOpen} variant='ghost' colorScheme='green'>
+						Add
+					</Button>
+				</HStack>
 				<HStack
 					pl='2'
 					w='full'
@@ -105,20 +97,24 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 							bg: 'gray.600',
 						},
 						'&::-webkit-scrollbar-thumb': {
-							bg: 'gray.800',
-						},
-						'&::-webkit-scrollbar-thumb:hover': {
-							bg: 'gray.850',
+							bg: 'gray.900',
 						},
 					}}>
 					{renderCards()}
+					{/* Extra div at the end so that there's some artificial padding */}
+					<Box minH='1px' visibility='hidden' minW='1px' />
 				</HStack>
 			</Box>
 			<CreateDataset onClose={onClose} isOpen={isOpen} />
+			<DeleteDataset />
 		</>
 	);
 });
-
-export const HorizontalDatasetPreview = connect(null, {
+const mapStateToProps = (state: IAppState) => ({
+	datasetList: state.datasetList,
+	datasetLoading: state.datasetListLoading.value,
+});
+export const HorizontalDatasetPreview = connect(mapStateToProps, {
 	resetSelectedDatasetAction,
+	refreshDataset: refreshDatasetListAction,
 })(HorizontalDatasetPreviewC);

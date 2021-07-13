@@ -12,6 +12,12 @@ def create_dataset(uuid: str, name: str, type: str, date_created: str, date_last
     DBManager.get_instance().execute(cmd)
 
 
+def delete_dataset(uuid: str):
+    cmd = DBCommand(name=f"Delete Dataset {uuid}",
+                    command=f"DELETE FROM datasets WHERE id = '{uuid}'")
+    DBManager.get_instance().execute(cmd)
+
+
 def get_datasets():
     cmd = DBCommand(name="Get Datasets", command='''SELECT * FROM datasets ORDER BY date_last_accessed DESC ''')
     return DBManager.get_instance().execute(cmd)

@@ -24,7 +24,6 @@ const Model = React.memo(() => {
 	}, []);
 	return (
 		<VStack
-			py='2'
 			px='6'
 			w='full'
 			spacing='4'
