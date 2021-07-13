@@ -19,11 +19,13 @@ import { push, Push } from 'connected-react-router';
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { IMAGE_CLASSIFICATION } from '_view_helpers/constants/modelConstants';
 import { waitTillEngineJobComplete } from '_/renderer/view/helpers/engineJobHelper';
+import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActionts';
 
 interface Props {
 	onClose: () => void;
 	isOpen: boolean;
 	push: Push;
+	refreshDataset: () => void;
 }
 
 const CreateDatasetC = React.memo((props: Props) => {
@@ -61,9 +63,7 @@ const CreateDatasetC = React.memo((props: Props) => {
 
 		// Wait until the creation job has completed
 		await waitTillEngineJobComplete(createDatasetRes['ids'][0]);
-		const datasetData = await EngineActionHandler.getInstance().getDatasetByName(
-			datasetName,
-		)[1];
+
 		// Complete! Send a notification to user
 		setDatasetCreating(false);
 		toast({
@@ -74,7 +74,7 @@ const CreateDatasetC = React.memo((props: Props) => {
 			isClosable: false,
 		});
 		props.onClose();
-		props.push(`/dataset/${datasetData['id']}`);
+		props.refreshDataset();
 	};
 	return (
 		<Modal
@@ -123,4 +123,5 @@ const CreateDatasetC = React.memo((props: Props) => {
 
 export const CreateDataset = connect(null, {
 	push,
+	refreshDataset: refreshDatasetListAction,
 })(CreateDatasetC);

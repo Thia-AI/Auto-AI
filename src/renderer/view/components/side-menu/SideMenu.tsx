@@ -74,10 +74,7 @@ const SideMenuC = React.memo((props: Props) => {
 									bg: 'gray.600',
 								},
 								'&::-webkit-scrollbar-thumb': {
-									bg: 'gray.800',
-								},
-								'&::-webkit-scrollbar-thumb:hover': {
-									bg: 'gray.850',
+									bg: 'gray.900',
 								},
 							}}>
 							<Stack spacing='1'>

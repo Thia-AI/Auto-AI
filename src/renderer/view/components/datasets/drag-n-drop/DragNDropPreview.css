@@ -1,0 +1,12 @@
+.drag-drop-preview {
+	overflow-y: hidden !important;
+}
+.drag-drop-preview::-webkit-scrollbar {
+	height: 8px;
+	width: 8px;
+	background: #4a5568;
+}
+
+.drag-drop-preview::-webkit-scrollbar-thumb {
+	background: #171923;
+}

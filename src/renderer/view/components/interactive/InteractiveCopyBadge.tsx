@@ -5,7 +5,7 @@ import { Badge, Tooltip, Text, Placement } from '@chakra-ui/react';
 import './InteractiveCopyBadge.css';
 
 interface Props {
-	badgeID: string;
+	badgeID: string | undefined;
 	lengthToClip?: number;
 	tooltipLabel?: string;
 	tooltipPlacement?: Placement;
@@ -15,6 +15,8 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 	const badgeIDRef = useRef<HTMLDivElement>(null);
 
 	const renderBadgeID = () => {
+		if (!props.badgeID) return '';
+
 		if (props.lengthToClip) {
 			return props.badgeID.substring(0, props.lengthToClip);
 		} else {
@@ -41,7 +43,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 					// Notify via tooltip of copy
 					// Add bouncing animation and copy model ID to clipboard
 					badgeIDRef.current?.classList.add('copy-bounce');
-					navigator.clipboard.writeText(props.badgeID);
+					navigator.clipboard.writeText(props.badgeID ? props.badgeID : '');
 					// remove bouncing animation after it's finished
 					setTimeout(() => {
 						if (badgeIDRef.current) {

@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { DeleteDatasetEngineAction } from './actions/delete/deleteDataset';
 import { GetDatasetEngineAction } from './actions/get/getDataset';
 import { GetDatasetByNameEngineAction } from './actions/get/getDatasetByName';
 import { GetDatasetsEngineAction } from './actions/get/getDatasets';
@@ -31,6 +32,7 @@ class EngineActionHandler {
 	private getDatasetEA!: IEngineAction;
 	private getDatasetByNameEA!: IEngineAction;
 	private getFirstImageOfDatasetEA!: IEngineAction;
+	private deleteDatasetEA!: IEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -86,6 +88,7 @@ class EngineActionHandler {
 		this.getDatasetEA = new GetDatasetEngineAction(this._engineRequest);
 		this.getDatasetByNameEA = new GetDatasetByNameEngineAction(this._engineRequest);
 		this.getFirstImageOfDatasetEA = new GetFirstImageOfDatasetEngineAction(this._engineRequest);
+		this.deleteDatasetEA = new DeleteDatasetEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -131,6 +134,10 @@ class EngineActionHandler {
 
 	public getFirstImageOfDataset = async (uuid: string, config?: AxiosRequestConfig) => {
 		return this.getFirstImageOfDatasetEA.run(config, uuid);
+	};
+
+	public deleteDataset = async (uuid: string, config?: AxiosRequestConfig) => {
+		return this.deleteDatasetEA.run(config, uuid);
 	};
 }
 

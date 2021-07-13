@@ -79,12 +79,9 @@ const ModelsC = (props: Props) => {
 			sx={{
 				'&::-webkit-scrollbar': {
 					w: '8px',
-					bg: 'gray.700',
+					bg: 'gray.600',
 				},
 				'&::-webkit-scrollbar-thumb': {
-					bg: 'gray.900',
-				},
-				'&::-webkit-scrollbar-thumb:hover': {
 					bg: 'gray.900',
 				},
 			}}>
