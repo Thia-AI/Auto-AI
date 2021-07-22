@@ -1,6 +1,7 @@
 const lodash = require('lodash');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 const path = require('path');
 
 function srcPaths(src) {
@@ -33,6 +34,11 @@ const commonConfig = {
 	},
 	module: {
 		rules: [
+			{
+				test: /\.jsx?$/,
+				exclude: /node_modules/,
+				loader: 'babel-loader',
+			},
 			{
 				test: /\.(ts|tsx)$/,
 				exclude: /node_modules/,
@@ -88,7 +94,7 @@ mainConfig.plugins = [
 
 					jsonContent.main = './main.bundle.js';
 					jsonContent.scripts = { start: 'electron ./main.bundle.js' };
-					jsonContent.postinstall = 'electron-builder install-app-deps';
+					jsonContent.postinstall = 'npm install --legacy-peer-deps';
 
 					return JSON.stringify(jsonContent, undefined, 2);
 				},
@@ -107,4 +113,9 @@ rendererConfig.plugins = [
 	}),
 ];
 
-module.exports = [mainConfig, rendererConfig];
+const jobMonitorWorkerConfig = lodash.cloneDeep(commonConfig);
+jobMonitorWorkerConfig.entry = './src/renderer/workers/job-monitor/worker.ts';
+jobMonitorWorkerConfig.target = 'webworker';
+jobMonitorWorkerConfig.output.filename = 'job-monitor-worker.bundle.js';
+
+module.exports = [mainConfig, rendererConfig, jobMonitorWorkerConfig];

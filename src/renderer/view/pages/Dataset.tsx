@@ -86,7 +86,7 @@ const Dataset = React.memo(() => {
 						Select images to transfer to dataset
 					</Text>
 				</Box>
-				<DragNDrop dataset={dataset} />
+				<DragNDrop />
 			</Box>
 			<Spacer />
 		</VStack>

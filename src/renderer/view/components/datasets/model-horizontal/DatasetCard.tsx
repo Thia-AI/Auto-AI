@@ -61,7 +61,7 @@ const DatasetCardC = React.memo((props: Props) => {
 		if (!imageRetrived) {
 			return (
 				<Center h='200px' w='full' borderTopRadius='lg'>
-					<Spinner color='gray.200' size='lg' />
+					<Spinner color='gray.600' size='lg' />
 				</Center>
 			);
 		}

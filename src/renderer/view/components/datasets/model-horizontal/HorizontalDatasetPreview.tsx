@@ -20,7 +20,7 @@ import { isFirstLetterVowel } from '_/renderer/view/helpers/textHelper';
 import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetTrainActions';
 import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
-import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActionts';
+import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IAppState } from '_/renderer/state/reducers';
 import { IDatasetListReducer } from '_/renderer/state/dataset-list/model/reducerTypes';
 
@@ -45,7 +45,7 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 		if (props.datasetLoading) {
 			return (
 				<Center w='full' h='full'>
-					<Spinner size='xl' color='gray.200' />
+					<Spinner size='xl' color='gray.600' />
 				</Center>
 			);
 		}

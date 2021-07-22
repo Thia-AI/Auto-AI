@@ -30,6 +30,8 @@ import {
 	IDatasetListReducer,
 	IDatasetPreviewFilesReducer,
 } from './dataset-list/model/reducerTypes';
+import { notificationsReducer } from './notifications/NotificationReducers';
+import { INotificationsReducer } from './notifications/model/reducerTypes';
 
 // define the root reducer
 const createRootReducer = (history) =>
@@ -46,6 +48,7 @@ const createRootReducer = (history) =>
 		datasetList: datasetListReducer,
 		datasetListLoading: datasetListLoadingReducer,
 		datasetPreviewFiles: datasetPreviewFilesReducer,
+		notifications: notificationsReducer,
 	});
 
 // define the state of the App
@@ -62,6 +65,7 @@ export interface IAppState {
 	datasetList: IDatasetListReducer;
 	datasetListLoading: IDatasetListLoadingReducer;
 	datasetPreviewFiles: IDatasetPreviewFilesReducer;
+	notifications: INotificationsReducer;
 }
 
 export default createRootReducer;

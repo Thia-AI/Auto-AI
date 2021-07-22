@@ -1,7 +1,7 @@
 import { Box, Center, Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { FixedSizeGrid } from 'react-window';
-import { AutoSizer } from 'react-virtualized';
+import AutoSizer from './AutoSizer.jsx';
 import { DragNDropPreviewCell } from './PreviewCell';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
