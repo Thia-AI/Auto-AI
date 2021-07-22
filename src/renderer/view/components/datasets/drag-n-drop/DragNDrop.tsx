@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from 'react';
 
-import { Center, HStack, Text, Button, VStack } from '@chakra-ui/react';
+import { Center, HStack, Text, Button, VStack, useToast } from '@chakra-ui/react';
 import { remote } from 'electron';
 import { promises } from 'fs';
 import { extname, sep } from 'path';
 
-import { Dataset } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { DragNDropPreview } from './DragNDropPreview';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
-import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActionts';
+import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
+import { JobMonitorHandler } from '_/renderer/view/worker-handlers/JobMonitorHandler';
+import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 
 interface Props {
-	dataset?: Dataset;
 	files: string[];
 	updateFiles: (files: string[]) => IUpdateDatasetPreviewFilesAction;
+	pathname: string;
 }
 
-const DragNDropC = React.memo((props: Props) => {
+const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
+	const toast = useToast();
+
 	const dialog = remote.dialog;
 
 	const [fileDirectory, setFileDirectory] = useState('');
+	const [imagesUploading, setImagesUploading] = useState(false);
 
 	useEffect(() => {
 		return () => {
-			props.updateFiles([]);
+			updateFiles([]);
 		};
 	}, []);
 
@@ -43,7 +47,7 @@ const DragNDropC = React.memo((props: Props) => {
 		});
 		if (files.canceled) return;
 		setFileDirectory('');
-		props.updateFiles(files.filePaths);
+		updateFiles(files.filePaths);
 	};
 
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -60,9 +64,54 @@ const DragNDropC = React.memo((props: Props) => {
 				return extension === '.jpg' || extension === '.jpeg' || extension === '.png';
 			});
 			setFileDirectory(folder.filePaths[0] + sep);
-			props.updateFiles(filteredFiles);
+			updateFiles(filteredFiles);
 		} catch (err) {
 			console.error(err);
+		}
+	};
+
+	const uploadFiles = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (files.length !== 0) {
+			setImagesUploading(true);
+			// Get dataset ID from the path (recall that dataset page has route of /dataset/<dataset-id>)
+			const datasetID = pathname.split('/').pop() ?? '';
+			const [uploadImageErr, uploadImageRes] =
+				await EngineActionHandler.getInstance().uploadImagesToDataset(datasetID, {
+					files,
+				});
+			if (uploadImageErr) {
+				toast({
+					title: 'Error',
+					description: 'Failed to upload images to dataset',
+					status: 'error',
+					duration: 1500,
+					isClosable: true,
+				});
+				setImagesUploading(false);
+				return;
+			}
+
+			JobMonitorHandler.getInstance().addJobIDToMonitor(uploadImageRes['ids'][0]);
+			setImagesUploading(false);
+			toast({
+				title: 'Success',
+				description: 'Started Image Upload Job',
+				status: 'info',
+				duration: 1500,
+				isClosable: false,
+			});
+			updateFiles([]);
+		}
+	};
+
+	const clearFiles = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (files.length !== 0) {
+			updateFiles([]);
 		}
 	};
 
@@ -108,18 +157,15 @@ const DragNDropC = React.memo((props: Props) => {
 					<Text fontSize='md'>Select folder containing images (faster)</Text>
 				</Center>
 				<VStack ml='2'>
-					<Button w='full' variant='ghost' colorScheme='green'>
+					<Button
+						isLoading={imagesUploading}
+						w='full'
+						variant='ghost'
+						colorScheme='green'
+						onClick={uploadFiles}>
 						Upload
 					</Button>
-					<Button
-						w='full'
-						variant='outline'
-						colorScheme='blue'
-						onClick={() => {
-							if (props.files.length !== 0) {
-								props.updateFiles([]);
-							}
-						}}>
+					<Button w='full' variant='outline' colorScheme='blue' onClick={clearFiles}>
 						Clear
 					</Button>
 				</VStack>
@@ -132,6 +178,7 @@ const DragNDropC = React.memo((props: Props) => {
 
 const mapStateToProps = (state: IAppState) => ({
 	files: state.datasetPreviewFiles.value,
+	pathname: state.router.location.pathname,
 });
 export const DragNDrop = connect(mapStateToProps, {
 	updateFiles: updateDatasetPreviewFilesAction,

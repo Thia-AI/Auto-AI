@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { IoTrash } from 'react-icons/io5';
 
 import { IAppState } from '_/renderer/state/reducers';
-import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActionts';
+import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
 
 interface Data {
@@ -74,7 +74,7 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const renderLoading = () => {
 		return (
 			<Center w='full' h='full' boxShadow='lg' bg='gray.700' borderRadius='md'>
-				<Spinner />
+				<Spinner color='gray.600' />
 			</Center>
 		);
 	};

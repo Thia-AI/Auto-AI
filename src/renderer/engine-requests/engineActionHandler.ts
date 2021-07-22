@@ -10,7 +10,7 @@ import { GetModelEngineAction } from './actions/get/getModel';
 import { GetModelsEngineAction } from './actions/get/getModels';
 import { CreateDatasetEngineAction } from './actions/post/createDataset';
 import { CreateModelEngineAction } from './actions/post/createModel';
-import { IEngineAction } from './base/iEngineAction';
+import { UploadImageToDatasetEngineAction } from './actions/post/uploadImageToDataset';
 
 /**
  * Class that manages all EngineActions
@@ -19,20 +19,21 @@ class EngineActionHandler {
 	private static instance: EngineActionHandler;
 
 	// Engine status
-	private getDevicesEA!: IEngineAction;
+	private getDevicesEA!: GetDevicesEngineAction;
 	// Jobs
-	private getJobEA!: IEngineAction;
+	private getJobEA!: GetJobEngineAction;
 	// Models
-	private createModelEA!: IEngineAction;
-	private getModelsEA!: IEngineAction;
-	private getModelEA!: IEngineAction;
+	private createModelEA!: CreateModelEngineAction;
+	private getModelsEA!: GetModelsEngineAction;
+	private getModelEA!: GetModelEngineAction;
 	// Datasets
-	private createDatasetEA!: IEngineAction;
-	private getDatasetsEA!: IEngineAction;
-	private getDatasetEA!: IEngineAction;
-	private getDatasetByNameEA!: IEngineAction;
-	private getFirstImageOfDatasetEA!: IEngineAction;
-	private deleteDatasetEA!: IEngineAction;
+	private createDatasetEA!: CreateDatasetEngineAction;
+	private getDatasetsEA!: GetDatasetsEngineAction;
+	private getDatasetEA!: GetDatasetEngineAction;
+	private getDatasetByNameEA!: GetDatasetByNameEngineAction;
+	private getFirstImageOfDatasetEA!: GetFirstImageOfDatasetEngineAction;
+	private deleteDatasetEA!: DeleteDatasetEngineAction;
+	private uploadImagetoDatasetEA!: UploadImageToDatasetEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -89,6 +90,7 @@ class EngineActionHandler {
 		this.getDatasetByNameEA = new GetDatasetByNameEngineAction(this._engineRequest);
 		this.getFirstImageOfDatasetEA = new GetFirstImageOfDatasetEngineAction(this._engineRequest);
 		this.deleteDatasetEA = new DeleteDatasetEngineAction(this._engineRequest);
+		this.uploadImagetoDatasetEA = new UploadImageToDatasetEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -138,6 +140,14 @@ class EngineActionHandler {
 
 	public deleteDataset = async (uuid: string, config?: AxiosRequestConfig) => {
 		return this.deleteDatasetEA.run(config, uuid);
+	};
+
+	public uploadImagesToDataset = async (
+		uuid: string,
+		jsonData: object,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.uploadImagetoDatasetEA.run(config, [uuid, jsonData]);
 	};
 }
 

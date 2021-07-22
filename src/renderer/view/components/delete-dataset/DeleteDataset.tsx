@@ -20,7 +20,7 @@ import { Dataset, nullDataset } from '../../helpers/constants/engineDBTypes';
 import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-dataset/model/actionTypes';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { waitTillEngineJobComplete } from '../../helpers/engineJobHelper';
-import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActionts';
+import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 
 interface Props {
 	deleteDatasetData: IOpenCloseDeleteDatasetReducer;

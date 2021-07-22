@@ -10,6 +10,7 @@ import { history } from '_state/store';
 
 import Header from './components/header/Header';
 import { SideMenu } from './components/side-menu/SideMenu';
+import { NotificationsHandler } from './components/notifications/NotificationsHandler';
 
 /**
  * App component
@@ -52,11 +53,13 @@ const AppC = React.memo((props: Props) => {
 	return (
 		<>
 			<Header />
+			<SideMenu />
+			<NotificationsHandler />
 			<Router history={history}>
 				<Suspense
 					fallback={
-						<Center color='gray.600' w='full' h='full' marginTop='var(--header-height)'>
-							<Spinner size='lg' />
+						<Center w='full' h='full' marginTop='var(--header-height)'>
+							<Spinner color='gray.600' size='lg' />
 						</Center>
 					}>
 					<Switch>
@@ -76,7 +79,6 @@ const AppC = React.memo((props: Props) => {
 					</Switch>
 				</Suspense>
 			</Router>
-			<SideMenu />
 		</>
 	);
 });

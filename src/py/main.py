@@ -36,7 +36,7 @@ environment.init_environment_post_gpu()
 
 @app.route('/devices', methods=['GET'])
 def get_devices_route():
-    log(f"ACCEPTED [{request.method}] /devices")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     out = []
     for device in tf.config.list_physical_devices():
         out.append({
@@ -46,11 +46,20 @@ def get_devices_route():
     return jsonify(out)
 
 
-@app.route('/train', methods=['POST'])
-def train_route():
-    log(f"ACCEPTED [{request.method}] /train")
+@app.route('/dataset/<string:uuid>/input/upload', methods=['POST'])
+def train_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
     # Check to see if files key exists
+    req_data_format = {
+        'files': req_constants.REQUIRED + req_constants.ARRAY_NON_EMPTY,
+    }
+    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    rows = get_dataset(uuid)
+    if rows is None:
+        return {'Error': 'ID of dataset does not exist'}, 400
     try:
         files = req_data["files"]
     except (TypeError, KeyError) as e:
@@ -58,13 +67,13 @@ def train_route():
     if len(files) == 0:
         return {'Error': "Didn't receive any input, try again with input"}, 400
 
-    ids = JobCreator().create(BulkFileTransferJob(files)).queue()
+    ids = JobCreator().create(BulkFileTransferJob((uuid, files))).queue()
     return {'ids': ids}, 202
 
 
 @app.route('/jobs', methods=['GET'])
 def get_jobs_route():
-    log(f"ACCEPTED [{request.method}] /jobs")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     rows = get_jobs()
     jobs = []
     for row in rows:
@@ -86,7 +95,7 @@ def get_jobs_route():
 
 @app.route('/job/<string:uuid>', methods=['GET'])
 def get_job_route(uuid: str):
-    log(f"ACCEPTED [{request.method}] /job/{uuid}")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
@@ -108,12 +117,12 @@ def get_job_route(uuid: str):
 
 @app.route('/model/create', methods=['POST'])
 def create_model_route():
-    log(f"ACCEPTED [{request.method}] /model/create")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
     req_data_format = {
-        'model_name': req_constants.REQUIRED + req_constants.NON_EMPTY,
-        'model_type': req_constants.REQUIRED + req_constants.NON_EMPTY,
-        'model_type_extra': req_constants.REQUIRED + req_constants.NON_EMPTY
+        'model_name': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY,
+        'model_type': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY,
+        'model_type_extra': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY
     }
     error_obj = route_helpers.validate_req_json(req_data, req_data_format)
     if error_obj is not None:
@@ -127,7 +136,7 @@ def create_model_route():
 
 @app.route('/models', methods=['GET'])
 def get_models_route():
-    log(f"ACCEPTED [{request.method}] /models")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     rows = get_models()
     models = []
     for row in rows:
@@ -147,7 +156,7 @@ def get_models_route():
 
 @app.route('/model/<string:uuid>', methods=['GET'])
 def get_model_route(uuid: str):
-    log(f"ACCEPTED [{request.method}] /model/{uuid}")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(uuid)
@@ -167,11 +176,11 @@ def get_model_route(uuid: str):
 
 @app.route('/dataset/create', methods=['POST'])
 def create_dataset_route():
-    log(f"ACCEPTED [{request.method}] /dataset/create")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
     req_data_format = {
-        'name': req_constants.REQUIRED + req_constants.NON_EMPTY,
-        'type': req_constants.REQUIRED + req_constants.NON_EMPTY
+        'name': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY,
+        'type': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY
     }
     error_obj = route_helpers.validate_req_json(req_data, req_data_format)
     if error_obj is not None:
@@ -185,7 +194,7 @@ def create_dataset_route():
 
 @app.route('/datasets', methods=['GET'])
 def get_datasets_route():
-    log(f"ACCEPTED [{request.method}] /datasets")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     rows = get_datasets()
     datasets = []
     for row in rows:
@@ -203,7 +212,7 @@ def get_datasets_route():
 
 @app.route('/dataset/<string:uuid>', methods=['GET'])
 def get_dataset_route(uuid: str):
-    log(f"ACCEPTED [{request.method}] /dataset/{uuid}")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of dataset is of incorrect length"}, 400
     rows = get_dataset(uuid)
@@ -222,7 +231,7 @@ def get_dataset_route(uuid: str):
 
 @app.route('/dataset/by-name/<string:name>', methods=['GET'])
 def get_dataset_by_name_route(name: str):
-    log(f"ACCEPTED [{request.method}] /dataset/by-name/{name}")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     if name is None or len(name) == 0:
         return {'Error': "Please enter an ID"}, 400
 
@@ -242,7 +251,7 @@ def get_dataset_by_name_route(name: str):
 
 @app.route('/dataset/first-image/<string:uuid>', methods=['GET'])
 def get_dataset_first_image_route(uuid: str):
-    log(f"ACCEPTED [{request.method}] /dataset/first-image/{uuid}")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of dataset is of incorrect length"}, 400
     rows = get_dataset(uuid)
@@ -264,7 +273,7 @@ def get_dataset_first_image_route(uuid: str):
 
 @app.route('/dataset/<string:uuid>', methods=['DELETE'])
 def delete_dataset_route(uuid: str):
-    log(f"ACCEPTED [{request.method}] /dataset/first-image/{uuid}")
+    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of dataset is of incorrect length"}, 400
     rows = get_dataset(uuid)

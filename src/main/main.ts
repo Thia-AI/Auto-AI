@@ -47,6 +47,7 @@ function createWindow(): void {
 			contextIsolation: false,
 			backgroundThrottling: false,
 			enableRemoteModule: true,
+			nodeIntegrationInWorker: true,
 		},
 	});
 
