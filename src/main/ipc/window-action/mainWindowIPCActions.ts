@@ -1,5 +1,8 @@
 import { ipcMain, BrowserWindow } from 'electron';
 
+/**
+ * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}
+ */
 class MainWindowIPCActions {
 	protected window: BrowserWindow;
 
@@ -13,28 +16,30 @@ class MainWindowIPCActions {
 
 	public initIPCActions = () => {
 		ipcMain.handle('window:close', async () => {
-			// console.log('Closed');
 			this.window.close();
 		});
-
 		ipcMain.handle('window:unmaximize', async () => {
-			// console.log('Unmaximized');
 			this.window.unmaximize();
 		});
 
 		ipcMain.handle('window:maximize', async () => {
-			// console.log('Maximized');
 			this.window.maximize();
 		});
 
 		ipcMain.handle('window:minimize', async () => {
-			// console.log('Minimized');
 			this.window.minimize();
+		});
+
+		ipcMain.handle('window:focus', async () => {
+			this.window.show();
 		});
 
 		this.initWindowIPCActions();
 	};
 
+	/**
+	 * Send back IPC message to renderer maximizes/unmaximizes the BW
+	 */
 	private initWindowIPCActions = () => {
 		this.window.on('maximize', () => {
 			this.window.webContents.send('window:maximized');

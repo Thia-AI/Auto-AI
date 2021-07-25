@@ -29,10 +29,7 @@ interface Props {
 	getDevReloadEngineStatus: () => ThunkAction<void, {}, undefined, IEngineDevStatusAction>;
 }
 
-/**
- * Since we use a frameless **Electron** app, we have to implement a custom window top bar
- */
-class Header extends PureComponent<Props> {
+class HeaderC extends PureComponent<Props> {
 	constructor(props) {
 		super(props);
 		this.initToggleMaxRestoreButtons();
@@ -209,8 +206,11 @@ const mapStateToProps = (state: IAppState) => {
 	};
 };
 
-export default connect(mapStateToProps, {
+/**
+ * Since we use a frameless **Electron** app, we have to implement a custom window top bar
+ */
+export const Header = connect(mapStateToProps, {
 	changeHeaderMaximized,
 	listenForEngineStart: notifyEngineStarted,
 	getDevReloadEngineStatus: getDevEngineStatus,
-})(Header);
+})(HeaderC);

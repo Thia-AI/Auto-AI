@@ -11,7 +11,7 @@ import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
 import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
-import { EngineIPCActionHandler } from './ipc/engine-ipc/engineIPCActionHandler';
+import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 
 let mainWindow: BrowserWindow | null;
@@ -21,7 +21,10 @@ let engineIPCActionHandler: EngineIPCActionHandler;
 
 const isDev = require('electron-is-dev');
 
-initRendererDev(isDev);
+export const APP_NAME = 'Thia';
+
+preRendererAppInit();
+
 /**
  * Creates the main window for **renderer**
  */
@@ -88,7 +91,11 @@ function createWindow(): void {
 		mainWindow = null;
 	});
 }
-
+function preRendererAppInit() {
+	if (process.platform === 'win32') {
+		app.setAppUserModelId(APP_NAME);
+	}
+}
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is
  * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part)
@@ -145,6 +152,7 @@ if (!isSingleInstance) {
 	// initialization and is ready to create browser windows.
 	// Some APIs can only be used after this event occurs.
 	app.on('ready', async () => {
+		initRendererDev(isDev);
 		createWindow();
 	});
 }

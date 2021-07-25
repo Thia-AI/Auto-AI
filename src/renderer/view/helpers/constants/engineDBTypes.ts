@@ -18,3 +18,17 @@ export const nullDataset: Dataset = {
 	date_last_accessed: '',
 	misc_data: '',
 };
+/**
+ * Engine's DB job entry
+ */
+export interface Job {
+	id: string;
+	job_name: string;
+	has_started: boolean;
+	has_finished: boolean;
+	status: string;
+	progress: number;
+	progress_max: number;
+	date_started: string;
+	date_finished: string;
+}

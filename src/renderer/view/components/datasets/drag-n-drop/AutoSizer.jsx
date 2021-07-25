@@ -58,7 +58,7 @@ function createDetectElementResize(nonce, hostWindow) {
 			);
 		};
 
-		var scrollListener = (e) => {
+		var scrollListener = function (e) {
 			// Don't measure (which forces) reflow for scrolls that happen inside of children!
 			if (
 				e.target.className &&
