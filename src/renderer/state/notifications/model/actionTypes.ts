@@ -1,3 +1,4 @@
+import { Job } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { NOTIFICATION_DISMISS, NOTIFICATION_SEND, NOTIFICATION_CLEAR } from '../../types';
 
 // When we want to send a notification
@@ -20,6 +21,6 @@ export interface INotifClearAction {
 // Form factor of what a notification contains
 export interface INotification {
 	id?: number;
-	name: string;
-	dismissAfter?: number;
+	job: Job;
+	dismissAfter: number;
 }

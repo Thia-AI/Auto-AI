@@ -8,7 +8,7 @@ import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
 import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
 import { history } from '_state/store';
 
-import Header from './components/header/Header';
+import { Header } from './components/header/Header';
 import { SideMenu } from './components/side-menu/SideMenu';
 import { NotificationsHandler } from './components/notifications/NotificationsHandler';
 
