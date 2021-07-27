@@ -4,7 +4,7 @@ import { NOTIFICATION_DISMISS, NOTIFICATION_SEND, NOTIFICATION_CLEAR } from '../
 // When we want to send a notification
 export interface INotifSendAction {
 	type: typeof NOTIFICATION_SEND;
-	payload: INotification;
+	payload: IJobNotification;
 }
 
 // When we want to dismiss a notification given it's id
@@ -19,7 +19,7 @@ export interface INotifClearAction {
 }
 
 // Form factor of what a notification contains
-export interface INotification {
+export interface IJobNotification {
 	id?: number;
 	job: Job;
 	dismissAfter: number;
