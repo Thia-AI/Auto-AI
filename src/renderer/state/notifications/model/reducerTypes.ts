@@ -1,6 +1,6 @@
-import { INotification } from './actionTypes';
+import { IJobNotification } from './actionTypes';
 
 // State for list of notifications
 export interface INotificationsReducer {
-	value: INotification[];
+	value: IJobNotification[];
 }

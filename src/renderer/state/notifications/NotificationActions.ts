@@ -4,12 +4,12 @@ import {
 	INotifSendAction,
 	INotifDismissAction,
 	INotifClearAction,
-	INotification,
+	IJobNotification,
 } from './model/actionTypes';
 
 // When we want to send a notification
 export const notifSendAction = (
-	notification: INotification,
+	notification: IJobNotification,
 ): ThunkAction<void, {}, undefined, INotifSendAction> => {
 	if (!notification.id) {
 		notification.id = new Date().getTime();

@@ -32,3 +32,15 @@ export interface Job {
 	date_started: string;
 	date_finished: string;
 }
+
+export const nullJob: Job = {
+	id: '',
+	job_name: '',
+	has_started: false,
+	has_finished: false,
+	status: '',
+	progress: 0,
+	progress_max: 0,
+	date_started: '',
+	date_finished: '',
+};

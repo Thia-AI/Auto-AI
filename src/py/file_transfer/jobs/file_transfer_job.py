@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import time
 from overrides import overrides
+import fnmatch
 
 
 from job.base_job import BaseJob
@@ -16,7 +17,7 @@ from db.commands.dataset_commands import get_dataset
 
 class BulkFileTransferJob(BaseJob):
     def __init__(self, files: (int, List[str])):
-        super().__init__(files, job_name="Bulk File Transfer", initial_status="Starting Bulk File Transfer", progress_max=len(files))
+        super().__init__(files, job_name="Bulk File Transfer", initial_status="Starting Bulk File Transfer", progress_max=len(files[1]))
 
     @overrides
     def run(self):
@@ -27,6 +28,7 @@ class BulkFileTransferJob(BaseJob):
         (dataset_id, file_paths) = self.arg
         rows = get_dataset(dataset_id)
         dataset = {}
+
         for row in rows:
             dataset = {
                 'id': row['id'],
@@ -36,13 +38,15 @@ class BulkFileTransferJob(BaseJob):
                 'date_last_accessed': row['date_last_accessed'],
                 'misc_data': row['misc_data']
             }
-        # Make input directory if it doesn't already exist
         os.makedirs((config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME).absolute(), exist_ok=True)
+        num_files_in_input_dir = len(os.listdir((config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME).absolute()))
+        # Make input directory if it doesn't already exist
         for i, file in enumerate(file_paths):
             _, tail = os.path.split(file)
+            _, extension = os.path.splitext(file)
             if tf.io.gfile.exists(file):
                 try:
-                    shutil.copyfile(file, (config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME / tail).absolute())
+                    shutil.copyfile(file, (config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME / (str(i + num_files_in_input_dir) + extension)).absolute())
                     self.set_progress(i+1)
                     if time.time() - start_time >= amount_of_time_to_update_after:
                         update_job(self)
