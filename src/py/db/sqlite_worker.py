@@ -91,7 +91,7 @@ class Sqlite3Worker(threading.Thread):
                     values,
                     err,
                 )
-                log(f"Query returned error: {query}: {values}: {err}", log_it=self.log_worker)
+                log(f"Query returned error: {query}: {values}: {err}")
             finally:
                 # Wake up the thread waiting on the execution of the select
                 # query.
@@ -99,9 +99,14 @@ class Sqlite3Worker(threading.Thread):
                 self._select_events[token].set()
         else:
             try:
-                self._sqlite3_cursor.execute(query, values)
+                if isinstance(values, list) and len(values) >= 1:
+                    # We want to execute multiple at once
+                    self._sqlite3_cursor.executemany(query, values)
+                    log("Execute Many")
+                else:
+                    self._sqlite3_cursor.execute(query, values)
             except sqlite3.Error as err:
-                log(f"Query returned error: {query}: {values}: {err}", log_it=self.log_worker)
+                log(f"Query returned error: {query}: {values}: {err}")
 
     def close(self):
         """Closes the worker's thread
