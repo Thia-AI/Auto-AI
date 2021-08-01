@@ -39,6 +39,10 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 		};
 	}, []);
 
+	/**
+	 * Opens native OS dialog with multiple file selection (Images only)
+	 * @param e Button click event
+	 */
 	const selectMultipleFiles = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
 		const files = await dialog.showOpenDialog(remote.getCurrentWindow(), {
@@ -56,6 +60,10 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 		updateFiles(files.filePaths);
 	};
 
+	/**
+	 * Opens native OS dialog with folder selection
+	 * @param e Button click event
+	 */
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
 		const folder = await dialog.showOpenDialog(remote.getCurrentWindow(), {

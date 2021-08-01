@@ -101,8 +101,8 @@ class Sqlite3Worker(threading.Thread):
             try:
                 if isinstance(values, list) and len(values) >= 1:
                     # We want to execute multiple at once
+                    log("Executing Many", log_it=self.log_worker)
                     self._sqlite3_cursor.executemany(query, values)
-                    log("Execute Many")
                 else:
                     self._sqlite3_cursor.execute(query, values)
             except sqlite3.Error as err:

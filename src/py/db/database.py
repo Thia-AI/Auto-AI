@@ -40,6 +40,7 @@ class DBManager(object):
 
     def __create_tables_if_not_exist(self):
         try:
+            # Jobs
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS jobs
                        (id varchar(32) not null, 
                        job_name text not null, 
@@ -50,6 +51,7 @@ class DBManager(object):
                        progress_max integer,
                        date_started datetime,
                        date_finished datetime)''')
+            # Models
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS models
                     (id varchar(32) not null,
                     model_name text not null, 
@@ -58,14 +60,23 @@ class DBManager(object):
                     date_created datetime not null,
                     date_last_accessed datetime not null,
                     model_status text not null )''')
-
+            # Datasets
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS datasets
             (id varchar(32) not null,
              name text not null,
              type text not null,
              date_created datetime not null,
              date_last_accessed datetime not null,
+             labels text not null,
              misc_data text not null)''')
+            # Input (for a dataset, i.e. images)
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS input
+            (id varchar(32) not null,
+            dataset_id varchar(32) not null,
+            file_name text not null,
+            label text not null,
+            date_created datetime not null
+            )''')
         except sqlite3.Error as e:
             log("[SQLITE] - failed to create table")
             log(str(e))

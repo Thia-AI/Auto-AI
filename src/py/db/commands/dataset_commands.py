@@ -2,12 +2,12 @@ from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
 
-def create_dataset(uuid: str, name: str, type: str, date_created: str, date_last_accessed: str, misc_data: str):
+def create_dataset(uuid: str, name: str, dataset_type: str, date_created: str, date_last_accessed: str, misc_data: str):
     cmd = DBCommand(name=f"Create Dataset {name}",
-                    command='''INSERT INTO datasets (id, name, type, date_created, date_last_accessed, misc_data)
-                    values (?, ?, ?, ?, ?, ?)''',
+                    command='''INSERT INTO datasets (id, name, type, date_created, date_last_accessed, misc_data, labels)
+                    values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        uuid, name, type, date_created, date_last_accessed, misc_data
+                        uuid, name, dataset_type, date_created, date_last_accessed, misc_data, ''
                     ))
     DBManager.get_instance().execute(cmd)
 

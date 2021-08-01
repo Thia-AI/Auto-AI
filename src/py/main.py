@@ -15,10 +15,11 @@ from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from model_config.jobs.model_config_jobs import ModelCreationJob
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
-
+# DB commands
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
+from db.commands.input_commands import get_all_inputs
 
 from job.job import JobCreator
 from log.logger import log
@@ -204,7 +205,8 @@ def get_datasets_route():
             'type': row['type'],
             'date_created': row['date_created'],
             'date_last_accessed': row['date_last_accessed'],
-            'misc_data': row['misc_data']
+            'misc_data': row['misc_data'],
+            'labels': row['labels']
         }
         datasets.append(dataset)
     return {'datasets': datasets}, 200
@@ -225,7 +227,8 @@ def get_dataset_route(uuid: str):
                    'type': row['type'],
                    'date_created': row['date_created'],
                    'date_last_accessed': row['date_last_accessed'],
-                   'misc_data': row['misc_data']
+                   'misc_data': row['misc_data'],
+                   'labels': row['labels']
                }, 200
 
 
@@ -245,7 +248,8 @@ def get_dataset_by_name_route(name: str):
                    'type': row['type'],
                    'date_created': row['date_created'],
                    'date_last_accessed': row['date_last_accessed'],
-                   'misc_data': row['misc_data']
+                   'misc_data': row['misc_data'],
+                   'labels': row['labels']
                }, 200
 
 
@@ -281,6 +285,24 @@ def delete_dataset_route(uuid: str):
         return {'Error': "ID of dataset does not exist"}, 400
     ids = JobCreator().create(DeleteDatasetJob(uuid)).queue()
     return {'ids': ids}, 202
+
+
+@app.route('/inputs', methods=['GET'])
+def get_all_inputs_route():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    rows = get_all_inputs()
+    inputs = []
+    for row in rows:
+        db_input = {
+            'id': row['id'],
+            'dataset_id': row['dataset_id'],
+            'file_name': row['file_name'],
+            'label': row['label'],
+            'date_created': row['date_created']
+        }
+        inputs.append(db_input)
+
+    return {'inputs': inputs}, 200
 
 
 if __name__ == '__main__':
