@@ -13,6 +13,7 @@ import { menu } from './menu/menu';
 import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
+import { isEmulatedDev } from './helpers/dev';
 
 let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
@@ -45,7 +46,7 @@ function createWindow(): void {
 		backgroundColor: '#1A202C',
 		webPreferences: {
 			webSecurity: true,
-			devTools: isDev,
+			devTools: isEmulatedDev,
 			nodeIntegration: true,
 			contextIsolation: false,
 			backgroundThrottling: false,
