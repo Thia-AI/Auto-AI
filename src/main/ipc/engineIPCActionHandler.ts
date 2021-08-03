@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-
+import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 /**
  * Class that manages EngineActions called by **renderer** through IPC
  */
@@ -29,8 +29,8 @@ class EngineIPCActionHandler {
 	 * @param engineActionHandler EngineActionHandler to be set
 	 */
 	public initIPCListening = () => {
-		ipcMain.handle('test', async () => {
-			return true;
+		ipcMain.handle('runtime:is-dev', async () => {
+			return RUNTIME_GLOBALS.isDev;
 		});
 	};
 }

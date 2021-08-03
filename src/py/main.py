@@ -2,6 +2,7 @@ import base64
 import os
 
 from flask import Flask, jsonify, request
+from pathlib import Path
 
 import glob
 
@@ -30,7 +31,8 @@ from helpers import route_helpers
 import tensorflow as tf
 import pyvips
 
-app = Flask(__name__)
+
+app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
 
 environment.init_environment_post_gpu()
 

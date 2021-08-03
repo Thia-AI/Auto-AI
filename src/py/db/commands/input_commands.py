@@ -15,3 +15,10 @@ def get_all_inputs(limit=100):
     cmd = DBCommand(name="Get All Inputs",
                     command=f'''SELECT * FROM input ORDER BY date_created DESC LIMIT {limit}''')
     return DBManager.get_instance().execute(cmd)
+
+
+def delete_all_inputs_of_dataset(uuid):
+    cmd = DBCommand(name=f"Delete All Inputs From Dataset '{uuid}'",
+                    command='DELETE FROM input WHERE dataset_id = ?',
+                    values=(uuid,))
+    DBManager.get_instance().execute(cmd)
