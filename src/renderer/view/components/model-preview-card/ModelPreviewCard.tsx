@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Box, Image, Divider, Flex, Badge, Tooltip } from '@chakra-ui/react';
+import { Box, Image, Divider, Flex, Badge } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
 

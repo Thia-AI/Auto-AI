@@ -6,7 +6,6 @@ import {
 	ModalContent,
 	ModalHeader,
 	ModalOverlay,
-	useDisclosure,
 	Text,
 	VStack,
 	Box,
