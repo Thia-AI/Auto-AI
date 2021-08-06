@@ -85,6 +85,7 @@ const DeleteDatasetC = (props: Props) => {
 										isClosable: false,
 									});
 									props.openCloseDeleteDataset(nullDataset);
+									setDatasetDeleting(false);
 									return;
 								}
 								// Wait until deletion job has completed

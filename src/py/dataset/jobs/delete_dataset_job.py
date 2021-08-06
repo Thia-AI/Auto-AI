@@ -8,6 +8,7 @@ from config import config
 from db.commands.job_commands import update_job
 from db.commands.dataset_commands import get_dataset, delete_dataset
 from db.commands.input_commands import delete_all_inputs_of_dataset
+from db.row_accessors import dataset_from_row
 
 
 class DeleteDatasetJob(BaseJob):
@@ -21,14 +22,7 @@ class DeleteDatasetJob(BaseJob):
         rows = get_dataset(dataset_id)
         dataset = {}
         for row in rows:
-            dataset = {
-                'id': row['id'],
-                'name': row['name'],
-                'type': row['type'],
-                'date_created': row['date_created'],
-                'date_last_accessed': row['date_last_accessed'],
-                'misc_data': row['misc_data']
-            }
+            dataset = dataset_from_row(row)
         # Delete dataset from DB
         delete_dataset(dataset_id)
         super().set_progress(1)

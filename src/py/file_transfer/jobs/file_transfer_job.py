@@ -15,6 +15,7 @@ from config import config
 from db.commands.job_commands import update_job
 from db.commands.dataset_commands import get_dataset
 from db.commands.input_commands import add_images_to_db_batch
+from db.row_accessors import dataset_from_row
 
 
 def add_input_to_values_list(values_list: List, input_id, dataset_id, file_name, label, date_created):
@@ -38,17 +39,9 @@ class BulkFileTransferJob(BaseJob):
         dataset = {}
 
         for row in rows:
-            dataset = {
-                'id': row['id'],
-                'name': row['name'],
-                'type': row['type'],
-                'date_created': row['date_created'],
-                'date_last_accessed': row['date_last_accessed'],
-                'misc_data': row['misc_data']
-            }
+            dataset = dataset_from_row(row)
+        # Make sure inputs directory exists
         os.makedirs((config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME).absolute(), exist_ok=True)
-        num_files_in_input_dir = len(
-            os.listdir((config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME).absolute()))
         # Make input directory if it doesn't already exist
         values_to_add_to_inputs_table = []
 

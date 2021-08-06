@@ -16,7 +16,7 @@ class UploadImageToDatasetEngineAction implements IEngineAction {
 			if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 			const res = await this.engineRequest.post(
-				`${this.apiName}/${data[0]}/input/upload`,
+				`${this.apiName}/${data[0]}/inputs/upload`,
 				data[1],
 				config,
 			);
