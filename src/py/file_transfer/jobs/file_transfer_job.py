@@ -57,11 +57,11 @@ class BulkFileTransferJob(BaseJob):
                     file_name = file_p.name
                     file_folder: Path = config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME
                     file_path: Path = file_folder / file_name
-                    i = 2
+                    j = 2
                     while tf.io.gfile.exists(file_path):
-                        file_name = f"{file_p.stem} ({i}){file_p.suffix}"
+                        file_name = f"{file_p.stem} ({j}){file_p.suffix}"
                         file_path = file_folder / file_name
-                        i += 1
+                        j += 1
 
                     # Copy the file fast with shutil
                     shutil.copyfile(file, file_path.absolute())
@@ -83,5 +83,6 @@ class BulkFileTransferJob(BaseJob):
         self.set_status("Updating DB Records")
         update_job(self)
         add_images_to_db_batch(values_to_add_to_inputs_table)
+        self.set_progress(super().progress_max())
 
         super().clean_up_job()

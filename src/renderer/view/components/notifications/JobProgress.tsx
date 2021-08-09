@@ -19,11 +19,13 @@ const JobProgressC = React.memo((props: Props) => {
 	const [intervalID, setIntervalID] = useState<any>();
 	const [job, setJob] = useState<Job>(nullJob);
 
+	console.log(job);
+
 	// We set here so that it displays the proper job name and progress
 	// even before the first setInterval() has ran below
 	useEffect(() => {
 		setJob(initialJob);
-	}, [initialJob]);
+	}, []);
 
 	useEffect(() => {
 		// Clear interval if jobID doesn't exist (when it finishes or hasn't started).
