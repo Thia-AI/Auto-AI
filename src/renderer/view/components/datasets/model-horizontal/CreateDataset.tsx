@@ -87,7 +87,7 @@ const CreateDatasetC = React.memo((props: Props) => {
 			<ModalOverlay />
 			<ModalContent>
 				<ModalHeader>Create Dataset</ModalHeader>
-				<ModalCloseButton />
+				<ModalCloseButton size='sm' />
 				<ModalBody pb='4'>
 					<VStack spacing='2' alignItems='flex-start'>
 						<Text

@@ -42,7 +42,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 			<ModalOverlay />
 			<ModalContent transition='all 200ms' overflow='hidden'>
 				<ModalHeader>Select Model</ModalHeader>
-				<ModalCloseButton />
+				<ModalCloseButton size='sm' />
 				<ModalBody
 					mt='2'
 					sx={{
@@ -74,7 +74,6 @@ const ModelSelectionC = React.memo((props: Props) => {
 							badgeColorScheme='teal'
 							cardDescription='Image classifier trained on your dataset.'
 							imageSrc={Preview}
-							toolTipInfo='Training Time: 1 Hr / 10k Images'
 							selectedModelNumber={0}
 						/>
 						<ModelPreviewCard
@@ -84,7 +83,6 @@ const ModelSelectionC = React.memo((props: Props) => {
 							updatedDate='06/06/2021'
 							cardDescription='Detect objects from images or video.'
 							imageSrc={Preview}
-							toolTipInfo='Training Time: 1 Hr / 2k Images'
 							selectedModelNumber={1}
 						/>
 						<ModelPreviewCard
@@ -94,7 +92,6 @@ const ModelSelectionC = React.memo((props: Props) => {
 							updatedDate='05/23/2021'
 							cardDescription='Detect and track objects throughout their lifecycle in a video.'
 							imageSrc={Preview}
-							toolTipInfo='Training Time: 1 Hr / 2k Images'
 							selectedModelNumber={2}
 						/>
 						<ModelPreviewCard
@@ -104,7 +101,6 @@ const ModelSelectionC = React.memo((props: Props) => {
 							updatedDate='06/03/2021'
 							cardDescription='Generates images similar to those trained on.'
 							imageSrc={Preview}
-							toolTipInfo='Training Time: 1 Hr / 5k Images'
 							selectedModelNumber={3}
 						/>
 					</HStack>

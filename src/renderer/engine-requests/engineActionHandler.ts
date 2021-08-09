@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { DeleteAllInputsFromDatasetEngineAction } from './actions/delete/deleteAllInputsFromDataset';
 import { DeleteDatasetEngineAction } from './actions/delete/deleteDataset';
 import { GetDatasetEngineAction } from './actions/get/getDataset';
 import { GetDatasetByNameEngineAction } from './actions/get/getDatasetByName';
@@ -33,6 +34,7 @@ class EngineActionHandler {
 	private getDatasetByNameEA!: GetDatasetByNameEngineAction;
 	private getFirstImageOfDatasetEA!: GetFirstImageOfDatasetEngineAction;
 	private deleteDatasetEA!: DeleteDatasetEngineAction;
+	private deleteAllInputsFromDatasetEA!: DeleteAllInputsFromDatasetEngineAction;
 	private uploadImagetoDatasetEA!: UploadImageToDatasetEngineAction;
 
 	private _engineRequest!: AxiosInstance;
@@ -91,6 +93,9 @@ class EngineActionHandler {
 		this.getFirstImageOfDatasetEA = new GetFirstImageOfDatasetEngineAction(this._engineRequest);
 		this.deleteDatasetEA = new DeleteDatasetEngineAction(this._engineRequest);
 		this.uploadImagetoDatasetEA = new UploadImageToDatasetEngineAction(this._engineRequest);
+		this.deleteAllInputsFromDatasetEA = new DeleteAllInputsFromDatasetEngineAction(
+			this._engineRequest,
+		);
 	};
 
 	/**
@@ -140,6 +145,10 @@ class EngineActionHandler {
 
 	public deleteDataset = async (uuid: string, config?: AxiosRequestConfig) => {
 		return this.deleteDatasetEA.run(config, uuid);
+	};
+
+	public deleteAllInputsFromDataset = (uuid: string, config?: AxiosRequestConfig) => {
+		return this.deleteAllInputsFromDatasetEA.run(config, uuid);
 	};
 
 	public uploadImagesToDataset = async (

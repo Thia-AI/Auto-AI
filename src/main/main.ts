@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
+import { register } from 'electron-localshortcut';
 
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
@@ -13,6 +14,7 @@ import { menu } from './menu/menu';
 import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
+import { isEmulatedDev } from './helpers/dev';
 
 let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
@@ -22,6 +24,12 @@ let engineIPCActionHandler: EngineIPCActionHandler;
 const isDev = require('electron-is-dev');
 
 export const APP_NAME = 'Thia';
+
+const preRendererAppInit = () => {
+	if (process.platform === 'win32') {
+		app.setAppUserModelId(APP_NAME);
+	}
+};
 
 preRendererAppInit();
 
@@ -45,7 +53,7 @@ function createWindow(): void {
 		backgroundColor: '#1A202C',
 		webPreferences: {
 			webSecurity: true,
-			devTools: isDev,
+			devTools: isEmulatedDev,
 			nodeIntegration: true,
 			contextIsolation: false,
 			backgroundThrottling: false,
@@ -91,28 +99,36 @@ function createWindow(): void {
 		mainWindow = null;
 	});
 }
-function preRendererAppInit() {
-	if (process.platform === 'win32') {
-		app.setAppUserModelId(APP_NAME);
-	}
-}
+
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is
  * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part)
- * @param isDev is **App** in development mode
  */
-function initRendererDev(isDev: boolean): void {
+const initRendererDev = () => {
 	if (isDev) {
 		ipcMain.handle('engine-dev:started', async () => {
 			return RUNTIME_GLOBALS.engineRunning;
 		});
 	}
-}
+};
 
+/**
+ * Registers shortcuts (key presses) to certain actions
+ * @param win the {@link BrowserWindow `BrowserWindow`} to register key shortcuts
+ */
+const registerShortcuts = (win: BrowserWindow) => {
+	// Dev shortcuts
+	if (isDev) {
+		// Opens dev dashboard on renderer
+		register(win, 'Ctrl+Shift+Q', () => {
+			win.webContents.send('dev:dashboard-toggle');
+		});
+	}
+};
 /**
  * Launches **Engine**
  */
-function launchEngine(): void {
+const launchEngine = () => {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
 	if (isDev) {
 		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
@@ -120,12 +136,12 @@ function launchEngine(): void {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}
 	/* eslint-enable  @typescript-eslint/no-unused-vars */
-}
+};
 
 /**
  * Initializes EngineActionHandler and EngineIPCActionHandler
  */
-const initializeIPC = (): void => {
+const initializeIPC = () => {
 	engineIPCActionHandler = EngineIPCActionHandler.getInstance();
 	engineIPCActionHandler.initIPCListening();
 };
@@ -152,8 +168,10 @@ if (!isSingleInstance) {
 	// initialization and is ready to create browser windows.
 	// Some APIs can only be used after this event occurs.
 	app.on('ready', async () => {
-		initRendererDev(isDev);
+		initRendererDev();
+
 		createWindow();
+		registerShortcuts(mainWindow!);
 	});
 }
 

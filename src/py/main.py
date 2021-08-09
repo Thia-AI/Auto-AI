@@ -2,6 +2,7 @@ import base64
 import os
 
 from flask import Flask, jsonify, request
+from pathlib import Path
 
 import glob
 
@@ -15,10 +16,13 @@ from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from model_config.jobs.model_config_jobs import ModelCreationJob
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
-
+from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
+# DB commands
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
+from db.commands.input_commands import get_all_inputs
+from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row
 
 from job.job import JobCreator
 from log.logger import log
@@ -29,7 +33,7 @@ from helpers import route_helpers
 import tensorflow as tf
 import pyvips
 
-app = Flask(__name__)
+app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
 
 environment.init_environment_post_gpu()
 
@@ -46,7 +50,7 @@ def get_devices_route():
     return jsonify(out)
 
 
-@app.route('/dataset/<string:uuid>/input/upload', methods=['POST'])
+@app.route('/dataset/<string:uuid>/inputs/upload', methods=['POST'])
 def train_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -77,17 +81,7 @@ def get_jobs_route():
     rows = get_jobs()
     jobs = []
     for row in rows:
-        job = {
-            'id': row['id'],
-            'job_name': row['job_name'],
-            'has_started': bool(row['has_started']),
-            'has_finished': bool(row['has_finished']),
-            'status': row['status'],
-            'date_started': row['date_started'],
-            'date_finished': row['date_finished'],
-            'progress': row['progress'],
-            'progress_max': row['progress_max']
-        }
+        job = job_from_row(row)
         jobs.append(job)
 
     return {'jobs': jobs}, 200
@@ -102,17 +96,7 @@ def get_job_route(uuid: str):
     if rows is None:
         return {'Error': "ID of job does not exist"}, 400
     for row in rows:
-        return {
-                   'id': row['id'],
-                   'job_name': row['job_name'],
-                   'has_started': bool(row['has_started']),
-                   'has_finished': bool(row['has_finished']),
-                   'status': row['status'],
-                   'date_started': row['date_started'],
-                   'date_finished': row['date_finished'],
-                   'progress': row['progress'],
-                   'progress_max': row['progress_max']
-               }, 200
+        return job_from_row(row), 200
 
 
 @app.route('/model/create', methods=['POST'])
@@ -140,15 +124,7 @@ def get_models_route():
     rows = get_models()
     models = []
     for row in rows:
-        model = {
-            'id': row['id'],
-            'model_name': row['model_name'],
-            'model_type': row['model_type'],
-            'model_type_extra': row['model_type_extra'],
-            'date_created': row['date_created'],
-            'date_last_accessed': row['date_last_accessed'],
-            'model_status': row['model_status']
-        }
+        model = model_from_row(row)
         models.append(model)
 
     return {'models': models}, 200
@@ -163,15 +139,7 @@ def get_model_route(uuid: str):
     if rows is None:
         return {'Error': "ID of model does not exist"}, 400
     for row in rows:
-        return {
-                   'id': row['id'],
-                   'model_name': row['model_name'],
-                   'model_type': row['model_type'],
-                   'model_type_extra': row['model_type_extra'],
-                   'date_created': row['date_created'],
-                   'date_last_accessed': row['date_last_accessed'],
-                   'model_status': row['model_status']
-               }, 200
+        return model_from_row(row), 200
 
 
 @app.route('/dataset/create', methods=['POST'])
@@ -198,14 +166,7 @@ def get_datasets_route():
     rows = get_datasets()
     datasets = []
     for row in rows:
-        dataset = {
-            'id': row['id'],
-            'name': row['name'],
-            'type': row['type'],
-            'date_created': row['date_created'],
-            'date_last_accessed': row['date_last_accessed'],
-            'misc_data': row['misc_data']
-        }
+        dataset = dataset_from_row(row)
         datasets.append(dataset)
     return {'datasets': datasets}, 200
 
@@ -219,14 +180,7 @@ def get_dataset_route(uuid: str):
     if rows is None or len(rows) == 0:
         return {'Error': "ID of dataset does not exist"}, 400
     for row in rows:
-        return {
-                   'id': row['id'],
-                   'name': row['name'],
-                   'type': row['type'],
-                   'date_created': row['date_created'],
-                   'date_last_accessed': row['date_last_accessed'],
-                   'misc_data': row['misc_data']
-               }, 200
+        return dataset_from_row(row), 200
 
 
 @app.route('/dataset/by-name/<string:name>', methods=['GET'])
@@ -239,14 +193,7 @@ def get_dataset_by_name_route(name: str):
     if rows is None or len(rows) == 0:
         return {'Error': "ID of dataset does not exist"}, 400
     for row in rows:
-        return {
-                   'id': row['id'],
-                   'name': row['name'],
-                   'type': row['type'],
-                   'date_created': row['date_created'],
-                   'date_last_accessed': row['date_last_accessed'],
-                   'misc_data': row['misc_data']
-               }, 200
+        return dataset_from_row(row), 200
 
 
 @app.route('/dataset/first-image/<string:uuid>', methods=['GET'])
@@ -281,6 +228,30 @@ def delete_dataset_route(uuid: str):
         return {'Error': "ID of dataset does not exist"}, 400
     ids = JobCreator().create(DeleteDatasetJob(uuid)).queue()
     return {'ids': ids}, 202
+
+
+@app.route('/dataset/<string:uuid>/inputs', methods=['DELETE'])
+def delete_all_inputs_from_dataset_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    ids = JobCreator().create(DeleteAllInputsFromDatasetJob(uuid)).queue()
+    return {'ids': ids}, 202
+
+
+@app.route('/inputs', methods=['GET'])
+def get_all_inputs_route():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    rows = get_all_inputs()
+    inputs = []
+    for row in rows:
+        db_input = input_from_row(row)
+        inputs.append(db_input)
+
+    return {'inputs': inputs}, 200
 
 
 if __name__ == '__main__':

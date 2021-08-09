@@ -11,6 +11,7 @@ import { history } from '_state/store';
 import { Header } from './components/header/Header';
 import { SideMenu } from './components/side-menu/SideMenu';
 import { NotificationsHandler } from './components/notifications/NotificationsHandler';
+import { DevDashboard } from './components/dev/DevDashboard';
 
 /**
  * App component
@@ -55,6 +56,7 @@ const AppC = React.memo((props: Props) => {
 			<Header />
 			<SideMenu />
 			<NotificationsHandler />
+			<DevDashboard />
 			<Router history={history}>
 				<Suspense
 					fallback={

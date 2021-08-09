@@ -23,7 +23,7 @@ const JobProgressC = React.memo((props: Props) => {
 	// even before the first setInterval() has ran below
 	useEffect(() => {
 		setJob(initialJob);
-	}, [initialJob]);
+	}, []);
 
 	useEffect(() => {
 		// Clear interval if jobID doesn't exist (when it finishes or hasn't started).
@@ -82,4 +82,7 @@ const JobProgressC = React.memo((props: Props) => {
 	return render();
 });
 
+/**
+ * Component that auto-monitors a Job ID and updates it's UI slider
+ */
 export const JobProgress = connect()(JobProgressC);
