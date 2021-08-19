@@ -1,22 +1,26 @@
-from config import route_helper_constants as req_constants
+from config import constants
 
 
 def validate_req_json_helper(req: dict, expected_req_format: dict):
     missing_keys = []
     expected_keys = expected_req_format.keys()
     for expected_key in expected_keys:
-        expected_key_requirements = expected_req_format[expected_key].split(req_constants.SPLITTER)
+        expected_key_requirements = expected_req_format[expected_key].split(constants.REQ_HELPER_SPLITTER)
         key_errors = []
-        if req_constants.REQUIRED in expected_key_requirements and (not req or expected_key not in req):
+        if constants.REQ_HELPER_REQUIRED in expected_key_requirements and (not req or expected_key not in req):
             # expected key is missing
             key_errors.append('Key missing from request')
-        if req_constants.STRING_NON_EMPTY in expected_key_requirements and (not req or not req[expected_key].strip()):
+            # Required is a key requirement so no bother adding other errors if it's missing
+            continue
+        # Everything else will assume key exists in req (if it is prefaced by constants.REQ_HELPER_REQUIRED
+        if constants.REQ_HELPER_STRING_NON_EMPTY in expected_key_requirements and (not req or not req[expected_key].strip()):
             # expected key's value is empty
             key_errors.append("String value cannot be empty")
-        if req_constants.ARRAY_NON_EMPTY in expected_key_requirements and (not req or type(req[expected_key]) != list or len(req[expected_key]) == 0):
+        if constants.REQ_HELPER_ARRAY_NON_EMPTY in expected_key_requirements and (not req or type(req[expected_key]) != list or len(req[expected_key]) == 0):
             # array is not empty
             key_errors.append("Array must exist and cannot be empty")
-
+        if constants.REQ_HELPER_INTEGER_OPTIONAL in expected_key_requirements and req and expected_key in req and type(req[expected_key]) != int:
+            key_errors.append("Key's value must be an integer, if provided")
         if len(key_errors) > 0:
             missing_keys.append([expected_key, key_errors])
     return missing_keys

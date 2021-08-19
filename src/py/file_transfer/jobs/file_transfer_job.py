@@ -45,6 +45,8 @@ class BulkFileTransferJob(BaseJob):
         # Make input directory if it doesn't already exist
         values_to_add_to_inputs_table = []
 
+        prev_datetime = datetime.now()
+
         for i, file in enumerate(file_paths):
             file_p = Path(file)
 
@@ -67,13 +69,21 @@ class BulkFileTransferJob(BaseJob):
                     shutil.copyfile(file, file_path.absolute())
                     self.set_progress(i + 1)
 
+                    # This is so that we end up with a unique datetime for each input
+                    # (uniqueness is required since we use the timestamp in cursor based
+                    # navigation)
+                    curr_datetime = datetime.now()
+                    while curr_datetime == prev_datetime:
+                        curr_datetime = datetime.now()
                     # Append to values list
                     add_input_to_values_list(values_to_add_to_inputs_table, uuid.uuid4().hex, dataset_id, file_name,
-                                             'unlabelled', datetime.now())
+                                             'unlabelled', curr_datetime)
 
                     if time.time() - start_time >= amount_of_time_to_update_after:
                         update_job(self)
                         start_time = time.time()
+
+                    prev_datetime = curr_datetime
 
                 except IOError:
                     log(f"Copying File '{file_p.name}' failed")

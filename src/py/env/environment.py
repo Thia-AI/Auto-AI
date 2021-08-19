@@ -73,10 +73,10 @@ def init_environment_pre_gpu() -> None:
 
     # Set environment variables
     # CUDA
-    os.environ['PATH'] = str(config.CUDA_PATH.absolute()) + os.pathsep + os.environ['PATH']
+    add_path_to_path_env(config.CUDA_PATH)
     # External Dependencies
     config.ED_VIPS = config.EXTERNAL_DEPENDENCIES / config.ED_VIPS_DIR_NAME
-    os.environ['PATH'] = str(config.ED_VIPS.absolute()) + os.pathsep + os.environ['PATH']
+    add_path_to_path_env(config.ED_VIPS)
 
     config.current_dir = Path.cwd() / config.bundle_dir
     msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
@@ -85,6 +85,10 @@ def init_environment_pre_gpu() -> None:
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     flask_logger = logging.getLogger('werkzeug')
     flask_logger.disabled = True
+
+
+def add_path_to_path_env(path: Path):
+    os.environ['PATH'] = str(path.absolute()) + os.pathsep + os.environ['PATH']
 
 
 def init_environment_post_gpu():
