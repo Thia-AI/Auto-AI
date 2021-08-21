@@ -2,6 +2,7 @@ import base64
 import glob
 import os
 from pathlib import Path
+from dateutil import parser
 
 from flask import Flask, jsonify, request
 
@@ -28,7 +29,8 @@ from job.job import JobCreator
 from log.logger import log
 from config import config
 from config import constants
-from helpers import route_helpers
+from helpers.route import validate_req_json
+from helpers.encoding import b64_encode, b64_decode
 
 import tensorflow as tf
 
@@ -57,7 +59,7 @@ def train_route(uuid: str):
     req_data_format = {
         'files': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_ARRAY_NON_EMPTY,
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     rows = get_dataset(uuid)
@@ -107,7 +109,7 @@ def create_model_route():
         'model_type': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
         'model_type_extra': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     # check to see if model already exists
@@ -149,7 +151,7 @@ def create_dataset_route():
         'name': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
         'type': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     # Check to see if dataset already exists
@@ -266,10 +268,10 @@ def get_next_inputs_route(uuid: str):
 
     req_data = request.get_json()
     req_data_format = {
-        'current_cursor_date': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'current_cursor_date': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_BASE64_ENCODED_DATETIME,
         'limit': constants.REQ_HELPER_INTEGER_OPTIONAL
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     # Check for limit range
@@ -279,7 +281,8 @@ def get_next_inputs_route(uuid: str):
 
     limit = req_data['limit'] if 'limit' in req_data else constants.INPUT_PAGINATION_DEFAULT_LIMIT
     # Get the next page inputs
-    rows = pagination_get_next_page_inputs(uuid, req_data['current_cursor_date'], limit + 1)
+    parsed_datetime = str(parser.parse(b64_decode(req_data['current_cursor_date'])))
+    rows = pagination_get_next_page_inputs(uuid, parsed_datetime, limit + 1)
     inputs = []
     is_end_of_table = len(rows) != limit + 1
     trim_rows = rows if is_end_of_table else rows[:-1]
@@ -293,15 +296,15 @@ def get_next_inputs_route(uuid: str):
         next_cursor = None
     else:
         next_input = input_from_row(trim_rows[-1])
-        next_cursor = next_input['date_created']
+        next_cursor = b64_encode(next_input['date_created'])
     # Determine previous cursor
-    prev_rows_preview = pagination_get_prev_page_preview_inputs(uuid, req_data['current_cursor_date'])
+    prev_rows_preview = pagination_get_prev_page_preview_inputs(uuid, parsed_datetime)
     if len(prev_rows_preview) == 0:
         # No input before current cursor
         prev_cursor = None
     else:
         prev_input = input_from_row(trim_rows[0])
-        prev_cursor = prev_input['date_created']
+        prev_cursor = b64_encode(prev_input['date_created'])
     return {
                'inputs': inputs,
                'next_cursor': next_cursor,
@@ -320,19 +323,19 @@ def get_prev_inputs_route(uuid: str):
 
     req_data = request.get_json()
     req_data_format = {
-        'current_cursor_date': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'current_cursor_date': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_BASE64_ENCODED_DATETIME,
         'limit': constants.REQ_HELPER_INTEGER_OPTIONAL
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     # TODO: Add a range checker in route_helpers to make this easier and reduce duplicated code
     if 'limit' in req_data and (req_data['limit'] <= 0 or req_data['limit'] > constants.INPUT_PAGINATION_LIMIT_MAX):
         return {'Error': f'limit provided is not in range 0 - {constants.INPUT_PAGINATION_LIMIT_MAX}'}, 400
     limit = req_data['limit'] if 'limit' in req_data else constants.INPUT_PAGINATION_DEFAULT_LIMIT
-
     # Get the previous page inputs
-    rows = pagination_get_prev_page_inputs(uuid, req_data['current_cursor_date'], limit + 1)
+    parsed_datetime = str(parser.parse(b64_decode(req_data['current_cursor_date'])))
+    rows = pagination_get_prev_page_inputs(uuid, parsed_datetime, limit + 1)
     inputs = []
     is_end_of_table = len(rows) != limit + 1
     trim_rows = rows if is_end_of_table else rows[:-1]
@@ -348,16 +351,16 @@ def get_prev_inputs_route(uuid: str):
         prev_cursor = None
     else:
         prev_input = input_from_row(trim_rows[0])
-        prev_cursor = prev_input['date_created']
+        prev_cursor = b64_encode(prev_input['date_created'])
 
     # Determine next cursor
-    next_rows_preview = pagination_get_next_page_preview_inputs(uuid, req_data['current_cursor_date'])
+    next_rows_preview = pagination_get_next_page_preview_inputs(uuid, parsed_datetime)
     if len(next_rows_preview) == 0:
         # No input after current cursor
         next_cursor = None
     else:
         next_input = input_from_row(trim_rows[-1])
-        next_cursor = next_input['date_created']
+        next_cursor = b64_encode(next_input['date_created'])
     return {
         'inputs': inputs,
         'next_cursor': next_cursor,
