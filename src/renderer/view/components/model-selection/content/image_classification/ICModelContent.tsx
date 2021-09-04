@@ -78,7 +78,10 @@ const ICModelContentC = React.memo((props: Props) => {
 		if (name.search(regex) === -1) {
 			setModelNameError('Alphanumeric Characters Only');
 			setModelNameValid(false);
-		} else setModelNameValid(true);
+			return;
+		}
+		setModelNameValid(true);
+		setModelNameError('');
 	};
 
 	const createModel = async () => {

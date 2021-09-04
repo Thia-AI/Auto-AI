@@ -13,11 +13,11 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
-import { IOpenCloseDeleteDatasetReducer } from '_/renderer/state/delete-dataset/model/reducerTypes';
-import { openCloseDeleteDatasetAction } from '_state/delete-dataset/DeleteDatasetActions';
+import { IOpenCloseDeleteDatasetReducer } from '_/renderer/state/delete-modals/model/reducerTypes';
+import { openCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/DeleteModalsActions';
 import { IAppState } from '_/renderer/state/reducers';
 import { Dataset, nullDataset } from '../../helpers/constants/engineDBTypes';
-import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-dataset/model/actionTypes';
+import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/model/actionTypes';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { waitTillEngineJobComplete } from '../../helpers/engineJobHelper';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
@@ -27,7 +27,8 @@ interface Props {
 	openCloseDeleteDataset: (dataset: Dataset) => IOpenCloseDeleteDatasetAction;
 	refreshDataset: () => void;
 }
-const DeleteDatasetC = (props: Props) => {
+
+const DeleteDatasetC = React.memo((props: Props) => {
 	const toast = useToast();
 	const [datasetDeleting, setDatasetDeleting] = useState(false);
 
@@ -103,7 +104,7 @@ const DeleteDatasetC = (props: Props) => {
 								// TODO: Refresh
 								props.refreshDataset();
 							}}
-							ml={3}>
+							ml='3'>
 							Delete
 						</Button>
 					</AlertDialogFooter>
@@ -111,7 +112,7 @@ const DeleteDatasetC = (props: Props) => {
 			</AlertDialogOverlay>
 		</AlertDialog>
 	);
-};
+});
 
 const mapStateToProps = (state: IAppState) => ({
 	deleteDatasetData: state.openCloseDeleteDataset,

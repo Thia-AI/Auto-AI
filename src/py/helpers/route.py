@@ -13,15 +13,29 @@ def validate_req_json_helper(req: dict, expected_req_format: dict):
         if constants.REQ_HELPER_REQUIRED in expected_key_requirements and (not req or expected_key not in req):
             # expected key is missing
             key_errors.append('Key missing from request')
+            missing_keys.append([expected_key, key_errors])
             # Required is a key requirement so no bother adding other errors if it's missing
             continue
         # Everything else will assume key exists in req (if it is prefaced by constants.REQ_HELPER_REQUIRED
-        if constants.REQ_HELPER_STRING_NON_EMPTY in expected_key_requirements and (not req or type(req[expected_key]) != str or not req[expected_key].strip()):
-            # expected key's value is empty
-            key_errors.append("String value cannot be empty")
+        if constants.REQ_HELPER_STRING_NON_EMPTY in expected_key_requirements and req:
+            if type(req[expected_key]) != str:
+                key_errors.append("Key's value must be a string")
+            elif not req[expected_key].strip():
+                # Expected key's value is empty
+                key_errors.append("Key's string value cannot be empty")
         if constants.REQ_HELPER_ARRAY_NON_EMPTY in expected_key_requirements and (not req or type(req[expected_key]) != list or len(req[expected_key]) == 0):
             # array is not empty
-            key_errors.append("Array must exist and cannot be empty")
+            key_errors.append("Key's value must be an array must exist and cannot be empty")
+            # TODO: Add type checking for all elements ex: STRING_ARRAY_NON_EMPTY
+        if constants.REQ_HELPER_STRING_ARRAY_NON_EMPTY in expected_key_requirements and (not req or type(req[expected_key]) != list or len(req[expected_key]) == 0):
+            # Array is not empty
+            key_errors.append("Key's value must be an array must exist and cannot be empty")
+        else:
+            # Go through array and verify all indices are strings
+            for elem in req[expected_key]:
+                if type(elem) != str:
+                    key_errors.append("Key's value must be a string-only array")
+                    break
         if constants.REQ_HELPER_INTEGER_OPTIONAL in expected_key_requirements and req and expected_key in req and type(req[expected_key]) != int:
             key_errors.append("Key's value must be an integer, if provided")
         if constants.REQ_HELPER_BASE64_ENCODED_DATETIME in expected_key_requirements and req:

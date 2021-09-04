@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { DeleteAllInputsFromDatasetEngineAction } from './actions/delete/deleteAllInputsFromDataset';
 import { DeleteDatasetEngineAction } from './actions/delete/deleteDataset';
+import { DeleteLabelEngineAction } from './actions/delete/deleteLabel';
 import { GetDatasetEngineAction } from './actions/get/getDataset';
 import { GetDatasetByNameEngineAction } from './actions/get/getDatasetByName';
 import { GetDatasetsEngineAction } from './actions/get/getDatasets';
@@ -9,6 +10,8 @@ import { GetFirstImageOfDatasetEngineAction } from './actions/get/getFirstImageO
 import { GetJobEngineAction } from './actions/get/getJob';
 import { GetModelEngineAction } from './actions/get/getModel';
 import { GetModelsEngineAction } from './actions/get/getModels';
+import { UpdateLabelsOrderEngineAction } from './actions/patch/updateLabelsOrder';
+import { AddLabelEngineAction } from './actions/post/addLabel';
 import { CreateDatasetEngineAction } from './actions/post/createDataset';
 import { CreateModelEngineAction } from './actions/post/createModel';
 import { UploadImageToDatasetEngineAction } from './actions/post/uploadImageToDataset';
@@ -36,6 +39,10 @@ class EngineActionHandler {
 	private deleteDatasetEA!: DeleteDatasetEngineAction;
 	private deleteAllInputsFromDatasetEA!: DeleteAllInputsFromDatasetEngineAction;
 	private uploadImagetoDatasetEA!: UploadImageToDatasetEngineAction;
+	// Dataset Labels
+	private addLabelToDatasetEA!: AddLabelEngineAction;
+	private deleteLabelFromDatasetEA!: DeleteLabelEngineAction;
+	private updateLabelsOrderEA!: UpdateLabelsOrderEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -96,6 +103,10 @@ class EngineActionHandler {
 		this.deleteAllInputsFromDatasetEA = new DeleteAllInputsFromDatasetEngineAction(
 			this._engineRequest,
 		);
+		// Dataset Labels
+		this.addLabelToDatasetEA = new AddLabelEngineAction(this._engineRequest);
+		this.updateLabelsOrderEA = new UpdateLabelsOrderEngineAction(this._engineRequest);
+		this.deleteLabelFromDatasetEA = new DeleteLabelEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -157,6 +168,30 @@ class EngineActionHandler {
 		config?: AxiosRequestConfig,
 	) => {
 		return this.uploadImagetoDatasetEA.run(config, [uuid, jsonData]);
+	};
+
+	public addLabelToDataset = async (
+		uuid: string,
+		jsonData: object,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.addLabelToDatasetEA.run(config, [uuid, jsonData]);
+	};
+
+	public deleteLabelFromDataset = async (
+		uuid: string,
+		jsonData: object,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.deleteLabelFromDatasetEA.run(config, [uuid, jsonData]);
+	};
+
+	public updateLabelsOrder = async (
+		uuid: string,
+		jsonData: object,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.updateLabelsOrderEA.run(config, [uuid, jsonData]);
 	};
 }
 

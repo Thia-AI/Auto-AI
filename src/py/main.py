@@ -22,7 +22,8 @@ from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
-    pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs
+    pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
+    update_labels_of_dataset, reset_labels_of_inputs
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row
 
 from job.job import JobCreator
@@ -362,10 +363,139 @@ def get_prev_inputs_route(uuid: str):
         next_input = input_from_row(trim_rows[-1])
         next_cursor = b64_encode(next_input['date_created'])
     return {
-        'inputs': inputs,
-        'next_cursor': next_cursor,
-        'previous_cursor': prev_cursor
-    }, 200
+               'inputs': inputs,
+               'next_cursor': next_cursor,
+               'previous_cursor': prev_cursor
+           }, 200
+
+
+@app.route('/dataset/<string:uuid>/labels/add', methods=['POST'])
+def add_label_to_dataset(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    curr_labels: str = dataset['labels']
+    if not curr_labels.strip():
+        # Dataset doesn't have any labels
+        labels = []
+    else:
+        labels = curr_labels.split(constants.DATASET_LABELS_SPLITTER)
+    # Check if label exits
+    if req_data['label'] in labels:
+        return {'Error': 'Label already exists'}, 400
+    # Create new labels string
+    labels.append(req_data['label'])
+    labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
+    update_labels_of_dataset(uuid, labels_string)
+    # Return back dataset that was updated
+    rows = get_dataset(uuid)
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    return {'dataset': dataset}, 200
+
+
+@app.route('/dataset/<string:uuid>/labels/remove', methods=['DELETE'])
+def remove_label_from_dataset(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    # Get labels from dataset
+    curr_labels: str = dataset['labels']
+    labels = curr_labels.split(constants.DATASET_LABELS_SPLITTER)
+    if req_data['label'] not in labels:
+        return {'Error': f"label '{req_data['label']}' doesn't exist"}
+    # Remove from labels
+    labels.remove(req_data['label'])
+    labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
+    update_labels_of_dataset(uuid, labels_string)
+    # Reset input labels
+    reset_labels_of_inputs(uuid, req_data['label'])
+    # Return back dataset that was updated
+    rows = get_dataset(uuid)
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+    return {'dataset': dataset}, 200
+
+
+@app.route('/dataset/<string:uuid>/labels/order', methods=['PATCH'])
+def update_labels_from_dataset(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'labels': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_ARRAY_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    labels_new_split: list = req_data['labels']
+    labels_new_set = set(labels_new_split)
+
+    labels_unsplit: str = dataset['labels']
+    labels = labels_unsplit.split(constants.DATASET_LABELS_SPLITTER)
+    labels_set = set(labels)
+
+    for label in labels:
+        if label not in labels_new_set:
+            return {'Error': 'Labels missing, must only include all existing labels to update their order'}, 400
+
+    if len(labels_new_set - labels_set) != 0:
+        return {'Error': 'Extra labels included, must only include all existing labels to update their order'}, 400
+
+    labels_new = constants.DATASET_LABELS_SPLITTER.join(labels_new_split)
+    update_labels_of_dataset(uuid, labels_new)
+
+    # Return back dataset that was updated
+    rows = get_dataset(uuid)
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+    return {'dataset': dataset}, 200
 
 
 if __name__ == '__main__':

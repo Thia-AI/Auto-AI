@@ -14,6 +14,7 @@ import { JobMonitorHandler } from '_/renderer/view/worker-handlers/JobMonitorHan
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { DatasetPreview } from '../preview/DatasetPreview';
 
 interface Props {
 	files: string[];
@@ -209,6 +210,7 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 				clearJobIDState={() => setUploadJobID(undefined)}
 			/>
 			<DragNDropPreview directory={fileDirectory} />
+			<DatasetPreview />
 		</Flex>
 	);
 });

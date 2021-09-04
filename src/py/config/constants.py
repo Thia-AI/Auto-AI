@@ -7,6 +7,7 @@ REQ_HELPER_SPLITTER: Final = ','
 REQ_HELPER_REQUIRED: Final = 'required'
 REQ_HELPER_STRING_NON_EMPTY: Final = 'string-non-empty'
 REQ_HELPER_ARRAY_NON_EMPTY: Final = 'array-non-empty'
+REQ_HELPER_STRING_ARRAY_NON_EMPTY: Final = 'string-array-non-empty'
 REQ_HELPER_INTEGER_OPTIONAL: Final = 'number-optional'
 REQ_HELPER_BASE64_ENCODED_DATETIME: Final = 'base64_encoded_datetime'
 
@@ -14,3 +15,7 @@ REQ_HELPER_BASE64_ENCODED_DATETIME: Final = 'base64_encoded_datetime'
 
 INPUT_PAGINATION_DEFAULT_LIMIT: Final = 10
 INPUT_PAGINATION_LIMIT_MAX: Final = 50
+
+# DB Constants
+
+DATASET_LABELS_SPLITTER: Final = '|'

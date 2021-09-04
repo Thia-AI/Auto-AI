@@ -33,8 +33,9 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 		<Box
 			w='full'
 			p={gridContainerPadding + 'px'}
-			borderRadius='md'
+			borderRadius='sm'
 			h={gridHeight + 2 * gridContainerPadding + 'px'}
+			mb='4'
 			bg='gray.750'>
 			<AutoSizer>
 				{({ height, width }) => {
