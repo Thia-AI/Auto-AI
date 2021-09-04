@@ -13,8 +13,8 @@ import NoImage from '_utils/images/placeholder-dark2.jpg';
 import { InteractiveCopyBadge } from '../../interactive/InteractiveCopyBadge';
 
 import { IAppState } from '_/renderer/state/reducers';
-import { openCloseDeleteDatasetAction } from '_state/delete-dataset/DeleteDatasetActions';
-import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-dataset/model/actionTypes';
+import { openCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/DeleteModalsActions';
+import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/model/actionTypes';
 
 import { ISelectedDatasetReducer } from '_/renderer/state/choose-dataset-train/model/reducerTypes';
 import {

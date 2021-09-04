@@ -35,6 +35,9 @@ const theme = extendTheme({
 		red: {
 			450: '#f25757',
 		},
+		green: {
+			450: '#2fa862',
+		},
 	},
 
 	components: {

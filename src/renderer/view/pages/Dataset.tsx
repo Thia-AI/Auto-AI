@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import {
 	Box,
@@ -12,16 +12,25 @@ import {
 	useColorModeValue as mode,
 } from '@chakra-ui/react';
 import { useRouteMatch } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
-import { Dataset } from '_view_helpers/constants/engineDBTypes';
+import { Dataset, nullDataset } from '_view_helpers/constants/engineDBTypes';
 import { getVerboseModelType } from '../helpers/modelHelper';
 import { InteractiveCopyBadge } from '../components/interactive/InteractiveCopyBadge';
 import { DragNDrop } from '../components/datasets/drag-n-drop/DragNDrop';
+import { IAppState } from '_/renderer/state/reducers';
+import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
+import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 
-const Dataset = React.memo(() => {
+interface Props {
+	activeDataset: Dataset | undefined;
+	changeActiveDataset: (activeDataset: Dataset) => IChangeActiveDatasetAction;
+}
+
+const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) => {
 	const datasetID = useRouteMatch().params['id'];
-	const [dataset, setDataset] = useState<Dataset | undefined>(undefined);
+	// const [dataset, setDataset] = useState<Dataset | undefined>(undefined);
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 
@@ -29,11 +38,18 @@ const Dataset = React.memo(() => {
 		const fetchDataset = async () => {
 			const [error, resData] = await EngineActionHandler.getInstance().getDataset(datasetID);
 			if (!error) {
-				setDataset(resData);
+				changeActiveDataset(resData);
 			}
 		};
 
 		fetchDataset();
+	}, []);
+
+	useEffect(() => {
+		// cleanup when dataset page is unmounted
+		return () => {
+			changeActiveDataset(nullDataset);
+		};
 	}, []);
 
 	return (
@@ -56,17 +72,17 @@ const Dataset = React.memo(() => {
 				},
 			}}>
 			<VStack alignItems='flex-start' ml='4'>
-				<Skeleton w='400px' isLoaded={dataset !== undefined}>
+				<Skeleton w='400px' isLoaded={activeDataset !== undefined}>
 					<HStack pt='1' alignItems='center'>
 						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated>
-							{dataset?.name}:
+							{activeDataset?.name}:
 						</Text>
 						<Badge fontSize='sm' colorScheme='purple' ml='1'>
-							{getVerboseModelType(dataset?.type)}
+							{getVerboseModelType(activeDataset?.type)}
 						</Badge>
 					</HStack>
 				</Skeleton>
-				<InteractiveCopyBadge badgeID={dataset?.id} />
+				<InteractiveCopyBadge badgeID={activeDataset?.id} />
 			</VStack>
 			<Box
 				w={isLargerThan1280 ? '90%' : 'full'}
@@ -93,4 +109,12 @@ const Dataset = React.memo(() => {
 	);
 });
 
-export default Dataset;
+const mapStateToProps = (state: IAppState) => ({
+	activeDataset: state.activeDataset.value,
+});
+
+const DatasetPage = connect(mapStateToProps, {
+	changeActiveDataset,
+})(DatasetPageC);
+
+export default DatasetPage;

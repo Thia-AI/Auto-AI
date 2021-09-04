@@ -8,7 +8,10 @@ export interface Dataset {
 	date_created: string;
 	date_last_accessed: string;
 	misc_data: string;
+	labels: string;
 }
+
+export const DATASET_LABELS_SPLITTER = '|';
 
 export const nullDataset: Dataset = {
 	id: '',
@@ -17,7 +20,9 @@ export const nullDataset: Dataset = {
 	date_created: '',
 	date_last_accessed: '',
 	misc_data: '',
+	labels: '',
 };
+
 /**
  * Engine's DB job entry
  */

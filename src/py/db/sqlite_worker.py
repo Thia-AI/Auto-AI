@@ -79,7 +79,7 @@ class Sqlite3Worker(threading.Thread):
         :param values: Tuple of values to be replaced into the ? of the query
         :return: None
         """
-        if query.lower().strip().startswith("select") or query.lower().strip().startswith("update"):
+        if query.lower().strip().startswith("select"):
             try:
                 self._sqlite3_cursor.execute(query, values)
                 self._results[token] = self._sqlite3_cursor.fetchall()
@@ -167,5 +167,5 @@ class Sqlite3Worker(threading.Thread):
         self._sql_queue.put((token, query, values), timeout=5)
         # If it's a select we queue it up with a token to mark the results
         # into the output queue so we know what results are ours.
-        if query.lower().strip().startswith("select") or query.lower().strip().startswith("update"):
+        if query.lower().strip().startswith("select"):
             return self._query_results(token)

@@ -1,10 +1,10 @@
 import base64
+import glob
 import os
+from pathlib import Path
+from dateutil import parser
 
 from flask import Flask, jsonify, request
-from pathlib import Path
-
-import glob
 
 from env import environment
 
@@ -21,17 +21,19 @@ from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromD
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
-from db.commands.input_commands import get_all_inputs
+from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
+    pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
+    update_labels_of_dataset, reset_labels_of_inputs
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row
 
 from job.job import JobCreator
 from log.logger import log
 from config import config
-from config import route_helper_constants as req_constants
-from helpers import route_helpers
+from config import constants
+from helpers.route import validate_req_json
+from helpers.encoding import b64_encode, b64_decode
 
 import tensorflow as tf
-import pyvips
 
 app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
 
@@ -56,9 +58,9 @@ def train_route(uuid: str):
     req_data = request.get_json()
     # Check to see if files key exists
     req_data_format = {
-        'files': req_constants.REQUIRED + req_constants.ARRAY_NON_EMPTY,
+        'files': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_ARRAY_NON_EMPTY,
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     rows = get_dataset(uuid)
@@ -104,11 +106,11 @@ def create_model_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
     req_data_format = {
-        'model_name': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY,
-        'model_type': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY,
-        'model_type_extra': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY
+        'model_name': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'model_type': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'model_type_extra': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     # check to see if model already exists
@@ -147,10 +149,10 @@ def create_dataset_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
     req_data_format = {
-        'name': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY,
-        'type': req_constants.REQUIRED + req_constants.STRING_NON_EMPTY
+        'name': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'type': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
     }
-    error_obj = route_helpers.validate_req_json(req_data, req_data_format)
+    error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
     # Check to see if dataset already exists
@@ -252,6 +254,248 @@ def get_all_inputs_route():
         inputs.append(db_input)
 
     return {'inputs': inputs}, 200
+
+
+# Input pagination routes
+
+@app.route('/dataset/<string:uuid>/inputs/cursor/next', methods=['GET'])
+def get_next_inputs_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'current_cursor_date': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_BASE64_ENCODED_DATETIME,
+        'limit': constants.REQ_HELPER_INTEGER_OPTIONAL
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    # Check for limit range
+    # TODO: Add a range checker in route_helpers to make this easier and reduce duplicated code
+    if 'limit' in req_data and (req_data['limit'] <= 0 or req_data['limit'] > constants.INPUT_PAGINATION_LIMIT_MAX):
+        return {'Error': f'limit provided is not in range 0 - {constants.INPUT_PAGINATION_LIMIT_MAX}'}, 400
+
+    limit = req_data['limit'] if 'limit' in req_data else constants.INPUT_PAGINATION_DEFAULT_LIMIT
+    # Get the next page inputs
+    parsed_datetime = str(parser.parse(b64_decode(req_data['current_cursor_date'])))
+    rows = pagination_get_next_page_inputs(uuid, parsed_datetime, limit + 1)
+    inputs = []
+    is_end_of_table = len(rows) != limit + 1
+    trim_rows = rows if is_end_of_table else rows[:-1]
+    for row in trim_rows:
+        db_input = input_from_row(row)
+        inputs.append(db_input)
+
+    # Determine the next and previous cursors
+    # Determine next cursor
+    if is_end_of_table:
+        next_cursor = None
+    else:
+        next_input = input_from_row(trim_rows[-1])
+        next_cursor = b64_encode(next_input['date_created'])
+    # Determine previous cursor
+    prev_rows_preview = pagination_get_prev_page_preview_inputs(uuid, parsed_datetime)
+    if len(prev_rows_preview) == 0:
+        # No input before current cursor
+        prev_cursor = None
+    else:
+        prev_input = input_from_row(trim_rows[0])
+        prev_cursor = b64_encode(prev_input['date_created'])
+    return {
+               'inputs': inputs,
+               'next_cursor': next_cursor,
+               'previous_cursor': prev_cursor
+           }, 200
+
+
+@app.route('/dataset/<string:uuid>/inputs/cursor/previous', methods=['GET'])
+def get_prev_inputs_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'current_cursor_date': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_BASE64_ENCODED_DATETIME,
+        'limit': constants.REQ_HELPER_INTEGER_OPTIONAL
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    # TODO: Add a range checker in route_helpers to make this easier and reduce duplicated code
+    if 'limit' in req_data and (req_data['limit'] <= 0 or req_data['limit'] > constants.INPUT_PAGINATION_LIMIT_MAX):
+        return {'Error': f'limit provided is not in range 0 - {constants.INPUT_PAGINATION_LIMIT_MAX}'}, 400
+    limit = req_data['limit'] if 'limit' in req_data else constants.INPUT_PAGINATION_DEFAULT_LIMIT
+    # Get the previous page inputs
+    parsed_datetime = str(parser.parse(b64_decode(req_data['current_cursor_date'])))
+    rows = pagination_get_prev_page_inputs(uuid, parsed_datetime, limit + 1)
+    inputs = []
+    is_end_of_table = len(rows) != limit + 1
+    trim_rows = rows if is_end_of_table else rows[:-1]
+    # We reverse because pagination_get_prev_page_inputs() returns inputs in descending order
+    trim_rows.reverse()
+    for row in trim_rows:
+        db_input = input_from_row(row)
+        inputs.append(db_input)
+
+    # Determine next and previous cursors
+    # Determine previous cursor
+    if is_end_of_table:
+        prev_cursor = None
+    else:
+        prev_input = input_from_row(trim_rows[0])
+        prev_cursor = b64_encode(prev_input['date_created'])
+
+    # Determine next cursor
+    next_rows_preview = pagination_get_next_page_preview_inputs(uuid, parsed_datetime)
+    if len(next_rows_preview) == 0:
+        # No input after current cursor
+        next_cursor = None
+    else:
+        next_input = input_from_row(trim_rows[-1])
+        next_cursor = b64_encode(next_input['date_created'])
+    return {
+               'inputs': inputs,
+               'next_cursor': next_cursor,
+               'previous_cursor': prev_cursor
+           }, 200
+
+
+@app.route('/dataset/<string:uuid>/labels/add', methods=['POST'])
+def add_label_to_dataset(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    curr_labels: str = dataset['labels']
+    if not curr_labels.strip():
+        # Dataset doesn't have any labels
+        labels = []
+    else:
+        labels = curr_labels.split(constants.DATASET_LABELS_SPLITTER)
+    # Check if label exits
+    if req_data['label'] in labels:
+        return {'Error': 'Label already exists'}, 400
+    # Create new labels string
+    labels.append(req_data['label'])
+    labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
+    update_labels_of_dataset(uuid, labels_string)
+    # Return back dataset that was updated
+    rows = get_dataset(uuid)
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    return {'dataset': dataset}, 200
+
+
+@app.route('/dataset/<string:uuid>/labels/remove', methods=['DELETE'])
+def remove_label_from_dataset(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    # Get labels from dataset
+    curr_labels: str = dataset['labels']
+    labels = curr_labels.split(constants.DATASET_LABELS_SPLITTER)
+    if req_data['label'] not in labels:
+        return {'Error': f"label '{req_data['label']}' doesn't exist"}
+    # Remove from labels
+    labels.remove(req_data['label'])
+    labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
+    update_labels_of_dataset(uuid, labels_string)
+    # Reset input labels
+    reset_labels_of_inputs(uuid, req_data['label'])
+    # Return back dataset that was updated
+    rows = get_dataset(uuid)
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+    return {'dataset': dataset}, 200
+
+
+@app.route('/dataset/<string:uuid>/labels/order', methods=['PATCH'])
+def update_labels_from_dataset(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'labels': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_ARRAY_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    labels_new_split: list = req_data['labels']
+    labels_new_set = set(labels_new_split)
+
+    labels_unsplit: str = dataset['labels']
+    labels = labels_unsplit.split(constants.DATASET_LABELS_SPLITTER)
+    labels_set = set(labels)
+
+    for label in labels:
+        if label not in labels_new_set:
+            return {'Error': 'Labels missing, must only include all existing labels to update their order'}, 400
+
+    if len(labels_new_set - labels_set) != 0:
+        return {'Error': 'Extra labels included, must only include all existing labels to update their order'}, 400
+
+    labels_new = constants.DATASET_LABELS_SPLITTER.join(labels_new_split)
+    update_labels_of_dataset(uuid, labels_new)
+
+    # Return back dataset that was updated
+    rows = get_dataset(uuid)
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+    return {'dataset': dataset}, 200
 
 
 if __name__ == '__main__':
