@@ -141,7 +141,7 @@ const LabelsListC = React.memo(
 			setIsLabelDeleting(false);
 			toast({
 				title: 'Success',
-				description: `Deleted Label '${label}' from Dataset'`,
+				description: `Deleted Label '${label}' from Dataset '${activeDataset.name}'`,
 				status: 'success',
 				duration: 1500,
 				isClosable: false,

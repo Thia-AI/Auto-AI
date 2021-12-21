@@ -34,3 +34,5 @@ Thumbs.db
 ._*
 
 !src/utils/line-awesome/dist
+
+datasets/**
