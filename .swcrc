@@ -21,7 +21,7 @@
 	},
 	"env": {
 		"targets": {
-			"electron": 11
+			"electron": 13
 		}
 	}
 }

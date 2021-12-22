@@ -67,30 +67,33 @@ export class EngineShell {
 	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner)
 	 */
 	protected notifyOnceEngineHasStarted = async (retries = 20): Promise<boolean | undefined> => {
-		const timeout = this.engineCheckTimeout;
-		try {
-			await EngineRequestConfig.get('/devices', { timeout });
-			console.log('Engine Connected');
-			this.notifyRendererThatEngineHasStarted();
-			this.engineCheckTimeoutId = undefined;
-			this.resetEngineCheckTimeout();
-			RUNTIME_GLOBALS.engineRunning = true;
-			return true;
-		} catch (error) {
-			this.engineCheckRetries++;
-			this.engineCheckTimeout += this.engineCheckTimeoutIncreaseAmount;
-			const err = error as AxiosError;
-			console.log(err.message);
+		for (let i = 0; i < retries; i++) {
+			const timeout = this.engineCheckTimeout;
+			const initialTime = new Date().getTime();
+			try {
+				await EngineRequestConfig.get('/devices', { timeout });
+				console.log('Engine Connected');
+				this.notifyRendererThatEngineHasStarted();
+				this.engineCheckTimeoutId = undefined;
+				this.resetEngineCheckTimeout();
+				RUNTIME_GLOBALS.engineRunning = true;
+				return true;
+			} catch (error) {
+				this.engineCheckRetries++;
+				this.engineCheckTimeout += this.engineCheckTimeoutIncreaseAmount;
+				const err = error as AxiosError;
+				console.log(err.code);
+				console.log(err.message);
+			}
+			const afterTime = new Date().getTime();
+			// sleep for difference
+			await sleep(Math.abs(timeout - (afterTime - initialTime)));
 		}
-		if (this.engineCheckRetries == retries) {
-			console.log('Engine Failed to Start after Retries');
-			clearTimeout(this.engineCheckTimeoutId);
-			this.engineCheckTimeoutId = undefined;
-			this.resetEngineCheckTimeout();
-			return false;
-		} else {
-			this.engineCheckTimeoutId = setTimeout(this.notifyOnceEngineHasStarted, 0);
-		}
+		console.log('Engine Failed to Start after Retries');
+		clearTimeout(this.engineCheckTimeoutId);
+		this.engineCheckTimeoutId = undefined;
+		this.resetEngineCheckTimeout();
+		return false;
 	};
 
 	/**
@@ -100,3 +103,12 @@ export class EngineShell {
 		this.window?.webContents.send('engine:started');
 	};
 }
+
+/**
+ * Helper method to sleep in async/await
+ * @param ms Milliseconds to sleep for
+ * @returns N/A
+ */
+export const sleep = (ms: number) => {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+};
