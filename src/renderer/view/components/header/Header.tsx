@@ -1,5 +1,5 @@
 import React, { PureComponent, MouseEvent } from 'react';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer, MessageBoxReturnValue } from 'electron';
 import { connect } from 'react-redux';
 import { Box, Center, Flex, Spacer, Spinner } from '@chakra-ui/react';
 
@@ -43,14 +43,8 @@ class HeaderC extends PureComponent<Props> {
 	closeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
 
-		const dialog = remote.dialog;
-		const res = await dialog.showMessageBox({
-			title: 'Thia',
-			message: 'Are you sure you want to quit?',
-			detail: "This will stop the AI Engine and all it's processes.",
-			type: 'info',
-			buttons: ['Yes', 'Cancel'],
-		});
+		const res: MessageBoxReturnValue = await ipcRenderer.invoke('window:showCloseWindowDialog');
+
 		if (res.response == 0) {
 			await ipcRenderer.invoke('window:close');
 		}

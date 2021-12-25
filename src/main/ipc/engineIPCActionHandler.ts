@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 /**
- * Class that manages EngineActions called by **renderer** through IPC
+ * Class that contains IPC actions pertaining to **Engine**
  */
 class EngineIPCActionHandler {
 	private static instance: EngineIPCActionHandler;
