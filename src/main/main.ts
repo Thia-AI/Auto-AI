@@ -79,9 +79,9 @@ function createWindow(): void {
 	// must initialize IPC handler and Engine loading renderer
 	launchEngine();
 
-	engineIPCActionHandler = new EngineIPCActionHandler(mainWindow, engineJobsSIOConnection);
+	engineIPCActionHandler = new EngineIPCActionHandler(mainWindow, engineJobsSIOConnection); // eslint-disable-line @typescript-eslint/no-unused-vars
 
-	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
+	mainWindowIPCActions = new MainWindowIPCActions(mainWindow); // eslint-disable-line @typescript-eslint/no-unused-vars
 
 	// and load the index.html of the renderer
 	mainWindow

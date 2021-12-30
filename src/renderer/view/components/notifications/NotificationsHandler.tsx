@@ -56,7 +56,7 @@ const NotificationsHandlerC = React.memo(
 			ipcRenderer.on('engine:jobFinished', async (e, jobID: string) => {
 				// TODO: Do something when there's an error (maybe there needs to be a universal retry/error)
 				// system.
-				const [wasError, job] = await getJobIDStatus(jobID);
+				const [wasError, job] = await getJobIDStatus(jobID); // eslint-disable-line @typescript-eslint/no-unused-vars
 				sendNotification({
 					job: job as Job,
 					dismissAfter: 1250,

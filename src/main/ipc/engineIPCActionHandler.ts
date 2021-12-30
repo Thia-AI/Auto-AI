@@ -1,5 +1,5 @@
 import { ipcMain, BrowserWindow } from 'electron';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 
 import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 /**
@@ -50,6 +50,7 @@ class EngineIPCActionHandler {
 		});
 	};
 
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	/**
 	 * Logs Client-Side Socket-IO events
 	 * @param message Logging message
@@ -58,6 +59,7 @@ class EngineIPCActionHandler {
 	private logCSIO = (message?: any, ...optionalParams: any[]) => {
 		console.log('[CLIENT-SIO]:', message, ...optionalParams);
 	};
+	/* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 export { EngineIPCActionHandler };
