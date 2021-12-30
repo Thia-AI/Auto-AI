@@ -2,14 +2,17 @@ import base64
 import glob
 import os
 from pathlib import Path
-from dateutil import parser
 
+from dateutil import parser
 from flask import Flask, jsonify, request
 
 from env import environment
 
 # First thing we do is initialize file paths, env variables, etc.
 environment.init_environment_pre_gpu()
+
+from flask_socketio import SocketIO, emit, send
+import tensorflow as tf
 
 # Jobs
 from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
@@ -32,10 +35,17 @@ from config import config
 from config import constants
 from helpers.route import validate_req_json
 from helpers.encoding import b64_encode, b64_decode
-
-import tensorflow as tf
+# Socket IO
+from sio_namespaces.job_namespace import jobs_namespace
 
 app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
+
+io = SocketIO(app)
+
+io.on_namespace(jobs_namespace)
+
+# sio = socketio.Server(async_mode='threading', logger=True, engineio_logger=True)
+# app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
 
 environment.init_environment_post_gpu()
 
@@ -499,4 +509,5 @@ def update_labels_from_dataset(uuid: str):
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=8442, threaded=True)
+    # app.run(host='localhost', port=8442, threaded=True)
+    io.run(app, host='localhost', port=8442)

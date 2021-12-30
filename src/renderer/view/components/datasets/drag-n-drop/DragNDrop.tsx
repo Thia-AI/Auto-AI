@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
-import { JobMonitorHandler } from '_/renderer/view/worker-handlers/JobMonitorHandler';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
@@ -115,7 +114,6 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 			}
 
 			setUploadJobID(uploadImageRes['ids'][0]);
-			JobMonitorHandler.getInstance().addJobIDToMonitor(uploadImageRes['ids'][0]);
 
 			setImagesUploading(false);
 			toast({

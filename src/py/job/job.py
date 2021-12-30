@@ -4,6 +4,7 @@ from typing import Deque
 from collections import deque
 import time
 import uuid
+from sio_namespaces.job_namespace import jobs_namespace
 
 from log.logger import log
 from job.base_job import BaseJob
@@ -62,6 +63,7 @@ class JobManager:
         for job in list(self.job_queue):
             if job.has_started() and job.has_finished():
                 self.job_queue.remove(job)
+                jobs_namespace.update_users_of_job_finishing(job.id().hex)
         """Then run all jobs in the queue if they have not already started"""
         log(f"Job Queue Length: {len(self.job_queue)}", log_it=self.logging)
         for job in list(self.job_queue):
