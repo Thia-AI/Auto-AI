@@ -37,9 +37,6 @@ preRendererAppInit();
  * Creates the main window for **renderer**
  */
 function createWindow(): void {
-	// See https://github.com/electron/electron/issues/24073 for why we set this
-	// to false
-	app.allowRendererProcessReuse = false;
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		height: 768,
@@ -57,7 +54,6 @@ function createWindow(): void {
 			nodeIntegration: true,
 			contextIsolation: false,
 			backgroundThrottling: false,
-			enableRemoteModule: true,
 			nodeIntegrationInWorker: true,
 		},
 	});

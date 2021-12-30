@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import msvcrt
 import logging
+import json
 
 from config import config
 from log.logger import log
@@ -85,6 +86,14 @@ def init_environment_pre_gpu() -> None:
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     flask_logger = logging.getLogger('werkzeug')
     flask_logger.disabled = True
+
+    from tensorflow.python.client import device_lib
+
+    def get_available_gpus():
+        local_device_protos = device_lib.list_local_devices()
+        return [{"VRAM": "" + str(x.memory_limit / 1024 / 1024) + " GB", "Description": x.physical_device_desc} for x in
+                local_device_protos if x.device_type == 'GPU']
+    log("Available GPUs: " + json.dumps(get_available_gpus(), indent=2), True)
 
 
 def add_path_to_path_env(path: Path):

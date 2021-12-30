@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { remote, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import { useToast } from '@chakra-ui/toast';
 import { connect } from 'react-redux';
 import { IJobNotification } from '_/renderer/state/notifications/model/actionTypes';
@@ -16,8 +16,6 @@ interface Props {
 
 const NotificationsHandlerC = React.memo(({ notifications, sendNotification }: Props) => {
 	const toast = useToast();
-	// Use remote to send native notifications through electron
-	const Notification = remote.Notification;
 	/**
 	 * Map of jobID -> Notification key-value pair that represents the "active" notifications
 	 */
@@ -49,17 +47,13 @@ const NotificationsHandlerC = React.memo(({ notifications, sendNotification }: P
 			if (!notificationMap.hasOwnProperty(notif.job.id)) {
 				// This is a new notification, send it!!
 				if (!document.hasFocus()) {
-					// App isn't focused, show OS level notification as well
-					const nativeNotif = new Notification({
-						title: 'Job Update',
-						body: `Finished ${notif.job.job_name} job`,
-					});
-					nativeNotif.on('click', async (e) => {
-						e.preventDefault();
-						// If clicked, make the App be focused
-						await ipcRenderer.invoke('window:focus');
-					});
-					nativeNotif.show();
+					(async function () {
+						await ipcRenderer.invoke(
+							'notificationsHandler:showNotification',
+							'Job Update',
+							`Finished ${notif.job.job_name} job`,
+						);
+					})();
 				}
 				// Show UI notification regardless
 				toast({

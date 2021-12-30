@@ -37,7 +37,7 @@ const commonConfig = {
 			{
 				test: /\.jsx?$/,
 				exclude: /node_modules/,
-				loader: 'babel-loader',
+				loader: 'swc-loader',
 			},
 			{
 				test: /\.(ts|tsx)$/,

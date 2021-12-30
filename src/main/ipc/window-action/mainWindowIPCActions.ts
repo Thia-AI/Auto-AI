@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain, BrowserWindow, dialog, Notification } from 'electron';
 
 /**
  * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}
@@ -34,13 +34,63 @@ class MainWindowIPCActions {
 			this.window.show();
 		});
 
-		this.initWindowIPCActions();
-	};
+		// Header
+		ipcMain.handle('window:showCloseWindowDialog', async () => {
+			const res = await dialog.showMessageBox({
+				title: 'Thia',
+				message: 'Are you sure you want to quit?',
+				detail: "This will stop the AI Engine and all it's processes.",
+				type: 'info',
+				buttons: ['Yes', 'Cancel'],
+			});
 
-	/**
-	 * Send back IPC message to renderer maximizes/unmaximizes the BW
-	 */
-	private initWindowIPCActions = () => {
+			return res;
+		});
+
+		// DragNDrop
+		ipcMain.handle('dragNDrop:selectMultipleFiles', async () => {
+			const files = await dialog.showOpenDialog(this.window, {
+				title: 'Select Files to Upload',
+				properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
+				filters: [
+					{
+						name: 'Images',
+						extensions: ['jpg', 'png', 'jpeg'],
+					},
+				],
+			});
+
+			return files;
+		});
+
+		ipcMain.handle('dragNDrop:selectFolder', async () => {
+			const files = await dialog.showOpenDialog(this.window, {
+				title: 'Select Folder to Upload',
+				properties: ['openDirectory', 'dontAddToRecent'],
+			});
+
+			return files;
+		});
+
+		// NotificationsHandler
+		ipcMain.handle(
+			'notificationsHandler:showNotification',
+			async (e, title: string, body: string) => {
+				const notif = new Notification({
+					title,
+					body,
+				});
+
+				notif.on('click', async (e) => {
+					e.preventDefault();
+					this.window.focus();
+				});
+
+				notif.show();
+			},
+		);
+
+		// Handle unmaximize / maximize of window
 		this.window.on('maximize', () => {
 			this.window.webContents.send('window:maximized');
 		});

@@ -1,0 +1,27 @@
+{
+	"jsc": {
+		"parser": {
+			"syntax": "ecmascript",
+			"jsx": true,
+			"dynamicImport": true,
+			"privateMethod": true,
+			"functionBind": false,
+			"exportDefaultFrom": true,
+			"exportNamespaceFrom": false,
+			"decorators": true,
+			"decoratorsBeforeExport": false,
+			"topLevelAwait": false,
+			"importMeta": false
+		},
+		"transform": null,
+		"target": "es5",
+		"loose": false,
+		"externalHelpers": false,
+		"keepClassNames": false
+	},
+	"env": {
+		"targets": {
+			"electron": 16
+		}
+	}
+}

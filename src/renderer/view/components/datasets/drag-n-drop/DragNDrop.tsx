@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 import { Center, HStack, Text, Button, VStack, useToast, Flex } from '@chakra-ui/react';
-import { remote } from 'electron';
 import { promises } from 'fs';
 import { extname, sep } from 'path';
+import { ipcRenderer, OpenDialogReturnValue } from 'electron';
 
 import { DragNDropPreview } from './DragNDropPreview';
 import { connect } from 'react-redux';
@@ -25,8 +25,6 @@ interface Props {
 const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	const toast = useToast();
 
-	const dialog = remote.dialog;
-
 	const [fileDirectory, setFileDirectory] = useState('');
 	const [imagesUploading, setImagesUploading] = useState(false);
 
@@ -46,16 +44,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	 */
 	const selectMultipleFiles = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
-		const files = await dialog.showOpenDialog(remote.getCurrentWindow(), {
-			title: 'Select Files to Upload',
-			properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
-			filters: [
-				{
-					name: 'Images',
-					extensions: ['jpg', 'png', 'jpeg'],
-				},
-			],
-		});
+		const files: OpenDialogReturnValue = await ipcRenderer.invoke(
+			'dragNDrop:selectMultipleFiles',
+		);
 		if (files.canceled) return;
 		setFileDirectory('');
 		updateFiles(files.filePaths);
@@ -67,10 +58,8 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	 */
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
-		const folder = await dialog.showOpenDialog(remote.getCurrentWindow(), {
-			title: 'Select Folder to Upload',
-			properties: ['openDirectory', 'dontAddToRecent'],
-		});
+		const folder: OpenDialogReturnValue = await ipcRenderer.invoke('dragNDrop:selectFolder');
+
 		if (folder.canceled) return;
 		try {
 			const files = await promises.readdir(folder.filePaths[0]);

@@ -76,7 +76,7 @@ const AddLabelC = React.memo(
 			changeActiveDataset(addLabelRes['dataset']);
 			toast({
 				title: 'Success',
-				description: `Added Label '${labelValue}' to Dataset'`,
+				description: `Added Label '${labelValue}' to Dataset '${activeDataset.name}'`,
 				status: 'success',
 				duration: 1500,
 				isClosable: false,
