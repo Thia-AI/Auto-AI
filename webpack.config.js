@@ -102,6 +102,11 @@ mainConfig.plugins = [
 		],
 	}),
 ];
+// For socket-io re-rendering
+mainConfig.externals = {
+	bufferutil: 'bufferutil',
+	'utf-8-validate': 'utf-8-validate',
+};
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
 rendererConfig.entry = './src/renderer/view/renderer.tsx';
@@ -113,9 +118,4 @@ rendererConfig.plugins = [
 	}),
 ];
 
-const jobMonitorWorkerConfig = lodash.cloneDeep(commonConfig);
-jobMonitorWorkerConfig.entry = './src/renderer/workers/job-monitor/worker.ts';
-jobMonitorWorkerConfig.target = 'webworker';
-jobMonitorWorkerConfig.output.filename = 'job-monitor-worker.bundle.js';
-
-module.exports = [mainConfig, rendererConfig, jobMonitorWorkerConfig];
+module.exports = [mainConfig, rendererConfig];

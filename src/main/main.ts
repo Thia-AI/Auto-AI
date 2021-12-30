@@ -6,6 +6,7 @@ import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
 import { register } from 'electron-localshortcut';
+import { io } from 'socket.io-client';
 
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
@@ -24,6 +25,13 @@ let engineIPCActionHandler: EngineIPCActionHandler;
 const isDev = require('electron-is-dev');
 
 export const APP_NAME = 'Thia';
+
+const engineJobsSIOConnection = io('http://localhost:8442/jobs', {
+	path: '/socket.io',
+	forceNew: true,
+	timeout: 2000,
+	autoConnect: false,
+});
 
 const preRendererAppInit = () => {
 	if (process.platform === 'win32') {
@@ -69,10 +77,11 @@ function createWindow(): void {
 	Menu.setApplicationMenu(menu);
 
 	// must initialize IPC handler and Engine loading renderer
-	initializeIPC();
 	launchEngine();
+
+	engineIPCActionHandler = new EngineIPCActionHandler(mainWindow, engineJobsSIOConnection);
+
 	mainWindowIPCActions = new MainWindowIPCActions(mainWindow);
-	mainWindowIPCActions.initIPCActions();
 
 	// and load the index.html of the renderer
 	mainWindow
@@ -132,14 +141,6 @@ const launchEngine = () => {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}
 	/* eslint-enable  @typescript-eslint/no-unused-vars */
-};
-
-/**
- * Initializes EngineActionHandler and EngineIPCActionHandler
- */
-const initializeIPC = () => {
-	engineIPCActionHandler = EngineIPCActionHandler.getInstance();
-	engineIPCActionHandler.initIPCListening();
 };
 
 // Returns true if this instance of the App is the primary,

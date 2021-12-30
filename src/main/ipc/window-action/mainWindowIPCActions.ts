@@ -8,13 +8,14 @@ class MainWindowIPCActions {
 
 	constructor(window: BrowserWindow) {
 		this.window = window;
+		this.initIPCActions();
 	}
 
 	public getWindow = () => {
 		return this.window;
 	};
 
-	public initIPCActions = () => {
+	private initIPCActions = () => {
 		ipcMain.handle('window:close', async () => {
 			this.window.close();
 		});
