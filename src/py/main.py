@@ -12,6 +12,7 @@ from env import environment
 environment.init_environment_pre_gpu()
 
 from flask_socketio import SocketIO, emit, send
+from engineio.async_drivers import gevent
 import tensorflow as tf
 
 # Jobs
