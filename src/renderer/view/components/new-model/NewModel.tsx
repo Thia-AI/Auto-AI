@@ -12,6 +12,8 @@ import {
 } from '_/renderer/state/choose-model/model/actionTypes';
 
 import './NewModel.css';
+import { ipcRenderer } from 'electron';
+import { WorkerTask } from '_/shared/worker_constants';
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
 	changeSelectedModel: (modelNumber: number) => IChangeSelectedModelAction;

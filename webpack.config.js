@@ -71,6 +71,9 @@ const commonConfig = {
 	node: {
 		__dirname: false,
 	},
+	experiments: {
+		topLevelAwait: true,
+	},
 };
 // #endregion
 
@@ -118,4 +121,14 @@ rendererConfig.plugins = [
 	}),
 ];
 
-module.exports = [mainConfig, rendererConfig];
+const hiddenRendererConfig = lodash.cloneDeep(commonConfig);
+hiddenRendererConfig.entry = './src/worker/worker.ts';
+hiddenRendererConfig.target = 'electron-renderer';
+hiddenRendererConfig.output.filename = 'worker.bundle.js';
+hiddenRendererConfig.plugins = [
+	new HtmlWebpackPlugin({
+		template: path.resolve(__dirname, './public/worker.html'),
+		filename: 'worker.html',
+	}),
+];
+module.exports = [mainConfig, rendererConfig, hiddenRendererConfig];
