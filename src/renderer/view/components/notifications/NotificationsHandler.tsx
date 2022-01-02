@@ -8,7 +8,7 @@ import { notifSendAction } from '_/renderer/state/notifications/NotificationActi
 import { IAppState } from '_/renderer/state/reducers';
 import { Job } from '../../helpers/constants/engineDBTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
-import EngineRequestConfig from '_/renderer/engine-requests/engineRequestConfig';
+import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
 
 interface Props {
