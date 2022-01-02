@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Center, Flex, HStack, Icon, Spacer, Spinner, Text, useToast } from '@chakra-ui/react';
+import { Box, Flex, HStack, Icon, Spacer, Text } from '@chakra-ui/react';
 import { areEqual } from 'react-window';
 import { parse } from 'path';
 import { connect } from 'react-redux';
@@ -35,19 +35,18 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 
 	if (itemIndex >= file_paths.length) return null;
 	// Here on we can assume the file exists
-	const toast = useToast();
 
 	const file_path = file_paths[itemIndex];
 	const file_name = parse(file_path).name;
 
 	// TODO: Add lazy loading of background image
-	const renderLoading = () => {
-		return (
-			<Center w='full' h='full' boxShadow='lg' bg='gray.700' borderRadius='md'>
-				<Spinner color='gray.600' />
-			</Center>
-		);
-	};
+	// const renderLoading = () => {
+	// 	return (
+	// 		<Center w='full' h='full' boxShadow='lg' bg='gray.700' borderRadius='md'>
+	// 			<Spinner color='gray.600' />
+	// 		</Center>
+	// 	);
+	// };
 
 	return (
 		<Box p='2' style={style}>
