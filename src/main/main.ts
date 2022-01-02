@@ -107,7 +107,6 @@ const createWindow = (): void => {
 		)
 		.finally(() => {
 			/* no action */
-			console.log('Main Window Loaded');
 		});
 
 	// Emitted when the window is closed.

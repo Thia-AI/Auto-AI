@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, dialog, Notification } from 'electron';
+import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
 
 /**
  * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}
@@ -18,6 +18,7 @@ class MainWindowIPCActions {
 	private initIPCActions = () => {
 		ipcMain.handle('window:close', async () => {
 			this.window.close();
+			app.quit();
 		});
 		ipcMain.handle('window:unmaximize', async () => {
 			this.window.unmaximize();
