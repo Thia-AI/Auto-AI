@@ -13,7 +13,7 @@ import '_public/style.css';
 import { App } from './App';
 import { configureStore } from '../state/store';
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
-import EngineRequestConfig from '_engine_requests/engineRequestConfig';
+import EngineRequestConfig from '_/shared/engineRequestConfig';
 
 const theme = extendTheme({
 	styles: {

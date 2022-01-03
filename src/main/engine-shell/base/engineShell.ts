@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import { BrowserWindow } from 'electron';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
-import EngineRequestConfig from '_engine_requests/engineRequestConfig';
+import EngineRequestConfig from '_/shared/engineRequestConfig';
 
 /**
  * Base class for creating an EngineShell to deploy and manage **Engine**'s state

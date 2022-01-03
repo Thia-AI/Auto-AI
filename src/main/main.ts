@@ -7,6 +7,7 @@ import * as url from 'url';
 import { BrowserWindow, app, ipcMain, Menu } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
+import { cpus } from 'os';
 
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
@@ -16,11 +17,24 @@ import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 import { isEmulatedDev } from './helpers/dev';
+import {
+	ReadFileTaskResult,
+	READ_FILE,
+	TaskResult,
+	WorkerMap,
+	WorkerTask,
+} from '_/shared/worker_constants';
+
+const numCPUs = cpus().length;
 
 let mainWindow: BrowserWindow | null;
 let engineShell: EngineShellProd | EngineShellDev;
 let mainWindowIPCActions: MainWindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
+
+const availableWorkers: BrowserWindow[] = [];
+const workerMap: WorkerMap = {};
+const workerTaskQueue: WorkerTask[] = [];
 
 const isDev = require('electron-is-dev');
 
@@ -44,7 +58,7 @@ preRendererAppInit();
 /**
  * Creates the main window for **renderer**
  */
-function createWindow(): void {
+const createWindow = (): void => {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		height: 768,
@@ -62,7 +76,6 @@ function createWindow(): void {
 			nodeIntegration: true,
 			contextIsolation: false,
 			backgroundThrottling: false,
-			nodeIntegrationInWorker: true,
 		},
 	});
 
@@ -87,7 +100,7 @@ function createWindow(): void {
 	mainWindow
 		.loadURL(
 			url.format({
-				pathname: path.join(__dirname, './index.html'),
+				pathname: path.join(__dirname, 'index.html'),
 				protocol: 'file:',
 				slashes: true,
 			}),
@@ -103,7 +116,42 @@ function createWindow(): void {
 		// when you should delete the corresponding element.
 		mainWindow = null;
 	});
-}
+};
+
+const createBGWorker = () => {
+	const browserWindowWorker = new BrowserWindow({
+		show: false,
+		frame: true,
+		paintWhenInitiallyHidden: false,
+		webPreferences: {
+			webSecurity: true,
+			devTools: isEmulatedDev,
+			nodeIntegration: true,
+			contextIsolation: false,
+			backgroundThrottling: false,
+		},
+	});
+	browserWindowWorker
+		.loadURL(
+			url.format({
+				pathname: path.join(__dirname, 'worker.html'),
+				protocol: 'file:',
+				slashes: true,
+			}),
+		)
+		.finally(() => {
+			// Nothing
+		});
+	browserWindowWorker.on('closed', () => {
+		console.log('Background Worker Closed');
+	});
+	browserWindowWorker.webContents.once('did-finish-load', () => {
+		workerMap[browserWindowWorker.webContents.getOSProcessId()] = browserWindowWorker;
+		browserWindowWorker.webContents.send('worker:readyToInit');
+	});
+
+	return browserWindowWorker;
+};
 
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is
@@ -166,11 +214,46 @@ if (!isSingleInstance) {
 	// Some APIs can only be used after this event occurs.
 	app.on('ready', async () => {
 		initRendererDev();
-
 		createWindow();
 		registerShortcuts(mainWindow!);
+		// Create worker for each cpu
+		initWorkerIPC();
+
+		for (let i = 0; i < numCPUs; i++) {
+			const worker = createBGWorker();
+			availableWorkers.push(worker);
+		}
 	});
 }
+
+const doTask = () => {
+	while (availableWorkers.length > 0 && workerTaskQueue.length > 0) {
+		const task = workerTaskQueue.shift();
+		const nextWorker = availableWorkers.shift();
+
+		nextWorker?.webContents.send('worker:taskFromQueueSent', task);
+	}
+	mainWindow?.webContents.send('worker:status', availableWorkers.length, workerTaskQueue.length);
+};
+
+const initWorkerIPC = () => {
+	ipcMain.handle('worker:ready', (event) => {
+		availableWorkers.push(workerMap[event.sender.getOSProcessId()]);
+		doTask();
+	});
+
+	ipcMain.handle('worker:taskAssigned', (event, task: WorkerTask) => {
+		workerTaskQueue.push(task);
+		doTask();
+	});
+
+	ipcMain.handle('worker:taskDone', (event, result: TaskResult) => {
+		if (result.type == READ_FILE) {
+			result = result as ReadFileTaskResult;
+			mainWindow?.webContents.send(`worker:taskDone_${result.filePath}`, result);
+		}
+	});
+};
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
