@@ -6,7 +6,11 @@ const initialChangeSelectedState: ISelectedDatasetReducer = {
 	value: '',
 };
 
-// State for which dataset is currently selected (value is the ID of the dataset)
+/**
+ * State for which dataset is currently selected (value is the ID of the dataset).
+ *
+ * @ts
+ */
 export const selectedDatasetReducer = (
 	state = initialChangeSelectedState,
 	action: IResetSelectedDatasetAction | IChangeSelectedDatasetAction,

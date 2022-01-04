@@ -5,7 +5,8 @@
 	"extends": [
 		"eslint:recommended",
 		"plugin:react/recommended",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:@typescript-eslint/recommended",
+		"plugin:jsdoc/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
@@ -15,8 +16,53 @@
 		"ecmaVersion": 12,
 		"sourceType": "module"
 	},
-	"plugins": ["react", "@typescript-eslint", "import"],
+	"plugins": ["react", "@typescript-eslint", "import", "jsdoc"],
 	"rules": {
+		"jsdoc/require-jsdoc": [
+			"error",
+			{
+				"checkGetters": false,
+				"checkSetters": false,
+				"publicOnly": true,
+				"require": {
+					"FunctionExpression": true,
+					"FunctionDeclaration": true,
+					"ArrowFunctionExpression": true,
+					"ClassDeclaration": true,
+					"MethodDefinition": true
+				},
+				"contexts": [
+					"TSMethodSignature",
+					"TSInterfaceDeclaration",
+					"TSEnumDeclaration",
+					"TSTypeAliasDeclaration",
+					"VariableDeclaration"
+				],
+				"checkConstructors": false,
+				"enableFixer": false
+			}
+		],
+		"jsdoc/check-tag-names": ["error", { "definedTags": ["react", "ts"] }],
+		"jsdoc/require-returns": ["warn", { "exemptedBy": ["react", "ts"] }],
+		"jsdoc/require-param": ["warn", { "exemptedBy": ["ts"] }],
+		"jsdoc/match-description": [
+			"warn",
+			{
+				"message": "Description must be an English sentence (begin capitalized and end on a period)",
+				"tags": {
+					"param": {
+						"message": "@param description must be an English sentence (begin capitalized and end on a period)",
+						"match": true
+					},
+					"returns": {
+						"message": "@return description must be an English sentence (begin capitalized and end on a period)",
+						"match": true
+					}
+				}
+			}
+		],
+		"jsdoc/require-param-type": "off",
+		"jsdoc/require-returns-type": "off",
 		"indent": "off",
 		"no-prototype-builtins": "off",
 		"no-constant-condition": ["error", { "checkLoops": false }],

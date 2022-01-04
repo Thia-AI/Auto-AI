@@ -4,7 +4,7 @@ import { EngineShell } from './base/engineShell';
 import { BrowserWindow } from 'electron';
 
 /**
- * Class for creating a development EngineShell
+ * Class for creating a development EngineShell.
  */
 export class EngineShellDev extends EngineShell {
 	private engine: PythonShell;
@@ -16,8 +16,9 @@ export class EngineShellDev extends EngineShell {
 	};
 
 	/**
-	 * Instantiates a development EngineShell and starts a development **Engine** process
-	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications
+	 * Instantiates a development EngineShell and starts a development **Engine** process.
+	 *
+	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
 	 */
 	constructor(window: BrowserWindow | null) {
 		super(window);
@@ -32,7 +33,7 @@ export class EngineShellDev extends EngineShell {
 	}
 
 	/**
-	 * Overriden method for setting up streaming for dev **Engine** process' stdout messages
+	 * Overriden method for setting up streaming for dev **Engine** process' stdout messages.
 	 */
 	protected onDataChangeSetup = () => {
 		this.engine.on('message', (message) => {
@@ -41,7 +42,7 @@ export class EngineShellDev extends EngineShell {
 	};
 
 	/**
-	 * Overriden method for setting up listener for when dev **Engine** process exit's unexpectedly
+	 * Overriden method for setting up listener for when dev **Engine** process exit's unexpectedly.
 	 */
 	protected onExitSetup = () => {
 		this.engine.end((err, exitCode, exitSignal) => {

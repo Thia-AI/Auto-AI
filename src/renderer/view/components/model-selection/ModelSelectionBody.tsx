@@ -37,4 +37,7 @@ const mapStateToProps = (state: IAppState) => ({
 	selectedModel: state.selectedModel,
 });
 
+/**
+ * Manages which model description to display when creating a new model.
+ */
 export const ModelSelectionBody = connect(mapStateToProps)(ModelSelectionBodyC);

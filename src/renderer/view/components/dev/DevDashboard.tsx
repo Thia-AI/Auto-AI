@@ -15,6 +15,9 @@ import {
 import { ipcRenderer } from 'electron';
 import { DevDeleteDatasetInputs } from './DevDeleteDatasetInputs';
 
+/**
+ * Dev panel (only works during development).
+ */
 export const DevDashboard = React.memo(() => {
 	const [isDashboardOpen, setIsDashboardOpen] = useState(false);
 

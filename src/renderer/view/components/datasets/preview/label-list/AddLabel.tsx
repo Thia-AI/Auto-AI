@@ -141,6 +141,9 @@ const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset.value,
 });
 
+/**
+ * Adds a label to a dataset.
+ */
 export const AddLabel = connect(mapStateToProps, {
 	changeActiveDataset,
 })(AddLabelC);

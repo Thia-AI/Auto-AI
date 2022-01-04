@@ -1,9 +1,13 @@
-// State for whether model selection modal is opened or not
+/**
+ * State for whether model selection modal is opened or not.
+ */
 export interface IOpenCloseModelSelectionReducer {
 	value: boolean;
 }
 
-// State for which model is selected (for description viewing)
+/**
+ * State for which model is selected (for description viewing).
+ */
 export interface ISelectedModelReducer {
 	value: number;
 }

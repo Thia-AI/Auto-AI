@@ -38,9 +38,10 @@ const NotificationsHandlerC = React.memo(
 			}
 		}, [engineStarted]);
 		/**
-		 * Gets the status of a job
-		 * @param jobID uuid hex representation of the job ID to get the status of
-		 * @returns [false, job response object] if no error, and [true, error object] if error
+		 * Gets the status of a job.
+		 *
+		 * @param jobID UUID hex representation of the job ID to get the status of.
+		 * @returns `[false, job response object]` if no error, and `[true, error object]` if error.
 		 */
 		const getJobIDStatus = async (jobID: string): Promise<[boolean, Job]> => {
 			try {

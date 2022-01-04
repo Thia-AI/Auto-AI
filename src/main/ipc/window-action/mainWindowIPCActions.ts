@@ -1,20 +1,23 @@
 import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
 
 /**
- * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}
+ * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}.
  */
 class MainWindowIPCActions {
-	protected window: BrowserWindow;
+	protected _window: BrowserWindow;
 
 	constructor(window: BrowserWindow) {
-		this.window = window;
+		this._window = window;
 		this.initIPCActions();
 	}
 
-	public getWindow = () => {
-		return this.window;
-	};
+	get window() {
+		return this._window;
+	}
 
+	/**
+	 * Sets up IPC actions for the main window.
+	 */
 	private initIPCActions = () => {
 		ipcMain.handle('window:close', async () => {
 			this.window.close();

@@ -14,6 +14,9 @@ interface NavItemProps {
 	onClick: () => any;
 }
 
+/**
+ * Individual navigation item in the side menu.
+ */
 export const NavItem = React.memo((props: NavItemProps) => {
 	const { active, subtle, icon, children, label, endElement } = props;
 	return (

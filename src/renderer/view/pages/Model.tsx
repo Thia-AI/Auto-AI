@@ -50,4 +50,7 @@ const Model = React.memo(() => {
 	);
 });
 
+/**
+ * Page for rendering an individual model.
+ */
 export default Model;

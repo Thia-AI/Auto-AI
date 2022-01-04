@@ -2,11 +2,15 @@ import { NOTIFICATION_CLEAR, NOTIFICATION_DISMISS, NOTIFICATION_SEND } from '../
 import { INotifClearAction, INotifDismissAction, INotifSendAction } from './model/actionTypes';
 import { INotificationsReducer } from './model/reducerTypes';
 
-// State for list of notifications
 const initialNotificationsState: INotificationsReducer = {
 	value: [],
 };
 
+/**
+ * State for list of notifications.
+ *
+ * @ts
+ */
 export const notificationsReducer = (
 	state = initialNotificationsState,
 	action: INotifClearAction | INotifDismissAction | INotifSendAction,

@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Turn off eslint since this is not our source code.
+/* eslint-disable */
+
 function createDetectElementResize(nonce, hostWindow) {
 	// Check `document` and `window` in case of server-side rendering
 	var _window;
@@ -295,17 +298,17 @@ export default class AutoSizer extends React.Component {
 		}
 
 		/**
-     * TODO: Avoid rendering children before the initial measurements have been collected.
-     * At best this would just be wasting cycles.
-     * Add this check into version 10 though as it could break too many ref callbacks in version 9.
-     * Note that if default width/height props were provided this would still work with SSR.
+		 * TODO: Avoid rendering children before the initial measurements have been collected.
+		 * At best this would just be wasting cycles.
+		 * Add this check into version 10 though as it could break too many ref callbacks in version 9.
+		 * Note that if default width/height props were provided this would still work with SSR.
     if (
       height !== 0 &&
       width !== 0
     ) {
       child = children({ height, width })
     }
-    */
+		 */
 
 		return (
 			<div
@@ -359,3 +362,5 @@ export default class AutoSizer extends React.Component {
 		this._autoSizer = autoSizer;
 	};
 }
+
+/* eslint-enable */

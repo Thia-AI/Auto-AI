@@ -1,0 +1,112 @@
+{
+	"env": {
+		"browser": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:jsdoc/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 12,
+		"sourceType": "module"
+	},
+	"plugins": ["react", "@typescript-eslint", "import", "jsdoc"],
+	"rules": {
+		"jsdoc/require-jsdoc": [
+			"error",
+			{
+				"checkGetters": false,
+				"checkSetters": false,
+				"publicOnly": false,
+				"require": {
+					"FunctionExpression": true,
+					"FunctionDeclaration": true,
+					"ArrowFunctionExpression": true,
+					"ClassDeclaration": true,
+					"MethodDefinition": true
+				},
+				"contexts": [
+					"TSMethodSignature",
+					"TSInterfaceDeclaration",
+					"TSEnumDeclaration",
+					"TSTypeAliasDeclaration"
+				],
+				"checkConstructors": false,
+				"enableFixer": false
+			}
+		],
+		"jsdoc/check-tag-names": ["error", { "definedTags": ["ts"] }],
+		"jsdoc/require-returns": ["warn", { "exemptedBy": ["ts"] }],
+		"jsdoc/require-param": ["warn", { "exemptedBy": ["ts"] }],
+		"jsdoc/match-description": [
+			"warn",
+			{
+				"message": "Description must be an English sentence (begin capitalized and end on a period)",
+				"tags": {
+					"param": {
+						"message": "@param description must be an English sentence (begin capitalized and end on a period)",
+						"match": true
+					},
+					"returns": {
+						"message": "@return description must be an English sentence (begin capitalized and end on a period)",
+						"match": true
+					}
+				}
+			}
+		],
+		"jsdoc/require-param-type": "off",
+		"jsdoc/require-returns-type": "off",
+		"indent": "off",
+		"no-prototype-builtins": "off",
+		"no-constant-condition": ["error", { "checkLoops": false }],
+		"react/display-name": "off",
+		"linebreak-style": "off",
+		"quotes": ["error", "single", { "avoidEscape": true }],
+		"semi": ["error", "always"],
+		"import/no-unresolved": "error",
+		"@typescript-eslint/ban-types": "off",
+		"react/prop-types": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"@typescript-eslint/no-unused-vars": ["error"],
+		"@typescript-eslint/no-var-requires": "off",
+		"@typescript-eslint/no-empty-function": "off",
+		"no-useless-catch": "off"
+	},
+	"overrides": [
+		{
+			"files": ["src/renderer/**/*.tsx"],
+			"rules": {
+				"@typescript-eslint/no-var-requires": ["error"]
+			}
+		},
+		{
+			"files": ["src/main/**/*.ts"],
+			"rules": {
+				"@typescript-eslint/no-var-requires": "off"
+			}
+		}
+	],
+	"settings": {
+		"import/parsers": {
+			"@typescript-eslint/parser": [".ts", ".tsx"]
+		},
+		"import/resolver": {
+			"typescript": {
+				"alwaysTryTypes": true,
+				"project": "tsconfig.json"
+			}
+		},
+		"react": {
+			"pragma": "React",
+			"fragment": "Fragment",
+			"version": "detect"
+		}
+	}
+}

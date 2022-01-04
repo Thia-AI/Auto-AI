@@ -12,7 +12,11 @@ import {
 	IUpdateDatasetPreviewFilesAction,
 } from './model/actionTypes';
 
-// Action for when we want to refresh the datasets array
+/**
+ * When we want to refresh the datasets array.
+ *
+ * @ts
+ */
 export const refreshDatasetListAction =
 	(): ThunkAction<void, {}, undefined, IRefreshDatasetListAction> =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +43,11 @@ export const refreshDatasetListAction =
 		dispatch(datasetListLoadingAction(false));
 	};
 
-// When we want to update the loading status for the dataset list
+/**
+ * When we want to update the loading status for the dataset list.
+ *
+ * @ts
+ */
 export const datasetListLoadingAction = (isDatasetLoading: boolean): ILoadingDatasetListAction => ({
 	type: DATASET_LOADING,
 	payload: {
@@ -47,7 +55,11 @@ export const datasetListLoadingAction = (isDatasetLoading: boolean): ILoadingDat
 	},
 });
 
-// When we want to update the files for dataset preview upload
+/**
+ * When we want to update the files for dataset preview upload.
+ *
+ * @ts
+ */
 export const updateDatasetPreviewFilesAction = (
 	files: string[],
 ): IUpdateDatasetPreviewFilesAction => ({

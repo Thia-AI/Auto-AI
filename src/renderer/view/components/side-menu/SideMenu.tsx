@@ -214,6 +214,9 @@ const mapStateToProps = (state: IAppState) => ({
 	selectedPage: state.selectedPage,
 });
 
+/**
+ * Side menu component.
+ */
 export const SideMenu = connect(mapStateToProps, {
 	openCloseSideMenu,
 	push,

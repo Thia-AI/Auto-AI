@@ -66,4 +66,7 @@ const StatusIndicatorC = React.memo((props: Props) => {
 const mapStateToProps = (state: IAppState) => ({
 	engineStarted: state.engineStarted,
 });
+/**
+ * Status indicator representing **Engine**'s current status
+ */
 export const StatusIndicator = connect(mapStateToProps, {})(StatusIndicatorC);

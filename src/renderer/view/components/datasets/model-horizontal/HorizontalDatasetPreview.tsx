@@ -17,7 +17,7 @@ import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { CreateDataset } from './CreateDataset';
 import { DatasetCard, FillerDatasetCard } from './DatasetCard';
 import { isFirstLetterVowel } from '_/renderer/view/helpers/textHelper';
-import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetTrainActions';
+import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetActions';
 import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
@@ -114,6 +114,10 @@ const mapStateToProps = (state: IAppState) => ({
 	datasetList: state.datasetList,
 	datasetLoading: state.datasetListLoading.value,
 });
+
+/**
+ * Displays all datasets a model can be trained on.
+ */
 export const HorizontalDatasetPreview = connect(mapStateToProps, {
 	resetSelectedDatasetAction,
 	refreshDataset: refreshDatasetListAction,

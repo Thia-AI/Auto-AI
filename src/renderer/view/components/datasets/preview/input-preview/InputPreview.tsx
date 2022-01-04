@@ -1,6 +1,9 @@
 import { Box } from '@chakra-ui/react';
 import React from 'react';
 
+/**
+ * Preview of a dataset's inputs (images).
+ */
 export const InputPreview = React.memo(() => {
 	return (
 		<Box

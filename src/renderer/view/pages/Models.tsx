@@ -94,6 +94,11 @@ const ModelsC = (props: Props) => {
 
 const mapStateToProps = () => ({});
 
-export default connect(mapStateToProps, {
+/**
+ * Page for rendering all models.
+ */
+const Models = connect(mapStateToProps, {
 	push,
 })(ModelsC);
+
+export default Models;

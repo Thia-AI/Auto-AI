@@ -47,6 +47,9 @@ const engineJobsSIOConnection = io('http://localhost:8442/jobs', {
 	autoConnect: false,
 });
 
+/**
+ * Sets the app user model to Thia (used in windows to register the app name).
+ */
 const preRendererAppInit = () => {
 	if (process.platform === 'win32') {
 		app.setAppUserModelId(APP_NAME);
@@ -56,7 +59,7 @@ const preRendererAppInit = () => {
 preRendererAppInit();
 
 /**
- * Creates the main window for **renderer**
+ * Creates the main window for **renderer**.
  */
 const createWindow = (): void => {
 	// Create the browser window.
@@ -118,7 +121,12 @@ const createWindow = (): void => {
 	});
 };
 
-const createBGWorker = () => {
+/**
+ * Creates a background worker from a hidden renderer.
+ *
+ * @returns Hidden renderer worker.
+ */
+const createWorker = () => {
 	const browserWindowWorker = new BrowserWindow({
 		show: false,
 		frame: true,
@@ -155,7 +163,7 @@ const createBGWorker = () => {
 
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is
- * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part)
+ * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part).
  */
 const initRendererDev = () => {
 	if (isDev) {
@@ -166,8 +174,9 @@ const initRendererDev = () => {
 };
 
 /**
- * Registers shortcuts (key presses) to certain actions
- * @param win the {@link BrowserWindow `BrowserWindow`} to register key shortcuts
+ * Registers shortcuts (key presses) to certain actions.
+ *
+ * @param win - The {@link BrowserWindow `BrowserWindow`} to register key shortcuts.
  */
 const registerShortcuts = (win: BrowserWindow) => {
 	// Dev shortcuts
@@ -179,7 +188,7 @@ const registerShortcuts = (win: BrowserWindow) => {
 	}
 };
 /**
- * Launches **Engine**
+ * Launches **Engine**.
  */
 const launchEngine = () => {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
@@ -220,12 +229,15 @@ if (!isSingleInstance) {
 		initWorkerIPC();
 
 		for (let i = 0; i < numCPUs; i++) {
-			const worker = createBGWorker();
+			const worker = createWorker();
 			availableWorkers.push(worker);
 		}
 	});
 }
 
+/**
+ * Sends task to next available workers and sends status update to renderer.
+ */
 const doTask = () => {
 	while (availableWorkers.length > 0 && workerTaskQueue.length > 0) {
 		const task = workerTaskQueue.shift();
@@ -236,6 +248,9 @@ const doTask = () => {
 	mainWindow?.webContents.send('worker:status', availableWorkers.length, workerTaskQueue.length);
 };
 
+/**
+ * Initializes worker IPC handles.
+ */
 const initWorkerIPC = () => {
 	ipcMain.handle('worker:ready', (event) => {
 		availableWorkers.push(workerMap[event.sender.getOSProcessId()]);

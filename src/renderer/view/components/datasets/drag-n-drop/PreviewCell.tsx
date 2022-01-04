@@ -15,6 +15,9 @@ interface Data {
 	directory: string;
 }
 
+/**
+ * Properties for a PreviewCell
+ */
 export interface CellProps {
 	style: React.CSSProperties;
 	columnIndex: number;
@@ -100,6 +103,9 @@ const mapStateToProps = (state: IAppState) => ({
 	file_paths: state.datasetPreviewFiles.value,
 });
 
+/**
+ * A card that shows preview of an image (used when uploading images to a dataset).
+ */
 export const DragNDropPreviewCell = connect(mapStateToProps, {
 	updateFiles: updateDatasetPreviewFilesAction,
 })(DragNDropPreviewCellC);

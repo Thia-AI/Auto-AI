@@ -5,6 +5,12 @@ import {
 	OBJECT_TRACKING,
 } from './constants/modelConstants';
 
+/**
+ * Get verbose model name.
+ *
+ * @param modelType Model type received from **Engine**.
+ * @returns Verbose model name.
+ */
 export const getVerboseModelType = (modelType: string | undefined) => {
 	switch (modelType) {
 		case IMAGE_CLASSIFICATION[0]:

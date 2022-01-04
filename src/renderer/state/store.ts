@@ -6,9 +6,14 @@ import { routerMiddleware } from 'connected-react-router';
 
 import createRootReducer from './reducers';
 
+/**
+ * Hash history object keeps track of the browsing history of an application using the browser's built-in history stack.
+ */
 export const history = createHashHistory();
 
-// AppState will contain the ReducerTypes for all reducers
+/**
+ * Contains the ReducerTypes for all reducers.
+ */
 export type AppState = ReturnType<typeof createRootReducer>;
 
 const logger = createLogger({
@@ -21,8 +26,12 @@ let middleWare = [thunk as ThunkMiddleware, routerMiddleware(history)];
 if (process.env.NODE_ENV === 'development') {
 	middleWare = [...middleWare, logger];
 }
-// create our store
 
+/**
+ * Creates our Redux store instance used in **renderer**.
+ *
+ * @returns Redux store.
+ */
 export const configureStore = () =>
 	createStore(
 		createRootReducer(history),

@@ -193,6 +193,9 @@ const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset.value,
 });
 
+/**
+ * Vertical list containing all label when editing a dataset.
+ */
 export const LabelsList = connect(mapStateToProps, {
 	changeActiveDataset,
 	openCloseDeleteLabel: openCloseDeleteLabelAction,

@@ -17,7 +17,7 @@ import { CreateModelEngineAction } from './actions/post/createModel';
 import { UploadImageToDatasetEngineAction } from './actions/post/uploadImageToDataset';
 
 /**
- * Class that manages all EngineActions
+ * Class that manages all EngineActions.
  */
 class EngineActionHandler {
 	private static instance: EngineActionHandler;
@@ -47,14 +47,15 @@ class EngineActionHandler {
 	private _engineRequest!: AxiosInstance;
 
 	/**
-	 * Private constructor
+	 * Private constructor.
 	 */
 	private constructor() {}
 
 	/**
 	 * Gives you the EngineActionHandler instance from anywhere in **App** with
-	 * `EngineActionHandler.getInstance();`
-	 * @returns singleton EngineActionHandler instance
+	 * `EngineActionHandler.getInstance();`.
+	 *
+	 * @returns Singleton EngineActionHandler instance.
 	 */
 	public static getInstance(): EngineActionHandler {
 		if (!EngineActionHandler.instance) {
@@ -65,22 +66,25 @@ class EngineActionHandler {
 	}
 
 	/**
-	 * Getter for _engineRequest
+	 * Getter for _engineRequest.
+	 *
+	 * @returns The engineRequest object.
 	 */
 	get engineRequest() {
 		return this._engineRequest;
 	}
 
 	/**
-	 * Setter for _engineRequest
+	 * Setter for _engineRequest.
 	 */
 	set engineRequest(eR: AxiosInstance) {
 		this._engineRequest = eR;
 	}
 
 	/**
-	 * Initializes EngineActionHandler
-	 * @param eR engineRequest instance to set as the AxiosInstance to use for EngineActions
+	 * Initializes EngineActionHandler.
+	 *
+	 * @param eR EngineRequest instance to set as the AxiosInstance to use for EngineActions.
 	 */
 	public initInstances = (eR: AxiosInstance) => {
 		this.engineRequest = eR;
@@ -110,9 +114,10 @@ class EngineActionHandler {
 	};
 
 	/**
-	 * Calls GetDevicesEngineAction's `run()` method
-	 * @param config configuration to use for running `/devices` EngineAction
-	 * @returns data returned by GetDevicesEngineAction
+	 * Calls GetDevicesEngineAction's `run()` method.
+	 *
+	 * @param config Configuration to use for running `/devices` EngineAction.
+	 * @returns Data returned by GetDevicesEngineAction.
 	 */
 	public getDevices = async (config?: AxiosRequestConfig) => {
 		return this.getDevicesEA.run(config);

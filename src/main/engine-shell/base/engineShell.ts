@@ -4,7 +4,7 @@ import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 
 /**
- * Base class for creating an EngineShell to deploy and manage **Engine**'s state
+ * Base class for creating an EngineShell to deploy and manage **Engine**'s state.
  */
 export class EngineShell {
 	protected window: BrowserWindow | null;
@@ -14,8 +14,9 @@ export class EngineShell {
 	private engineCheckTimeoutInitial: number;
 	private engineCheckTimeoutIncreaseAmount: number;
 	/**
-	 * Instantiate an **Engine** Shell
-	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications
+	 * Instantiate an **Engine** Shell.
+	 *
+	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
 	 */
 	constructor(window: BrowserWindow | null) {
 		this.window = window;
@@ -25,14 +26,22 @@ export class EngineShell {
 		this.engineCheckTimeoutIncreaseAmount = 750;
 	}
 
-	// Methods to be overriden
+	/**
+	 * Setting up streaming for **Engine** process' stdout messages.
+	 * To be overriden.
+	 */
 	protected onDataChangeSetup = () => {};
+	/**
+	 * Setting up listener for when **Engine** process exit's unexpectedly.
+	 * To be overriden.
+	 */
 	protected onExitSetup = () => {};
 
 	/**
-	 * Universal method to be ran each time an **Engine** process exits
-	 * @param exitCode The exit code for why the **Engine** process exited
-	 * @param exitSignal The exit signal for why the **Engine** process exited
+	 * Universal method to be ran each time an **Engine** process exits.
+	 *
+	 * @param exitCode The exit code for why the **Engine** process exited.
+	 * @param exitSignal The exit signal for why the **Engine** process exited.
 	 */
 	protected onExitUniversal = (
 		exitCode: number | null,
@@ -44,8 +53,9 @@ export class EngineShell {
 
 	/**
 	 * Universal method to be ran each time a new message comes from stdout
-	 * on **Engine** process
-	 * @param data message that was outputted from stdout
+	 * on **Engine** process.
+	 *
+	 * @param data Message that was outputted from stdout.
 	 */
 	protected onDataChangeUniversal = (data: string) => {
 		const date = new Date();
@@ -53,18 +63,19 @@ export class EngineShell {
 	};
 
 	/**
-	 * Resets the EngineShell's timeout for managing **Engine**'s state
+	 * Resets the EngineShell's timeout for managing **Engine**'s state.
 	 */
 	public resetEngineCheckTimeout = (): void => {
 		this.engineCheckTimeout = this.engineCheckTimeoutInitial;
 	};
 
 	/**
-	 * Sets up notification once EngineShell has recognized the **Engine** process starting
-	 * @param retries number of times to retry
-	 * @returns a Promise for when EngineShell has failed to detect the **Engine** process starting
+	 * Sets up notification once EngineShell has recognized the **Engine** process starting.
+	 *
+	 * @param retries Number of times to retry.
+	 * @returns A {@link Promise `Promise`} for when EngineShell has failed to detect the **Engine** process starting
 	 * (either due to the **Engine** process not starting in the first place, latency between **Engine** server
-	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner)
+	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner).
 	 */
 	protected notifyOnceEngineHasStarted = async (retries = 20): Promise<boolean | undefined> => {
 		for (let i = 0; i < retries; i++) {
@@ -97,7 +108,7 @@ export class EngineShell {
 	};
 
 	/**
-	 * Notifies **renderer** that **Engine** process has started
+	 * Notifies **renderer** that **Engine** process has started.
 	 */
 	private notifyRendererThatEngineHasStarted = () => {
 		this.window?.webContents.send('engine:started');
@@ -105,9 +116,10 @@ export class EngineShell {
 }
 
 /**
- * Helper method to sleep in async/await
- * @param ms Milliseconds to sleep for
- * @returns N/A
+ * Helper method to sleep in async/await.
+ *
+ * @param ms Milliseconds to sleep for.
+ * @returns N/A.
  */
 export const sleep = (ms: number) => {
 	return new Promise((resolve) => setTimeout(resolve, ms));

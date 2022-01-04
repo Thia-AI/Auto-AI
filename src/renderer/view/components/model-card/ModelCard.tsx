@@ -31,6 +31,9 @@ interface Props {
 	onClick: () => void;
 }
 
+/**
+ * Card representing a model in the
+ */
 export const ModelCard = React.memo((props: Props) => {
 	const statusColor = () => {
 		switch (props.modelStatus.toLowerCase()) {
@@ -42,6 +45,7 @@ export const ModelCard = React.memo((props: Props) => {
 				return 'red';
 		}
 	};
+
 	return (
 		<HStack
 			willChange='transform'

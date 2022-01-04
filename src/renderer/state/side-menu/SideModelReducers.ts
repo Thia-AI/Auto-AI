@@ -6,7 +6,11 @@ const initialOpenSideMenuState: IMenuOpenReducer = {
 	value: false,
 };
 
-// State for whether the menu is opened or not
+/**
+ * State for whether the menu is opened or not.
+ *
+ * @ts
+ */
 export const openSideMenuReducer = (
 	state = initialOpenSideMenuState,
 	action: IMenuOpenCloseAction,
@@ -25,6 +29,11 @@ const initialChangeSelectedPageState: ISelectedPageReducer = {
 	value: 0,
 };
 
+/**
+ * State for currently selected page.
+ *
+ * @ts
+ */
 export const changeSelectedPageReducer = (
 	state = initialChangeSelectedPageState,
 	action: IChangeSelectedPageAction,

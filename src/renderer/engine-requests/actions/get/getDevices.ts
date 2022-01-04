@@ -2,15 +2,16 @@ import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineAction } from '../../base/iEngineAction';
 
 /**
- * EngineAction class for to run 'GET /devices' route on **Engine**
+ * EngineAction class for to run 'GET /devices' route on **Engine**.
  */
 class GetDevicesEngineAction implements IEngineAction {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
 	/**
-	 * Instantiates `/devices` request
-	 * @param engineRequest an AxiosInstance representing an EngineRequest
+	 * Instantiates `/devices` request.
+	 *
+	 * @param engineRequest An AxiosInstance representing an EngineRequest.
 	 */
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
@@ -18,9 +19,10 @@ class GetDevicesEngineAction implements IEngineAction {
 		this.apiName = '/devices';
 	}
 	/**
-	 * Gets devices that are connected to **Engine**
-	 * @param config configuration to append to engineRequest
-	 * @returns devices that are connected to **Engine**
+	 * Gets devices that are connected to **Engine**.
+	 *
+	 * @param config Configuration to append to engineRequest.
+	 * @returns Devices that are connected to **Engine**.
 	 */
 	run = async (config?: AxiosRequestConfig): Promise<object[]> => {
 		try {

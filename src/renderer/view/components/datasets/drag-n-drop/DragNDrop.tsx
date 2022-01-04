@@ -38,8 +38,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	}, []);
 
 	/**
-	 * Opens native OS dialog with multiple file selection (Images only)
-	 * @param e Button click event
+	 * Opens native OS dialog with multiple file selection (Images only).
+	 *
+	 * @param e Button click event.
 	 */
 	const selectMultipleFiles = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
@@ -52,8 +53,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	};
 
 	/**
-	 * Opens native OS dialog with folder selection
-	 * @param e Button click event
+	 * Opens native OS dialog with folder selection.
+	 *
+	 * @param e Button click event.
 	 */
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
@@ -74,8 +76,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	};
 
 	/**
-	 * Uploads files to dataset
-	 * @param e Button click event
+	 * Uploads files to dataset.
+	 *
+	 * @param e Button click event.
 	 */
 	const uploadFiles = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
@@ -208,9 +211,8 @@ const mapStateToProps = (state: IAppState) => ({
 });
 
 /**
- * Component to drag and drop images to upload to a Engine dataset
+ * Component to drag and drop images to upload to a Engine dataset.
  */
-
 export const DragNDrop = connect(mapStateToProps, {
 	updateFiles: updateDatasetPreviewFilesAction,
 })(DragNDropC);

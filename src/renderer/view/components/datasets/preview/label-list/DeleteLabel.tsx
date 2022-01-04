@@ -78,6 +78,10 @@ const DeleteLabelC = React.memo(
 const mapStateToProps = (state: IAppState) => ({
 	deleteLabelValue: state.openCloseDeleteLabel,
 });
+
+/**
+ * Deletes a dataset's label.
+ */
 export const DeleteLabel = connect(mapStateToProps, {
 	openCloseDeleteLabel: openCloseDeleteLabelAction,
 })(DeleteLabelC);

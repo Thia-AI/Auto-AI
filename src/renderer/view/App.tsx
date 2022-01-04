@@ -85,6 +85,10 @@ const AppC = React.memo((props: Props) => {
 	);
 });
 const mapStateToProps = () => ({});
+
+/**
+ * Main portion of the **renderer**.
+ */
 export const App = connect(mapStateToProps, {
 	openCloseSideMenu,
 })(AppC);

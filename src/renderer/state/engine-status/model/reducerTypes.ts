@@ -1,4 +1,6 @@
-// State for the status of engine
+/**
+ * State for the status of engine.
+ */
 export interface IEngineStatusReducer {
 	value: boolean;
 }

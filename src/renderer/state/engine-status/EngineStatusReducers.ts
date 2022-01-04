@@ -6,7 +6,11 @@ const initialEngineStatusState: IEngineStatusReducer = {
 	value: false,
 };
 
-// State for the status of engine
+/**
+ * State for the status of engine.
+ *
+ * @ts
+ */
 export const engineStatusReducer = (
 	state = initialEngineStatusState,
 	action: IEngineStartedAction | IEngineDevStatusAction,

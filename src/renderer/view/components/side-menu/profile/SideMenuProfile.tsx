@@ -3,6 +3,11 @@ import React from 'react';
 
 import { ProfileSelectButton } from './ProfileSelectButton';
 
+/**
+ * Expanded profile menu within side menu.
+ *
+ * @react
+ */
 export const SideMenuProfile = () => {
 	return (
 		<Menu>

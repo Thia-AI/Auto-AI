@@ -27,4 +27,7 @@ const HamburgerC = React.memo((props: Props) => {
 
 const mapStateToProps = () => ({});
 
+/**
+ * Hamburger icon that opens the side menu.
+ */
 export const Hamburger = connect(mapStateToProps, { openCloseSideMenu })(HamburgerC);

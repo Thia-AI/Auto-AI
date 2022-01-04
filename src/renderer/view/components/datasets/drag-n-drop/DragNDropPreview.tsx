@@ -69,4 +69,7 @@ const mapStateToProps = (state: IAppState) => ({
 	files: state.datasetPreviewFiles.value,
 });
 
+/**
+ * Displays the preview cells in a grid-like fashion when adding new inputs to a dataset.
+ */
 export const DragNDropPreview = connect(mapStateToProps)(DragNDropPreviewC);
