@@ -16,6 +16,16 @@ import {
 	notifyEngineStarted,
 } from '_/renderer/state/engine-status/EngineStatusActions';
 import { StatusIndicator } from './StatusIndicator';
+import {
+	IPC_ENGINE_STARTED,
+	IPC_SHOW_CLOSE_WINDOW_DIALOG,
+	IPC_WINDOW_CLOSED,
+	IPC_WINDOW_MAXIMIZE,
+	IPC_WINDOW_MAXIMIZED,
+	IPC_WINDOW_MINIMIZE,
+	IPC_WINDOW_UNMAXIMIZE,
+	IPC_WINDOW_UNMAXIMIZED,
+} from '_/shared/ipcChannels';
 
 interface Props {
 	maximizedClass: IHeaderMaximizedChangedReducer;
@@ -39,10 +49,10 @@ const HeaderC = (props: Props) => {
 	const closeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
 
-		const res: MessageBoxReturnValue = await ipcRenderer.invoke('window:showCloseWindowDialog');
+		const res: MessageBoxReturnValue = await ipcRenderer.invoke(IPC_SHOW_CLOSE_WINDOW_DIALOG);
 
 		if (res.response == 0) {
-			await ipcRenderer.invoke('window:close');
+			await ipcRenderer.invoke(IPC_WINDOW_CLOSED);
 		}
 	};
 	/**
@@ -52,7 +62,7 @@ const HeaderC = (props: Props) => {
 	 */
 	const unmaximizeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
-		await ipcRenderer.invoke('window:unmaximize');
+		await ipcRenderer.invoke(IPC_WINDOW_UNMAXIMIZE);
 	};
 	/**
 	 * Maximizes the **renderer**'s BrowserWindow.
@@ -61,7 +71,7 @@ const HeaderC = (props: Props) => {
 	 */
 	const maximizeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
-		await ipcRenderer.invoke('window:maximize');
+		await ipcRenderer.invoke(IPC_WINDOW_MAXIMIZE);
 	};
 	/**
 	 * Minimizes the **renderer**'s BrowserWindow.
@@ -70,18 +80,18 @@ const HeaderC = (props: Props) => {
 	 */
 	const minimizeWindow = async (event: MouseEvent) => {
 		event.preventDefault();
-		await ipcRenderer.invoke('window:minimize');
+		await ipcRenderer.invoke(IPC_WINDOW_MINIMIZE);
 	};
 
 	/**
 	 * Initializes IPC for switching maximize and unmazimize buttons.
 	 */
 	const initToggleMaxRestoreButtons = () => {
-		ipcRenderer.on('window:unmaximized', () => {
+		ipcRenderer.on(IPC_WINDOW_UNMAXIMIZED, () => {
 			props.changeHeaderMaximized('');
 		});
 
-		ipcRenderer.on('window:maximized', () => {
+		ipcRenderer.on(IPC_WINDOW_MAXIMIZED, () => {
 			props.changeHeaderMaximized('maximized');
 		});
 	};
@@ -93,7 +103,7 @@ const HeaderC = (props: Props) => {
 		// when engine has already started
 		props.getDevReloadEngineStatus();
 
-		ipcRenderer.on('engine:started', () => {
+		ipcRenderer.on(IPC_ENGINE_STARTED, () => {
 			props.listenForEngineStart();
 		});
 	};

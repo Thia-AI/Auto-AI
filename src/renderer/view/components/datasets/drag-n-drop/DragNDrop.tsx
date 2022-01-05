@@ -14,6 +14,10 @@ import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHand
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { DatasetPreview } from '../preview/DatasetPreview';
+import {
+	IPC_DRAG_AND_DROP_SELECT_FOLDER,
+	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
+} from '_/shared/ipcChannels';
 
 interface Props {
 	files: string[];
@@ -45,7 +49,7 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	const selectMultipleFiles = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
 		const files: OpenDialogReturnValue = await ipcRenderer.invoke(
-			'dragNDrop:selectMultipleFiles',
+			IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
 		);
 		if (files.canceled) return;
 		setFileDirectory('');
@@ -59,7 +63,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	 */
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
-		const folder: OpenDialogReturnValue = await ipcRenderer.invoke('dragNDrop:selectFolder');
+		const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
+			IPC_DRAG_AND_DROP_SELECT_FOLDER,
+		);
 
 		if (folder.canceled) return;
 		try {

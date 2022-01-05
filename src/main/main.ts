@@ -24,6 +24,15 @@ import {
 	WorkerMap,
 	WorkerTask,
 } from '_/shared/worker_constants';
+import {
+	IPC_DEV_TOGGLE_DEV_DASHBOARD,
+	IPC_DEV_ENGINE_STARTED,
+	IPC_WORKER_READY,
+	IPC_WORKER_READY_TO_INIT,
+	IPC_WORKER_TASK_ASSIGNED,
+	IPC_WORKER_TASK_DONE,
+	IPC_WORKER_TASK_RECEIVED,
+} from '_/shared/ipcChannels';
 
 const numCPUs = cpus().length;
 
@@ -155,7 +164,7 @@ const createWorker = () => {
 	});
 	browserWindowWorker.webContents.once('did-finish-load', () => {
 		workerMap[browserWindowWorker.webContents.getOSProcessId()] = browserWindowWorker;
-		browserWindowWorker.webContents.send('worker:readyToInit');
+		browserWindowWorker.webContents.send(IPC_WORKER_READY_TO_INIT);
 	});
 
 	return browserWindowWorker;
@@ -167,7 +176,7 @@ const createWorker = () => {
  */
 const initRendererDev = () => {
 	if (isDev) {
-		ipcMain.handle('engine-dev:started', async () => {
+		ipcMain.handle(IPC_DEV_ENGINE_STARTED, async () => {
 			return RUNTIME_GLOBALS.engineRunning;
 		});
 	}
@@ -183,7 +192,7 @@ const registerShortcuts = (win: BrowserWindow) => {
 	if (isDev) {
 		// Opens dev dashboard on renderer
 		register(win, 'Ctrl+Shift+Q', () => {
-			win.webContents.send('dev:dashboard-toggle');
+			win.webContents.send(IPC_DEV_TOGGLE_DEV_DASHBOARD);
 		});
 	}
 };
@@ -243,7 +252,7 @@ const doTask = () => {
 		const task = workerTaskQueue.shift();
 		const nextWorker = availableWorkers.shift();
 
-		nextWorker?.webContents.send('worker:taskFromQueueSent', task);
+		nextWorker?.webContents.send(IPC_WORKER_TASK_RECEIVED, task);
 	}
 	mainWindow?.webContents.send('worker:status', availableWorkers.length, workerTaskQueue.length);
 };
@@ -252,17 +261,17 @@ const doTask = () => {
  * Initializes worker IPC handles.
  */
 const initWorkerIPC = () => {
-	ipcMain.handle('worker:ready', (event) => {
+	ipcMain.handle(IPC_WORKER_READY, (event) => {
 		availableWorkers.push(workerMap[event.sender.getOSProcessId()]);
 		doTask();
 	});
 
-	ipcMain.handle('worker:taskAssigned', (event, task: WorkerTask) => {
+	ipcMain.handle(IPC_WORKER_TASK_ASSIGNED, (event, task: WorkerTask) => {
 		workerTaskQueue.push(task);
 		doTask();
 	});
 
-	ipcMain.handle('worker:taskDone', (event, result: TaskResult) => {
+	ipcMain.handle(IPC_WORKER_TASK_DONE, (event, result: TaskResult) => {
 		if (result.type == READ_FILE) {
 			result = result as ReadFileTaskResult;
 			mainWindow?.webContents.send(`worker:taskDone_${result.filePath}`, result);

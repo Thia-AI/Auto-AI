@@ -10,6 +10,11 @@ import { Job } from '../../helpers/constants/engineDBTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
+import {
+	IPC_CONNECT_SOCKET,
+	IPC_ENGINE_JOB_FINISHED,
+	IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
+} from '_/shared/ipcChannels';
 
 interface Props {
 	notifications: IJobNotification[];
@@ -29,7 +34,7 @@ const NotificationsHandlerC = React.memo(
 
 		const [notificationMap, setNotificationMap] = useState<INotificationMap>({});
 		const setupSocket = async () => {
-			await ipcRenderer.invoke('engine:connectSocket');
+			await ipcRenderer.invoke(IPC_CONNECT_SOCKET);
 		};
 		// On mount
 		useEffect(() => {
@@ -54,7 +59,7 @@ const NotificationsHandlerC = React.memo(
 		};
 
 		useEffect(() => {
-			ipcRenderer.on('engine:jobFinished', async (e, jobID: string) => {
+			ipcRenderer.on(IPC_ENGINE_JOB_FINISHED, async (e, jobID: string) => {
 				// TODO: Do something when there's an error (maybe there needs to be a universal retry/error)
 				// system.
 				const [wasError, job] = await getJobIDStatus(jobID); // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -75,7 +80,7 @@ const NotificationsHandlerC = React.memo(
 					if (!document.hasFocus()) {
 						(async function () {
 							await ipcRenderer.invoke(
-								'notificationsHandler:showNotification',
+								IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
 								'Job Update',
 								`Finished ${notif.job.job_name} job`,
 							);

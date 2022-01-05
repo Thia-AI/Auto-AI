@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import { BrowserWindow } from 'electron';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
+import { IPC_ENGINE_STARTED } from '_/shared/ipcChannels';
 
 /**
  * Base class for creating an EngineShell to deploy and manage **Engine**'s state.
@@ -108,10 +109,10 @@ export class EngineShell {
 	};
 
 	/**
-	 * Notifies **renderer** that **Engine** process has started.
+	 * Notifies **renderer** that the **Engine** process has started.
 	 */
 	private notifyRendererThatEngineHasStarted = () => {
-		this.window?.webContents.send('engine:started');
+		this.window?.webContents.send(IPC_ENGINE_STARTED);
 	};
 }
 

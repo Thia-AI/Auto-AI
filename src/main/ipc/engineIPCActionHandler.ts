@@ -1,5 +1,10 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import { Socket } from 'socket.io-client';
+import {
+	IPC_CONNECT_SOCKET,
+	IPC_ENGINE_JOB_FINISHED,
+	IPC_RUNTIME_IS_DEV,
+} from '_/shared/ipcChannels';
 
 import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 /**
@@ -38,18 +43,18 @@ class EngineIPCActionHandler {
 		socket.on('jobFinished', (jobID: string) => {
 			// Job has finished, let the renderer know
 			this.logCSIO('Job Finished:', jobID);
-			this.window.webContents.send('engine:jobFinished', jobID);
+			this.window.webContents.send(IPC_ENGINE_JOB_FINISHED, jobID);
 		});
 	};
 	/**
 	 * Initializes EngineActions' respective methods to be ran for each IPC notification.
 	 */
 	private initIPCListening = () => {
-		ipcMain.handle('runtime:is-dev', async () => {
+		ipcMain.handle(IPC_RUNTIME_IS_DEV, async () => {
 			return RUNTIME_GLOBALS.isDev;
 		});
 
-		ipcMain.handle('engine:connectSocket', async () => {
+		ipcMain.handle(IPC_CONNECT_SOCKET, async () => {
 			// console.log('Trueszki');
 			this.socket.connect();
 		});

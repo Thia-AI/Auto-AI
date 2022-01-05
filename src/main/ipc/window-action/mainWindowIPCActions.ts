@@ -1,4 +1,17 @@
 import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
+import {
+	IPC_DRAG_AND_DROP_SELECT_FOLDER,
+	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
+	IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
+	IPC_SHOW_CLOSE_WINDOW_DIALOG,
+	IPC_WINDOW_CLOSED,
+	IPC_WINDOW_FOCUS,
+	IPC_WINDOW_MAXIMIZE,
+	IPC_WINDOW_MAXIMIZED,
+	IPC_WINDOW_MINIMIZE,
+	IPC_WINDOW_UNMAXIMIZE,
+	IPC_WINDOW_UNMAXIMIZED,
+} from '_/shared/ipcChannels';
 
 /**
  * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}.
@@ -19,28 +32,28 @@ class MainWindowIPCActions {
 	 * Sets up IPC actions for the main window.
 	 */
 	private initIPCActions = () => {
-		ipcMain.handle('window:close', async () => {
+		ipcMain.handle(IPC_WINDOW_CLOSED, async () => {
 			this.window.close();
 			app.quit();
 		});
-		ipcMain.handle('window:unmaximize', async () => {
+		ipcMain.handle(IPC_WINDOW_UNMAXIMIZE, async () => {
 			this.window.unmaximize();
 		});
 
-		ipcMain.handle('window:maximize', async () => {
+		ipcMain.handle(IPC_WINDOW_MAXIMIZE, async () => {
 			this.window.maximize();
 		});
 
-		ipcMain.handle('window:minimize', async () => {
+		ipcMain.handle(IPC_WINDOW_MINIMIZE, async () => {
 			this.window.minimize();
 		});
 
-		ipcMain.handle('window:focus', async () => {
+		ipcMain.handle(IPC_WINDOW_FOCUS, async () => {
 			this.window.show();
 		});
 
 		// Header
-		ipcMain.handle('window:showCloseWindowDialog', async () => {
+		ipcMain.handle(IPC_SHOW_CLOSE_WINDOW_DIALOG, async () => {
 			const res = await dialog.showMessageBox({
 				title: 'Thia',
 				message: 'Are you sure you want to quit?',
@@ -53,7 +66,7 @@ class MainWindowIPCActions {
 		});
 
 		// DragNDrop
-		ipcMain.handle('dragNDrop:selectMultipleFiles', async () => {
+		ipcMain.handle(IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES, async () => {
 			const files = await dialog.showOpenDialog(this.window, {
 				title: 'Select Files to Upload',
 				properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
@@ -68,7 +81,7 @@ class MainWindowIPCActions {
 			return files;
 		});
 
-		ipcMain.handle('dragNDrop:selectFolder', async () => {
+		ipcMain.handle(IPC_DRAG_AND_DROP_SELECT_FOLDER, async () => {
 			const files = await dialog.showOpenDialog(this.window, {
 				title: 'Select Folder to Upload',
 				properties: ['openDirectory', 'dontAddToRecent'],
@@ -79,7 +92,7 @@ class MainWindowIPCActions {
 
 		// NotificationsHandler
 		ipcMain.handle(
-			'notificationsHandler:showNotification',
+			IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
 			async (e, title: string, body: string) => {
 				const notif = new Notification({
 					title,
@@ -97,11 +110,11 @@ class MainWindowIPCActions {
 
 		// Handle unmaximize / maximize of window
 		this.window.on('maximize', () => {
-			this.window.webContents.send('window:maximized');
+			this.window.webContents.send(IPC_WINDOW_MAXIMIZED);
 		});
 
 		this.window.on('unmaximize', () => {
-			this.window.webContents.send('window:unmaximized');
+			this.window.webContents.send(IPC_WINDOW_UNMAXIMIZED);
 		});
 	};
 }
