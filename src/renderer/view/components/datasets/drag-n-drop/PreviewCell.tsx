@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Box, Flex, HStack, Icon, Spacer, Text } from '@chakra-ui/react';
+import { Box, Center, Flex, HStack, Icon, Spacer, Spinner, Text } from '@chakra-ui/react';
 import { areEqual } from 'react-window';
 import { parse } from 'path';
 import { connect } from 'react-redux';
@@ -27,6 +27,26 @@ export interface CellProps {
 	updateFiles: (files: string[]) => IUpdateDatasetPreviewFilesAction;
 }
 
+const useProgressiveImage = (src: string): [boolean, string] => {
+	const [sourceLoaded, setSourceLoaded] = useState('');
+	const [imageLoaded, setImageLoaded] = useState(false);
+
+	useEffect(() => {
+		let img: HTMLImageElement | null = new Image();
+		img.src = src;
+		img.onload = () => {
+			setSourceLoaded(src);
+			setImageLoaded(true);
+		};
+
+		return () => {
+			img = null;
+		};
+	}, [src]);
+
+	return [imageLoaded, sourceLoaded];
+};
+
 const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	// So that we remove the "undefined" from props.data
 	if (!props.data) return null;
@@ -42,61 +62,76 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const file_path = file_paths[itemIndex];
 	const file_name = parse(file_path).name;
 
-	// TODO: Add lazy loading of background image
-	// const renderLoading = () => {
-	// 	return (
-	// 		<Center w='full' h='full' boxShadow='lg' bg='gray.700' borderRadius='md'>
-	// 			<Spinner color='gray.600' />
-	// 		</Center>
-	// 	);
-	// };
-
-	return (
-		<Box p='2' style={style}>
-			<Flex
-				boxShadow='lg'
-				w='full'
-				h='full'
-				flexDir='column'
-				bg='gray.700'
-				bgImage={`url(file://${(directory + file_path).replace(/\\/g, '/')})`}
-				borderRadius='md'
-				bgSize='cover'
-				bgPos='center'>
-				<Spacer />
-				<HStack
-					borderBottomRadius='md'
-					// We move it down 1 px and slightly scale or else the corners of the parent background bleed. This is a quick hack!
-					// To see what I mean, https://stackoverflow.com/questions/16938437/white-corner-showing-on-black-box-with-border-radius
-					transform='translateY(1px) scale(1.01)'
-					w='full'
-					py='1'
-					px='1'
-					bg='gray.850'
-					fontSize='10px'
-					color='gray.300'>
-					<Text isTruncated>{file_name}</Text>
-					<Spacer />
-					<Icon
-						fontSize='sm'
-						cursor='pointer'
-						color='red.400'
-						transition='all 200ms'
-						willChange='color'
-						as={IoTrash}
-						_hover={{
-							color: 'red.500',
-						}}
-						onClick={() => {
-							const files_cpy = [...file_paths];
-							files_cpy.splice(itemIndex, 1);
-							props.updateFiles(files_cpy);
-						}}
-					/>
-				</HStack>
-			</Flex>
-		</Box>
+	const [imageLoaded, imageSrc] = useProgressiveImage(
+		`file://${(directory + file_path).replace(/\\/g, '/')}`,
 	);
+
+	// TODO: Add lazy loading of background image
+	const renderLoading = () => {
+		return (
+			<Center w='full' h='full' boxShadow='lg' bg='gray.700' borderRadius='md'>
+				<Spinner color='gray.600' />
+			</Center>
+		);
+	};
+
+	const renderLoaded = () => {
+		return (
+			<Box p='2' style={style}>
+				<Flex
+					boxShadow='lg'
+					w='full'
+					h='full'
+					flexDir='column'
+					bg='gray.700'
+					bgImage={`url(${imageSrc})`}
+					borderRadius='md'
+					bgSize='cover'
+					bgPos='center'>
+					<Spacer />
+					<HStack
+						borderBottomRadius='md'
+						// We move it down 1 px and slightly scale or else the corners of the parent background bleed. This is a quick hack!
+						// To see what I mean, https://stackoverflow.com/questions/16938437/white-corner-showing-on-black-box-with-border-radius
+						transform='translateY(1px) scale(1.01)'
+						w='full'
+						py='1'
+						px='1'
+						bg='gray.850'
+						fontSize='10px'
+						color='gray.300'>
+						<Text isTruncated>{file_name}</Text>
+						<Spacer />
+						<Icon
+							fontSize='sm'
+							cursor='pointer'
+							color='red.400'
+							transition='all 200ms'
+							willChange='color'
+							as={IoTrash}
+							_hover={{
+								color: 'red.500',
+							}}
+							onClick={() => {
+								const files_cpy = [...file_paths];
+								files_cpy.splice(itemIndex, 1);
+								props.updateFiles(files_cpy);
+							}}
+						/>
+					</HStack>
+				</Flex>
+			</Box>
+		);
+	};
+
+	const render = () => {
+		if (imageLoaded) {
+			return renderLoaded();
+		}
+		return renderLoading();
+	};
+	useEffect(() => {}, [file_path]);
+	return render();
 }, areEqual);
 
 const mapStateToProps = (state: IAppState) => ({
