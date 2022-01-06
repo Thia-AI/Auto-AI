@@ -24,6 +24,15 @@ import {
 	WorkerMap,
 	WorkerTask,
 } from '_/shared/worker_constants';
+import {
+	IPC_DEV_TOGGLE_DEV_DASHBOARD,
+	IPC_DEV_ENGINE_STARTED,
+	IPC_WORKER_READY,
+	IPC_WORKER_READY_TO_INIT,
+	IPC_WORKER_TASK_ASSIGNED,
+	IPC_WORKER_TASK_DONE,
+	IPC_WORKER_TASK_RECEIVED,
+} from '_/shared/ipcChannels';
 
 const numCPUs = cpus().length;
 
@@ -47,6 +56,9 @@ const engineJobsSIOConnection = io('http://localhost:8442/jobs', {
 	autoConnect: false,
 });
 
+/**
+ * Sets the app user model to Thia (used in windows to register the app name).
+ */
 const preRendererAppInit = () => {
 	if (process.platform === 'win32') {
 		app.setAppUserModelId(APP_NAME);
@@ -56,7 +68,7 @@ const preRendererAppInit = () => {
 preRendererAppInit();
 
 /**
- * Creates the main window for **renderer**
+ * Creates the main window for **renderer**.
  */
 const createWindow = (): void => {
 	// Create the browser window.
@@ -118,7 +130,12 @@ const createWindow = (): void => {
 	});
 };
 
-const createBGWorker = () => {
+/**
+ * Creates a background worker from a hidden renderer.
+ *
+ * @returns Hidden renderer worker.
+ */
+const createWorker = () => {
 	const browserWindowWorker = new BrowserWindow({
 		show: false,
 		frame: true,
@@ -147,7 +164,7 @@ const createBGWorker = () => {
 	});
 	browserWindowWorker.webContents.once('did-finish-load', () => {
 		workerMap[browserWindowWorker.webContents.getOSProcessId()] = browserWindowWorker;
-		browserWindowWorker.webContents.send('worker:readyToInit');
+		browserWindowWorker.webContents.send(IPC_WORKER_READY_TO_INIT);
 	});
 
 	return browserWindowWorker;
@@ -155,31 +172,32 @@ const createBGWorker = () => {
 
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is
- * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part)
+ * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part).
  */
 const initRendererDev = () => {
 	if (isDev) {
-		ipcMain.handle('engine-dev:started', async () => {
+		ipcMain.handle(IPC_DEV_ENGINE_STARTED, async () => {
 			return RUNTIME_GLOBALS.engineRunning;
 		});
 	}
 };
 
 /**
- * Registers shortcuts (key presses) to certain actions
- * @param win the {@link BrowserWindow `BrowserWindow`} to register key shortcuts
+ * Registers shortcuts (key presses) to certain actions.
+ *
+ * @param win - The {@link BrowserWindow `BrowserWindow`} to register key shortcuts.
  */
 const registerShortcuts = (win: BrowserWindow) => {
 	// Dev shortcuts
 	if (isDev) {
 		// Opens dev dashboard on renderer
 		register(win, 'Ctrl+Shift+Q', () => {
-			win.webContents.send('dev:dashboard-toggle');
+			win.webContents.send(IPC_DEV_TOGGLE_DEV_DASHBOARD);
 		});
 	}
 };
 /**
- * Launches **Engine**
+ * Launches **Engine**.
  */
 const launchEngine = () => {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
@@ -220,34 +238,40 @@ if (!isSingleInstance) {
 		initWorkerIPC();
 
 		for (let i = 0; i < numCPUs; i++) {
-			const worker = createBGWorker();
+			const worker = createWorker();
 			availableWorkers.push(worker);
 		}
 	});
 }
 
+/**
+ * Sends task to next available workers and sends status update to renderer.
+ */
 const doTask = () => {
 	while (availableWorkers.length > 0 && workerTaskQueue.length > 0) {
 		const task = workerTaskQueue.shift();
 		const nextWorker = availableWorkers.shift();
 
-		nextWorker?.webContents.send('worker:taskFromQueueSent', task);
+		nextWorker?.webContents.send(IPC_WORKER_TASK_RECEIVED, task);
 	}
 	mainWindow?.webContents.send('worker:status', availableWorkers.length, workerTaskQueue.length);
 };
 
+/**
+ * Initializes worker IPC handles.
+ */
 const initWorkerIPC = () => {
-	ipcMain.handle('worker:ready', (event) => {
+	ipcMain.handle(IPC_WORKER_READY, (event) => {
 		availableWorkers.push(workerMap[event.sender.getOSProcessId()]);
 		doTask();
 	});
 
-	ipcMain.handle('worker:taskAssigned', (event, task: WorkerTask) => {
+	ipcMain.handle(IPC_WORKER_TASK_ASSIGNED, (event, task: WorkerTask) => {
 		workerTaskQueue.push(task);
 		doTask();
 	});
 
-	ipcMain.handle('worker:taskDone', (event, result: TaskResult) => {
+	ipcMain.handle(IPC_WORKER_TASK_DONE, (event, result: TaskResult) => {
 		if (result.type == READ_FILE) {
 			result = result as ReadFileTaskResult;
 			mainWindow?.webContents.send(`worker:taskDone_${result.filePath}`, result);

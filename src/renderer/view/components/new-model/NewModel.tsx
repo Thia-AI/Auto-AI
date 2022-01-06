@@ -37,6 +37,9 @@ const mapStateToProps = () => {
 	return {};
 };
 
+/**
+ * Adding a new model.
+ */
 export const NewModel = connect(mapStateToProps, {
 	openCloseModelSelectionAction,
 	changeSelectedModel: changeSelectedModelAction,

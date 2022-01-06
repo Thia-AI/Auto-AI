@@ -14,6 +14,10 @@ import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHand
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { DatasetPreview } from '../preview/DatasetPreview';
+import {
+	IPC_DRAG_AND_DROP_SELECT_FOLDER,
+	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
+} from '_/shared/ipcChannels';
 
 interface Props {
 	files: string[];
@@ -38,13 +42,14 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	}, []);
 
 	/**
-	 * Opens native OS dialog with multiple file selection (Images only)
-	 * @param e Button click event
+	 * Opens native OS dialog with multiple file selection (Images only).
+	 *
+	 * @param e Button click event.
 	 */
 	const selectMultipleFiles = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
 		const files: OpenDialogReturnValue = await ipcRenderer.invoke(
-			'dragNDrop:selectMultipleFiles',
+			IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
 		);
 		if (files.canceled) return;
 		setFileDirectory('');
@@ -52,12 +57,15 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	};
 
 	/**
-	 * Opens native OS dialog with folder selection
-	 * @param e Button click event
+	 * Opens native OS dialog with folder selection.
+	 *
+	 * @param e Button click event.
 	 */
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
-		const folder: OpenDialogReturnValue = await ipcRenderer.invoke('dragNDrop:selectFolder');
+		const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
+			IPC_DRAG_AND_DROP_SELECT_FOLDER,
+		);
 
 		if (folder.canceled) return;
 		try {
@@ -74,8 +82,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 	};
 
 	/**
-	 * Uploads files to dataset
-	 * @param e Button click event
+	 * Uploads files to dataset.
+	 *
+	 * @param e Button click event.
 	 */
 	const uploadFiles = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
@@ -208,9 +217,8 @@ const mapStateToProps = (state: IAppState) => ({
 });
 
 /**
- * Component to drag and drop images to upload to a Engine dataset
+ * Component to drag and drop images to upload to a Engine dataset.
  */
-
 export const DragNDrop = connect(mapStateToProps, {
 	updateFiles: updateDatasetPreviewFilesAction,
 })(DragNDropC);

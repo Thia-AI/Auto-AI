@@ -10,7 +10,9 @@ interface Props {
 	tooltipLabel?: string;
 	tooltipPlacement?: Placement;
 }
-
+/**
+ * A badge that allows for copying on click.
+ */
 export const InteractiveCopyBadge = React.memo((props: Props) => {
 	const badgeIDRef = useRef<HTMLDivElement>(null);
 

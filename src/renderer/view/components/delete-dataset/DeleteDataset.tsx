@@ -117,6 +117,9 @@ const DeleteDatasetC = React.memo((props: Props) => {
 const mapStateToProps = (state: IAppState) => ({
 	deleteDatasetData: state.openCloseDeleteDataset,
 });
+/**
+ * Modal that confirms the deletion of a dataset.
+ */
 export const DeleteDataset = connect(mapStateToProps, {
 	openCloseDeleteDataset: openCloseDeleteDatasetAction,
 	refreshDataset: refreshDatasetListAction,

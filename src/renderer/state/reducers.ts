@@ -42,6 +42,12 @@ import { activeDatasetReducer } from './active-dataset-page/ActiveDatasetReducer
 import { IActiveDatasetReducer } from './active-dataset-page/model/reducerTypes';
 
 // define the root reducer
+/**
+ * Definition of the root reducer.
+ *
+ * @param history The history object.
+ * @returns The reducer function returned from {@link combineReducers `combineReducers()`}.
+ */
 const createRootReducer = (history) =>
 	combineReducers({
 		router: connectRouter(history),
@@ -61,7 +67,9 @@ const createRootReducer = (history) =>
 		activeDataset: activeDatasetReducer,
 	});
 
-// define the state of the App
+/**
+ * All state types for **renderer**.
+ */
 export interface IAppState {
 	router: RouterState;
 	engineStarted: IEngineStatusReducer;

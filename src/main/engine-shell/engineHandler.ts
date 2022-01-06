@@ -5,7 +5,7 @@ import { EngineShellDev } from './engineShellDev';
 import { EngineShellProd } from './engineShellProd';
 
 /**
- * Singleton class that handles/manages EngineShells depending on dev/prod
+ * Singleton class that handles/manages EngineShells depending on dev/prod.
  */
 export class EngineHandler {
 	private static instance: EngineHandler;
@@ -26,16 +26,14 @@ export class EngineHandler {
 		'engine',
 		'engine.exe',
 	);
-	/**
-	 * Private constructor only called when creating an EngineHandler instance for
-	 * first time
-	 */
+
 	private constructor() {}
 
 	/**
 	 * Gives you the EngineHandler instance from anywhere in **App** with
-	 * `EngineHandler.getInstance();`
-	 * @returns singleton EngineHandler instance
+	 * `EngineHandler.getInstance();`.
+	 *
+	 * @returns Singleton {@link EngineHandler `EngineHandler`} instance.
 	 */
 	public static getInstance(): EngineHandler {
 		if (!EngineHandler.instance) {
@@ -46,11 +44,12 @@ export class EngineHandler {
 	}
 
 	/**
-	 * Creates a development EngineShell which then will launch a development **Engine** process (or production if `simulatingProd = true` )
-	 * @param window BrowserWindow to be managed by the EngineShell
-	 * @param simulateProd whether we want to simulate a production environment i.e. to test how *App** will function with an
-	 * Engine .exe process rather than the .py code
-	 * @returns dev EngineShell or prod EngineShell (if `simulateProd = true` environment with development **App**) instance
+	 * Creates a development EngineShell which then will launch a development **Engine** process (or production if `simulatingProd = true` ).
+	 *
+	 * @param window BrowserWindow to be managed by the EngineShell.
+	 * @param simulateProd Whether we want to simulate a production environment i.e. to test how *App** will function with an
+	 * Engine .exe process rather than the .py code.
+	 * @returns A {@link EngineShellDev `development EngineShell`} or a {@link EngineShellProd `production EngineShell`} (if `simulateProd = true` environment with development **App**) instance.
 	 */
 	public createDevEngine = (
 		window: BrowserWindow | null,
@@ -63,9 +62,10 @@ export class EngineHandler {
 	};
 
 	/**
-	 * Creates a production EngineShell which then will launch a production **Engine** process
-	 * @param window BrowserWindow to be managed by the EngineShell
-	 * @returns prod EngineShell instance
+	 * Creates a production EngineShell which then will launch a production **Engine** process.
+	 *
+	 * @param window BrowserWindow to be managed by the EngineShell.
+	 * @returns Prod EngineShell instance.
 	 */
 	public createProdEngine = (window: BrowserWindow | null): EngineShellProd => {
 		return new EngineShellProd(EngineHandler.pathToEngineProd, window);

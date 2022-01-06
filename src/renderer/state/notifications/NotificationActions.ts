@@ -7,7 +7,11 @@ import {
 	IJobNotification,
 } from './model/actionTypes';
 
-// When we want to send a notification
+/**
+ * When we want to send a notification.
+ *
+ * @ts
+ */
 export const notifSendAction = (
 	notification: IJobNotification,
 ): ThunkAction<void, {}, undefined, INotifSendAction> => {
@@ -31,13 +35,21 @@ export const notifSendAction = (
 	};
 };
 
-// When we want to dismiss a notification given it's id
+/**
+ * When we want to dismiss a notification given it's id.
+ *
+ * @ts
+ */
 export const notifDismissAction = (id: number): INotifDismissAction => ({
 	type: NOTIFICATION_DISMISS,
 	payload: id,
 });
 
-// When we want to clear all notifications
+/**
+ * When we want to clear all notifications.
+ *
+ * @ts
+ */
 export const notifClearAction = (): INotifClearAction => ({
 	type: NOTIFICATION_CLEAR,
 });

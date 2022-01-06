@@ -14,6 +14,9 @@ import { AiFillDatabase } from 'react-icons/ai';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { waitTillEngineJobComplete } from '../../helpers/engineJobHelper';
 
+/**
+ * Dev panel deleting dataset inputs component.
+ */
 export const DevDeleteDatasetInputs = React.memo(() => {
 	const toast = useToast();
 

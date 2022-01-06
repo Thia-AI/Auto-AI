@@ -117,6 +117,9 @@ const mapStateToProps = (state: IAppState) => {
 	};
 };
 
+/**
+ * Modal that opens for creating a new model.
+ */
 export const ModelSelection = connect(mapStateToProps, {
 	openCloseModelSelectionAction,
 })(ModelSelectionC);

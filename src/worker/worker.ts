@@ -1,5 +1,11 @@
 import { ipcRenderer } from 'electron';
 import { promises } from 'fs';
+import {
+	IPC_WORKER_READY,
+	IPC_WORKER_READY_TO_INIT,
+	IPC_WORKER_TASK_DONE,
+	IPC_WORKER_TASK_RECEIVED,
+} from '_/shared/ipcChannels';
 
 import {
 	ReadFileTaskResult,
@@ -10,11 +16,11 @@ import {
 // Entry point for background hidden renderer workers
 document.title = `Worker - ${process.pid}`;
 
-ipcRenderer.on('worker:readyToInit', async () => {
+ipcRenderer.on(IPC_WORKER_READY_TO_INIT, async () => {
 	await ready();
 });
 
-ipcRenderer.on('worker:taskFromQueueSent', async (event, task: WorkerTask) => {
+ipcRenderer.on(IPC_WORKER_TASK_RECEIVED, async (event, task: WorkerTask) => {
 	if (task.type == READ_FILE) {
 		task = task as ReadFileWorkerTask;
 		const [isError, data] = await readFile(task.payload.filePath);
@@ -24,13 +30,13 @@ ipcRenderer.on('worker:taskFromQueueSent', async (event, task: WorkerTask) => {
 			data,
 			filePath: task.payload.filePath,
 		};
-		await ipcRenderer.invoke('worker:taskDone', result);
+		await ipcRenderer.invoke(IPC_WORKER_TASK_DONE, result);
 	}
 	await ready();
 });
 
 const ready = async () => {
-	await ipcRenderer.invoke('worker:ready');
+	await ipcRenderer.invoke(IPC_WORKER_READY);
 };
 
 /**

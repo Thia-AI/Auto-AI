@@ -4,15 +4,16 @@ import { BrowserWindow } from 'electron';
 import { EngineShell } from './base/engineShell';
 
 /**
- * Class for creating a production EngineShell
+ * Class for creating a production EngineShell.
  */
 export class EngineShellProd extends EngineShell {
 	engine: ChildProcessWithoutNullStreams;
 	/**
-	 * Instantiates a production EngineShell and starts a production **Engine** process
-	 * @param enginePath path to the location of engine.exe
-	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications
-	 * @param simulatedProd Whether production is being simulated or not
+	 * Instantiates a production EngineShell and starts a production **Engine** process.
+	 *
+	 * @param enginePath Path to the location of engine.exe.
+	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
+	 * @param simulatedProd Whether production is being simulated or not.
 	 */
 	constructor(enginePath: string, window: BrowserWindow | null, simulatedProd = false) {
 		super(window);
@@ -29,7 +30,7 @@ export class EngineShellProd extends EngineShell {
 	}
 
 	/**
-	 * Overriden method for setting up streaming for prod **Engine** process' stdout messages
+	 * Overriden method for setting up streaming for prod **Engine** process' stdout messages.
 	 */
 	onDataChangeSetup = () => {
 		this.engine.stdout.on('data', (data) => {
@@ -39,7 +40,7 @@ export class EngineShellProd extends EngineShell {
 	};
 
 	/**
-	 * Overriden method for setting up listener for when prod **Engine** process exit's unexpectedly
+	 * Overriden method for setting up listener for when prod **Engine** process exit's unexpectedly.
 	 */
 	onExitSetup = () => {
 		this.engine.on('exit', (code, signal) => {

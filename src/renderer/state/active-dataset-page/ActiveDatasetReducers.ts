@@ -2,11 +2,15 @@ import { CHANGE_ACTIVE_DATASET } from '_state/types';
 import { IChangeActiveDatasetAction } from './model/actionTypes';
 import { IActiveDatasetReducer } from './model/reducerTypes';
 
-// State for the current active dataset (for Dataset page)
 const initialActiveDatasetState: IActiveDatasetReducer = {
 	value: undefined,
 };
 
+/**
+ * State for the current active dataset (for Dataset page).
+ *
+ * @ts
+ */
 export const activeDatasetReducer = (
 	state = initialActiveDatasetState,
 	action: IChangeActiveDatasetAction,

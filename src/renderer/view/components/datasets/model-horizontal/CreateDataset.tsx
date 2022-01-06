@@ -121,6 +121,9 @@ const CreateDatasetC = React.memo((props: Props) => {
 	);
 });
 
+/**
+ * Modal that opens when creating a new dataset.
+ */
 export const CreateDataset = connect(null, {
 	push,
 	refreshDataset: refreshDatasetListAction,

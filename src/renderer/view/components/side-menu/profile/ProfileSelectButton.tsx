@@ -2,6 +2,9 @@ import { Box, Flex, HStack, Image, useMenuButton, FlexProps } from '@chakra-ui/r
 import React from 'react';
 import { HiSelector } from 'react-icons/hi';
 
+/**
+ * Side menu profile button.
+ */
 export const ProfileSelectButton = React.memo((props: FlexProps) => {
 	const buttonProps = useMenuButton(props);
 	return (

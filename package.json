@@ -14,12 +14,12 @@
 		"build:win-py-unpacked": "npm run build:py && npm run build:win-unpacked",
 		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources --debug=all engine.spec",
 		"lint": "echo Lint-Check Main && npm run lint-main && echo Lint-Check Renderer && npm run lint-renderer",
-		"lint-renderer": "eslint src/renderer/**",
-		"lint-main": "eslint src/main/**",
-		"lint-fix-renderer": "eslint src/renderer/** --fix",
-		"lint-fix-main": "eslint src/main/** --fix",
-		"lint-fix-dry-renderer": "eslint src/renderer/** --fix-dry-run",
-		"lint-fix-dry-main": "eslint src/main/** --fix-dry-run"
+		"lint-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\"",
+		"lint-main": "eslint src/main/** -c=\"main.eslintrc.json\"",
+		"lint-fix-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\" --fix",
+		"lint-fix-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix",
+		"lint-fix-dry-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\" --fix-dry-run",
+		"lint-fix-dry-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix-dry-run"
 	},
 	"build": {
 		"appId": "Thia",
@@ -114,6 +114,7 @@
 		"eslint-import-resolver-typescript": "^2.4.0",
 		"eslint-import-resolver-webpack": "^0.13.0",
 		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-jsdoc": "^37.5.0",
 		"eslint-plugin-jsx-a11y": "^6.4.1",
 		"eslint-plugin-react": "^7.23.2",
 		"eslint-plugin-react-hooks": "^4.2.0",

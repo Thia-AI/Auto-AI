@@ -14,7 +14,11 @@ import {
 
 import { ipcRenderer } from 'electron';
 import { DevDeleteDatasetInputs } from './DevDeleteDatasetInputs';
+import { IPC_DEV_TOGGLE_DEV_DASHBOARD, IPC_RUNTIME_IS_DEV } from '_/shared/ipcChannels';
 
+/**
+ * Dev panel (only works during development).
+ */
 export const DevDashboard = React.memo(() => {
 	const [isDashboardOpen, setIsDashboardOpen] = useState(false);
 
@@ -22,19 +26,19 @@ export const DevDashboard = React.memo(() => {
 
 	useEffect(() => {
 		const setupDev = async () => {
-			setIsDev(await ipcRenderer.invoke('runtime:is-dev'));
+			setIsDev(await ipcRenderer.invoke(IPC_RUNTIME_IS_DEV));
 		};
 
 		setupDev();
 	}, []);
 
 	useEffect(() => {
-		ipcRenderer.on('dev:dashboard-toggle', () => {
+		ipcRenderer.on(IPC_DEV_TOGGLE_DEV_DASHBOARD, () => {
 			isDashboardOpen ? setIsDashboardOpen(false) : setIsDashboardOpen(true);
 		});
 
 		return () => {
-			ipcRenderer.removeAllListeners('dev:dashboard-toggle');
+			ipcRenderer.removeAllListeners(IPC_DEV_TOGGLE_DEV_DASHBOARD);
 		};
 	}, [isDashboardOpen]);
 	const render = () => {

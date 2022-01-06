@@ -20,7 +20,7 @@ import { ISelectedDatasetReducer } from '_/renderer/state/choose-dataset-train/m
 import {
 	changeSelectedDatasetAction,
 	resetSelectedDatasetAction,
-} from '_/renderer/state/choose-dataset-train/ChooseDatasetTrainActions';
+} from '_/renderer/state/choose-dataset-train/ChooseDatasetActions';
 import {
 	IChangeSelectedDatasetAction,
 	IResetSelectedDatasetAction,
@@ -172,6 +172,9 @@ const mapStateToProps = (state: IAppState) => ({
 	selectedDatasetID: state.selectedDataset,
 });
 
+/**
+ * A dataset card representing a trainable dataset for a model (used once a dataset is fetched).
+ */
 export const DatasetCard = connect(mapStateToProps, {
 	changeSelectedDatasetAction,
 	resetSelectedDatasetAction,
@@ -179,6 +182,11 @@ export const DatasetCard = connect(mapStateToProps, {
 	openCloseDeleteDataset: openCloseDeleteDatasetAction,
 })(DatasetCardC);
 
+/**
+ * An empty dataset card representing a trainable dataset for a model (used while a dataset is being fetched).
+ *
+ * @react
+ */
 export const FillerDatasetCard = () => {
 	return (
 		<Box

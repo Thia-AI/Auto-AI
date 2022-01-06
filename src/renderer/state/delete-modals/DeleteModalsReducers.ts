@@ -3,13 +3,16 @@ import { IOpenCloseDeleteDatasetReducer, IOpenCloseDeleteLabelReducer } from './
 import { IOpenCloseDeleteDatasetAction, IOpenCloseDeleteLabelAction } from './model/actionTypes';
 import { nullDataset } from '_/renderer/view/helpers/constants/engineDBTypes';
 
-// State for whether the delete dataset dialog is open or not along with
-// the dataset it should display
 const initialOpenCloseDeleteDatasetSelectionState: IOpenCloseDeleteDatasetReducer = {
 	openCloseValue: false,
 	datasetValue: nullDataset,
 };
 
+/**
+ * State for whether the delete dataset dialog is open or not along with the dataset it should display.
+ *
+ * @ts
+ */
 export const openCloseDeleteDatasetReducer = (
 	state = initialOpenCloseDeleteDatasetSelectionState,
 	action: IOpenCloseDeleteDatasetAction,
@@ -25,13 +28,16 @@ export const openCloseDeleteDatasetReducer = (
 	}
 };
 
-// State for whether delete label dialog is open or not along with
-// the label it should display
 const initialOpenCloseDeleteLabelSelectionState: IOpenCloseDeleteLabelReducer = {
 	labelValue: '',
 	openCloseValue: false,
 };
 
+/**
+ * State for whether delete label dialog is open or not along with the label it should display.
+ *
+ * @ts
+ */
 export const openCloseDeleteLabelReducer = (
 	state = initialOpenCloseDeleteLabelSelectionState,
 	action: IOpenCloseDeleteLabelAction,

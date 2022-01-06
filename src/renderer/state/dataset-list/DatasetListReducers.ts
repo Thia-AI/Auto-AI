@@ -14,11 +14,15 @@ import {
 	IDatasetPreviewFilesReducer,
 } from './model/reducerTypes';
 
-// State for the list of datasets
 const initialDatasetListState: IDatasetListReducer = {
 	value: [],
 };
 
+/**
+ * State for the list of datasets.
+ *
+ * @ts
+ */
 export const datasetListReducer = (
 	state = initialDatasetListState,
 	action: IRefreshDatasetListAction,
@@ -33,11 +37,15 @@ export const datasetListReducer = (
 	}
 };
 
-// State for whether dataset list is being loaded
 const initialDatasetListLoadingState: IDatasetListLoadingReducer = {
 	value: false,
 };
 
+/**
+ * State for whether dataset list is being loaded.
+ *
+ * @ts
+ */
 export const datasetListLoadingReducer = (
 	state = initialDatasetListLoadingState,
 	action: ILoadingDatasetListAction,
@@ -52,10 +60,15 @@ export const datasetListLoadingReducer = (
 	}
 };
 
-// State for dataset upload file preview
 const initialDatasetPreviewFilesState: IDatasetPreviewFilesReducer = {
 	value: [],
 };
+
+/**
+ * State for dataset upload file preview.
+ *
+ * @ts
+ */
 export const datasetPreviewFilesReducer = (
 	state = initialDatasetPreviewFilesState,
 	action: IUpdateDatasetPreviewFilesAction,

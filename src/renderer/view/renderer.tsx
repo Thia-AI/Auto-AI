@@ -51,6 +51,9 @@ const theme = extendTheme({
 	},
 });
 
+/**
+ * Redux store.
+ */
 export const store = configureStore();
 
 const engineActionHandler = EngineActionHandler.getInstance();

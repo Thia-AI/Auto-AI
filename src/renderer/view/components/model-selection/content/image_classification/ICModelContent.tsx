@@ -213,6 +213,10 @@ const ICModelContentC = React.memo((props: Props) => {
 	);
 });
 const mapStateToProps = () => ({});
+
+/**
+ * Image classification model content description.
+ */
 export const ICModelContent = connect(mapStateToProps, {
 	openCloseModelSelectionAction,
 	push,

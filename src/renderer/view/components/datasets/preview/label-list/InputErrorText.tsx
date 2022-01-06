@@ -9,6 +9,9 @@ interface Props {
 	isInputFocused: boolean;
 }
 
+/**
+ * Displays error text for inputs.
+ */
 export const InputErrorText = React.memo(
 	({ isInputValid, inputError, clickedOnInputOnce, isInputFocused }: Props) => {
 		return (

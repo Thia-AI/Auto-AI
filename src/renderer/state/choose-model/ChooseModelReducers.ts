@@ -6,7 +6,11 @@ const initialOpenCloseModelSelectionState: IOpenCloseModelSelectionReducer = {
 	value: false,
 };
 
-// State for whether model selection modal is opened or not
+/**
+ * State for whether model selection modal is opened or not.
+ *
+ * @ts
+ */
 export const openCloseModelSelectionReducer = (
 	state = initialOpenCloseModelSelectionState,
 	action: IOpenCloseModelSelectionAction,
@@ -25,7 +29,11 @@ const initialChangeSelectedModelState: ISelectedModelReducer = {
 	value: 0,
 };
 
-// State for which model is selected (for description viewing)
+/**
+ * State for which model is selected (for description viewing).
+ *
+ * @ts
+ */
 export const selectedModelReducer = (
 	state = initialChangeSelectedModelState,
 	action: IChangeSelectedModelAction,

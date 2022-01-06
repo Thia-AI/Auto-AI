@@ -1,5 +1,5 @@
 /**
- * Engine's DB dataset entry
+ * **Engine**'s DB Dataset table.
  */
 export interface Dataset {
 	id: string;
@@ -11,8 +11,14 @@ export interface Dataset {
 	labels: string;
 }
 
+/**
+ * Splitter for labels property of dataset.
+ */
 export const DATASET_LABELS_SPLITTER = '|';
 
+/**
+ * Empty dataset.
+ */
 export const nullDataset: Dataset = {
 	id: '',
 	name: '',
@@ -24,7 +30,7 @@ export const nullDataset: Dataset = {
 };
 
 /**
- * Engine's DB job entry
+ * **Engine**'s DB Job table.
  */
 export interface Job {
 	id: string;
@@ -38,6 +44,9 @@ export interface Job {
 	date_finished: string;
 }
 
+/**
+ * Empty job.
+ */
 export const nullJob: Job = {
 	id: '',
 	job_name: '',
