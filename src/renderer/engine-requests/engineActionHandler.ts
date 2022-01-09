@@ -6,10 +6,11 @@ import { GetDatasetEngineAction } from './actions/get/getDataset';
 import { GetDatasetByNameEngineAction } from './actions/get/getDatasetByName';
 import { GetDatasetsEngineAction } from './actions/get/getDatasets';
 import { GetDevicesEngineAction } from './actions/get/getDevices';
-import { GetFirstImageOfDatasetEngineAction } from './actions/get/getFirstImageOfDataset';
 import { GetJobEngineAction } from './actions/get/getJob';
 import { GetModelEngineAction } from './actions/get/getModel';
 import { GetModelsEngineAction } from './actions/get/getModels';
+import { GetNextPageEngineAction, IGetNextPageData } from './actions/post/getNextPage';
+import { GetPreviousPageEngineAction, IGetPreviousPageData } from './actions/post/getPreviousPage';
 import { UpdateLabelsOrderEngineAction } from './actions/patch/updateLabelsOrder';
 import { AddLabelEngineAction } from './actions/post/addLabel';
 import { CreateDatasetEngineAction } from './actions/post/createDataset';
@@ -35,7 +36,8 @@ class EngineActionHandler {
 	private getDatasetsEA!: GetDatasetsEngineAction;
 	private getDatasetEA!: GetDatasetEngineAction;
 	private getDatasetByNameEA!: GetDatasetByNameEngineAction;
-	private getFirstImageOfDatasetEA!: GetFirstImageOfDatasetEngineAction;
+	private getPreviousPageEA!: GetPreviousPageEngineAction;
+	private getNextPageEA!: GetNextPageEngineAction;
 	private deleteDatasetEA!: DeleteDatasetEngineAction;
 	private deleteAllInputsFromDatasetEA!: DeleteAllInputsFromDatasetEngineAction;
 	private uploadImagetoDatasetEA!: UploadImageToDatasetEngineAction;
@@ -101,7 +103,8 @@ class EngineActionHandler {
 		this.getDatasetsEA = new GetDatasetsEngineAction(this._engineRequest);
 		this.getDatasetEA = new GetDatasetEngineAction(this._engineRequest);
 		this.getDatasetByNameEA = new GetDatasetByNameEngineAction(this._engineRequest);
-		this.getFirstImageOfDatasetEA = new GetFirstImageOfDatasetEngineAction(this._engineRequest);
+		this.getPreviousPageEA = new GetPreviousPageEngineAction(this._engineRequest);
+		this.getNextPageEA = new GetNextPageEngineAction(this._engineRequest);
 		this.deleteDatasetEA = new DeleteDatasetEngineAction(this._engineRequest);
 		this.uploadImagetoDatasetEA = new UploadImageToDatasetEngineAction(this._engineRequest);
 		this.deleteAllInputsFromDatasetEA = new DeleteAllInputsFromDatasetEngineAction(
@@ -155,8 +158,34 @@ class EngineActionHandler {
 		return this.getDatasetByNameEA.run(config, name);
 	};
 
-	public getFirstImageOfDataset = async (uuid: string, config?: AxiosRequestConfig) => {
-		return this.getFirstImageOfDatasetEA.run(config, uuid);
+	public getPreviousPage = async (
+		uuid: string,
+		currentCursorDate: string,
+		config?: AxiosRequestConfig,
+	) => {
+		const data: IGetPreviousPageData = {
+			datasetID: uuid,
+			data: {
+				current_cursor_date: currentCursorDate,
+			},
+		};
+
+		return this.getPreviousPageEA.run(config, data);
+	};
+
+	public getNextPage = async (
+		uuid: string,
+		currentCursorDate: string,
+		config?: AxiosRequestConfig,
+	) => {
+		const data: IGetNextPageData = {
+			datasetID: uuid,
+			data: {
+				current_cursor_date: currentCursorDate,
+			},
+		};
+
+		return this.getNextPageEA.run(config, data);
 	};
 
 	public deleteDataset = async (uuid: string, config?: AxiosRequestConfig) => {

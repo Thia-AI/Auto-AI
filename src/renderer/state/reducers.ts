@@ -40,6 +40,14 @@ import { notificationsReducer } from './notifications/NotificationReducers';
 import { INotificationsReducer } from './notifications/model/reducerTypes';
 import { activeDatasetReducer } from './active-dataset-page/ActiveDatasetReducers';
 import { IActiveDatasetReducer } from './active-dataset-page/model/reducerTypes';
+import {
+	activeDatasetInputsPreviewIDReducer,
+	activeDatasetInputsReducer,
+} from './active-dataset-inputs/ActiveDatasetInputsReducers';
+import {
+	IActiveDatasetInputsPreviewIDReducer,
+	IActiveDatasetInputsReducer,
+} from './active-dataset-inputs/model/reducerTypes';
 
 // define the root reducer
 /**
@@ -65,6 +73,8 @@ const createRootReducer = (history) =>
 		datasetPreviewFiles: datasetPreviewFilesReducer,
 		notifications: notificationsReducer,
 		activeDataset: activeDatasetReducer,
+		activeDatasetInputs: activeDatasetInputsReducer,
+		activeDatasetInputsPreviewID: activeDatasetInputsPreviewIDReducer,
 	});
 
 /**
@@ -86,6 +96,8 @@ export interface IAppState {
 	datasetPreviewFiles: IDatasetPreviewFilesReducer;
 	notifications: INotificationsReducer;
 	activeDataset: IActiveDatasetReducer;
+	activeDatasetInputs: IActiveDatasetInputsReducer;
+	activeDatasetInputsPreviewID: IActiveDatasetInputsPreviewIDReducer;
 }
 
 export default createRootReducer;

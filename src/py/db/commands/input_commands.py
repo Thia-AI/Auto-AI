@@ -1,5 +1,3 @@
-from typing import List
-
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -14,6 +12,11 @@ def add_images_to_db_batch(values):
 def get_all_inputs(limit=100):
     cmd = DBCommand(name="Get All Inputs",
                     command=f'''SELECT * FROM input ORDER BY date_created DESC LIMIT {limit}''')
+    return DBManager.get_instance().execute(cmd)
+
+
+def get_input(uuid: str):
+    cmd = DBCommand(name=f"Get Input With ID: {uuid}", command=f"SELECT * FROM input WHERE id = '{uuid}'")
     return DBManager.get_instance().execute(cmd)
 
 

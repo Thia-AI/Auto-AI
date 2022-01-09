@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { Box, Center, Flex, HStack, Icon, Spacer, Spinner, Text } from '@chakra-ui/react';
 import { areEqual } from 'react-window';
@@ -9,6 +9,7 @@ import { IoTrash } from 'react-icons/io5';
 import { IAppState } from '_/renderer/state/reducers';
 import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
+import { useProgressiveImage } from '_/renderer/view/helpers/customHooks';
 
 interface Data {
 	rowCount: number;
@@ -26,26 +27,6 @@ export interface CellProps {
 	file_paths: string[];
 	updateFiles: (files: string[]) => IUpdateDatasetPreviewFilesAction;
 }
-
-const useProgressiveImage = (src: string): [boolean, string] => {
-	const [sourceLoaded, setSourceLoaded] = useState('');
-	const [imageLoaded, setImageLoaded] = useState(false);
-
-	useEffect(() => {
-		let img: HTMLImageElement | null = new Image();
-		img.src = src;
-		img.onload = () => {
-			setSourceLoaded(src);
-			setImageLoaded(true);
-		};
-
-		return () => {
-			img = null;
-		};
-	}, [src]);
-
-	return [imageLoaded, sourceLoaded];
-};
 
 const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	// So that we remove the "undefined" from props.data
