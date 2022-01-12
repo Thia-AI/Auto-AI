@@ -35,12 +35,12 @@ const InputPreviewC = React.memo((props: Props) => {
 		<Flex
 			w='full'
 			h='full'
-			ml='2'
+			mx='2'
 			flexDir='column'
 			borderTopRightRadius='sm'
 			borderBottomRightRadius='sm'
 			overflow='hidden'>
-			<Flex w='full' h='80%' flexDir='row'>
+			<Flex w='full' h='78%' minH='78%' maxH='78%' flexDir='row'>
 				<PreviewDatasetInput w='70%' />
 				<Center w='30%' h='full'>
 					Labelling

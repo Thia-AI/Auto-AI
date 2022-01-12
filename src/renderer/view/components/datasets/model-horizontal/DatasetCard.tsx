@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Center, Spinner, Text, Image, HStack, Spacer, VStack, Icon } from '@chakra-ui/react';
+import { Box, Center, Spinner, Text, HStack, Spacer, VStack, Icon, chakra } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { FiEdit } from 'react-icons/fi';
@@ -9,7 +9,6 @@ import { push, Push } from 'connected-react-router';
 
 import { Dataset } from '_view_helpers/constants/engineDBTypes';
 import Preview from '_utils/images/placeholder-dark2.jpg';
-import NoImage from '_utils/images/placeholder-dark2.jpg';
 import { InteractiveCopyBadge } from '../../interactive/InteractiveCopyBadge';
 
 import { IAppState } from '_/renderer/state/reducers';
@@ -40,9 +39,7 @@ interface Props {
 }
 
 const DatasetCardC = React.memo((props: Props) => {
-	const [imageLoaded, imageSrc] = useProgressiveImage(
-		`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`,
-	);
+	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
 
 	const renderImage = () => {
 		if (!imageLoaded) {
@@ -53,11 +50,10 @@ const DatasetCardC = React.memo((props: Props) => {
 			);
 		}
 		return (
-			<Image
+			<chakra.img
 				cursor='pointer'
 				onClick={() => {
-					if (props.selectedDatasetID.value === props.dataset.id)
-						props.resetSelectedDatasetAction();
+					if (props.selectedDatasetID.value === props.dataset.id) props.resetSelectedDatasetAction();
 					else props.changeSelectedDatasetAction(props.dataset.id);
 				}}
 				borderTopRadius='lg'
@@ -65,7 +61,6 @@ const DatasetCardC = React.memo((props: Props) => {
 				h='200px'
 				w='full'
 				src={imageSrc}
-				fallbackSrc={NoImage}
 			/>
 		);
 	};

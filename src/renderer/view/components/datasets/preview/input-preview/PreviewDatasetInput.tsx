@@ -34,7 +34,9 @@ const PreviewDatasetInputC = React.memo(
 		// Load only once active input has been received
 		const [imageLoaded, imageSrc] = useProgressiveImage(
 			`${ENGINE_URL}/dataset/${datasetID}/input/${activeInput.id}`,
-			datasetID!.length > 0,
+			{
+				readyToLoad: datasetID!.length > 0,
+			},
 		);
 		useEffect(() => {
 			setInputPreviewID(0);
@@ -46,40 +48,33 @@ const PreviewDatasetInputC = React.memo(
 		// TODO: Create no preview component
 		const renderNoPreview = () => {
 			return (
-				<Box w={w} h='full' bg='red.400'>
-					Nothing.
-				</Box>
+				<Center w={w} h='full' borderLeftRadius='md' overflow='hidden'>
+					<Image fit='cover' h='full' w='full' src={NoImage} />
+				</Center>
 			);
 		};
 
 		const renderPreview = () => {
 			return (
-				<Box w={w} h='full' bg='gray.800'>
-					<Image
-						onClick={() => {}}
-						fit='cover'
-						h='full'
-						w='full'
-						src={imageSrc}
-						fallbackSrc={NoImage}
-					/>
+				<Box w={w} h='full' bg='gray.800' borderLeftRadius='md' overflow='hidden'>
+					<Image onClick={() => {}} fit='cover' h='full' w='full' src={imageSrc} fallbackSrc={NoImage} />
 				</Box>
 			);
 		};
 
 		const renderLoading = () => {
 			return (
-				<Center h='full' w={w}>
+				<Center h='full' w={w} borderLeftRadius='md' overflow='hidden'>
 					<Spinner color='gray.600' size='lg' />
 				</Center>
 			);
 		};
 		const render = () => {
 			if (activeDatasetInputs.value.length !== 0) {
+				if (!imageLoaded) {
+					return renderLoading();
+				}
 				return renderPreview();
-			}
-			if (!imageLoaded) {
-				return renderLoading();
 			}
 			return renderNoPreview();
 		};

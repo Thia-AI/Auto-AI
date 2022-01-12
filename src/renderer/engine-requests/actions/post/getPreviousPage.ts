@@ -23,12 +23,10 @@ class GetPreviousPageEngineAction implements IEngineAction {
 
 	run = async (config?: AxiosRequestConfig, data?: IGetPreviousPageData) => {
 		try {
-			const res = await this.engineRequest.get(
+			const res = await this.engineRequest.post(
 				`${this.apiName}/${data?.datasetID}/inputs/cursor/previous`,
-				{
-					...config,
-					data: data?.data,
-				},
+				data?.data,
+				config,
 			);
 			return [false, res.data];
 		} catch (_err) {
