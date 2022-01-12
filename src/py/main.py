@@ -1,7 +1,7 @@
 from gevent import monkey
+
 monkey.patch_all()
 
-import base64
 import glob
 import os
 from pathlib import Path
@@ -14,8 +14,8 @@ from env import environment
 # First thing we do is initialize file paths, env variables, etc.
 environment.init_environment_pre_gpu()
 
-from flask_socketio import SocketIO, emit, send
-from engineio.async_drivers import gevent
+from flask_socketio import SocketIO
+
 import tensorflow as tf
 
 # Jobs
@@ -52,13 +52,6 @@ io.on_namespace(jobs_namespace)
 # app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
 
 environment.init_environment_post_gpu()
-
-
-@app.after_request
-def add_cache_control(response):
-    response.cache_control.max_age = 300
-    response.cache_control.public = True
-    return response
 
 
 @app.route('/devices', methods=['GET'])
@@ -187,6 +180,7 @@ def create_dataset_route():
 def get_datasets_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     rows = get_datasets()
+    log(len(rows))
     datasets = []
     for row in rows:
         dataset = dataset_from_row(row)
