@@ -12,3 +12,17 @@ export interface IActiveDatasetInputsReducer {
 export interface IActiveDatasetInputsPreviewIDReducer {
 	value: number;
 }
+
+/**
+ * State for the next page cursor (or null if no next page) for dataset inputs.
+ */
+export interface INextPageCursorReducer {
+	value: string | null;
+}
+
+/**
+ * State for the previous page cursor (or null if no previous page) for dataset inputs.
+ */
+export interface IPreviousPageCursorReducer {
+	value: string | null;
+}

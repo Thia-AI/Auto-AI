@@ -3,15 +3,21 @@ import {
 	GET_PREVIOUS_PAGE_INPUTS,
 	RESET_ACTIVE_DATASET_INPUTS,
 	SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID,
+	SET_NEXT_PAGE_CURSOR,
+	SET_PREVIOUS_PAGE_CURSOR,
 } from '_state/types';
 import {
 	IGetNextPageInputsAction,
 	IGetPreviousPageInputsAction,
 	IResetActiveDatasetInputsAction,
 	ISetActiveDatasetInputsPreviewIDAction,
+	ISetNextPageCursorAction,
+	ISetPreviousPageCursorAction,
 } from './model/actionTypes';
 import {
+	INextPageCursorReducer,
 	IActiveDatasetInputsPreviewIDReducer,
+	IPreviousPageCursorReducer,
 	IActiveDatasetInputsReducer,
 } from './model/reducerTypes';
 
@@ -61,6 +67,52 @@ export const activeDatasetInputsPreviewIDReducer = (
 ): IActiveDatasetInputsPreviewIDReducer => {
 	switch (action.type) {
 		case SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID:
+			return {
+				value: action.payload.value,
+			};
+		default:
+			return state;
+	}
+};
+
+const initialNextPageCursorReducer: INextPageCursorReducer = {
+	value: null,
+};
+
+/**
+ * State for the next page cursor (or null if no next page) for dataset inputs.
+ *
+ * @ts
+ */
+export const nextPageCursorReducer = (
+	state = initialNextPageCursorReducer,
+	action: ISetNextPageCursorAction,
+): INextPageCursorReducer => {
+	switch (action.type) {
+		case SET_NEXT_PAGE_CURSOR:
+			return {
+				value: action.payload.value,
+			};
+		default:
+			return state;
+	}
+};
+
+const initialPreviousPageCursorReducer: IPreviousPageCursorReducer = {
+	value: null,
+};
+
+/**
+ * State for the previous page cursor (or null if no previous page) for dataset inputs.
+ *
+ * @ts
+ */
+export const previousPageCursorReducer = (
+	state = initialPreviousPageCursorReducer,
+	action: ISetPreviousPageCursorAction,
+): IPreviousPageCursorReducer => {
+	switch (action.type) {
+		case SET_PREVIOUS_PAGE_CURSOR:
 			return {
 				value: action.payload.value,
 			};

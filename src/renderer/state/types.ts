@@ -119,3 +119,13 @@ export const RESET_ACTIVE_DATASET_INPUTS = 'RESET_ACTIVE_DATASET_INPUTS';
  * When we are setting the current active dataset input ID (index) that is displayed on the larger preview.
  */
 export const SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID = 'SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID';
+
+/**
+ * When we setting the next page cursor after retrieving the next/previous page.
+ */
+export const SET_NEXT_PAGE_CURSOR = 'SET_NEXT_PAGE_CURSOR';
+
+/**
+ * When we setting the previous page cursor after retrieving the next/previous page.
+ */
+export const SET_PREVIOUS_PAGE_CURSOR = 'SET_PREVIOUS_PAGE_CURSOR';
