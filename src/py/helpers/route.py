@@ -29,8 +29,7 @@ def validate_req_json_helper(req: dict, expected_req_format: dict):
             # TODO: Add type checking for all elements ex: STRING_ARRAY_NON_EMPTY
         if constants.REQ_HELPER_STRING_ARRAY_NON_EMPTY in expected_key_requirements and (not req or type(req[expected_key]) != list or len(req[expected_key]) == 0):
             # Array is not empty
-            key_errors.append("Key's value must be an array must exist and cannot be empty")
-        else:
+            key_errors.append("Key's value must be an array, must exist, and cannot be empty")
             # Go through array and verify all indices are strings
             for elem in req[expected_key]:
                 if type(elem) != str:

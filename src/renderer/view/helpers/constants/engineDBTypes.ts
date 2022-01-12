@@ -58,3 +58,30 @@ export const nullJob: Job = {
 	date_started: '',
 	date_finished: '',
 };
+
+/**
+ * **Engine**'s DB Input table.
+ */
+export interface Input {
+	dataset_id: string;
+	date_created: string;
+	file_name: string;
+	id: string;
+	label: string;
+}
+
+/**
+ * Constant for value of an unlabelled input's `label`.
+ */
+export const UNLABBELED_INPUT_VALUE = 'unlabelled';
+
+/**
+ * Empty input.
+ */
+export const nullInput: Input = {
+	dataset_id: '',
+	date_created: '',
+	file_name: '',
+	id: '',
+	label: '',
+};

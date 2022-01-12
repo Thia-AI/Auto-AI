@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 
-import { Box, Center, Spinner, Text, Image, HStack, Spacer, VStack, Icon } from '@chakra-ui/react';
+import { Box, Center, Spinner, Text, HStack, Spacer, VStack, Icon, chakra } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { FiEdit } from 'react-icons/fi';
@@ -9,7 +9,6 @@ import { push, Push } from 'connected-react-router';
 
 import { Dataset } from '_view_helpers/constants/engineDBTypes';
 import Preview from '_utils/images/placeholder-dark2.jpg';
-import NoImage from '_utils/images/placeholder-dark2.jpg';
 import { InteractiveCopyBadge } from '../../interactive/InteractiveCopyBadge';
 
 import { IAppState } from '_/renderer/state/reducers';
@@ -27,7 +26,8 @@ import {
 } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 
 import './DatasetCard.css';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { ENGINE_URL } from '_/renderer/engine-requests/constants';
+import { useProgressiveImage } from '_/renderer/view/helpers/customHooks';
 
 interface Props {
 	dataset: Dataset;
@@ -39,26 +39,10 @@ interface Props {
 }
 
 const DatasetCardC = React.memo((props: Props) => {
-	// Dataset
-	const [datasetImage, setDatasetImage] = useState('');
-	const [imageRetrived, setImageRetrieved] = useState(false);
-
-	const fetchFirstImage = useCallback(async () => {
-		const [error, resData] = await EngineActionHandler.getInstance().getFirstImageOfDataset(
-			props.dataset.id,
-		);
-
-		setImageRetrieved(true);
-		if (!error && resData['image']) {
-			setDatasetImage(resData['image']);
-		}
-	}, [props.dataset.id]);
-	useEffect(() => {
-		fetchFirstImage();
-	}, []);
+	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
 
 	const renderImage = () => {
-		if (!imageRetrived) {
+		if (!imageLoaded) {
 			return (
 				<Center h='200px' w='full' borderTopRadius='lg'>
 					<Spinner color='gray.600' size='lg' />
@@ -66,19 +50,17 @@ const DatasetCardC = React.memo((props: Props) => {
 			);
 		}
 		return (
-			<Image
+			<chakra.img
 				cursor='pointer'
 				onClick={() => {
-					if (props.selectedDatasetID.value === props.dataset.id)
-						props.resetSelectedDatasetAction();
+					if (props.selectedDatasetID.value === props.dataset.id) props.resetSelectedDatasetAction();
 					else props.changeSelectedDatasetAction(props.dataset.id);
 				}}
 				borderTopRadius='lg'
 				fit='cover'
 				h='200px'
 				w='full'
-				src={datasetImage}
-				fallbackSrc={NoImage}
+				src={imageSrc}
 			/>
 		);
 	};

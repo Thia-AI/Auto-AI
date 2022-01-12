@@ -1,11 +1,8 @@
+import { Dispatch } from 'react';
 import { ThunkAction } from 'redux-thunk';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 
-import {
-	DATASET_LOADING,
-	REFRESH_DATASET_LIST,
-	UPDATE_DATASET_PREVIEW_UPLOAD_FILES,
-} from '../types';
+import { DATASET_LOADING, REFRESH_DATASET_LIST, UPDATE_DATASET_PREVIEW_UPLOAD_FILES } from '../types';
 import {
 	ILoadingDatasetListAction,
 	IRefreshDatasetListAction,
@@ -20,7 +17,7 @@ import {
 export const refreshDatasetListAction =
 	(): ThunkAction<void, {}, undefined, IRefreshDatasetListAction> =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async (dispatch: any, getState) => {
+	async (dispatch: Dispatch<IRefreshDatasetListAction | ILoadingDatasetListAction>, getState) => {
 		dispatch(datasetListLoadingAction(true));
 		const [error, resData] = await EngineActionHandler.getInstance().getDatasets();
 		const state = getState();
@@ -60,9 +57,7 @@ export const datasetListLoadingAction = (isDatasetLoading: boolean): ILoadingDat
  *
  * @ts
  */
-export const updateDatasetPreviewFilesAction = (
-	files: string[],
-): IUpdateDatasetPreviewFilesAction => ({
+export const updateDatasetPreviewFilesAction = (files: string[]): IUpdateDatasetPreviewFilesAction => ({
 	type: UPDATE_DATASET_PREVIEW_UPLOAD_FILES,
 	payload: {
 		files,

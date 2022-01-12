@@ -1,9 +1,10 @@
+import { nullDataset } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { CHANGE_ACTIVE_DATASET } from '_state/types';
 import { IChangeActiveDatasetAction } from './model/actionTypes';
 import { IActiveDatasetReducer } from './model/reducerTypes';
 
 const initialActiveDatasetState: IActiveDatasetReducer = {
-	value: undefined,
+	value: nullDataset,
 };
 
 /**

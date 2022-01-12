@@ -1,21 +1,21 @@
 from gevent import monkey
+
 monkey.patch_all()
 
-import base64
 import glob
 import os
 from pathlib import Path
 
 from dateutil import parser
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, abort
 
 from env import environment
 
 # First thing we do is initialize file paths, env variables, etc.
 environment.init_environment_pre_gpu()
 
-from flask_socketio import SocketIO, emit, send
-from engineio.async_drivers import gevent
+from flask_socketio import SocketIO
+
 import tensorflow as tf
 
 # Jobs
@@ -30,7 +30,7 @@ from db.commands.model_commands import get_models, get_model
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    update_labels_of_dataset, reset_labels_of_inputs
+    update_labels_of_dataset, reset_labels_of_inputs, get_input
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row
 
 from job.job import JobCreator
@@ -180,6 +180,7 @@ def create_dataset_route():
 def get_datasets_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     rows = get_datasets()
+    log(len(rows))
     datasets = []
     for row in rows:
         dataset = dataset_from_row(row)
@@ -212,7 +213,7 @@ def get_dataset_by_name_route(name: str):
         return dataset_from_row(row), 200
 
 
-@app.route('/dataset/first-image/<string:uuid>', methods=['GET'])
+@app.route('/dataset/<string:uuid>/first-image', methods=['GET'])
 def get_dataset_first_image_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -223,15 +224,14 @@ def get_dataset_first_image_route(uuid: str):
     for row in rows:
         # Only 1 row in rows but we access via iteration
         # Get images in dataset's input directory
-        input_dir = (config.DATASET_DIR / row['name'] / config.DATASET_INPUT_DIR_NAME).absolute()
-        files = glob.glob(str(input_dir) + os.path.sep + '*.jpg')
+        input_dir = str((config.DATASET_DIR / row['name'] / config.DATASET_INPUT_DIR_NAME).resolve())
+        files = glob.glob1(input_dir, '*.jpg')
         if len(files) == 0:
-            return {'image': ''}, 200
-        with open(files[0], 'rb') as image:
-            # Return base64 encoded image that we can pass directly as src to <img /> tag
-            encoded = base64.b64encode(image.read()).decode('utf-8')
-            base64_output = 'data:image/jpg;base64,{}'.format(encoded)
-            return {'image': base64_output}, 200
+            abort(404)
+        try:
+            return send_from_directory(input_dir, files[0])
+        except FileNotFoundError:
+            abort(404)
 
 
 @app.route('/dataset/<string:uuid>', methods=['DELETE'])
@@ -272,7 +272,7 @@ def get_all_inputs_route():
 
 # Input pagination routes
 
-@app.route('/dataset/<string:uuid>/inputs/cursor/next', methods=['GET'])
+@app.route('/dataset/<string:uuid>/inputs/cursor/next', methods=['POST'])
 def get_next_inputs_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -327,7 +327,7 @@ def get_next_inputs_route(uuid: str):
            }, 200
 
 
-@app.route('/dataset/<string:uuid>/inputs/cursor/previous', methods=['GET'])
+@app.route('/dataset/<string:uuid>/inputs/cursor/previous', methods=['POST'])
 def get_prev_inputs_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -510,6 +510,31 @@ def update_labels_from_dataset(uuid: str):
     for row in rows:
         dataset = dataset_from_row(row)
     return {'dataset': dataset}, 200
+
+
+@app.route('/dataset/<string:dataset_id>/input/<string:input_id>', methods=['GET'])
+def get_input_image(dataset_id: str, input_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(dataset_id) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    if len(input_id) != 32:
+        return {'Error': "ID of input is of incorrect length"}, 400
+    rows = get_dataset(dataset_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    # So that pycharm doesn't throw a warning saying dataset_name is referenced before assignment
+    dataset_name = ''
+    for row in rows:
+        dataset_name: str = row['name']
+    rows = get_input(input_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of input does not exist"}, 400
+    for row in rows:
+        file_name: str = row['file_name']
+        try:
+            return send_from_directory(str((config.DATASET_DIR / dataset_name / config.DATASET_INPUT_DIR_NAME).resolve()), file_name)
+        except FileNotFoundError:
+            return {'Error': "File not found"}, 404
 
 
 if __name__ == '__main__':

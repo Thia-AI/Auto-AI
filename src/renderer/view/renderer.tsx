@@ -7,7 +7,6 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ChakraProvider, extendTheme, ColorModeScript } from '@chakra-ui/react';
 
-import '_fonts/fonts.css';
 import '_public/style.css';
 
 import { App } from './App';

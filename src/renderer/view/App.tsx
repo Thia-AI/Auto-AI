@@ -25,6 +25,7 @@ const AppC = React.memo((props: Props) => {
 	useEffect(() => {
 		const openSideMenu = (event: KeyboardEvent) => {
 			if (event.key == 'Escape') {
+				event.preventDefault();
 				props.openCloseSideMenu();
 			}
 		};

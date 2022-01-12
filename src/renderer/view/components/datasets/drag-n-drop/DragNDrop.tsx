@@ -18,14 +18,16 @@ import {
 	IPC_DRAG_AND_DROP_SELECT_FOLDER,
 	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
 } from '_/shared/ipcChannels';
+import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 
 interface Props {
 	files: string[];
 	updateFiles: (files: string[]) => IUpdateDatasetPreviewFilesAction;
 	pathname: string;
+	getNextPageInputs: (datasetID: string, cursorDate: string) => void;
 }
 
-const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
+const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs }: Props) => {
 	const toast = useToast();
 
 	const [fileDirectory, setFileDirectory] = useState('');
@@ -119,7 +121,6 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 			);
 			if (!err) {
 				setUploadJob(resData as Job);
-				console.log(resData);
 			}
 
 			setUploadJobID(uploadImageRes['ids'][0]);
@@ -133,6 +134,9 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname }: Props) => {
 				isClosable: false,
 			});
 			updateFiles([]);
+			// Reset active dataset inputs for previewing.
+			const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
+			getNextPageInputs(datasetID, someOldDateBase64);
 		}
 	};
 
@@ -221,4 +225,5 @@ const mapStateToProps = (state: IAppState) => ({
  */
 export const DragNDrop = connect(mapStateToProps, {
 	updateFiles: updateDatasetPreviewFilesAction,
+	getNextPageInputs: getNextPageInputsAction,
 })(DragNDropC);

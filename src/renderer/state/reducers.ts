@@ -1,24 +1,12 @@
 import { combineReducers } from 'redux';
 import { connectRouter, RouterState } from 'connected-react-router';
 
-import {
-	selectedModelReducer,
-	openCloseModelSelectionReducer,
-} from './choose-model/ChooseModelReducers';
-import {
-	ISelectedModelReducer,
-	IOpenCloseModelSelectionReducer,
-} from './choose-model/model/reducerTypes';
+import { selectedModelReducer, openCloseModelSelectionReducer } from './choose-model/ChooseModelReducers';
+import { ISelectedModelReducer, IOpenCloseModelSelectionReducer } from './choose-model/model/reducerTypes';
 
 import { engineStatusReducer } from './engine-status/EngineStatusReducers';
-import {
-	openCloseDeleteDatasetReducer,
-	openCloseDeleteLabelReducer,
-} from './delete-modals/DeleteModalsReducers';
-import {
-	IOpenCloseDeleteDatasetReducer,
-	IOpenCloseDeleteLabelReducer,
-} from './delete-modals/model/reducerTypes';
+import { openCloseDeleteDatasetReducer, openCloseDeleteLabelReducer } from './delete-modals/DeleteModalsReducers';
+import { IOpenCloseDeleteDatasetReducer, IOpenCloseDeleteLabelReducer } from './delete-modals/model/reducerTypes';
 import { IEngineStatusReducer } from './engine-status/model/reducerTypes';
 import { headerMaximizedChangedReducer } from './header/HeaderReducers';
 import { IHeaderMaximizedChangedReducer } from './header/model/reducerTypes';
@@ -26,20 +14,24 @@ import { IMenuOpenReducer, ISelectedPageReducer } from './side-menu/model/reduce
 import { changeSelectedPageReducer, openSideMenuReducer } from './side-menu/SideModelReducers';
 import { selectedDatasetReducer } from './choose-dataset-train/ChooseDatasetReducers';
 import { ISelectedDatasetReducer } from './choose-dataset-train/model/reducerTypes';
-import {
-	datasetListLoadingReducer,
-	datasetListReducer,
-	datasetPreviewFilesReducer,
-} from './dataset-list/DatasetListReducers';
-import {
-	IDatasetListLoadingReducer,
-	IDatasetListReducer,
-	IDatasetPreviewFilesReducer,
-} from './dataset-list/model/reducerTypes';
+import { datasetListLoadingReducer, datasetListReducer, datasetPreviewFilesReducer } from './dataset-list/DatasetListReducers';
+import { IDatasetListLoadingReducer, IDatasetListReducer, IDatasetPreviewFilesReducer } from './dataset-list/model/reducerTypes';
 import { notificationsReducer } from './notifications/NotificationReducers';
 import { INotificationsReducer } from './notifications/model/reducerTypes';
 import { activeDatasetReducer } from './active-dataset-page/ActiveDatasetReducers';
 import { IActiveDatasetReducer } from './active-dataset-page/model/reducerTypes';
+import {
+	activeDatasetInputsPreviewIDReducer,
+	activeDatasetInputsReducer,
+	nextPageCursorReducer,
+	previousPageCursorReducer,
+} from './active-dataset-inputs/ActiveDatasetInputsReducers';
+import {
+	IActiveDatasetInputsPreviewIDReducer,
+	IActiveDatasetInputsReducer,
+	INextPageCursorReducer,
+	IPreviousPageCursorReducer,
+} from './active-dataset-inputs/model/reducerTypes';
 
 // define the root reducer
 /**
@@ -65,6 +57,10 @@ const createRootReducer = (history) =>
 		datasetPreviewFiles: datasetPreviewFilesReducer,
 		notifications: notificationsReducer,
 		activeDataset: activeDatasetReducer,
+		activeDatasetInputs: activeDatasetInputsReducer,
+		activeDatasetInputsPreviewID: activeDatasetInputsPreviewIDReducer,
+		nextPageCursor: nextPageCursorReducer,
+		previousPageCursor: previousPageCursorReducer,
 	});
 
 /**
@@ -86,6 +82,10 @@ export interface IAppState {
 	datasetPreviewFiles: IDatasetPreviewFilesReducer;
 	notifications: INotificationsReducer;
 	activeDataset: IActiveDatasetReducer;
+	activeDatasetInputs: IActiveDatasetInputsReducer;
+	activeDatasetInputsPreviewID: IActiveDatasetInputsPreviewIDReducer;
+	nextPageCursor: INextPageCursorReducer;
+	previousPageCursor: IPreviousPageCursorReducer;
 }
 
 export default createRootReducer;

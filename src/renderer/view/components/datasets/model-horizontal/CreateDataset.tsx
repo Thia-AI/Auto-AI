@@ -43,11 +43,10 @@ const CreateDatasetC = React.memo((props: Props) => {
 	// TODO: Add input validation as in ICModelContent:createModel
 	const createDataset = async () => {
 		setDatasetCreating(true);
-		const [createDatasetErr, createDatasetRes] =
-			await EngineActionHandler.getInstance().createDataset({
-				name: datasetName,
-				type: IMAGE_CLASSIFICATION[0],
-			});
+		const [createDatasetErr, createDatasetRes] = await EngineActionHandler.getInstance().createDataset({
+			name: datasetName,
+			type: IMAGE_CLASSIFICATION[0],
+		});
 
 		if (createDatasetErr) {
 			toast({
@@ -90,13 +89,7 @@ const CreateDatasetC = React.memo((props: Props) => {
 				<ModalCloseButton size='sm' />
 				<ModalBody pb='4'>
 					<VStack spacing='2' alignItems='flex-start'>
-						<Text
-							fontWeight='semibold'
-							color='gray.300'
-							as='h4'
-							fontSize='sm'
-							pl='1'
-							mb='1'>
+						<Text fontWeight='semibold' color='gray.300' as='h4' fontSize='sm' pl='1' mb='1'>
 							Name
 						</Text>
 						<Flex justifyContent='space-between' w='full'>
@@ -107,10 +100,7 @@ const CreateDatasetC = React.memo((props: Props) => {
 								variant='filled'
 								placeholder="Enter the dataset's name"
 							/>
-							<Button
-								isLoading={datasetCreating}
-								onClick={createDataset}
-								colorScheme='teal'>
+							<Button isLoading={datasetCreating} onClick={createDataset} colorScheme='teal'>
 								Create
 							</Button>
 						</Flex>
