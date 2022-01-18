@@ -19,7 +19,8 @@
 		"lint-fix-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\" --fix",
 		"lint-fix-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix",
 		"lint-fix-dry-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\" --fix-dry-run",
-		"lint-fix-dry-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix-dry-run"
+		"lint-fix-dry-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix-dry-run",
+		"postinstall": "patch-package"
 	},
 	"build": {
 		"appId": "Thia",
@@ -72,6 +73,7 @@
 		"electron-localshortcut": "^3.2.1",
 		"lodash": "^4.17.21",
 		"node-notifier": "^10.0.0",
+		"patch-package": "^6.4.7",
 		"python-shell": "^3.0.1",
 		"react": "^17.0.2",
 		"react-beautiful-dnd": "^13.1.0",
@@ -85,9 +87,11 @@
 		"react-tooltip": "^4.2.21",
 		"react-transition-group": "^4.4.1",
 		"react-window": "^1.8.6",
+		"react-zoom-pan-pinch": "^2.1.3",
 		"redux": "^4.0.5",
 		"redux-logger": "^3.0.6",
 		"redux-thunk": "^2.3.0",
+		"rooks": "^5.8.0",
 		"socket.io-client": "^4.4.0"
 	},
 	"devDependencies": {
