@@ -57,7 +57,7 @@ const mapStateToProps = (state: IAppState) => ({
 });
 
 /**
- * Preview of a dataset's inputs (images).
+ * Preview of a dataset's inputs (or images).
  */
 export const InputPreview = connect(mapStateToProps, {
 	getNextPageInputs: getNextPageInputsAction,
