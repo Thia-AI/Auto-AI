@@ -9,7 +9,7 @@ import { IoTrash } from 'react-icons/io5';
 import { IAppState } from '_/renderer/state/reducers';
 import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
-import { useProgressiveImage } from '_/renderer/view/helpers/customHooks';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
 
 interface Data {
 	rowCount: number;
@@ -43,9 +43,7 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const file_path = file_paths[itemIndex];
 	const file_name = parse(file_path).name;
 
-	const [imageLoaded, imageSrc] = useProgressiveImage(
-		`file://${(directory + file_path).replace(/\\/g, '/')}`,
-	);
+	const [imageLoaded, imageSrc] = useProgressiveImage(`file://${(directory + file_path).replace(/\\/g, '/')}`);
 
 	// TODO: Add lazy loading of background image
 	const renderLoading = () => {

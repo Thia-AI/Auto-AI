@@ -18,7 +18,7 @@ import { push, Push } from 'connected-react-router';
 
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { IMAGE_CLASSIFICATION } from '_view_helpers/constants/modelConstants';
-import { waitTillEngineJobComplete } from '_/renderer/view/helpers/engineJobHelper';
+import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 
 interface Props {

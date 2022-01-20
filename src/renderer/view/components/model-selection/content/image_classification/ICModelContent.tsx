@@ -21,7 +21,7 @@ import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/Cho
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import { RadioCard } from './ICModelRadio';
-import { waitTillEngineJobComplete } from '_view_helpers/engineJobHelper';
+import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { changeSelectedPage } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
@@ -104,12 +104,11 @@ const ICModelContentC = React.memo((props: Props) => {
 		if (wasError) return;
 		// No error, send create model action
 		setModelCreating(true);
-		const [createModelErr, createModelRes] =
-			await EngineActionHandler.getInstance().createModel({
-				model_name: modelNameValue,
-				model_type: 'image_classification',
-				model_type_extra: modelTypeValue.toLowerCase(),
-			});
+		const [createModelErr, createModelRes] = await EngineActionHandler.getInstance().createModel({
+			model_name: modelNameValue,
+			model_type: 'image_classification',
+			model_type_extra: modelTypeValue.toLowerCase(),
+		});
 		// If error occurred when sending the Engine Action
 		if (createModelErr) {
 			toast({
@@ -147,13 +146,7 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Center>
 			<Flex direction='row' w='full'>
 				<Box>
-					<Text
-						fontWeight='semibold'
-						color={inputColor}
-						as='h4'
-						fontSize='sm'
-						pl='1'
-						mb='1'>
+					<Text fontWeight='semibold' color={inputColor} as='h4' fontSize='sm' pl='1' mb='1'>
 						Name
 					</Text>
 					<Input
@@ -170,13 +163,7 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Flex>
 			<Flex direction='row' w='full' pt='4'>
 				<Box w='full'>
-					<Text
-						fontWeight='semibold'
-						color={inputColor}
-						as='h4'
-						fontSize='sm'
-						pl='1'
-						mb='1'>
+					<Text fontWeight='semibold' color={inputColor} as='h4' fontSize='sm' pl='1' mb='1'>
 						Model Type:
 					</Text>
 					<VStack {...group} alignItems='flex-start' w='full'>
@@ -194,17 +181,10 @@ const ICModelContentC = React.memo((props: Props) => {
 
 			<Center pt='8'>
 				<HStack spacing='3'>
-					<Button
-						isLoading={modelCreating}
-						loadingText='Creating'
-						colorScheme='teal'
-						onClick={createModel}>
+					<Button isLoading={modelCreating} loadingText='Creating' colorScheme='teal' onClick={createModel}>
 						Create
 					</Button>
-					<Button
-						colorScheme='red'
-						variant='ghost'
-						onClick={props.openCloseModelSelectionAction}>
+					<Button colorScheme='red' variant='ghost' onClick={props.openCloseModelSelectionAction}>
 						Cancel
 					</Button>
 				</HStack>
