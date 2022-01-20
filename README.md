@@ -1,4 +1,4 @@
-<h1 align=center>Thia</h1>
+<h1 align=center>Thia [README OUTDATED AS FUCK LOL!]</h1>
 
 
 #### Getting Setup On Your Machine
