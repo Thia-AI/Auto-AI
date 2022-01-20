@@ -1,6 +1,8 @@
 import { AxiosRequestConfig } from 'axios';
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 
+// Random helper functions
+
 /**
  * Helper method that waits until an Engine job has completed.
  *
@@ -32,4 +34,15 @@ export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) =
  */
 export const sleep = (ms: number) => {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+/**
+ * Converts image resolution into megapixels.
+ *
+ * @param width Width of image.
+ * @param height Height of image.
+ * @returns Megapixels of the image.
+ */
+export const resolutionToMegapixels = (width: number, height: number) => {
+	return (width * height) / 1_000_000;
 };

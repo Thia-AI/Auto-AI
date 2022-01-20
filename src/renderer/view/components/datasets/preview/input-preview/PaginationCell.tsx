@@ -9,12 +9,12 @@ import { IAppState } from '_/renderer/state/reducers';
 import { PreviewDatasetPagination } from './PreviewDatasetPagination';
 import { Input } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/customHooks';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { setActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { IActiveDatasetInputsPreviewIDReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
-import { sleep } from '_/renderer/view/helpers/engineJobHelper';
+import { sleep } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
 	input: Input;

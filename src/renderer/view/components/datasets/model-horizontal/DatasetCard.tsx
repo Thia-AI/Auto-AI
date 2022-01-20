@@ -27,7 +27,7 @@ import {
 
 import './DatasetCard.css';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/customHooks';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
 
 interface Props {
 	dataset: Dataset;
@@ -57,7 +57,7 @@ const DatasetCardC = React.memo((props: Props) => {
 					else props.changeSelectedDatasetAction(props.dataset.id);
 				}}
 				borderTopRadius='lg'
-				fit='cover'
+				objectFit='cover'
 				h='200px'
 				w='full'
 				src={imageSrc}

@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { AiFillDatabase } from 'react-icons/ai';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
-import { waitTillEngineJobComplete } from '../../helpers/engineJobHelper';
+import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 
 /**
  * Dev panel deleting dataset inputs component.
@@ -30,8 +30,9 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 	const deleteInputs = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
 		setInputsDeleting(true);
-		const [deleteInputsErr, deleteInputsRes] =
-			await EngineActionHandler.getInstance().deleteAllInputsFromDataset(value);
+		const [deleteInputsErr, deleteInputsRes] = await EngineActionHandler.getInstance().deleteAllInputsFromDataset(
+			value,
+		);
 		if (deleteInputsErr) {
 			toast({
 				title: 'Error',
@@ -62,21 +63,11 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 					<InputLeftElement pointerEvents='none' fontSize='sm' color='gray.600'>
 						<AiFillDatabase />
 					</InputLeftElement>
-					<Input
-						bg='gray.800'
-						placeholder="Enter input's dataset ID"
-						value={value}
-						onChange={handleChange}
-					/>
+					<Input bg='gray.800' placeholder="Enter input's dataset ID" value={value} onChange={handleChange} />
 				</InputGroup>
 			</FormControl>
 
-			<Button
-				isLoading={inputsDeleting}
-				type='submit'
-				colorScheme='blue'
-				minW='24'
-				onClick={deleteInputs}>
+			<Button isLoading={inputsDeleting} type='submit' colorScheme='blue' minW='24' onClick={deleteInputs}>
 				Delete
 			</Button>
 		</HStack>

@@ -18,7 +18,7 @@ const defaultProgressiveImageOptions: ProgressiveImageOptions = { readyToLoad: t
  * @returns Whether the image has been loaded and its `src`.
  */
 export const useProgressiveImage = (src: string, options?: ProgressiveImageOptions): [boolean, string] => {
-	const [sourceLoaded, setSourceLoaded] = useState('');
+	const [sourceLoaded, setSourceLoaded] = useState(NoImage);
 	const [imageLoaded, setImageLoaded] = useState(false);
 
 	const { readyToLoad }: Required<ProgressiveImageOptions> = { ...defaultProgressiveImageOptions, ...options };
@@ -35,6 +35,8 @@ export const useProgressiveImage = (src: string, options?: ProgressiveImageOptio
 				setSourceLoaded(NoImage);
 				setImageLoaded(true);
 			};
+		} else {
+			setSourceLoaded(NoImage);
 		}
 
 		return () => {
