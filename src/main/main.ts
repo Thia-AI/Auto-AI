@@ -17,13 +17,7 @@ import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 import { isEmulatedDev } from './helpers/dev';
-import {
-	ReadFileTaskResult,
-	READ_FILE,
-	TaskResult,
-	WorkerMap,
-	WorkerTask,
-} from '_/shared/worker_constants';
+import { ReadFileTaskResult, READ_FILE, TaskResult, WorkerMap, WorkerTask } from '_/shared/worker_constants';
 import {
 	IPC_DEV_TOGGLE_DEV_DASHBOARD,
 	IPC_DEV_ENGINE_STARTED,
@@ -230,7 +224,7 @@ if (!isSingleInstance) {
 	// This method will be called when Electron has finished
 	// initialization and is ready to create browser windows.
 	// Some APIs can only be used after this event occurs.
-	app.on('ready', async () => {
+	app.whenReady().then(() => {
 		initRendererDev();
 		createWindow();
 		registerShortcuts(mainWindow!);
