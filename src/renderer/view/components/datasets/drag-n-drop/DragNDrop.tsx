@@ -14,20 +14,20 @@ import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHand
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { DatasetPreview } from '../preview/DatasetPreview';
-import {
-	IPC_DRAG_AND_DROP_SELECT_FOLDER,
-	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
-} from '_/shared/ipcChannels';
+import { IPC_DRAG_AND_DROP_SELECT_FOLDER, IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES } from '_/shared/ipcChannels';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
+import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
+import { MAX_INPUTS_PER_PAGE } from '_/shared/engineConstants';
 
 interface Props {
 	files: string[];
 	updateFiles: (files: string[]) => IUpdateDatasetPreviewFilesAction;
 	pathname: string;
 	getNextPageInputs: (datasetID: string, cursorDate: string) => void;
+	activeDatasetInputs: IActiveDatasetInputsReducer;
 }
 
-const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs }: Props) => {
+const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs, activeDatasetInputs }: Props) => {
 	const toast = useToast();
 
 	const [fileDirectory, setFileDirectory] = useState('');
@@ -50,9 +50,7 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 	 */
 	const selectMultipleFiles = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
-		const files: OpenDialogReturnValue = await ipcRenderer.invoke(
-			IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
-		);
+		const files: OpenDialogReturnValue = await ipcRenderer.invoke(IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES);
 		if (files.canceled) return;
 		setFileDirectory('');
 		updateFiles(files.filePaths);
@@ -65,9 +63,7 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 	 */
 	const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
-		const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
-			IPC_DRAG_AND_DROP_SELECT_FOLDER,
-		);
+		const folder: OpenDialogReturnValue = await ipcRenderer.invoke(IPC_DRAG_AND_DROP_SELECT_FOLDER);
 
 		if (folder.canceled) return;
 		try {
@@ -100,10 +96,12 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 			}
 			// Get dataset ID from the path (recall that dataset page has route of /dataset/<dataset-id>)
 			const datasetID = pathname.split('/').pop() ?? '';
-			const [uploadImageErr, uploadImageRes] =
-				await EngineActionHandler.getInstance().uploadImagesToDataset(datasetID, {
+			const [uploadImageErr, uploadImageRes] = await EngineActionHandler.getInstance().uploadImagesToDataset(
+				datasetID,
+				{
 					files: filesCpy,
-				});
+				},
+			);
 			if (uploadImageErr) {
 				toast({
 					title: 'Error',
@@ -116,13 +114,10 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 				return;
 			}
 			// Get initial job that is passed down to the JobProgress component
-			const [err, resData] = await EngineActionHandler.getInstance().getJob(
-				uploadImageRes['ids'][0],
-			);
+			const [err, resData] = await EngineActionHandler.getInstance().getJob(uploadImageRes['ids'][0]);
 			if (!err) {
 				setUploadJob(resData as Job);
 			}
-
 			setUploadJobID(uploadImageRes['ids'][0]);
 
 			setImagesUploading(false);
@@ -134,9 +129,11 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 				isClosable: false,
 			});
 			updateFiles([]);
-			// Reset active dataset inputs for previewing.
-			const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
-			getNextPageInputs(datasetID, someOldDateBase64);
+			if (activeDatasetInputs.value.length < MAX_INPUTS_PER_PAGE) {
+				// Reset active dataset inputs for previewing.
+				const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
+				getNextPageInputs(datasetID, someOldDateBase64);
+			}
 		}
 	};
 
@@ -204,11 +201,7 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 					</Button>
 				</VStack>
 			</HStack>
-			<JobProgress
-				jobID={uploadJobID}
-				initialJob={uploadJob}
-				clearJobIDState={() => setUploadJobID(undefined)}
-			/>
+			<JobProgress jobID={uploadJobID} initialJob={uploadJob} clearJobIDState={() => setUploadJobID(undefined)} />
 			<DragNDropPreview directory={fileDirectory} />
 			<DatasetPreview />
 		</Flex>
@@ -218,6 +211,7 @@ const DragNDropC = React.memo(({ files, updateFiles, pathname, getNextPageInputs
 const mapStateToProps = (state: IAppState) => ({
 	files: state.datasetPreviewFiles.value,
 	pathname: state.router.location.pathname,
+	activeDatasetInputs: state.activeDatasetInputs,
 });
 
 /**

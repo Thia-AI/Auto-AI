@@ -30,7 +30,7 @@ const PaginationCellC = React.memo(
 		const ref = useRef<HTMLDivElement>(null);
 		const [isSelectedCell, setIsSelectedCell] = useState(false);
 		const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${datasetID}/input/${input.id}`, {
-			readyToLoad: datasetID!.length > 0,
+			readyToLoad: datasetID!.length > 0 && input.id.length > 0,
 		});
 
 		const checkIfPaginationCellIsSelected = async () => {

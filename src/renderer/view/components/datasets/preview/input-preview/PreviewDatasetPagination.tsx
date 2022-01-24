@@ -1,4 +1,4 @@
-import { Button, Center, Flex, HStack, LayoutProps } from '@chakra-ui/react';
+import { Button, Center, Flex, HStack, Icon, LayoutProps, Text } from '@chakra-ui/react';
 import React, { useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
@@ -18,6 +18,7 @@ import {
 } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
+import { MdImageNotSupported } from 'react-icons/md';
 interface Props {
 	h: LayoutProps['h'];
 	activeDatasetInputs: IActiveDatasetInputsReducer;
@@ -79,6 +80,45 @@ const PreviewDatasetPaginationC = React.memo(
 			};
 		}, [navigatePaginationWithKeyboard]);
 
+		const renderPagination = () => {
+			if (activeDatasetInputs.value.length == 0) {
+				return (
+					<Center w='100%' h='100%' flexDir='column' bg='gray.800' borderRadius='md'>
+						<Icon as={MdImageNotSupported} boxSize='7' color='teal.300' opacity={0.3} />
+						<Text fontSize='sm' color='gray.600' fontWeight='thin' mt='2'>
+							No Images in Dataset
+						</Text>
+					</Center>
+				);
+			} else {
+				return (
+					<HStack
+						w='100%'
+						h='100%'
+						overflowX='auto'
+						pt='0.5'
+						pb='1.5'
+						px='1'
+						overflowY='hidden'
+						sx={{
+							'&::-webkit-scrollbar': {
+								h: '5px',
+								bg: 'gray.600',
+							},
+							'&::-webkit-scrollbar-thumb': {
+								bg: 'gray.900',
+							},
+						}}>
+						{Array(activeDatasetInputs.value.length)
+							.fill(0)
+							.map((_, i) => {
+								return <PaginationCell key={i} input={activeDatasetInputs.value[i]} cellID={i} />;
+							})}
+					</HStack>
+				);
+			}
+		};
+
 		return (
 			<Flex w='full' h={h} mt='2'>
 				<Center h='full' cursor='pointer' pr='1'>
@@ -99,29 +139,7 @@ const PreviewDatasetPaginationC = React.memo(
 						}}
 					/>
 				</Center>
-				<HStack
-					w='100%'
-					h='100%'
-					overflowX='auto'
-					pt='0.5'
-					pb='1.5'
-					px='1'
-					overflowY='hidden'
-					sx={{
-						'&::-webkit-scrollbar': {
-							h: '5px',
-							bg: 'gray.600',
-						},
-						'&::-webkit-scrollbar-thumb': {
-							bg: 'gray.900',
-						},
-					}}>
-					{Array(activeDatasetInputs.value.length)
-						.fill(0)
-						.map((_, i) => {
-							return <PaginationCell key={i} input={activeDatasetInputs.value[i]} cellID={i} />;
-						})}
-				</HStack>
+				{renderPagination()}
 				<Center h='full' cursor='pointer' pl='1'>
 					<Button
 						leftIcon={<GrFormNext />}
