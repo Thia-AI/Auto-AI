@@ -4,10 +4,11 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, Menu } from 'electron';
+import { BrowserWindow, app, ipcMain, Menu, protocol } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { cpus } from 'os';
+import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
@@ -17,7 +18,7 @@ import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 import { isEmulatedDev } from './helpers/dev';
-import { ReadFileTaskResult, READ_FILE, TaskResult, WorkerMap, WorkerTask } from '_/shared/worker_constants';
+import { ReadFileTaskResult, READ_FILE, TaskResult, WorkerMap, WorkerTask } from '_/shared/workerConstants';
 import {
 	IPC_DEV_TOGGLE_DEV_DASHBOARD,
 	IPC_DEV_ENGINE_STARTED,
@@ -224,10 +225,21 @@ if (!isSingleInstance) {
 	// This method will be called when Electron has finished
 	// initialization and is ready to create browser windows.
 	// Some APIs can only be used after this event occurs.
-	app.whenReady().then(() => {
+	app.whenReady().then(async () => {
+		if (isDev) {
+			const extension = await installExtension([REACT_DEVELOPER_TOOLS], {
+				loadExtensionOptions: { allowFileAccess: true },
+				forceDownload: true,
+			});
+			console.log('Extension loaded:', extension);
+		}
 		initRendererDev();
 		createWindow();
 		registerShortcuts(mainWindow!);
+		protocol.registerFileProtocol('file', (req, callback) => {
+			const pathname = decodeURIComponent(req.url.replace('file:///', ''));
+			callback(pathname);
+		});
 		// Create worker for each cpu
 		initWorkerIPC();
 
