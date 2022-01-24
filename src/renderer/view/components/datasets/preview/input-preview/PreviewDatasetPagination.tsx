@@ -96,14 +96,18 @@ const PreviewDatasetPaginationC = React.memo(
 						w='100%'
 						h='100%'
 						overflowX='auto'
-						pt='0.5'
+						pt='1.5'
 						pb='1.5'
-						px='1'
+						px='1.5'
+						bg='gray.800'
+						borderRadius='md'
 						overflowY='hidden'
 						sx={{
 							'&::-webkit-scrollbar': {
 								h: '5px',
 								bg: 'gray.600',
+								borderBottomLeftRadius: 'sm',
+								borderBottomRightRadius: 'sm',
 							},
 							'&::-webkit-scrollbar-thumb': {
 								bg: 'gray.900',

@@ -55,12 +55,18 @@ const PreviewDatasetInputC = React.memo(
 		const buttonSize = useBreakpointValue({ base: 'xs', xl: 'sm' }) ?? '';
 
 		const resetImage = (image: HTMLImageElement, container: HTMLDivElement, setTransform: (...any) => void) => {
-			let newPositionY = Math.abs(container.clientHeight - image.height) / 2;
-			let newPositionX = Math.abs(container.clientWidth - image.width) / 2;
-			if (image.width <= image.height || image.height >= container.clientHeight) {
+			const containerWidth = Math.round(container.getBoundingClientRect().width);
+			const containerHeight = Math.round(container.getBoundingClientRect().height);
+			let newPositionY = Math.abs(containerHeight - image.height) / 2;
+			let newPositionX = Math.abs(containerWidth - image.width) / 2;
+			if (image.width <= image.height || image.height >= containerHeight) {
 				newPositionY *= -1;
 			}
-			if (image.width == container.clientWidth) {
+			if (image.width < containerWidth && image.height < containerHeight) {
+				// Change back to positive
+				newPositionY *= -1;
+			}
+			if (image.width == containerWidth) {
 				newPositionX = 0;
 			}
 
