@@ -1,7 +1,3 @@
-from gevent import monkey
-
-monkey.patch_all()
-
 import glob
 import os
 from pathlib import Path
@@ -44,7 +40,7 @@ from sio_namespaces.job_namespace import jobs_namespace
 
 app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
 
-io = SocketIO(app)
+io = SocketIO(app, async_mode='threading')
 
 io.on_namespace(jobs_namespace)
 
@@ -180,7 +176,6 @@ def create_dataset_route():
 def get_datasets_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     rows = get_datasets()
-    log(len(rows))
     datasets = []
     for row in rows:
         dataset = dataset_from_row(row)
