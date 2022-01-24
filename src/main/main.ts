@@ -8,7 +8,7 @@ import { BrowserWindow, app, ipcMain, Menu, protocol } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { cpus } from 'os';
-import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';

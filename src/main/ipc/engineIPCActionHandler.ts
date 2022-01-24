@@ -1,10 +1,6 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import { Socket } from 'socket.io-client';
-import {
-	IPC_CONNECT_SOCKET,
-	IPC_ENGINE_JOB_FINISHED,
-	IPC_RUNTIME_IS_DEV,
-} from '_/shared/ipcChannels';
+import { IPC_CONNECT_SOCKET, IPC_ENGINE_JOB_FINISHED, IPC_RUNTIME_IS_DEV } from '_/shared/ipcChannels';
 
 import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 /**
@@ -55,7 +51,6 @@ class EngineIPCActionHandler {
 		});
 
 		ipcMain.handle(IPC_CONNECT_SOCKET, async () => {
-			// console.log('Trueszki');
 			this.socket.connect();
 		});
 	};

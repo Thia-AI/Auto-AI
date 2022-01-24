@@ -55,33 +55,35 @@ const AppC = React.memo((props: Props) => {
 	return (
 		<>
 			<Header />
-			<SideMenu />
-			<NotificationsHandler />
-			<DevDashboard />
-			<Router history={history}>
-				<Suspense
-					fallback={
-						<Center w='full' h='full' marginTop='var(--header-height)'>
-							<Spinner color='gray.600' size='lg' />
-						</Center>
-					}>
-					<Switch>
-						<Route exact path='/' component={Main} />
-						<Route exact path='/models' component={Models} />
-						<Route exact path='/models/:id' component={Model} />
-						<Route exact path='/dataset/:id' component={Dataset} />
-						<Route exact path='/jobs' component={Jobs} />
-						<Route exact path='/exports' component={Exports} />
-						<Route exact path='/deployments' component={Deployments} />
-						<Route exact path='/notifications' component={Notifications} />
-						<Route exact path='/logs' component={Logs} />
-						<Route exact path='/quota' component={Quota} />
-						<Route exact path='/subscription' component={Subscription} />
-						<Route exact path='/settings' component={Settings} />
-						<Route exact path='/help' component={Help} />
-					</Switch>
-				</Suspense>
-			</Router>
+			<React.StrictMode>
+				<SideMenu />
+				<NotificationsHandler />
+				<DevDashboard />
+				<Router history={history}>
+					<Suspense
+						fallback={
+							<Center w='full' h='full' marginTop='var(--header-height)'>
+								<Spinner color='gray.600' size='lg' />
+							</Center>
+						}>
+						<Switch>
+							<Route exact path='/' component={Main} />
+							<Route exact path='/models' component={Models} />
+							<Route exact path='/models/:id' component={Model} />
+							<Route exact path='/dataset/:id' component={Dataset} />
+							<Route exact path='/jobs' component={Jobs} />
+							<Route exact path='/exports' component={Exports} />
+							<Route exact path='/deployments' component={Deployments} />
+							<Route exact path='/notifications' component={Notifications} />
+							<Route exact path='/logs' component={Logs} />
+							<Route exact path='/quota' component={Quota} />
+							<Route exact path='/subscription' component={Subscription} />
+							<Route exact path='/settings' component={Settings} />
+							<Route exact path='/help' component={Help} />
+						</Switch>
+					</Suspense>
+				</Router>
+			</React.StrictMode>
 		</>
 	);
 });
