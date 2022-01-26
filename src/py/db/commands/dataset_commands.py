@@ -1,3 +1,5 @@
+import uuid
+
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -31,3 +33,57 @@ def get_dataset(uuid: str):
 def get_dataset_by_name(name: str):
     cmd = DBCommand(name=f"Get Dataset With name: {name}", command=f"SELECT * FROM datasets WHERE name = '{name}'")
     return DBManager.get_instance().execute(cmd)
+
+
+def add_label(label: str, dataset_id: str, color: str):
+    cmd = DBCommand(name=f"Add Label: {label}, for Dataset: {dataset_id}",
+                    command=f'''INSERT INTO labels (id, value, dataset_id, color)
+                                VALUES (?, ?, ?, ?)''',
+                    values=(uuid.uuid4().hex, label, dataset_id, color))
+    DBManager.get_instance().execute(cmd)
+
+
+def update_label_input_count(label: str, dataset_id: str, color: str, input_count: int):
+    cmd = DBCommand(name=f"Get labels from Dataset: {dataset_id}",
+                    command="SELECT * FROM labels WHERE dataset_id = ? AND value = ?",
+                    values=(dataset_id, label))
+    rows = DBManager.get_instance().execute(cmd)
+    if rows is None or len(rows) == 0:
+        # No label exists, add it
+        cmd = DBCommand(name=f"Add Label: {label}, for Dataset: {dataset_id}",
+                        command=f'''INSERT INTO labels (id, value, input_count, dataset_id, color) VALUES (?, ?, ?, ?, ?)''',
+                        values=(uuid.uuid4().hex, label, input_count, dataset_id, color))
+    else:
+        # Label exists, update count
+        cmd = DBCommand(name=f"Add Label: {label}, for Dataset: {dataset_id}",
+                        command=f'''UPDATE labels SET input_count = input_count + ? WHERE value = ? AND dataset_id = ?''',
+                        values=(input_count, label, dataset_id))
+    DBManager.get_instance().execute(cmd)
+
+
+def delete_label(label: str, dataset_id: str):
+    cmd = DBCommand(name=f"Delete Label: {label}, from Dataset: {dataset_id}",
+                    command="DELETE FROM labels WHERE dataset_id = ? AND value = ?",
+                    values=(dataset_id, label))
+    DBManager.get_instance().execute(cmd)
+
+
+def get_labels(dataset_id: str):
+    cmd = DBCommand(name=f"Get labels from Dataset: {dataset_id}",
+                    command="SELECT * FROM labels WHERE dataset_id = ?",
+                    values=(dataset_id,))
+    return DBManager.get_instance().execute(cmd)
+
+
+def get_label(dataset_id: str, label: str):
+    cmd = DBCommand(name=f"Get labels from Dataset: {dataset_id}",
+                    command="SELECT * FROM labels WHERE dataset_id = ? AND value = ?",
+                    values=(dataset_id, label))
+    return DBManager.get_instance().execute(cmd)
+
+
+def delete_all_labels(dataset_id: str):
+    cmd = DBCommand(name=f"Delete all Labels from Dataset: {dataset_id}",
+                    command="DELETE FROM labels WHERE dataset_id = ?",
+                    values=(dataset_id,))
+    DBManager.get_instance().execute(cmd)

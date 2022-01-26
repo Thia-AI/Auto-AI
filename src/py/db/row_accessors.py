@@ -44,3 +44,13 @@ def input_from_row(row):
         'label': row['label'],
         'date_created': row['date_created']
     }
+
+
+def label_from_row(row):
+    return {
+        'id': row['id'],
+        'dataset_id': row['dataset_id'],
+        'value': row['value'],
+        'input_count': row['input_count'],
+        'color': row['color']
+    }

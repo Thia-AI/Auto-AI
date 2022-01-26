@@ -2,10 +2,10 @@ import atexit
 import os
 import sqlite3
 
+from config import config
 from db.commands.base_commands import DBCommand
 from db.sqlite_worker import Sqlite3Worker
 from log.logger import log
-from config import config
 
 
 class DBManager(object):
@@ -41,41 +41,53 @@ class DBManager(object):
     def __create_tables_if_not_exist(self):
         try:
             # Jobs
-            self.__connection.execute('''CREATE TABLE IF NOT EXISTS jobs
-                       (id varchar(32) not null, 
-                       job_name text not null, 
-                       has_started integer not null, 
-                       has_finished integer not null, 
-                       status text,
-                       progress integer,
-                       progress_max integer,
-                       date_started datetime,
-                       date_finished datetime)''')
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS jobs (
+               id varchar(32) not null primary key, 
+               job_name text not null, 
+               has_started integer not null, 
+               has_finished integer not null, 
+               status text,
+               progress integer,
+               progress_max integer,
+               date_started datetime,
+               date_finished datetime
+           )''')
             # Models
-            self.__connection.execute('''CREATE TABLE IF NOT EXISTS models
-                    (id varchar(32) not null,
-                    model_name text not null, 
-                    model_type text not null,
-                    model_type_extra text not null,
-                    date_created datetime not null,
-                    date_last_accessed datetime not null,
-                    model_status text not null )''')
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS models (
+                id varchar(32) not null primary key,
+                model_name text not null, 
+                model_type text not null,
+                model_type_extra text not null,
+                date_created datetime not null,
+                date_last_accessed datetime not null,
+                model_status text not null 
+            )''')
             # Datasets
-            self.__connection.execute('''CREATE TABLE IF NOT EXISTS datasets
-            (id varchar(32) not null,
-             name text not null,
-             type text not null,
-             date_created datetime not null,
-             date_last_accessed datetime not null,
-             labels text not null,
-             misc_data text not null)''')
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS datasets (
+                 id varchar(32) not null primary key,
+                 name text not null,
+                 type text not null,
+                 date_created datetime not null,
+                 date_last_accessed datetime not null,
+                 labels text not null,
+                 misc_data text not null
+             )''')
             # Input (for a dataset, i.e. images)
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS input
-            (id varchar(32) not null,
-            dataset_id varchar(32) not null,
-            file_name text not null,
-            label text not null,
-            date_created datetime not null
+                (id varchar(32) not null primary key,
+                dataset_id varchar(32) not null,
+                file_name text not null,
+                label text not null,
+                date_created datetime not null
+            )''')
+            # Labels for a dataset
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS labels (
+                id varchar(32) not null primary key,
+                value varchar(32) not null,
+                input_count integer default 0,
+                dataset_id varchar(32) not null,
+                color text not null,
+                foreign key (dataset_id) references datasets(id)
             )''')
         except sqlite3.Error as e:
             log("[SQLITE] - failed to create table")
