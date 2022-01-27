@@ -1,21 +1,21 @@
-from typing import List
-import tensorflow as tf
 import os
-from pathlib import Path
 import shutil
 import time
-from overrides import overrides
-import fnmatch
-from datetime import datetime
 import uuid
+from datetime import datetime
+from pathlib import Path
+from typing import List
 
+import tensorflow as tf
+from overrides import overrides
+
+from config import config
+from db.commands.dataset_commands import get_dataset, update_label_input_count
+from db.commands.input_commands import add_images_to_db_batch
+from db.commands.job_commands import update_job
+from db.row_accessors import dataset_from_row
 from job.base_job import BaseJob
 from log.logger import log
-from config import config
-from db.commands.job_commands import update_job
-from db.commands.dataset_commands import get_dataset
-from db.commands.input_commands import add_images_to_db_batch
-from db.row_accessors import dataset_from_row
 
 
 def add_input_to_values_list(values_list: List, input_id, dataset_id, file_name, label, date_created):
@@ -35,6 +35,8 @@ class BulkFileTransferJob(BaseJob):
         amount_of_time_to_update_after = 1
         start_time = time.time()
         (dataset_id, file_paths) = self.arg
+        num_files_transferred = 0
+
         rows = get_dataset(dataset_id)
         dataset = {}
 
@@ -67,6 +69,7 @@ class BulkFileTransferJob(BaseJob):
 
                     # Copy the file fast with shutil
                     shutil.copyfile(file, file_path.absolute())
+                    num_files_transferred += 1
                     self.set_progress(i + 1)
 
                     # This is so that we end up with a unique datetime for each input
@@ -89,7 +92,7 @@ class BulkFileTransferJob(BaseJob):
                     log(f"Copying File '{file_p.name}' failed")
             else:
                 log(f"{file_p.name} does not exist")
-
+        update_label_input_count('unlabelled', dataset_id, 'rgb(1, 8, 20)', num_files_transferred)
         self.set_status("Updating DB Records")
         update_job(self)
         add_images_to_db_batch(values_to_add_to_inputs_table)

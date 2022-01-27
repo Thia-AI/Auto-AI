@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Box, Center, Flex, HStack, Icon, Spacer, Spinner, Text } from '@chakra-ui/react';
+import { Box, Center, chakra, Flex, HStack, Icon, Spacer, Spinner, Text } from '@chakra-ui/react';
 import { areEqual } from 'react-window';
 import { parse } from 'path';
 import { connect } from 'react-redux';
@@ -57,23 +57,15 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const renderLoaded = () => {
 		return (
 			<Box p='2' style={style}>
-				<Flex
-					boxShadow='lg'
-					w='full'
-					h='full'
-					flexDir='column'
-					bg='gray.700'
-					bgImage={`url(${imageSrc})`}
-					borderRadius='md'
-					bgSize='cover'
-					bgPos='center'>
-					<Spacer />
+				<Flex boxShadow='lg' w='full' h='full' flexDir='column' bg='gray.700' borderRadius='md'>
+					<chakra.img style={{ height: '80%', objectFit: 'cover' }} src={imageSrc} loading='eager' />
 					<HStack
 						borderBottomRadius='md'
 						// We move it down 1 px and slightly scale or else the corners of the parent background bleed. This is a quick hack!
 						// To see what I mean, https://stackoverflow.com/questions/16938437/white-corner-showing-on-black-box-with-border-radius
 						transform='translateY(1px) scale(1.01)'
 						w='full'
+						h='20%'
 						py='1'
 						px='1'
 						bg='gray.850'

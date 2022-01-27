@@ -15,5 +15,4 @@ class DataAugmentationJob(BaseJob):
     def run(self):
         super().run()
         files = self.arg
-        log(str(len(files)))
         super().clean_up_job()

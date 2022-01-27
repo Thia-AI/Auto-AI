@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { DeleteAllInputsFromDatasetEngineAction } from './actions/delete/deleteAllInputsFromDataset';
 import { DeleteDatasetEngineAction } from './actions/delete/deleteDataset';
-import { DeleteLabelEngineAction } from './actions/delete/deleteLabel';
+import { DeleteLabelEngineAction, IDeleteLabelData } from './actions/delete/deleteLabel';
 import { GetDatasetEngineAction } from './actions/get/getDataset';
 import { GetDatasetByNameEngineAction } from './actions/get/getDatasetByName';
 import { GetDatasetsEngineAction } from './actions/get/getDatasets';
@@ -12,10 +12,13 @@ import { GetModelsEngineAction } from './actions/get/getModels';
 import { GetNextPageEngineAction, IGetNextPageData } from './actions/post/getNextPage';
 import { GetPreviousPageEngineAction, IGetPreviousPageData } from './actions/post/getPreviousPage';
 import { UpdateLabelsOrderEngineAction } from './actions/patch/updateLabelsOrder';
-import { AddLabelEngineAction } from './actions/post/addLabel';
+import { AddLabelEngineAction, IAddLabelData } from './actions/post/addLabel';
 import { CreateDatasetEngineAction } from './actions/post/createDataset';
 import { CreateModelEngineAction } from './actions/post/createModel';
 import { UploadImageToDatasetEngineAction } from './actions/post/uploadImageToDataset';
+import { GetDatasetLabelsEngineAction } from './actions/get/getDatasetLabels';
+import { GetDatasetLabelEngineAction, IGetDatasetLabelData } from './actions/get/getDatasetLabel';
+import { UpdateInputLabelData, UpdateInputLabelEngineAction } from './actions/put/updateInputLabel';
 
 /**
  * Class that manages all EngineActions.
@@ -45,6 +48,9 @@ class EngineActionHandler {
 	private addLabelToDatasetEA!: AddLabelEngineAction;
 	private deleteLabelFromDatasetEA!: DeleteLabelEngineAction;
 	private updateLabelsOrderEA!: UpdateLabelsOrderEngineAction;
+	private getDatasetLabelsEA!: GetDatasetLabelsEngineAction;
+	private getDatasetLabelEA!: GetDatasetLabelEngineAction;
+	private updateInputLabelEA!: UpdateInputLabelEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -107,13 +113,14 @@ class EngineActionHandler {
 		this.getNextPageEA = new GetNextPageEngineAction(this._engineRequest);
 		this.deleteDatasetEA = new DeleteDatasetEngineAction(this._engineRequest);
 		this.uploadImagetoDatasetEA = new UploadImageToDatasetEngineAction(this._engineRequest);
-		this.deleteAllInputsFromDatasetEA = new DeleteAllInputsFromDatasetEngineAction(
-			this._engineRequest,
-		);
+		this.deleteAllInputsFromDatasetEA = new DeleteAllInputsFromDatasetEngineAction(this._engineRequest);
 		// Dataset Labels
 		this.addLabelToDatasetEA = new AddLabelEngineAction(this._engineRequest);
 		this.updateLabelsOrderEA = new UpdateLabelsOrderEngineAction(this._engineRequest);
 		this.deleteLabelFromDatasetEA = new DeleteLabelEngineAction(this._engineRequest);
+		this.getDatasetLabelsEA = new GetDatasetLabelsEngineAction(this._engineRequest);
+		this.getDatasetLabelEA = new GetDatasetLabelEngineAction(this._engineRequest);
+		this.updateInputLabelEA = new UpdateInputLabelEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -158,11 +165,7 @@ class EngineActionHandler {
 		return this.getDatasetByNameEA.run(config, name);
 	};
 
-	public getPreviousPage = async (
-		uuid: string,
-		currentCursorDate: string,
-		config?: AxiosRequestConfig,
-	) => {
+	public getPreviousPage = async (uuid: string, currentCursorDate: string, config?: AxiosRequestConfig) => {
 		const data: IGetPreviousPageData = {
 			datasetID: uuid,
 			data: {
@@ -173,11 +176,7 @@ class EngineActionHandler {
 		return this.getPreviousPageEA.run(config, data);
 	};
 
-	public getNextPage = async (
-		uuid: string,
-		currentCursorDate: string,
-		config?: AxiosRequestConfig,
-	) => {
+	public getNextPage = async (uuid: string, currentCursorDate: string, config?: AxiosRequestConfig) => {
 		const data: IGetNextPageData = {
 			datasetID: uuid,
 			data: {
@@ -196,36 +195,36 @@ class EngineActionHandler {
 		return this.deleteAllInputsFromDatasetEA.run(config, uuid);
 	};
 
-	public uploadImagesToDataset = async (
-		uuid: string,
-		jsonData: object,
-		config?: AxiosRequestConfig,
-	) => {
+	public uploadImagesToDataset = async (uuid: string, jsonData: object, config?: AxiosRequestConfig) => {
 		return this.uploadImagetoDatasetEA.run(config, [uuid, jsonData]);
 	};
 
-	public addLabelToDataset = async (
-		uuid: string,
-		jsonData: object,
-		config?: AxiosRequestConfig,
-	) => {
+	public addLabelToDataset = async (uuid: string, jsonData: IAddLabelData, config?: AxiosRequestConfig) => {
 		return this.addLabelToDatasetEA.run(config, [uuid, jsonData]);
 	};
 
-	public deleteLabelFromDataset = async (
-		uuid: string,
-		jsonData: object,
-		config?: AxiosRequestConfig,
-	) => {
+	public deleteLabelFromDataset = async (uuid: string, jsonData: IDeleteLabelData, config?: AxiosRequestConfig) => {
 		return this.deleteLabelFromDatasetEA.run(config, [uuid, jsonData]);
 	};
 
-	public updateLabelsOrder = async (
-		uuid: string,
-		jsonData: object,
-		config?: AxiosRequestConfig,
-	) => {
+	public getDatasetLabels = async (uuid: string, config?: AxiosRequestConfig) => {
+		return this.getDatasetLabelsEA.run(config, uuid);
+	};
+
+	public getDatasetLabel = async (datasetID: string, labelValue: string, config?: AxiosRequestConfig) => {
+		const data: IGetDatasetLabelData = {
+			datasetID,
+			labelValue,
+		};
+		return this.getDatasetLabelEA.run(config, data);
+	};
+
+	public updateLabelsOrder = async (uuid: string, jsonData: object, config?: AxiosRequestConfig) => {
 		return this.updateLabelsOrderEA.run(config, [uuid, jsonData]);
+	};
+
+	public updateInputLabel = async (inputID: string, data: UpdateInputLabelData, config?: AxiosRequestConfig) => {
+		return this.updateInputLabelEA.run(config, [inputID, data]);
 	};
 }
 

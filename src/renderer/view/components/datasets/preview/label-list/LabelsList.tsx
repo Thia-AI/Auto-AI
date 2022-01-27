@@ -4,7 +4,7 @@ import { Box, Flex, VStack, useToast } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
 
-import { Dataset, DATASET_LABELS_SPLITTER } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset, DATASET_LABELS_SPLITTER, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { AddLabel } from './AddLabel';
 import { Label } from './Label';
 import { IAppState } from '_/renderer/state/reducers';
@@ -15,15 +15,18 @@ import { openCloseDeleteLabelAction } from '_/renderer/state/delete-modals/Delet
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { DeleteLabel } from './DeleteLabel';
 import { IOpenCloseDeleteLabelAction } from '_/renderer/state/delete-modals/model/actionTypes';
+import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
+import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 
 interface Props {
-	activeDataset: Dataset | undefined;
-	changeActiveDataset: (activeDataset: Dataset) => IChangeActiveDatasetAction;
+	activeDataset: IActiveDatasetReducer;
+	changeActiveDataset: (activeDataset: Dataset, labels: Labels) => IChangeActiveDatasetAction;
 	openCloseDeleteLabel: (labelValue: string) => IOpenCloseDeleteLabelAction;
+	getNextPageInputs: (datasetID: string, cursorDate: string) => void;
 }
 
 const LabelsListC = React.memo(
-	({ activeDataset, changeActiveDataset, openCloseDeleteLabel }: Props) => {
+	({ activeDataset, changeActiveDataset, openCloseDeleteLabel, getNextPageInputs }: Props) => {
 		const toast = useToast();
 
 		const [labels, setLabels] = useState<string[]>([]);
@@ -37,11 +40,15 @@ const LabelsListC = React.memo(
 		const [inputError, setInputError] = useState('Enter A Label');
 
 		useEffect(() => {
-			// Set labels only once dataset has been received and
-			if (activeDataset && activeDataset.labels.trim().length > 0) {
-				setLabels(activeDataset.labels.split(DATASET_LABELS_SPLITTER));
+			// Set labels only once dataset has been received
+			if (activeDataset.value.dataset) {
+				if (activeDataset.value.dataset.labels.trim().length > 0) {
+					setLabels(activeDataset.value.dataset.labels.split(DATASET_LABELS_SPLITTER));
+				} else {
+					setLabels([]);
+				}
 			}
-		}, [activeDataset]);
+		}, [activeDataset.value.dataset]);
 
 		const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 			setClickedOnInputOnce(true);
@@ -67,7 +74,7 @@ const LabelsListC = React.memo(
 		const onDragEnd = async (result: DropResult) => {
 			const { destination, source } = result;
 
-			if (!destination || destination.index === source.index || !activeDataset) return;
+			if (!destination || destination.index === source.index || !activeDataset.value.dataset) return;
 
 			const initialLabels = labels.slice();
 			const labelsCpy = labels.slice();
@@ -79,7 +86,7 @@ const LabelsListC = React.memo(
 			setLabels(labelsCpy);
 
 			const [updateLabelsOrderErr, updateLabelsOrderRes] =
-				await EngineActionHandler.getInstance().updateLabelsOrder(activeDataset.id, {
+				await EngineActionHandler.getInstance().updateLabelsOrder(activeDataset.value.dataset.id, {
 					labels: labelsCpy,
 				});
 			if (updateLabelsOrderErr) {
@@ -94,7 +101,7 @@ const LabelsListC = React.memo(
 				return;
 			}
 			// Have change reflect for rest of UI
-			changeActiveDataset(updateLabelsOrderRes['dataset']);
+			changeActiveDataset(updateLabelsOrderRes['dataset'], updateLabelsOrderRes['labels']);
 		};
 
 		const renderList = (provided: DroppableProvided) => {
@@ -117,13 +124,15 @@ const LabelsListC = React.memo(
 		};
 
 		const deleteLabel = async (label: string) => {
-			if (!activeDataset) return;
+			if (activeDataset.value.dataset.id.length == 0) return;
 
 			setIsLabelDeleting(true);
-			const [deleteLabelErr, deleteLabelRes] =
-				await EngineActionHandler.getInstance().deleteLabelFromDataset(activeDataset.id, {
+			const [deleteLabelErr, deleteLabelRes] = await EngineActionHandler.getInstance().deleteLabelFromDataset(
+				activeDataset.value.dataset.id,
+				{
 					label: label,
-				});
+				},
+			);
 
 			if (deleteLabelErr) {
 				toast({
@@ -137,11 +146,15 @@ const LabelsListC = React.memo(
 				return;
 			}
 
-			changeActiveDataset(deleteLabelRes['dataset']);
+			changeActiveDataset(deleteLabelRes['dataset'], deleteLabelRes['labels']);
+			// Refresh dataset page inputs
+			// Get next pages from oldest date possible.
+			const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
+			getNextPageInputs(activeDataset.value.dataset.id, someOldDateBase64);
 			setIsLabelDeleting(false);
 			toast({
 				title: 'Success',
-				description: `Deleted Label '${label}' from Dataset '${activeDataset.name}'`,
+				description: `Deleted Label '${label}' from Dataset '${activeDataset.value.dataset.name}'`,
 				status: 'success',
 				duration: 1500,
 				isClosable: false,
@@ -152,7 +165,9 @@ const LabelsListC = React.memo(
 		return (
 			<>
 				<VStack
-					w='175px'
+					w='150px'
+					minW='150px'
+					maxW='150px'
 					h='full'
 					bg='gray.800'
 					pt='2'
@@ -190,7 +205,7 @@ const LabelsListC = React.memo(
 );
 
 const mapStateToProps = (state: IAppState) => ({
-	activeDataset: state.activeDataset.value,
+	activeDataset: state.activeDataset,
 });
 
 /**
@@ -199,4 +214,5 @@ const mapStateToProps = (state: IAppState) => ({
 export const LabelsList = connect(mapStateToProps, {
 	changeActiveDataset,
 	openCloseDeleteLabel: openCloseDeleteLabelAction,
+	getNextPageInputs: getNextPageInputsAction,
 })(LabelsListC);

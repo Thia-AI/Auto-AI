@@ -1,14 +1,13 @@
-import os
 import shutil
-from overrides import overrides
-import uuid
 
-from job.base_job import BaseJob
+from overrides import overrides
+
 from config import config
-from db.commands.job_commands import update_job
-from db.commands.dataset_commands import get_dataset, delete_dataset
+from db.commands.dataset_commands import get_dataset, delete_dataset, delete_all_labels
 from db.commands.input_commands import delete_all_inputs_of_dataset
+from db.commands.job_commands import update_job
 from db.row_accessors import dataset_from_row
+from job.base_job import BaseJob
 
 
 class DeleteDatasetJob(BaseJob):
@@ -33,7 +32,7 @@ class DeleteDatasetJob(BaseJob):
         update_job(self)
         # Delete all inputs of dataset from DB
         delete_all_inputs_of_dataset(dataset_id)
+        delete_all_labels(dataset_id)
         super().set_progress(3)
 
         super().clean_up_job()
-

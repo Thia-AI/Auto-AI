@@ -11,10 +11,7 @@ import { IHeaderMaximizeChangedAction } from '_/renderer/state/header/model/acti
 import { Hamburger } from './HamburgerMenu';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import { IEngineStartedAction } from '_/renderer/state/engine-status/model/actionTypes';
-import {
-	getDevEngineStatus,
-	notifyEngineStarted,
-} from '_/renderer/state/engine-status/EngineStatusActions';
+import { getDevEngineStatus, notifyEngineStarted } from '_/renderer/state/engine-status/EngineStatusActions';
 import { StatusIndicator } from './StatusIndicator';
 import {
 	IPC_ENGINE_STARTED,
@@ -35,7 +32,7 @@ interface Props {
 	getDevReloadEngineStatus: () => void;
 }
 
-const HeaderC = (props: Props) => {
+const HeaderC = React.memo((props: Props) => {
 	useEffect(() => {
 		initToggleMaxRestoreButtons();
 		checkForEngineStart();
@@ -149,10 +146,7 @@ const HeaderC = (props: Props) => {
 					</Box>
 					<Box className='title-button' gridColumn='2' onClick={maximizeWindow}>
 						<svg width='10' height='10' viewBox='0 0 10 10'>
-							<path
-								d='m10-1.6667e-6v10h-10v-10zm-1.001 1.001h-7.998v7.998h7.998z'
-								strokeWidth='.25'
-							/>
+							<path d='m10-1.6667e-6v10h-10v-10zm-1.001 1.001h-7.998v7.998h7.998z' strokeWidth='.25' />
 						</svg>
 					</Box>
 					<Box
@@ -168,11 +162,7 @@ const HeaderC = (props: Props) => {
 							/>
 						</svg>
 					</Box>
-					<Box
-						gridColumn='3'
-						className='title-button'
-						id='close-button'
-						onClick={closeWindow}>
+					<Box gridColumn='3' className='title-button' id='close-button' onClick={closeWindow}>
 						<svg width='12' height='12' viewBox='0 0 12 12'>
 							<path
 								d='m6.8496 6 5.1504 5.1504-0.84961 0.84961-5.1504-5.1504-5.1504 5.1504-0.84961-0.84961 5.1504-5.1504-5.1504-5.1504 0.84961-0.84961 5.1504 5.1504 5.1504-5.1504 0.84961 0.84961z'
@@ -184,7 +174,7 @@ const HeaderC = (props: Props) => {
 			</Box>
 		</Box>
 	);
-};
+});
 
 const mapStateToProps = (state: IAppState) => {
 	return {
@@ -192,6 +182,8 @@ const mapStateToProps = (state: IAppState) => {
 		engineStarted: state.engineStarted,
 	};
 };
+
+HeaderC.displayName = 'Header';
 
 /**
  * Since we use a frameless **Electron** app, we have to implement a custom window top bar

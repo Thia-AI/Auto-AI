@@ -12,6 +12,35 @@ export interface Dataset {
 }
 
 /**
+ * Dictionary of a Label value -> Label
+ */
+export interface Labels {
+	[key: string]: Label;
+}
+
+/**
+ * **Engine**'s DB Label table.
+ */
+export interface Label {
+	id: string;
+	value: string;
+	input_count: number;
+	dataset_id: string;
+	color: string;
+}
+
+/**
+ * Empty label.
+ */
+export const nullLabel: Label = {
+	id: '',
+	value: '',
+	input_count: 2,
+	dataset_id: '',
+	color: '',
+};
+
+/**
  * Splitter for labels property of dataset.
  */
 export const DATASET_LABELS_SPLITTER = '|';
@@ -73,7 +102,7 @@ export interface Input {
 /**
  * Constant for value of an unlabelled input's `label`.
  */
-export const UNLABBELED_INPUT_VALUE = 'unlabelled';
+export const UNLABBELED_INPUT_VALUE_LABEL = 'unlabelled';
 
 /**
  * Empty input.

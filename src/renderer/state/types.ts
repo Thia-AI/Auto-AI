@@ -98,6 +98,11 @@ export const NOTIFICATION_CLEAR = 'NOTIF_CLEAR';
  */
 export const CHANGE_ACTIVE_DATASET = 'CHANGE_ACTIVE_DATASET';
 
+/**
+ * When we are updating a dataset label.
+ */
+export const UPDATE_ACTIVE_DATASET_LABEL = 'UPDATE_ACTIVE_DATASET_LABEL';
+
 // Active Dataset Inputs
 
 /**
@@ -109,6 +114,11 @@ export const GET_NEXT_PAGE_INPUTS = 'GET_NEXT_PAGE_INPUTS';
  * When we are getting the previous page of inputs with cursor pagination.
  */
 export const GET_PREVIOUS_PAGE_INPUTS = 'GET_PREVIOUS_PAGE_INPUTS';
+
+/**
+ * When we are updating the label for a particular dataset input.
+ */
+export const UPDATE_DATASET_INPUT_LABEL = 'UPDATE_DATASET_INPUT_LABEL';
 
 /**
  * When we are resetting the page of inputs.

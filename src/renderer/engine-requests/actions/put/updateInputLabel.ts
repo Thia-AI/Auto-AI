@@ -2,29 +2,27 @@ import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineAction } from '../../base/iEngineAction';
 
 /**
- * Data for deleting a label.
+ * Data for adding a label.
  */
-export interface IDeleteLabelData {
-	label: string;
+export interface UpdateInputLabelData {
+	previous_label: string;
+	new_label: string;
 }
-class DeleteLabelEngineAction implements IEngineAction {
+class UpdateInputLabelEngineAction implements IEngineAction {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
-		this.actionName = 'Delete Label';
-		this.apiName = '/dataset/';
+		this.actionName = 'Update Input Label';
+		this.apiName = '/input/';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, IDeleteLabelData]) => {
+	run = async (config?: AxiosRequestConfig, data?: [string, UpdateInputLabelData]) => {
 		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.delete(`${this.apiName}/${data[0]}/labels/remove`, {
-				...config,
-				data: data[1],
-			});
+			const res = await this.engineRequest.put(`${this.apiName}/${data[0]}/update_label`, data[1], config);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;
@@ -33,4 +31,4 @@ class DeleteLabelEngineAction implements IEngineAction {
 	};
 }
 
-export { DeleteLabelEngineAction };
+export { UpdateInputLabelEngineAction };

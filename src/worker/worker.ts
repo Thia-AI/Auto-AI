@@ -7,12 +7,7 @@ import {
 	IPC_WORKER_TASK_RECEIVED,
 } from '_/shared/ipcChannels';
 
-import {
-	ReadFileTaskResult,
-	ReadFileWorkerTask,
-	READ_FILE,
-	WorkerTask,
-} from '_/shared/worker_constants';
+import { ReadFileTaskResult, ReadFileWorkerTask, READ_FILE, WorkerTask } from '_/shared/workerConstants';
 // Entry point for background hidden renderer workers
 document.title = `Worker - ${process.pid}`;
 

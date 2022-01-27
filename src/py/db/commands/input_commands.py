@@ -27,17 +27,17 @@ def delete_all_inputs_of_dataset(uuid: str):
     DBManager.get_instance().execute(cmd)
 
 
-def update_labels_of_dataset(uuid: str, labels: str):
-    cmd = DBCommand(name=f"Update Dataset [{uuid}]'s labels to '{labels}'",
-                    command='''UPDATE datasets SET labels = ? WHERE id = ?''',
-                    values=(labels, uuid))
-    DBManager.get_instance().execute(cmd)
-
-
 def reset_labels_of_inputs(dataset_id: str, label_to_reset: str):
     cmd = DBCommand(name=f"Reset Inputs With Label: {label_to_reset}",
                     command='''UPDATE input SET label = 'unlabelled' WHERE dataset_id = ? AND label = ?''',
                     values=(dataset_id, label_to_reset))
+    DBManager.get_instance().execute(cmd)
+
+
+def update_input_label(input_id: str, new_label: str, ):
+    cmd = DBCommand(name=f"Update Input: {input_id}'s label to: {new_label}",
+                    command='''UPDATE input SET label = ? WHERE id = ?''',
+                    values=(new_label, input_id))
     DBManager.get_instance().execute(cmd)
 
 

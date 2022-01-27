@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Box, Center, Image, Spinner } from '@chakra-ui/react';
+import { Box, Center, chakra, Spinner } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
 import NoImage from '_utils/images/placeholder-dark2.jpg';
 import { IAppState } from '_/renderer/state/reducers';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PreviewDatasetPagination } from './PreviewDatasetPagination';
-import { Input } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
@@ -26,12 +26,20 @@ interface Props {
 
 const PaginationCellC = React.memo(
 	({ input, activeDataset, setActivePreviewID, cellID, selectedInputPreviewID }: Props) => {
-		const datasetID = activeDataset.value?.id;
+		const datasetID = activeDataset.value.dataset?.id;
 		const ref = useRef<HTMLDivElement>(null);
 		const [isSelectedCell, setIsSelectedCell] = useState(false);
+		const [label, setLabel] = useState<Label>(nullLabel);
 		const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${datasetID}/input/${input.id}`, {
-			readyToLoad: datasetID!.length > 0,
+			readyToLoad: datasetID!.length > 0 && input.id.length > 0,
 		});
+
+		useEffect(() => {
+			if (datasetID) {
+				// Update the label each time the input changes (if dataset is loaded that is)
+				setLabel(activeDataset.value.labels[input.label]);
+			}
+		}, [datasetID, input]);
 
 		const checkIfPaginationCellIsSelected = async () => {
 			if (cellID == selectedInputPreviewID.value) {
@@ -43,6 +51,7 @@ const PaginationCellC = React.memo(
 				setIsSelectedCell(false);
 			}
 		};
+
 		useEffect(() => {
 			checkIfPaginationCellIsSelected();
 		}, [cellID, selectedInputPreviewID]);
@@ -66,7 +75,8 @@ const PaginationCellC = React.memo(
 					h='full'
 					borderRadius='md'
 					cursor='pointer'
-					boxShadow={isSelectedCell ? 'outline' : 'none'}
+					outline='3px solid'
+					outlineColor={label.value.length > 0 ? label.color : 'transparent'}
 					ref={ref}
 					onClick={() => {
 						setActivePreviewID(cellID);
@@ -74,7 +84,16 @@ const PaginationCellC = React.memo(
 					css={{
 						aspectRatio: '1 / 1',
 					}}>
-					<Image fit='cover' borderRadius='md' h='full' w='full' src={imageSrc} fallbackSrc={NoImage} />
+					<chakra.img
+						objectFit='cover'
+						objectPosition='center'
+						filter={isSelectedCell ? `drop-shadow(0px 0px 10px ${label.color}) brightness(35%)` : 'none'}
+						borderRadius='md'
+						h='full'
+						w='full'
+						src={imageSrc}
+						fallbackSrc={NoImage}
+					/>
 				</Box>
 			);
 		};

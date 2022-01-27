@@ -8,6 +8,7 @@ import {
 	SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID,
 	SET_NEXT_PAGE_CURSOR,
 	SET_PREVIOUS_PAGE_CURSOR,
+	UPDATE_DATASET_INPUT_LABEL,
 } from '_state/types';
 import {
 	IGetNextPageInputsAction,
@@ -16,6 +17,7 @@ import {
 	ISetActiveDatasetInputsPreviewIDAction,
 	ISetNextPageCursorAction,
 	ISetPreviousPageCursorAction,
+	IUpdateDatasetInputLabelAction,
 } from './model/actionTypes';
 
 /**
@@ -98,6 +100,22 @@ export const getNextPageInputsAction =
 			dispatch(setPreviousPageCursor(resData['previous_cursor']));
 		}
 	};
+
+/**
+ * Updates the label for a particular dataset input.
+ *
+ * @ts
+ */
+export const updateActiveDatasetInputLabelAction = (
+	inputIndex: number,
+	newLabel: string,
+): IUpdateDatasetInputLabelAction => ({
+	type: UPDATE_DATASET_INPUT_LABEL,
+	payload: {
+		inputIndex,
+		newLabel,
+	},
+});
 
 /**
  * Resets the active dataset inputs.
