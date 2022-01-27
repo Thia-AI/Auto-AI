@@ -6,6 +6,7 @@ import {
 	SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID,
 	SET_NEXT_PAGE_CURSOR,
 	SET_PREVIOUS_PAGE_CURSOR,
+	UPDATE_DATASET_INPUT_LABEL,
 } from '_state/types';
 
 /**
@@ -25,6 +26,17 @@ export interface IGetNextPageInputsAction {
 	type: typeof GET_NEXT_PAGE_INPUTS;
 	payload: {
 		inputs: Input[];
+	};
+}
+
+/**
+ * Updates the label for a particular dataset input.
+ */
+export interface IUpdateDatasetInputLabelAction {
+	type: typeof UPDATE_DATASET_INPUT_LABEL;
+	payload: {
+		inputIndex: number;
+		newLabel: string;
 	};
 }
 

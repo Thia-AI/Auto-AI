@@ -4,15 +4,17 @@ import { Button, Input, InputGroup, InputRightElement, useToast } from '@chakra-
 import { IoAddOutline } from 'react-icons/io5';
 
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
-import { Dataset } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
+import randomColor from 'randomcolor';
+import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 
 interface Props {
-	activeDataset: Dataset | undefined;
-	changeActiveDataset: (activeDataset: Dataset) => IChangeActiveDatasetAction;
+	activeDataset: IActiveDatasetReducer;
+	changeActiveDataset: (activeDataset: Dataset, labels: Labels) => IChangeActiveDatasetAction;
 	labelValue: string;
 	resetLabelValue: () => void;
 	onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -43,7 +45,7 @@ const AddLabelC = React.memo(
 		};
 
 		const addLabel = async () => {
-			if (!activeDataset) return;
+			if (!activeDataset.value.dataset) return;
 
 			if (!isInputValid) {
 				toast({
@@ -56,10 +58,13 @@ const AddLabelC = React.memo(
 				return;
 			}
 			setLabelUploading(true);
-			const [addLabelErr, addLabelRes] =
-				await EngineActionHandler.getInstance().addLabelToDataset(activeDataset.id, {
+			const [addLabelErr, addLabelRes] = await EngineActionHandler.getInstance().addLabelToDataset(
+				activeDataset.value.dataset.id,
+				{
 					label: labelValue,
-				});
+					color: randomColor({ format: 'rgb' }),
+				},
+			);
 
 			if (addLabelErr) {
 				toast({
@@ -73,10 +78,10 @@ const AddLabelC = React.memo(
 				setLabelUploading(false);
 				return;
 			}
-			changeActiveDataset(addLabelRes['dataset']);
+			changeActiveDataset(addLabelRes['dataset'], addLabelRes['labels']);
 			toast({
 				title: 'Success',
-				description: `Added Label '${labelValue}' to Dataset '${activeDataset.name}'`,
+				description: `Added Label '${labelValue}' to Dataset '${activeDataset.value.dataset.name}'`,
 				status: 'success',
 				duration: 1500,
 				isClosable: false,
@@ -127,18 +132,14 @@ interface ButtonProps {
 }
 const AddLabelInputButton = React.memo(({ isLoading }: ButtonProps) => {
 	return (
-		<Button
-			borderTopLeftRadius='none'
-			borderBottomLeftRadius='none'
-			colorScheme='green'
-			isLoading={isLoading}>
+		<Button borderTopLeftRadius='none' borderBottomLeftRadius='none' colorScheme='green' isLoading={isLoading}>
 			<IoAddOutline transform='scale(2)' />
 		</Button>
 	);
 });
 
 const mapStateToProps = (state: IAppState) => ({
-	activeDataset: state.activeDataset.value,
+	activeDataset: state.activeDataset,
 });
 
 /**

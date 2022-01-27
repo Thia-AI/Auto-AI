@@ -5,6 +5,7 @@ import {
 	SET_ACTIVE_DATASET_INPUTS_PREVIEW_ID,
 	SET_NEXT_PAGE_CURSOR,
 	SET_PREVIOUS_PAGE_CURSOR,
+	UPDATE_DATASET_INPUT_LABEL,
 } from '_state/types';
 import {
 	IGetNextPageInputsAction,
@@ -13,6 +14,7 @@ import {
 	ISetActiveDatasetInputsPreviewIDAction,
 	ISetNextPageCursorAction,
 	ISetPreviousPageCursorAction,
+	IUpdateDatasetInputLabelAction,
 } from './model/actionTypes';
 import {
 	INextPageCursorReducer,
@@ -35,7 +37,8 @@ export const activeDatasetInputsReducer = (
 	action:
 		| IGetNextPageInputsAction
 		| IGetPreviousPageInputsAction
-		| IResetActiveDatasetInputsAction,
+		| IResetActiveDatasetInputsAction
+		| IUpdateDatasetInputLabelAction,
 ): IActiveDatasetInputsReducer => {
 	switch (action.type) {
 		case GET_NEXT_PAGE_INPUTS:
@@ -46,6 +49,17 @@ export const activeDatasetInputsReducer = (
 		case RESET_ACTIVE_DATASET_INPUTS:
 			return {
 				value: [],
+			};
+		case UPDATE_DATASET_INPUT_LABEL:
+			const stateCopy = [...state.value];
+			const newInput = {
+				...stateCopy[action.payload.inputIndex],
+				label: action.payload.newLabel,
+			};
+			stateCopy[action.payload.inputIndex] = newInput;
+
+			return {
+				value: stateCopy,
 			};
 		default:
 			return state;

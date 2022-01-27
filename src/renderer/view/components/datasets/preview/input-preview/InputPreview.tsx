@@ -1,4 +1,4 @@
-import { Center, Flex } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
@@ -8,6 +8,7 @@ import {
 import { IResetActiveDatasetInputsAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
+import { InputPreviewLabels } from './InputPreviewLabels';
 import { PreviewDatasetInput } from './PreviewDatasetInput';
 import { PreviewDatasetPagination } from './PreviewDatasetPagination';
 
@@ -21,6 +22,7 @@ interface Props {
 const InputPreviewC = React.memo((props: Props) => {
 	// Dataset ID from pathname. Pathname should be /dataset/<dataset-id>
 	const datasetID: string = props.pathname.split('/').pop()!;
+
 	useEffect(() => {
 		// Get next pages from oldest date possible.
 		const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
@@ -42,9 +44,7 @@ const InputPreviewC = React.memo((props: Props) => {
 			overflow='hidden'>
 			<Flex w='full' h='78%' minH='78%' maxH='78%' flexDir='row'>
 				<PreviewDatasetInput w='70%' />
-				<Center w='30%' h='full'>
-					Labelling
-				</Center>
+				<InputPreviewLabels w='30%' h='full' />
 			</Flex>
 			<PreviewDatasetPagination h='20%' />
 		</Flex>

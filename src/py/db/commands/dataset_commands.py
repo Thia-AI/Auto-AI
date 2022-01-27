@@ -82,6 +82,34 @@ def get_label(dataset_id: str, label: str):
     return DBManager.get_instance().execute(cmd)
 
 
+def update_labels_of_dataset(uuid: str, labels: str):
+    cmd = DBCommand(name=f"Update Dataset {uuid}'s labels to '{labels}'",
+                    command='''UPDATE datasets SET labels = ? WHERE id = ?''',
+                    values=(labels, uuid))
+    DBManager.get_instance().execute(cmd)
+
+
+def increment_label_input_count(dataset_id: str, label: str):
+    cmd = DBCommand(name=f"Increment Label: {label}'s input_count by 1 for Dataset: {dataset_id}",
+                    command='''UPDATE labels SET input_count = input_count + 1 WHERE dataset_id = ? AND value = ?''',
+                    values=(dataset_id, label))
+    DBManager.get_instance().execute(cmd)
+
+
+def decrement_label_input_count(dataset_id: str, label: str):
+    cmd = DBCommand(name=f"Decrement Label: {label}'s input_count by 1 for Dataset: {dataset_id}",
+                    command='''UPDATE labels SET input_count = input_count - 1 WHERE dataset_id = ? AND value = ?''',
+                    values=(dataset_id, label))
+    DBManager.get_instance().execute(cmd)
+
+
+def add_label_input_count(dataset_id: str, label: str, amount_to_add: int):
+    cmd = DBCommand(name=f"Add Label: {label}'s input_count by {amount_to_add} for Dataset: {dataset_id}",
+                    command='''UPDATE labels SET input_count = input_count + ? WHERE dataset_id = ? AND value = ?''',
+                    values=(amount_to_add, dataset_id, label))
+    DBManager.get_instance().execute(cmd)
+
+
 def delete_all_labels(dataset_id: str):
     cmd = DBCommand(name=f"Delete all Labels from Dataset: {dataset_id}",
                     command="DELETE FROM labels WHERE dataset_id = ?",

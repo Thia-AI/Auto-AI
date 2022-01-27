@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import {
 	Box,
@@ -15,17 +15,18 @@ import { useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
-import { Dataset, nullDataset } from '_view_helpers/constants/engineDBTypes';
+import { Dataset, Labels, nullDataset } from '_view_helpers/constants/engineDBTypes';
 import { getVerboseModelType } from '../helpers/modelHelper';
 import { InteractiveCopyBadge } from '../components/interactive/InteractiveCopyBadge';
 import { DragNDrop } from '../components/datasets/drag-n-drop/DragNDrop';
 import { IAppState } from '_/renderer/state/reducers';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
+import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 
 interface Props {
-	activeDataset: Dataset | undefined;
-	changeActiveDataset: (activeDataset: Dataset) => IChangeActiveDatasetAction;
+	activeDataset: IActiveDatasetReducer;
+	changeActiveDataset: (activeDataset: Dataset, labels: Labels) => IChangeActiveDatasetAction;
 }
 
 const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) => {
@@ -34,21 +35,24 @@ const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) 
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 
-	useEffect(() => {
-		const fetchDataset = async () => {
-			const [error, resData] = await EngineActionHandler.getInstance().getDataset(datasetID);
-			if (!error) {
-				changeActiveDataset(resData);
-			}
-		};
+	const refreshDataset = useCallback(async () => {
+		const [datasetError, datasetResData] = await EngineActionHandler.getInstance().getDataset(datasetID);
+		const [datasetLabelsError, datasetLabelsResData] = await EngineActionHandler.getInstance().getDatasetLabels(
+			datasetID,
+		);
+		if (!datasetError && !datasetLabelsError) {
+			changeActiveDataset(datasetResData, datasetLabelsResData);
+		}
+	}, [datasetID]);
 
-		fetchDataset();
+	useEffect(() => {
+		refreshDataset();
 	}, []);
 
 	useEffect(() => {
 		// cleanup when dataset page is unmounted
 		return () => {
-			changeActiveDataset(nullDataset);
+			changeActiveDataset(nullDataset, {});
 		};
 	}, []);
 
@@ -72,17 +76,17 @@ const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) 
 				},
 			}}>
 			<VStack alignItems='flex-start' ml='4'>
-				<Skeleton w='400px' isLoaded={activeDataset !== undefined}>
+				<Skeleton w='400px' isLoaded={activeDataset.value.dataset !== undefined}>
 					<HStack pt='1' alignItems='center'>
 						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated>
-							{activeDataset?.name}:
+							{activeDataset.value.dataset?.name}:
 						</Text>
 						<Badge fontSize='sm' colorScheme='purple' ml='1'>
-							{getVerboseModelType(activeDataset?.type)}
+							{getVerboseModelType(activeDataset.value.dataset?.type)}
 						</Badge>
 					</HStack>
 				</Skeleton>
-				<InteractiveCopyBadge badgeID={activeDataset?.id} />
+				<InteractiveCopyBadge badgeID={activeDataset.value.dataset?.id} />
 			</VStack>
 			<Box
 				w={isLargerThan1280 ? '90%' : 'full'}
@@ -102,7 +106,7 @@ const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) 
 						Select images to transfer to dataset
 					</Text>
 				</Box>
-				<DragNDrop />
+				<DragNDrop refreshDataset={refreshDataset} />
 			</Box>
 			<Spacer />
 		</VStack>
@@ -110,7 +114,7 @@ const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) 
 });
 
 const mapStateToProps = (state: IAppState) => ({
-	activeDataset: state.activeDataset.value,
+	activeDataset: state.activeDataset,
 });
 
 const DatasetPage = connect(mapStateToProps, {

@@ -24,13 +24,13 @@ const LabelC = React.memo(({ label, index, openCloseDeleteLabel }: Props) => {
 			justifyContent='center'
 			alignItems='baseline'
 			ref={provided.innerRef}>
-			<Center w='15px'>
+			<Center w='15px' pr='1.5' pl='1.5'>
 				<Text color='gray.700' fontSize='xs'>
 					{index}
 				</Text>
 			</Center>
 			<Center w='80%' pr='15px'>
-				<Text fontWeight='light' fontSize='md'>
+				<Text fontWeight='light' fontSize='md' isTruncated={true}>
 					{label}
 				</Text>
 			</Center>

@@ -23,11 +23,12 @@ from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromD
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model
-from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name
+from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
+    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    update_labels_of_dataset, reset_labels_of_inputs, get_input
-from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row
+    reset_labels_of_inputs, get_input, update_input_label
+from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row
 
 from job.job import JobCreator
 from log.logger import log
@@ -378,6 +379,70 @@ def get_prev_inputs_route(uuid: str):
            }, 200
 
 
+@app.route('/dataset/<string:uuid>/labels', methods=['GET'])
+def get_dataset_labels_route(uuid: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    rows = get_labels(uuid)
+    out = {}
+    for row in rows:
+        label = label_from_row(row)
+        label_value = label['value']
+        out[label_value] = label
+    return out, 200
+
+
+@app.route('/dataset/<string:uuid>/label/<string:label_value>', methods=['GET'])
+def get_dataset_label_route(uuid: str, label_value: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    rows = get_label(uuid, label_value)
+    label = {}
+    for row in rows:
+        label = label_from_row(row)
+    return label, 200
+
+
+@app.route('/input/<string:input_id>/update_label', methods=['PUT'])
+def update_input_label_route(input_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+
+    if len(input_id) != 32:
+        return {'Error': "ID of input is of incorrect length"}, 400
+
+    rows = get_input(input_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of input does not exist"}, 400
+    dataset_id = ''
+    for row in rows:
+        dataset_id = input_from_row(row)['dataset_id']
+
+    req_data = request.get_json()
+    req_data_format = {
+        'previous_label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'new_label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    # Set input label to new label
+    update_input_label(input_id, req_data['new_label'])
+    # Increment current label input count
+    increment_label_input_count(dataset_id, req_data['new_label'])
+    # Decrement old label input count
+    decrement_label_input_count(dataset_id, req_data['previous_label'])
+    return {}, 200
+
+
 @app.route('/dataset/<string:uuid>/labels/add', methods=['POST'])
 def add_label_to_dataset(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
@@ -389,7 +454,8 @@ def add_label_to_dataset(uuid: str):
 
     req_data = request.get_json()
     req_data_format = {
-        'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+        'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'color': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
     }
     error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
@@ -409,6 +475,7 @@ def add_label_to_dataset(uuid: str):
     if req_data['label'] in labels:
         return {'Error': 'Label already exists'}, 400
     # Create new labels string
+    add_label(req_data['label'], dataset['id'], req_data['color'])
     labels.append(req_data['label'])
     labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
     update_labels_of_dataset(uuid, labels_string)
@@ -417,8 +484,13 @@ def add_label_to_dataset(uuid: str):
     dataset = {}
     for row in rows:
         dataset = dataset_from_row(row)
-
-    return {'dataset': dataset}, 200
+    rows = get_labels(uuid)
+    labels_out = {}
+    for row in rows:
+        label = label_from_row(row)
+        label_value = label['value']
+        labels_out[label_value] = label
+    return {'dataset': dataset, 'labels': labels_out}, 200
 
 
 @app.route('/dataset/<string:uuid>/labels/remove', methods=['DELETE'])
@@ -447,7 +519,16 @@ def remove_label_from_dataset(uuid: str):
     labels = curr_labels.split(constants.DATASET_LABELS_SPLITTER)
     if req_data['label'] not in labels:
         return {'Error': f"label '{req_data['label']}' doesn't exist"}
+
+    # Transfer input count from label to delete to unlabelled
+    rows = get_label(uuid, req_data['label'])
+    label = {}
+    for row in rows:
+        label = label_from_row(row)
+    input_count_to_transfer = label['input_count']
+    add_label_input_count(uuid, 'unlabelled', input_count_to_transfer)
     # Remove from labels
+    delete_label(req_data['label'], uuid)
     labels.remove(req_data['label'])
     labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
     update_labels_of_dataset(uuid, labels_string)
@@ -458,7 +539,13 @@ def remove_label_from_dataset(uuid: str):
     dataset = {}
     for row in rows:
         dataset = dataset_from_row(row)
-    return {'dataset': dataset}, 200
+    rows = get_labels(uuid)
+    labels_out = {}
+    for row in rows:
+        label = label_from_row(row)
+        label_value = label['value']
+        labels_out[label_value] = label
+    return {'dataset': dataset, 'labels': labels_out}, 200
 
 
 @app.route('/dataset/<string:uuid>/labels/order', methods=['PATCH'])
@@ -504,7 +591,13 @@ def update_labels_from_dataset(uuid: str):
     dataset = {}
     for row in rows:
         dataset = dataset_from_row(row)
-    return {'dataset': dataset}, 200
+    rows = get_labels(uuid)
+    labels_out = {}
+    for row in rows:
+        label = label_from_row(row)
+        label_value = label['value']
+        labels_out[label_value] = label
+    return {'dataset': dataset, 'labels': labels_out}, 200
 
 
 @app.route('/dataset/<string:dataset_id>/input/<string:input_id>', methods=['GET'])

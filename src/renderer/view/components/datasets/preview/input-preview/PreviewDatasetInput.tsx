@@ -18,8 +18,6 @@ import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
 import { nullInput } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
-
-import './PreviewDatasetInput.css';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { resolutionToMegapixels } from '_/renderer/view/helpers/functionHelpers';
 
@@ -36,7 +34,7 @@ const PreviewDatasetInputC = React.memo(
 		const ANIMATION_TIME = 250;
 		const DEBOUNCE_TIME = 225;
 
-		const datasetID = activeDataset.value?.id;
+		const datasetID = activeDataset.value.dataset?.id;
 		const activeInput = activeDatasetInputs.value[previewInputID.value] ?? nullInput;
 		const [maxScale, setMaxScale] = useState(1);
 		// Load only once active input has been received
@@ -164,7 +162,13 @@ const PreviewDatasetInputC = React.memo(
 											Reset
 										</Button>
 									</HStack>
-									<TransformComponent wrapperStyle={{ height: '100%', width: '100%', zIndex: 1 }}>
+									<TransformComponent
+										wrapperStyle={{
+											height: '100%',
+											width: '100%',
+											zIndex: 1,
+											cursor: 'grab',
+										}}>
 										<chakra.img
 											ref={imgRef}
 											onLoad={(e) => {

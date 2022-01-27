@@ -43,7 +43,7 @@ const PreviewDatasetPaginationC = React.memo(
 		setPreviewID,
 		selectedInputPreviewID,
 	}: Props) => {
-		const datasetID = activeDataset.value?.id;
+		const datasetID = activeDataset.value.dataset?.id;
 		const isThereANextPage = nextPageCursor.value !== null;
 		const isThereAPreviousPage = previousPageCursor.value !== null;
 

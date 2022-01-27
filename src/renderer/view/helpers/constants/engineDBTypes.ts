@@ -11,6 +11,9 @@ export interface Dataset {
 	labels: string;
 }
 
+/**
+ * Dictionary of a Label value -> Label
+ */
 export interface Labels {
 	[key: string]: Label;
 }
