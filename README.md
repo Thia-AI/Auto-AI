@@ -77,7 +77,7 @@ Currently Thia is a passion project of mine (hoping to get some funding after th
 
 ![yes](./doc/images/automl_pricing_example.png)
 
-This was for a hackathon I partaking in where I needed a model to detect individual roofs of houses from satellite images. The training was done twice and took about half a day each with 8 nodes in parallel. This is where cloud auto-ml providers get you; training is never quick, and you can kiss your wallet goodbye if you need to retrain when you get more data.
+This was for a hackathon I was partaking in where I needed a model to detect individual roofs of houses from satellite images. The training was done twice and took about half a day each with 8 nodes in parallel. This is where cloud auto-ml providers get you; training is never quick, and you can kiss your wallet goodbye if you need to retrain when you get more data.
 
 Commercial GPUs now are so powerful and so common (thanks to crypto and games) that almost everyone has access to a GPU and if they don't they can rent a relatively cheap machine that does have one from the [multitude of providers](https://geekflare.com/best-cloud-gpu-platforms/ 'List of some GPU providers ') out there. So why are there no auto-ml solutions that can run on your own hardware? _(sarcasm)_.
 
