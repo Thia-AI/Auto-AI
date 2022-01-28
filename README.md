@@ -84,3 +84,9 @@ Commercial GPUs now are so powerful and so common (thanks to crypto and games) t
 ## Contributing
 
 While I'm not actively looking for any help on this project yet, I will have to soon. If you or anyone you know would be interested in joining, [get in touch](https://www.linkedin.com/in/ritesh-ahlawat/ 'My LinkedIn') with me :D.
+
+> #### ℹ️ Built with:
+> - ElectronJS (TypeScript)
+> - React (TypeScript)
+> - Flask
+> - TensorFlow
