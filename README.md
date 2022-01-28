@@ -73,7 +73,7 @@ For the beta release we need to be able to:
 
 ## About
 
-Currently Thia is a passion project of mine (hoping to get some funding after the MVP is done) that I came up after I received an absolutely ridiculous bill from Google Cloud:
+Currently Thia is a passion project of mine (hoping to get some funding after the MVP is done) that I came up with after I received an absolutely ridiculous bill from Google Cloud:
 
 ![yes](./doc/images/automl_pricing_example.png)
 
