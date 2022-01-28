@@ -33,10 +33,15 @@ For the MVP we need to be able to:
 ##### <u>Tasks to be completed</u>
 
 ✅ UI & Architecture
+<br />
 ✅ App & Engine Packaging
+<br />
 ✅ Image Classification Dataset
+<br />
 ❌ Image Classification Model Training _(eta March 2022)_
+<br />
 ❌ Image Classification Model Export _(eta April 2022)_
+<br />
 
 #### Beta
 
@@ -49,13 +54,21 @@ For the beta release we need to be able to:
 ##### <u>Tasks to be completed</u>
 
 ❌ Get Funding
+<br />
 ❌ Expand Team
+<br />
 ❌ App Signing
+<br />
 ❌ UI Rework
+<br />
 ❌ Remote VM Management
+<br />
 ❌ Object Detection Model Training
-❌ Highly Optimized Model Exporting via Tensorrt
+<br />
+❌ Highly Optimized Model Exporting via TensorRT
+<br />
 ❌ Website & APIs Up
+<br />
 ❌ Authn & Authz
 
 ## About
