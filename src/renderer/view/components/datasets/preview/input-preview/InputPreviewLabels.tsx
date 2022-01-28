@@ -48,7 +48,6 @@ const InputPreviewLabelsC = React.memo(
 
 		const assignLabelToCurrentInput = async (label: string) => {
 			if (activeInput.label != label) {
-				console.log(activeInput.label, label, activeInput);
 				// Change on UI instantly first
 				updateInputLabel(previewInputID.value, label);
 				const prevLabelInputCount = activeDataset.value.labels[activeInput.label].input_count;

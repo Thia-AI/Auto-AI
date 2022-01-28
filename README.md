@@ -1,64 +1,73 @@
-<h1 align=center>Thia [README OUTDATED AS FUCK LOL!]</h1>
+<h1 align=center>Thia Auto-ML</h1>
 
+![Build Status](https://github.com/Thia-AI/Auto-AI/actions/workflows/main.yml/badge.svg) ![Version](https://img.shields.io/badge/Version-alpha-red)
 
-#### Getting Setup On Your Machine
-##### Prereqs
-- Node & NPM (tested at v15.4.0 & 7.5.6)
-- Python 3.8.9 (App only)
-- Git
-- Windows 10
-- Visual C++ Build Tools [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio-exp/?sku=BuildTools&rel=16 "Download link") **(App only)**
+<br />
 
-##### Steps
+An Auto-ML application that runs on your **OWN** computer instead of some server in the cloud.
 
-For being able to push changes you need to 1. have access to the repo, and 2. have your ssh keys installed
+![Image](./doc/images/thia_dataset_preview.png)
 
-1. Make sure you have OpenSSH Clientoptional feature installed. To do so open Apps & features in Windows settings, click on Optional features and add OpenSSH Client.
-2. Open `command prompt` as an admin and generate an ED25519 (more secure and performance than RSA keys) SSH key pair using `ssh-keygen -t ed25519`.
+<br />
+<br />
+<br />
 
-```shell
-$ssh-keygen -t ed25519
-Generating public/private ed25519 key pair.
-$Enter file in which to save the key (C:\Users\Ritesh/.ssh/id_ed25519):
-Created directory 'C:\Users\Ritesh/.ssh'.
-$Enter passphrase (empty for no passphrase):
-$Enter same passphrase again:
-Your identification has been saved in C:\Users\Ritesh/.ssh/id_ed25519.
-Your public key has been saved in C:\Users\Ritesh/.ssh/id_ed25519.pub.
-The key fingerprint is:
-SHA256:ALPHANUMERICAL_NUMBERS user@PC-NAME
-The key's randomart image is:
-+--[ED25519 256]--+
-|       +Xz+=+    |
-|      . =*zE     |
-|       o ==a. .. |
-|      + = oo o...|
-|     . *Sz..o  .o|
-|      o z.+ o.o .|
-|       o + . =   |
-|        z     .  |
-|                 |
-+----[SHA256]-----+
-```
-3. To copy the ssh-key you just created, you can directly copy the `id_ed25519.pub` or open Git Bash and enter `cat ~/.ssh/id_ed25519.pub | clip` which would copy it to your clipboard.
-4. Sign in to GitLab.
-5. In the top right corner, select your avatar.
-6. Select **Settings**.
-7. From the left sidebar, select **SSH Keys**.
-8. In the **Key** box, paste the contents of your public key. If you manually copied the key, make sure you copy the entire key, which starts with `ssh-ed25519` or `ssh-rsa` if you’re using an RSA key-pair, and may end with a comment.
-9. In the **Title** text box, dtype a description like *Work Laptop* or *Home Workstation*.
-10. In the **Expires at** box, select an expiration date **for today's date in 1 year**. The expiration date is informational only and won’t prevent you from using the key. However, it is so that administrators can view expiration dates and use them for guidance when deleting keys.
-11. Select **Add key**.
+Thia will be the hub to train, serve, and monitor your ML models. Our ML Engine runs on **YOUR** computer _(and of your remote linux machines in the future)_ so **YOU** are in control of your own private data. The only time the app communicates with our servers will be for [Authn and Authz](https://www.cloudflare.com/en-ca/learning/access-management/authn-vs-authz/ 'Learn about the difference'), everything else will be packaged in the installer.
 
-For cloning and setting up **App**
+![yes](./doc/images/how_thia_works.png)
 
-1. Clone the repo (using ssh - `git clone git@gitlab.com:thia-ai/auto-ai.git` if you are a project member).
-2. Open VS code at the `thia` directory and install the recommended extensions.
-3. Install npm packages with `npm install`.
-5. Install pip packages with `pip install -r requirements.txt`.
-6. We use a local version of CUDA for dev/prod and store it [here](https://drive.google.com/file/d/1O9fdHDXvDuA2Xz2wVxCS--EECazrqt_r/view?usp=sharing "Downlink to CUDA"). Download and extract into thia so that there exists a folder thia/CUDA with all CUDA files inside.
+## Pricing
 
-For starting **App**
+Free while we are still in Pre-Alpha/Alpha. When we are in Beta and onwards, expect a tiered payment model. **However**, since this is running on your hardware, our pricing will be **drastically** lower than other cloud auto-ml providers _(see an example near the end)_.
 
-1. Open a terminal and run webpack with `npm run dev`, this will start webpack in watch mode and **main/renderer** would be compiled and bundled in the dist directory.
-2. Open a new terminal and start the **Electron** process with `npm run start`. This will launch the app, each time the **renderer** code changes you can just reload the webpage, however, if the **main** code changes then you will need to close and restart **App** again.
+## Brief Roadmap
+
+#### Alpha (MVP)
+
+For the MVP we need to be able to:
+
+1. Create a dataset
+2. Train an Image classification model
+3. Export the model in format of choice.
+
+##### <u>Tasks to be completed</u>
+
+✅ UI & Architecture
+✅ App & Engine Packaging
+✅ Image Classification Dataset
+❌ Image Classification Model Training _(eta March 2022)_
+❌ Image Classification Model Export _(eta April 2022)_
+
+#### Beta
+
+For the beta release we need to be able to:
+
+1. Train models on a remote Ubuntu VM
+2. Export models for serving to a remote Ubuntu VM
+3. Train an Object Detection model
+
+##### <u>Tasks to be completed</u>
+
+❌ Get Funding
+❌ Expand Team
+❌ App Signing
+❌ UI Rework
+❌ Remote VM Management
+❌ Object Detection Model Training
+❌ Highly Optimized Model Exporting via Tensorrt
+❌ Website & APIs Up
+❌ Authn & Authz
+
+## About
+
+Currently Thia is a passion project of mine (hoping to get some funding after the MVP is done) that I came up after I received an absolutely ridiculous bill from Google Cloud:
+
+![yes](./doc/images/automl_pricing_example.png)
+
+This was for a hackathon I partaking in where I needed a model to detect individual roofs of houses from satellite images. The training was done twice and took about half a day each with 8 nodes in parallel. This is where cloud auto-ml providers get you; training is never quick, and you can kiss your wallet goodbye if you need to retrain when you get more data.
+
+Commercial GPUs now are so powerful and so common (thanks to crypto and games) that almost everyone has access to a GPU and if they don't they can rent a relatively cheap machine that does have one from the [multitude of providers](https://geekflare.com/best-cloud-gpu-platforms/ 'List of some GPU providers ') out there. So why is there no application that can run on your own hardware? _(sarcasm)_.
+
+## Contributing
+
+While I'm not actively looking for any help on this project yet, I will have to soon. If you or anyone you know would be interested in joining, [get in touch](https://www.linkedin.com/in/ritesh-ahlawat/ 'My LinkedIn') with me :D.
