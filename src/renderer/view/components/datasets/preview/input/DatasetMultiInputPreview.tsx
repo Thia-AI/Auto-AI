@@ -31,7 +31,7 @@ interface Props {
 	selectedInputPreviewID: IActiveDatasetInputsPreviewIDReducer;
 }
 
-const PreviewDatasetPaginationC = React.memo(
+const DatasetMultiInputPreviewC = React.memo(
 	({
 		h,
 		activeDatasetInputs,
@@ -178,8 +178,8 @@ const mapStateToProps = (state: IAppState) => ({
 /**
  * Pagination component when previewing a dataset's inputs.
  */
-export const PreviewDatasetPagination = connect(mapStateToProps, {
+export const DatasetMultiInputPreview = connect(mapStateToProps, {
 	getNextPage: getNextPageInputsAction,
 	getPreviousPage: getPreviousPageInputsAction,
 	setPreviewID: setActiveDatasetInputsPreviewIDAction,
-})(PreviewDatasetPaginationC);
+})(DatasetMultiInputPreviewC);

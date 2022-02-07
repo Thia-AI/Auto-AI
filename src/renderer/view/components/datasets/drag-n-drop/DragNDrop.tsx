@@ -13,7 +13,7 @@ import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
-import { DatasetPreview } from '../preview/DatasetPreview';
+import { DatasetLabelInputPreview } from '../preview/DatasetLabelInputPreview';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER, IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES } from '_/shared/ipcChannels';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
@@ -212,7 +212,7 @@ const DragNDropC = React.memo(
 					clearJobIDState={() => setUploadJobID(undefined)}
 				/>
 				<DragNDropPreview directory={fileDirectory} />
-				<DatasetPreview />
+				<DatasetLabelInputPreview />
 			</Flex>
 		);
 	},

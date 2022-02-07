@@ -3,10 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Box, Center, chakra, Spinner } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
-import NoImage from '_utils/images/placeholder-dark2.jpg';
 import { IAppState } from '_/renderer/state/reducers';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { PreviewDatasetPagination } from './PreviewDatasetPagination';
+import { DatasetMultiInputPreview } from './DatasetMultiInputPreview';
 import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
@@ -92,7 +91,6 @@ const PaginationCellC = React.memo(
 						h='full'
 						w='full'
 						src={imageSrc}
-						fallbackSrc={NoImage}
 					/>
 				</Box>
 			);

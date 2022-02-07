@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react';
+import { Flex, VStack } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
@@ -8,9 +8,10 @@ import {
 import { IResetActiveDatasetInputsAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
-import { InputPreviewLabels } from './InputPreviewLabels';
-import { PreviewDatasetInput } from './PreviewDatasetInput';
-import { PreviewDatasetPagination } from './PreviewDatasetPagination';
+import { DatasetInputLabels } from '../labels/DatasetInputLabels';
+import { DatasetSingleInputPreview } from './DatasetSingleInputPreview';
+import { DatasetMultiInputPreview } from './DatasetMultiInputPreview';
+import { DatasetSingleInputPreviewDetails } from './DatasetSingleInputPreviewDetails';
 
 interface Props {
 	pathname: string;
@@ -19,7 +20,7 @@ interface Props {
 	resetPageInputs: () => IResetActiveDatasetInputsAction;
 }
 
-const InputPreviewC = React.memo((props: Props) => {
+const DatasetInputPreviewC = React.memo((props: Props) => {
 	// Dataset ID from pathname. Pathname should be /dataset/<dataset-id>
 	const datasetID: string = props.pathname.split('/').pop()!;
 
@@ -37,16 +38,20 @@ const InputPreviewC = React.memo((props: Props) => {
 		<Flex
 			w='full'
 			h='full'
-			mx='2'
+			ml='2'
 			flexDir='column'
+			id='sex'
 			borderTopRightRadius='sm'
 			borderBottomRightRadius='sm'
 			overflow='hidden'>
 			<Flex w='full' h='78%' minH='78%' maxH='78%' flexDir='row'>
-				<PreviewDatasetInput w='70%' />
-				<InputPreviewLabels w='30%' h='full' />
+				<DatasetSingleInputPreview w='70%' />
+				<VStack w='30%' h='full' spacing='3'>
+					<DatasetSingleInputPreviewDetails />
+					<DatasetInputLabels />
+				</VStack>
 			</Flex>
-			<PreviewDatasetPagination h='20%' />
+			<DatasetMultiInputPreview h='20%' />
 		</Flex>
 	);
 });
@@ -57,9 +62,9 @@ const mapStateToProps = (state: IAppState) => ({
 });
 
 /**
- * Preview of a dataset's inputs (or images).
+ * Preview of a dataset's inputs (or images) using pagination.
  */
-export const InputPreview = connect(mapStateToProps, {
+export const DatasetInputPreview = connect(mapStateToProps, {
 	getNextPageInputs: getNextPageInputsAction,
 	resetPageInputs: resetActiveDatasetInputsAction,
-})(InputPreviewC);
+})(DatasetInputPreviewC);
