@@ -1,4 +1,4 @@
-import { Box, Button, Center, LayoutProps, Text, Wrap, WrapItem } from '@chakra-ui/react';
+import { Box, Button, Center, Text, Wrap, WrapItem } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
@@ -21,16 +21,14 @@ import { IUpdateDatasetLabelAction } from '_/renderer/state/active-dataset-page/
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 
 interface Props {
-	w: LayoutProps['w'];
-	h: LayoutProps['h'];
 	activeDataset: IActiveDatasetReducer;
 	activeDatasetInputs: IActiveDatasetInputsReducer;
 	previewInputID: IActiveDatasetInputsPreviewIDReducer;
 	updateInputLabel: (inputIndex: number, newLabel: string) => IUpdateDatasetInputLabelAction;
 	updateDatasetLabel: (labelValue: string, label: Label) => IUpdateDatasetLabelAction;
 }
-const InputPreviewLabelsC = React.memo(
-	({ w, h, activeDataset, activeDatasetInputs, previewInputID, updateInputLabel, updateDatasetLabel }: Props) => {
+const DatasetInputLabelsC = React.memo(
+	({ activeDataset, activeDatasetInputs, previewInputID, updateInputLabel, updateDatasetLabel }: Props) => {
 		const activeInput = activeDatasetInputs.value[previewInputID.value] ?? nullInput;
 		const [ordererdLabelsByCount, setOrdererdLabelsByCount] = useState<string[]>([]);
 		const [ordererdLabelsByPreference, setOrdererdLabelsByPreference] = useState<string[]>([]);
@@ -119,51 +117,65 @@ const InputPreviewLabelsC = React.memo(
 		const render = () => {
 			if (ordererdLabelsByCount.length == 0) {
 				return (
-					<Center w={w} h={h}>
+					<Center w='full' h='full'>
 						No Labels
 					</Center>
 				);
 			}
 			return (
-				<Center w={w} h={h}>
-					<Wrap justify='center' spacing='3'>
-						{ordererdLabelsByCount.map((label) => {
-							// Check if label exists before rendering. This needs to be done to prevent
-							// issues when label is deleted from activeDataset but the ordererd labels hasn't updated yet
-							if (activeDataset.value.labels[label]) {
-								// Transforms 'rgb(x, y, z)' into ['rgb', 'x', 'y', 'z', '']
-								const splitColor = activeDataset.value.labels[label].color.split(/(?:,|\)|\(| )+/);
-								const [r, g, b] = [splitColor[1], splitColor[2], splitColor[3]];
+				<Wrap
+					justify='center'
+					spacing='3'
+					w='full'
+					h='full'
+					maxH='65%'
+					overflowY='auto'
+					overflowX='hidden'
+					sx={{
+						'&::-webkit-scrollbar': {
+							w: '4px',
+							bg: 'gray.600',
+						},
+						'&::-webkit-scrollbar-thumb': {
+							bg: 'gray.900',
+						},
+					}}>
+					{ordererdLabelsByCount.map((label) => {
+						// Check if label exists before rendering. This needs to be done to prevent
+						// issues when label is deleted from activeDataset but the ordererd labels hasn't updated yet
+						if (activeDataset.value.labels[label]) {
+							// Transforms 'rgb(x, y, z)' into ['rgb', 'x', 'y', 'z', '']
+							const splitColor = activeDataset.value.labels[label].color.split(/(?:,|\)|\(| )+/);
+							const [r, g, b] = [splitColor[1], splitColor[2], splitColor[3]];
 
-								return (
-									<WrapItem key={label}>
-										<Button
-											pl='1.5'
-											position='relative'
-											maxW='150px'
-											variant='outline'
-											_hover={{
-												backgroundColor: `rgba(${r}, ${g}, ${b}, 0.075)`,
-											}}
-											_active={{
-												backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`,
-											}}
-											borderColor={activeDataset.value.labels[label].color}
-											leftIcon={
-												<LabelLeftIcon
-													count={activeDataset.value.labels[label].input_count}
-													color={activeDataset.value.labels[label].color}
-												/>
-											}
-											onClick={() => assignLabelToCurrentInput(label)}>
-											<Text isTruncated={true}>{label}</Text>
-										</Button>
-									</WrapItem>
-								);
-							}
-						})}
-					</Wrap>
-				</Center>
+							return (
+								<WrapItem key={label}>
+									<Button
+										pl='1.5'
+										position='relative'
+										maxW='150px'
+										variant='outline'
+										_hover={{
+											backgroundColor: `rgba(${r}, ${g}, ${b}, 0.075)`,
+										}}
+										_active={{
+											backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`,
+										}}
+										borderColor={activeDataset.value.labels[label].color}
+										leftIcon={
+											<LabelLeftIcon
+												count={activeDataset.value.labels[label].input_count}
+												color={activeDataset.value.labels[label].color}
+											/>
+										}
+										onClick={() => assignLabelToCurrentInput(label)}>
+										<Text isTruncated={true}>{label}</Text>
+									</Button>
+								</WrapItem>
+							);
+						}
+					})}
+				</Wrap>
 			);
 		};
 
@@ -194,7 +206,7 @@ const mapStateToProps = (state: IAppState) => ({
 /**
  * Component that renders the labels of a dataset.
  */
-export const InputPreviewLabels = connect(mapStateToProps, {
+export const DatasetInputLabels = connect(mapStateToProps, {
 	updateInputLabel: updateActiveDatasetInputLabelAction,
 	updateDatasetLabel: updateDatasetLabelAction,
-})(InputPreviewLabelsC);
+})(DatasetInputLabelsC);

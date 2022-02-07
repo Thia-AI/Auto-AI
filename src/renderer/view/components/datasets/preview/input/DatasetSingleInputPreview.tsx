@@ -29,7 +29,7 @@ interface Props {
 	activeDataset: IActiveDatasetReducer;
 }
 
-const PreviewDatasetInputC = React.memo(
+const DatasetSingleInputPreviewC = React.memo(
 	({ activeDatasetInputs, setInputPreviewID, previewInputID, w, activeDataset }: Props) => {
 		const ANIMATION_TIME = 250;
 		const DEBOUNCE_TIME = 225;
@@ -224,7 +224,7 @@ const PreviewDatasetInputC = React.memo(
 	},
 );
 
-PreviewDatasetInputC.displayName = 'DatasetInputPreview';
+DatasetSingleInputPreviewC.displayName = 'DatasetInputPreview';
 
 const mapStateToProps = (state: IAppState) => ({
 	activeDatasetInputs: state.activeDatasetInputs,
@@ -235,6 +235,6 @@ const mapStateToProps = (state: IAppState) => ({
 /**
  * Previews a dataset input in a larger size on top of {@link PreviewDatasetPagination `PreviewDatasetPagination`}.
  */
-export const PreviewDatasetInput = connect(mapStateToProps, {
+export const DatasetSingleInputPreview = connect(mapStateToProps, {
 	setInputPreviewID: setActiveDatasetInputsPreviewIDAction,
-})(PreviewDatasetInputC);
+})(DatasetSingleInputPreviewC);
