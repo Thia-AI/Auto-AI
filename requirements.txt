@@ -1,18 +1,9 @@
-tensorboard==2.6.0
-tensorboard-data-server==0.3.0
-tensorboard-plugin-wit==1.7.0
-tensorflow==2.7.0
-tensorflow-datasets==4.2.0
-tensorflow-estimator==2.7.0
-tensorflow-gpu-estimator==2.3.0
-tensorflow-metadata==0.28.0
-# Torch
---find-links https://download.pytorch.org/whl/torch_stable.html
-torch==1.7.1+cu110
-torchaudio==0.7.2
-torchvision==0.8.2+cu110
-Flask==1.1.2
-overrides==6.1.0
+numpy~=1.22.2
+overrides~=6.1.0
+tensorflow~=2.7.0
+PyYAML~=6.0
+python-dateutil~=2.8.2
+Flask~=2.0.2
 pyvips==2.1.15
 python-dateutil==2.8.2
 python-socketio==5.5.0
