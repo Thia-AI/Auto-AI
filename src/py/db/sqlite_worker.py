@@ -14,7 +14,7 @@ class Sqlite3Worker(threading.Thread):
         :param max_queue_size: how many queries can be stored at once
         :param raise_on_error: whether to raise an exception on error
         """
-        threading.Thread.__init__(self, name="sqlite_worker", daemon=True)
+        threading.Thread.__init__(self, name=f"sqlite_worker_{uuid.uuid4().hex}", daemon=True)
         self._sqlite3_conn = sqlite3.connect(
             db_path, check_same_thread=False, detect_types=sqlite3.PARSE_DECLTYPES
         )

@@ -1,58 +1,54 @@
 import glob
+import json
 import os
 from pathlib import Path
 
+import numpy as np
 from dateutil import parser
 from flask import Flask, jsonify, request, send_from_directory, abort
-
-from env import environment
-
-# First thing we do is initialize file paths, env variables, etc.
-environment.init_environment_pre_gpu()
-
 from flask_socketio import SocketIO
 
-import tensorflow as tf
-
-# Jobs
-from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
-from model_config.jobs.model_config_jobs import ModelCreationJob
+import config.config
+from config import config
+from config import constants
+from config.constants import ModelStatus
 from dataset.jobs.create_dataset_job import CreateDatasetJob
-from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
-# DB commands
-from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model
+from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
     increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
     reset_labels_of_inputs, get_input, update_input_label
+# Input commands
+from db.commands.input_commands import get_train_data_from_all_inputs
+# DB commands
+from db.commands.job_commands import get_jobs, get_job
+from db.commands.model_commands import get_models, get_model
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row
-
+from env import environment
+# Jobs
+from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
+from helpers.encoding import b64_encode, b64_decode
+from helpers.route import validate_req_json
+# Other
 from job.job import JobCreator
 from log.logger import log
-from config import config
-from config import constants
-from helpers.route import validate_req_json
-from helpers.encoding import b64_encode, b64_decode
+from model_config.jobs.model_config_jobs import ModelCreationJob
 # Socket IO
 from sio_namespaces.job_namespace import jobs_namespace
+from train.jobs.train_ic_job import TrainImageClassifierJob
 
 app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
 
-io = SocketIO(app, async_mode='threading')
-
-io.on_namespace(jobs_namespace)
 
 # sio = socketio.Server(async_mode='threading', logger=True, engineio_logger=True)
 # app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
 
-environment.init_environment_post_gpu()
-
 
 @app.route('/devices', methods=['GET'])
 def get_devices_route():
+    import tensorflow as tf
     log(f"ACCEPTED [{request.method}] {request.path}")
     out = []
     for device in tf.config.list_physical_devices():
@@ -64,7 +60,7 @@ def get_devices_route():
 
 
 @app.route('/dataset/<string:uuid>/inputs/upload', methods=['POST'])
-def train_route(uuid: str):
+def upload_inputs_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
     # Check to see if files key exists
@@ -74,8 +70,10 @@ def train_route(uuid: str):
     error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
+    if len(uuid) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
     rows = get_dataset(uuid)
-    if rows is None:
+    if rows is None or len(rows) == 0:
         return {'Error': 'ID of dataset does not exist'}, 400
     try:
         files = req_data["files"]
@@ -106,10 +104,38 @@ def get_job_route(uuid: str):
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
-    if rows is None:
+    if rows is None or len(rows) == 0:
         return {'Error': "ID of job does not exist"}, 400
     for row in rows:
         return job_from_row(row), 200
+
+
+@app.route('/job/train/<string:uuid>', methods=['GET'])
+def get_train_job_route(uuid: str):
+    # TODO: Add check to see whether job is a training job or not.
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(uuid) != 32:
+        return {'Error': "ID of job is of incorrect length"}, 400
+    rows = get_job(uuid)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of job does not exist"}, 400
+    job = dict()
+    for row in rows:
+        job = dict(job_from_row(row))
+
+    if 'model_name' in job['extra_data']:
+        # Training has passed initialization start
+        extra_data_path = config.MODEL_DIR / job['extra_data']['model_name'] / config.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+        if extra_data_path.is_file():
+            # Training is still in progress. Load extra_data's history from training-time file instead
+            # and overwrite it.
+            try:
+                with open(extra_data_path.absolute(), 'r') as f:
+                    extra_data = json.load(f)
+                    job.update({'extra_data': extra_data})
+            except:
+                return job
+    return job
 
 
 @app.route('/model/create', methods=['POST'])
@@ -131,6 +157,49 @@ def create_model_route():
     return {'ids': ids}, 202
 
 
+@app.route('/model/<string:model_id>/train', methods=['POST'])
+def train_model_route(model_id):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    req_data = request.get_json()
+    req_data_format = {
+        'dataset_id': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+
+    if len(model_id) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(model_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of model does not exist"}, 400
+    model = {}
+    for row in rows:
+        model = model_from_row(row)
+
+    if model['model_status'] == ModelStatus.TRAINING.value:
+        return {'Error': 'Model is currently being trained'}, 400
+    if model['model_status'] == ModelStatus.TRAINED.value:
+        return {'Error': 'Model has already been trained'}, 400
+
+    dataset_id = req_data['dataset_id']
+
+    if len(dataset_id) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(dataset_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+
+    # Validate that all inputs are labelled
+    inputs: np.ndarray = get_train_data_from_all_inputs(dataset_id)
+    input_labels = inputs[:, 1]
+    if constants.DATASET_UNLABELLED_LABEL in input_labels:
+        return {'Error': 'Dataset contains unlabelled inputs'}, 400
+    # Train
+    ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
+    return {'ids': ids}, 202
+
+
 @app.route('/models', methods=['GET'])
 def get_models_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
@@ -149,7 +218,7 @@ def get_model_route(uuid: str):
     if len(uuid) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(uuid)
-    if rows is None:
+    if rows is None or len(rows) == 0:
         return {'Error': "ID of model does not exist"}, 400
     for row in rows:
         return model_from_row(row), 200
@@ -220,7 +289,7 @@ def get_dataset_first_image_route(uuid: str):
     for row in rows:
         # Only 1 row in rows but we access via iteration
         # Get images in dataset's input directory
-        input_dir = str((config.DATASET_DIR / row['name'] / config.DATASET_INPUT_DIR_NAME).resolve())
+        input_dir = str((config.DATASET_DIR / row['name'] / config.DATASET_INPUT_DIR_NAME).absolute())
         files = glob.glob1(input_dir, '*.jpg')
         if len(files) == 0:
             abort(404)
@@ -620,11 +689,45 @@ def get_input_image(dataset_id: str, input_id: str):
     for row in rows:
         file_name: str = row['file_name']
         try:
-            return send_from_directory(str((config.DATASET_DIR / dataset_name / config.DATASET_INPUT_DIR_NAME).resolve()), file_name)
+            return send_from_directory(str((config.DATASET_DIR / dataset_name / config.DATASET_INPUT_DIR_NAME).absolute()), file_name)
         except FileNotFoundError:
             return {'Error': "File not found"}, 404
 
 
+@app.route('/telemetry/memory', methods=['GET'])
+def get_gpu_memory_info_route():
+    import GPUtil
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    gpus = GPUtil.getGPUs()
+    out = {}
+    gpu_memory_info = {}
+    for gpu in gpus:
+        curr_gpu = {
+            'name': gpu.name,
+            'id': gpu.id,
+            'memoryFree': gpu.memoryFree,
+            'memoryUsed': gpu.memoryUsed,
+            'memoryTotal': gpu.memoryTotal,
+            'load': gpu.load,
+            'memoryUtil': gpu.memoryUtil,
+            'driverVersion': gpu.driver,
+        }
+        gpu_memory_info[f'/device:GPU:{gpu.id}'] = curr_gpu
+    out['gpu_memory_info'] = gpu_memory_info
+    return out, 200
+
+
 if __name__ == '__main__':
-    # app.run(host='localhost', port=8442, threaded=True)
-    io.run(app, host='localhost', port=8442)
+    # https://docs.python.org/3.7/library/multiprocessing.html?highlight=process#multiprocessing.freeze_support
+    from multiprocessing import freeze_support
+
+    freeze_support()
+
+    # First thing we do is initialize file paths, env variables, etc.
+    environment.init_environment_pre_gpu()
+    import tensorflow as tf
+
+    io = SocketIO(app, async_mode='threading')
+    io.on_namespace(jobs_namespace)
+    environment.init_environment_post_gpu()
+    io.run(app, host='localhost', port=8442, use_reloader=False)

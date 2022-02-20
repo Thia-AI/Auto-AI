@@ -50,7 +50,8 @@ class DBManager(object):
                progress integer,
                progress_max integer,
                date_started datetime,
-               date_finished datetime
+               date_finished datetime,
+               extra_data json
            )''')
             # Models
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS models (

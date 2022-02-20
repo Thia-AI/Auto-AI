@@ -1,3 +1,4 @@
+from config.constants import ModelStatus
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -8,8 +9,15 @@ def create_model(uuid: str, model_name: str, model_type: str, model_type_extra: 
                     command='''INSERT INTO models (id, model_name, model_type, model_type_extra, date_created, date_last_accessed, model_status)
                     values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, 'IDLE'
+                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, ModelStatus.IDLE.value
                     ))
+    DBManager.get_instance().execute(cmd)
+
+
+def update_model_status(model_id: str, status: ModelStatus):
+    cmd = DBCommand(name=f"Update Model: {model_id}'s status to {status.value}",
+                    command=f'''UPDATE models SET model_status = ? WHERE id = ?''',
+                    values=(status.value, model_id))
     DBManager.get_instance().execute(cmd)
 
 

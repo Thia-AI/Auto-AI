@@ -8,10 +8,20 @@ bundle_dir = Path('.')
 current_dir = Path('.')
 
 """Model"""
+# Model Cache path
+MODEL_CACHE = Path('.')
+# Model directory name
+MODEL_CACHE_DIR_NAME = 'models_cache'
 # Model directory path
 MODEL_DIR = Path('.')
 # Model directory name
 MODEL_DIR_NAME = 'models'
+# Training checkpoint directory name
+MODEL_TRAINING_CHECKPOINT_DIR_NAME = 'training_checkpoints'
+# Training checkpoint name
+MODEL_TRAINING_CHECKPOINT_NAME = 'checkpoint'
+# Extra data file only available during training time
+MODEL_TRAINING_TIME_EXTRA_DATA_NAME = 'extra_data.json'
 
 """Datasets"""
 # Dataset directory path

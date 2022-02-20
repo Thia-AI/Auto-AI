@@ -57,7 +57,7 @@ class BulkFileTransferJob(BaseJob):
                     # If file_name already exists, we want to find the next numbered copy we can use
                     # For example, if cat.jpg already exists, we want to use cat (1).jpg, cat(2).jpg
                     # and so on
-
+                    # TODO: In copy image make sure they are all jpegs and if not, convert them to be
                     file_name = file_p.name
                     file_folder: Path = config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME
                     file_path: Path = file_folder / file_name

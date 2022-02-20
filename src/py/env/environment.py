@@ -1,14 +1,14 @@
-import sys
-import os
-from pathlib import Path
-import msvcrt
-import logging
 import json
+import logging
+import msvcrt
+import os
+import sys
+from pathlib import Path
 
 from config import config
-from log.logger import log
-from job.job import JobManager
 from db.database import DBManager
+from job.job import JobManager
+from log.logger import log
 
 
 def init_environment_pre_gpu() -> None:
@@ -20,6 +20,7 @@ def init_environment_pre_gpu() -> None:
         if len(sys.argv) > 1 and sys.argv[1] == 'simulated':
             """When Engine is ran in simulated mode during App development"""
             # Model
+            config.MODEL_CACHE = config.current_dir / 'src' / 'py' / config.MODEL_CACHE_DIR_NAME
             config.MODEL_DIR = config.current_dir / 'src' / 'py' / config.MODEL_DIR_NAME
             # Dataset
             config.DATASET_DIR = config.current_dir / 'src' / 'py' / config.DATASET_DIR_NAME
@@ -32,6 +33,7 @@ def init_environment_pre_gpu() -> None:
         else:
             """When Engine is ran in actual production environment"""
             # Model
+            config.MODEL_CACHE = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.MODEL_CACHE_DIR_NAME
             config.MODEL_DIR = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.MODEL_DIR_NAME
             # Dataset
             config.DATASET_DIR = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.DATASET_DIR_NAME
@@ -49,6 +51,7 @@ def init_environment_pre_gpu() -> None:
         if len(sys.argv) > 1 and sys.argv[1] == 'pycharm':
             """When Engine is ran in development mode via PyCharm"""
             # Model
+            config.MODEL_CACHE = config.current_dir / config.MODEL_CACHE_DIR_NAME
             config.MODEL_DIR = config.current_dir / config.MODEL_DIR_NAME
             # Dataset
             config.DATASET_DIR = config.current_dir / config.DATASET_DIR_NAME
@@ -62,6 +65,7 @@ def init_environment_pre_gpu() -> None:
         else:
             """When Engine is ran in development mode via App"""
             # Model
+            config.MODEL_CACHE = config.current_dir / 'src' / 'py' / config.MODEL_CACHE_DIR_NAME
             config.MODEL_DIR = config.current_dir / 'src' / 'py' / config.MODEL_DIR_NAME
             # Dataset
             config.DATASET_DIR = config.current_dir / 'src' / 'py' / config.DATASET_DIR_NAME
@@ -75,6 +79,8 @@ def init_environment_pre_gpu() -> None:
     # Set environment variables
     # CUDA
     add_path_to_path_env(config.CUDA_PATH)
+    # Set CUDA_DEVICE_ORDER so the IDs assigned by CUDA match those from nvidia-smi
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     # External Dependencies
     config.ED_VIPS = config.EXTERNAL_DEPENDENCIES / config.ED_VIPS_DIR_NAME
     add_path_to_path_env(config.ED_VIPS)
@@ -93,6 +99,7 @@ def init_environment_pre_gpu() -> None:
         local_device_protos = device_lib.list_local_devices()
         return [{"VRAM": "" + str(x.memory_limit / 1024 / 1024) + " GB", "Description": x.physical_device_desc} for x in
                 local_device_protos if x.device_type == 'GPU']
+
     log("Available GPUs: " + json.dumps(get_available_gpus(), indent=2), True)
 
 
