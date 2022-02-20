@@ -1,5 +1,8 @@
+import numpy as np
+
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
+from db.row_accessors import input_from_row
 
 
 def add_images_to_db_batch(values):
@@ -13,6 +16,18 @@ def get_all_inputs(limit=100):
     cmd = DBCommand(name="Get All Inputs",
                     command=f'''SELECT * FROM input ORDER BY date_created DESC LIMIT {limit}''')
     return DBManager.get_instance().execute(cmd)
+
+
+def get_train_data_from_all_inputs(dataset_id: str):
+    cmd = DBCommand(name=f"Get All Inputs From Dataset: {dataset_id}",
+                    command=f'''SELECT * FROM input WHERE dataset_id = ?''',
+                    values=(dataset_id,))
+    rows = DBManager.get_instance().execute(cmd)
+    inputs = []
+    for row in rows:
+        row_input = input_from_row(row)
+        inputs.append([row_input['file_name'], row_input['label']])
+    return np.array(inputs)
 
 
 def get_input(uuid: str):

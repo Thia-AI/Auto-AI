@@ -12,6 +12,7 @@ class BaseJob(ABC, Thread, EnforceOverrides):
     def __init__(self, arg, job_name: str, initial_status: str, progress_max: int):
         Thread.__init__(self, name=job_name, daemon=True)
         self.arg = arg
+        self.__extra_data = dict()
         self.__job_name: str = job_name
         self.__has_started = False
         self.__has_finished = False
@@ -54,6 +55,18 @@ class BaseJob(ABC, Thread, EnforceOverrides):
 
     def progress_max(self):
         return self.__progress_max
+
+    def extra_data(self):
+        return self.__extra_data
+
+    def set_extra_data(self, new_extra_data: dict):
+        self.__extra_data = new_extra_data
+
+    def update_extra_data(self, extra_data: dict, update_db=True):
+        self.__extra_data.update(extra_data)
+        if update_db:
+            from db.commands.job_commands import update_job
+            update_job(self)
 
     def has_finished(self):
         return self.__has_finished

@@ -1,3 +1,7 @@
+import json
+
+from log.logger import log
+
 def dataset_from_row(row):
     return {
         'id': row['id'],
@@ -11,6 +15,12 @@ def dataset_from_row(row):
 
 
 def job_from_row(row):
+    extra_data = row['extra_data']
+    try:
+        extra_data_obj = json.loads(extra_data)
+    except json.decoder.JSONDecodeError:
+        log(f"Error decoding extra data for job ID: {row['id']}")
+        extra_data_obj = {}
     return {
         'id': row['id'],
         'job_name': row['job_name'],
@@ -20,7 +30,8 @@ def job_from_row(row):
         'date_started': row['date_started'],
         'date_finished': row['date_finished'],
         'progress': row['progress'],
-        'progress_max': row['progress_max']
+        'progress_max': row['progress_max'],
+        'extra_data': extra_data_obj
     }
 
 
