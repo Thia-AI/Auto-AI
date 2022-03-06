@@ -9,7 +9,10 @@ import createRootReducer from './reducers';
 /**
  * Hash history object keeps track of the browsing history of an application using the browser's built-in history stack.
  */
-export const history = createHashHistory();
+export const history = createHashHistory({
+	// Set getUserConfirmation to empty function so that we can use a custom prompt instead of relying on the browser
+	getUserConfirmation: () => {},
+});
 
 /**
  * Contains the ReducerTypes for all reducers.
@@ -35,8 +38,5 @@ if (process.env.NODE_ENV === 'development') {
 export const configureStore = () =>
 	createStore(
 		createRootReducer(history),
-		compose(
-			applyMiddleware(...middleWare),
-			window['devToolsExtension'] ? window['devToolsExtension']() : (f) => f,
-		),
+		compose(applyMiddleware(...middleWare), window['devToolsExtension'] ? window['devToolsExtension']() : (f) => f),
 	);

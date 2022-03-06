@@ -1,3 +1,4 @@
+import functools
 import json
 from collections import defaultdict
 from multiprocessing import Process, Queue
@@ -7,15 +8,14 @@ from pathlib import Path
 import numpy as np
 import tensorflow as tf
 from overrides import overrides
-from tensorflow.keras import preprocessing, layers, models, backend, optimizers, losses, callbacks
+from tensorflow.keras import preprocessing, layers, models, backend, optimizers, losses, callbacks, metrics
 
 from config import config as c
 from config import constants
-from config.constants import ModelStatus
+from config.constants import ModelStatus, TrainJobStatus
 from db.commands.dataset_commands import get_dataset, get_labels
 from db.commands.input_commands import get_train_data_from_all_inputs
-from db.commands.model_commands import get_model
-from db.commands.model_commands import update_model_status
+from db.commands.model_commands import get_model, update_model_status, update_model_extra_data
 from db.row_accessors import dataset_from_row, model_from_row, label_from_row
 from job.base_job import BaseJob
 from log.logger import log
@@ -32,7 +32,7 @@ class TrainImageClassifierJob(BaseJob):
         super().run()
         # Extra data update here for training initialization
         extra_data = {
-            'status': ModelStatus.STARTING_TRAINING.value
+            'status': TrainJobStatus.STARTING_TRAINING.value
         }
         self.update_extra_data(extra_data)
 
@@ -42,7 +42,6 @@ class TrainImageClassifierJob(BaseJob):
         for row in rows:
             model = model_from_row(row)
         # TODO: Check here if already training and exit if so.
-        update_model_status(model_id, ModelStatus.TRAINING)
         # Extra data update here, so that we can get the train-time extra_data.json location
         # in get_train_job route.
         extra_data = {
@@ -55,14 +54,14 @@ class TrainImageClassifierJob(BaseJob):
         dataset = {}
         for row in rows:
             dataset = dataset_from_row(row)
-        rows = get_labels(dataset_id)
-        labels = {}
+        label_rows = get_labels(dataset_id)
+        label_to_class_map = {}
         num_classes = 0
-        for row in rows:
+        for row in label_rows:
             label = label_from_row(row)
             if label['value'] == constants.DATASET_UNLABELLED_LABEL:
                 continue
-            labels[label['value']] = num_classes
+            label_to_class_map[label['value']] = num_classes
             num_classes += 1
 
         inputs: np.ndarray = get_train_data_from_all_inputs(dataset_id)
@@ -71,7 +70,7 @@ class TrainImageClassifierJob(BaseJob):
             return str((c.DATASET_DIR / dataset['name'] / c.DATASET_INPUT_DIR_NAME / file_name).absolute())
 
         def make_input_label(label_value: str):
-            return labels[label_value]
+            return label_to_class_map[label_value]
 
         inputs = np.array([[make_input_path(i[0]), make_input_label(i[1])] for i in inputs])
 
@@ -87,24 +86,55 @@ class TrainImageClassifierJob(BaseJob):
         }
 
         train_process_queue.put(train_data)
-        # Extra data update here for training status update
-        extra_data = {
-            'status': ModelStatus.TRAINING.value
-        }
-        self.update_extra_data(extra_data)
+        update_model_status(model_id, ModelStatus.TRAINING)
         p = Process(target=train_in_separate_process, args=(train_process_queue,))
         p.start()
         p.join()
-        status, history, evaluation_result = itemgetter('status', 'history', 'evaluation_result')(train_process_queue.get())
+
+        # Transfer extra_data and remove local file
+        extra_data = itemgetter('extra_data')(train_process_queue.get())
+        self.update_extra_data(extra_data)
+        job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+        if job_updater_json_filepath.is_file():
+            job_updater_json_filepath.unlink()
+
+        # Get latest model data and update it's extra_data with a trained labels map
+        rows = get_model(model_id)
+        model = {}
+        for row in rows:
+            model = model_from_row(row)
+        if model['extra_data'] is not None:
+            current_model_extra_data = dict(model['extra_data'])
+        else:
+            current_model_extra_data = dict()
+        # Get labels trained on
+        labels_trained_on = {}
+        for row in label_rows:
+            label = label_from_row(row)
+            if label['value'] == constants.DATASET_UNLABELLED_LABEL:
+                continue
+            labels_trained_on[label['value']] = label
+
+        current_model_extra_data.update({'trained_model': {
+            'labels_to_class_map': label_to_class_map,
+            'labels_trained_on': labels_trained_on
+        }})
+        update_model_extra_data(model_id, current_model_extra_data)
+        update_model_status(model_id, ModelStatus.TRAINED)
         extra_data = {
-            'history': history,
-            'evaluation_result': evaluation_result,
-            'status': ModelStatus.TRAINED.value
+            'status_description': 'Cleaned up',
+            'status': TrainJobStatus.EVALUATED.value
         }
         self.update_extra_data(extra_data)
         log('Training Job Finished')
-        update_model_status(model_id, ModelStatus.TRAINED)
         self.set_progress(super().progress_max())
+        super().clean_up_job()
+
+
+def update_local_extra_data(data_to_update: dict, extra_data: dict, file: tf.io.gfile.GFile):
+    extra_data.update(data_to_update)
+    with file as f:
+        json.dump(extra_data, f)
 
 
 def train_in_separate_process(queue: Queue):
@@ -116,7 +146,7 @@ def train_in_separate_process(queue: Queue):
                                                                                                           'current_extra_data')(
         queue.get())
 
-    # Shuffle dataset
+    job_updater_json_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
     seed = np.random.randint(1e6)
     rng = np.random.RandomState(seed)
     rng.shuffle(inputs)
@@ -127,6 +157,11 @@ def train_in_separate_process(queue: Queue):
     BATCH_SIZE = 32
     effnet_model_name = 'efficientnetv2-b0'
     TRAIN_SPLIT = 0.8
+    current_extra_data = dict(current_extra_data)
+    extra_data_file = tf.io.gfile.GFile(job_updater_json_filepath.absolute(), 'w')
+    update_extra_data = functools.partial(update_local_extra_data, extra_data=current_extra_data, file=extra_data_file)
+    update_extra_data({'status_description': 'Initializing devices'})
+
     # Enable memory growth to prevent allocating all of the GPU's memory
     gpus = tf.config.experimental.list_physical_devices('GPU')
     for gpu in gpus:
@@ -146,6 +181,7 @@ def train_in_separate_process(queue: Queue):
         image.set_shape((image_size[0], image_size[1], num_channels))
         return image
 
+    update_extra_data({'status_description': 'Creating dataset'})
     train_x_paths = inputs[:int(TRAIN_SPLIT * NUM_IMAGES), 0]
     train_y = inputs[:int(TRAIN_SPLIT * NUM_IMAGES), 1].astype(np.int)
 
@@ -186,17 +222,26 @@ def train_in_separate_process(queue: Queue):
     train_ds = train_ds.map(lambda temp_images, temp_labels: (preprocessing_model(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
     val_ds = val_ds.map(lambda temp_images, temp_labels: (normalization_layer(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
 
+    update_extra_data({'status_description': 'Building model'})
     model = models.Sequential([
         layers.InputLayer(input_shape=IMAGE_SIZE + (3,)),
         effnetv2_model.get_model(effnet_model_name, save_path=model_cache_path, include_top=False),
         layers.Dropout(rate=0.2),
-        layers.Dense(2)
+        layers.Dense(2, activation='softmax')
     ])
 
     model.build((None,) + IMAGE_SIZE + (3,))
     model.summary()
 
-    model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(from_logits=True, label_smoothing=0.1), metrics=['accuracy'])
+    METRICS = [
+        metrics.BinaryAccuracy(name='accuracy'),
+        metrics.Precision(name='precision'),
+        metrics.Recall(name='recall'),
+        metrics.AUC(name='auc'),
+        metrics.AUC(name='prc', curve='PR'),
+    ]
+
+    model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(label_smoothing=0.1), metrics=METRICS)
 
     steps_per_epoch = TRAIN_SIZE // BATCH_SIZE
     validation_steps = VALIDATION_SIZE // BATCH_SIZE
@@ -214,6 +259,10 @@ def train_in_separate_process(queue: Queue):
 
         def on_train_begin(self, logs=None):
             self.json_file = tf.io.gfile.GFile(self.filepath.absolute(), 'w')
+            self.extra_data.update({'status': TrainJobStatus.TRAINING.value, 'status_description': 'Fitting model'})
+            # Save that training has started
+            with self.json_file as f:
+                json.dump(self.extra_data, f)
 
         def on_epoch_end(self, epoch, logs=None):
             logs = logs or {}
@@ -228,27 +277,28 @@ def train_in_separate_process(queue: Queue):
             with self.json_file as f:
                 json.dump(self.extra_data, f)
 
-        def on_train_end(self, logs=None):
-            if self.filepath.is_file():
-                self.filepath.unlink()
-            self.json_file = None
-
     cp_callback_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
     cp_callback = callbacks.ModelCheckpoint(filepath=cp_callback_filepath.absolute(), monitor='val_loss', mode='min', save_best_only=True)
-    early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=False)
-    job_updater_json_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+    early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+
     job_updater = JobUpdater(current_extra_data, job_updater_json_filepath)
 
+    CALLBACKS = [
+        job_updater,
+        cp_callback,
+        early_stopping
+    ]
     hist: callbacks.History = model.fit(train_ds, epochs=1000, steps_per_epoch=steps_per_epoch, validation_data=val_ds,
                                         validation_steps=validation_steps,
-                                        callbacks=[job_updater, cp_callback, early_stopping])
-
+                                        callbacks=CALLBACKS, verbose=2)
+    update_extra_data({'status_description': 'Evaluating model', 'status': TrainJobStatus.EVALUATING.value, 'history': hist.history})
     log('Evaluating model')
     evaluation = model.evaluate(val_ds, verbose=1)
     metric_names = model.metrics_names
     evaluation_result = {}
     for i, metric in enumerate(metric_names):
         evaluation_result[metric] = evaluation[i]
+    update_extra_data({'status_description': 'Cleaning up', 'evaluation_result': evaluation_result})
     backend.clear_session()
-    return_data = {'status': 'Success', 'history': hist.history, 'evaluation_result': evaluation_result}
+    return_data = {'extra_data': current_extra_data}
     queue.put(return_data)

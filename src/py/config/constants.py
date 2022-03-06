@@ -29,19 +29,35 @@ INPUT_PAGINATION_LIMIT_MAX: Final = 50
 DATASET_LABELS_SPLITTER: Final = '|'
 DATASET_UNLABELLED_LABEL: str = 'unlabelled'
 
+# Jobs
+CANCELLABLE_JOBS = ['Image Classification Test']
+IMAGE_CLASSIFICATION_TEST_JOB_NAME = 'Image Classification Test'
+IMAGE_CLASSIFICATION_TRAINING_JOB_NAME = 'Image Classification Training'
+
+GPU_JOBS = [IMAGE_CLASSIFICATION_TEST_JOB_NAME, IMAGE_CLASSIFICATION_TRAINING_JOB_NAME]
+
 
 # Model Statuses
-class ModelStatusEnum(Enum):
+class AutoNameEnum(Enum):
     def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
         return name
 
 
-class ModelStatus(ModelStatusEnum):
+class ModelStatus(AutoNameEnum):
     """Enum that contains different statuses (or states) a model can be in at any given time."""
     IDLE = auto()
     TRAINING = auto()
     STARTING_TRAINING = auto()
     TRAINED = auto()
     RETRAINING = auto()
+    ERROR = auto()
+
+
+class TrainJobStatus(AutoNameEnum):
+    """Enum that contains different statuses (or states) a training job can be in at any given time."""
+    TRAINING = auto()
+    STARTING_TRAINING = auto()
+    TRAINED = auto()
     EVALUATING = auto()
+    EVALUATED = auto()
     ERROR = auto()

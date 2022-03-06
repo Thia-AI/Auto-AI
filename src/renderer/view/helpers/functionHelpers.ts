@@ -12,13 +12,15 @@ import { EngineActionHandler } from '_engine_requests/engineActionHandler';
  * @returns Array of 2 -> [whether error occurred (boolean), response data (object)].
  */
 export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) => {
+	// TODO: Change while loop to an interval and clear interval on component unmounts
+
 	do {
 		const config: AxiosRequestConfig = {
 			timeout,
 		};
 		const initialTime = new Date().getTime();
 		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobId, config);
-		if (err || resData.has_finished) {
+		if (err || resData.has_finished || resData.has_cancelled) {
 			return [err, resData];
 		}
 		const afterTime = new Date().getTime();
@@ -125,4 +127,50 @@ const rgb2LabSpace = (rgb: RGBValue) => {
 	y = y > 0.008856 ? Math.pow(y, 1 / 3) : 7.787 * y + 16 / 116;
 	z = z > 0.008856 ? Math.pow(z, 1 / 3) : 7.787 * z + 16 / 116;
 	return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+};
+
+/**
+ * Gets the index of the smallest element in an array along with the minimum.
+ *
+ * @param arr Array of numbers.
+ * @returns Index of the smallest element in the array and the minimum value.
+ */
+export const argmin = (arr: number[] | undefined) => {
+	if (!arr) return [-1, 0];
+	if (arr.length === 0) return [-1, 0];
+
+	let min = arr[0];
+	let minIndex = 0;
+
+	for (let i = 1; i < arr.length; i++) {
+		if (arr[i] < min) {
+			minIndex = i;
+			min = arr[i];
+		}
+	}
+
+	return [minIndex, min];
+};
+
+/**
+ * Gets the index of the largest element in an array along with the maximum.
+ *
+ * @param arr Array of numbers.
+ * @returns Index of the largest element in the array and the maximum value.
+ */
+export const argmax = (arr: number[] | undefined) => {
+	if (!arr) return [-1, 0];
+	if (arr.length === 0) return [-1, 0];
+
+	let max = arr[0];
+	let maxIndex = 0;
+
+	for (let i = 1; i < arr.length; i++) {
+		if (arr[i] > max) {
+			maxIndex = i;
+			max = arr[i];
+		}
+	}
+
+	return [maxIndex, max];
 };

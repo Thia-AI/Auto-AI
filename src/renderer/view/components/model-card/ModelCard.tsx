@@ -11,38 +11,39 @@ import {
 	VStack,
 	Divider,
 	Skeleton,
+	ThemingProps,
 } from '@chakra-ui/react';
-
-import { ERROR, IDLE, TRAINING } from '_view_helpers/constants/modelConstants';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 
 import Preview from '_utils/images/placeholder-dark.jpg';
 import './ModelCard.css';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
+import { Model, ModelStatus } from '../../helpers/constants/engineDBTypes';
 
 interface Props {
 	isLoaded: boolean;
-	modelTitle: string;
-	modelStatus: string;
-	dateCreated: string;
-	modelType: string;
-	modelID: string;
+	model: Model;
 	onClick: () => void;
 }
 
 /**
  * Card representing a model in the
  */
-export const ModelCard = React.memo((props: Props) => {
-	const statusColor = () => {
-		switch (props.modelStatus.toLowerCase()) {
-			case IDLE:
+export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
+	const statusColor = (): ThemingProps['colorScheme'] => {
+		switch (model.model_status) {
+			case ModelStatus.IDLE:
 				return 'gray';
-			case TRAINING:
+			case ModelStatus.TRAINED:
+				return 'purple';
+			case ModelStatus.TRAINING:
+			case ModelStatus.STARTING_TRAINING:
 				return 'green';
-			case ERROR:
+			case ModelStatus.ERROR:
 				return 'red';
+			default:
+				return 'gray';
 		}
 	};
 
@@ -50,11 +51,11 @@ export const ModelCard = React.memo((props: Props) => {
 		<HStack
 			willChange='transform'
 			cursor='pointer'
-			onClick={props.onClick}
+			onClick={onClick}
 			_hover={{
-				transform: `${props.isLoaded ? 'scale(1.01)' : ''}`,
+				transform: `${isLoaded ? 'scale(1.01)' : ''}`,
 			}}
-			transition={props.isLoaded ? 'all 250ms' : ''}
+			transition={isLoaded ? 'all 250ms' : ''}
 			w='80%'
 			h='125px'
 			pt='2'
@@ -64,7 +65,7 @@ export const ModelCard = React.memo((props: Props) => {
 			boxShadow='lg'
 			bg='gray.850'>
 			<VStack spacing='2' alignItems='flex-start'>
-				<SkeletonCircle isLoaded={props.isLoaded} size='10'>
+				<SkeletonCircle isLoaded={isLoaded} size='10'>
 					<Avatar
 						size='md'
 						title='Ritesh Ahlawat - Creator'
@@ -73,38 +74,33 @@ export const ModelCard = React.memo((props: Props) => {
 					/>
 				</SkeletonCircle>
 				<Spacer />
-				<SkeletonText w='80px' isLoaded={props.isLoaded} noOfLines={2}>
-					<HStack>
-						<Text alignItems='baseline' fontSize='xs'>
+				<SkeletonText w='90px' isLoaded={isLoaded} noOfLines={2}>
+					<HStack maxW='full' spacing='0.5'>
+						<Text alignItems='baseline' fontSize='0.6rem'>
 							Status:
 						</Text>
-						<Badge colorScheme={statusColor()} fontSize='xs' size='xs' ml='1'>
-							{props.modelStatus}
+						<Badge colorScheme={statusColor()} fontSize='0.6rem' maxW='60%'>
+							<Text isTruncated>{model.model_status}</Text>
 						</Badge>
 					</HStack>
-					<InteractiveCopyBadge badgeID={props.modelID} />
+					<InteractiveCopyBadge badgeID={model.id} />
 				</SkeletonText>
 			</VStack>
 			<Divider orientation='vertical' />
-			<Skeleton w='full' h='full' isLoaded={props.isLoaded}>
+			<Skeleton w='full' h='full' isLoaded={isLoaded}>
 				<VStack bgImage={Preview} bgPos='center' bgSize='cover' borderRadius='lg' h='full'>
 					<Center pb='4' w='full'>
 						<Text color='gray.100' fontWeight='semibold' letterSpacing='0.15rem'>
-							{props.modelTitle}:
+							{model.model_name}:
 						</Text>
 						<Badge ml='2' colorScheme='purple'>
-							{getVerboseModelType(props.modelType)}
+							{getVerboseModelType(model.model_type)}
 						</Badge>
 					</Center>
 					<Spacer />
-					<HStack
-						px='2'
-						h='full'
-						w='full'
-						justifyContent='flex-end'
-						alignItems='flex-end'>
+					<HStack px='2' h='full' w='full' justifyContent='flex-end' alignItems='flex-end'>
 						<Text mb='1' color='gray.400' fontSize='xs'>
-							{new Date(props.dateCreated).toDateString()}
+							{new Date(model.date_created).toDateString()}
 						</Text>
 					</HStack>
 				</VStack>

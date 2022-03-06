@@ -31,11 +31,12 @@ def update_job(j: base.BaseJob):
         extra_data = json.dumps(j.extra_data())
     except TypeError:
         # Unserializable JSON
-        extra_data = dict()
+        log(f'Unserializable JSON: {j.extra_data()}')
+        extra_data = ''
     cmd = DBCommand(name=f"Update Job {str(j)}",
-                    command=f'''UPDATE jobs SET has_started = ?, has_finished = ?, status = ?, 
+                    command=f'''UPDATE jobs SET has_started = ?, has_finished = ?, has_cancelled = ?, status = ?, 
                                 date_started = ?, date_finished = ?, progress = ?, progress_max = ?, extra_data = ? WHERE id = ?''',
-                    values=(j.has_started(), j.has_finished(), j.status(), str(j.date_started()),
+                    values=(j.has_started(), j.has_finished(), j.has_cancelled(), j.status(), str(j.date_started()),
                             str(j.date_finished()), j.progress(), j.progress_max(), extra_data, j.id().hex))
     return DBManager.get_instance().execute(cmd)
 

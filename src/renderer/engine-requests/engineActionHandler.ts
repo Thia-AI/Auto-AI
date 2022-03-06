@@ -19,6 +19,11 @@ import { UploadImageToDatasetEngineAction } from './actions/post/uploadImageToDa
 import { GetDatasetLabelsEngineAction } from './actions/get/getDatasetLabels';
 import { GetDatasetLabelEngineAction, IGetDatasetLabelData } from './actions/get/getDatasetLabel';
 import { UpdateInputLabelData, UpdateInputLabelEngineAction } from './actions/put/updateInputLabel';
+import { ITrainModelData, TrainModelEngineAction } from './actions/post/trainModel';
+import { GetTrainJobEngineAction } from './actions/get/getTrainJobs';
+import { TestModelEngineAction } from './actions/post/testModel';
+import { GetTelemetryGPUStateEngineAction } from './actions/get/getTelemetryGPUState';
+import { CancelJobEA } from './actions/delete/cancelJob';
 
 /**
  * Class that manages all EngineActions.
@@ -30,10 +35,14 @@ class EngineActionHandler {
 	private getDevicesEA!: GetDevicesEngineAction;
 	// Jobs
 	private getJobEA!: GetJobEngineAction;
+	private getTrainJobEA!: GetTrainJobEngineAction;
+	private cancelJobEA!: CancelJobEA;
 	// Models
 	private createModelEA!: CreateModelEngineAction;
 	private getModelsEA!: GetModelsEngineAction;
 	private getModelEA!: GetModelEngineAction;
+	private trainModelEA!: TrainModelEngineAction;
+	private testModelEA!: TestModelEngineAction;
 	// Datasets
 	private createDatasetEA!: CreateDatasetEngineAction;
 	private getDatasetsEA!: GetDatasetsEngineAction;
@@ -51,6 +60,8 @@ class EngineActionHandler {
 	private getDatasetLabelsEA!: GetDatasetLabelsEngineAction;
 	private getDatasetLabelEA!: GetDatasetLabelEngineAction;
 	private updateInputLabelEA!: UpdateInputLabelEngineAction;
+	// Telemetry
+	private getTelemetryGPUStateEA!: GetTelemetryGPUStateEngineAction;
 
 	private _engineRequest!: AxiosInstance;
 
@@ -100,10 +111,14 @@ class EngineActionHandler {
 		this.getDevicesEA = new GetDevicesEngineAction(this._engineRequest);
 		// Jobs
 		this.getJobEA = new GetJobEngineAction(this._engineRequest);
+		this.getTrainJobEA = new GetTrainJobEngineAction(this._engineRequest);
+		this.cancelJobEA = new CancelJobEA(this._engineRequest);
 		// Models
 		this.createModelEA = new CreateModelEngineAction(this._engineRequest);
 		this.getModelsEA = new GetModelsEngineAction(this._engineRequest);
 		this.getModelEA = new GetModelEngineAction(this._engineRequest);
+		this.trainModelEA = new TrainModelEngineAction(this._engineRequest);
+		this.testModelEA = new TestModelEngineAction(this._engineRequest);
 		// Datasets
 		this.createDatasetEA = new CreateDatasetEngineAction(this._engineRequest);
 		this.getDatasetsEA = new GetDatasetsEngineAction(this._engineRequest);
@@ -121,6 +136,8 @@ class EngineActionHandler {
 		this.getDatasetLabelsEA = new GetDatasetLabelsEngineAction(this._engineRequest);
 		this.getDatasetLabelEA = new GetDatasetLabelEngineAction(this._engineRequest);
 		this.updateInputLabelEA = new UpdateInputLabelEngineAction(this._engineRequest);
+		// Telemetry
+		this.getTelemetryGPUStateEA = new GetTelemetryGPUStateEngineAction(this._engineRequest);
 	};
 
 	/**
@@ -135,6 +152,14 @@ class EngineActionHandler {
 
 	public getJob = async (uuid: string, config?: AxiosRequestConfig) => {
 		return this.getJobEA.run(config, uuid);
+	};
+
+	public getTrainJob = async (trainJobID: string, config?: AxiosRequestConfig) => {
+		return this.getTrainJobEA.run(config, trainJobID);
+	};
+
+	public cancelJob = async (jobID: string, config?: AxiosRequestConfig) => {
+		return this.cancelJobEA.run(config, jobID);
 	};
 
 	public createModel = async (data: object, config?: AxiosRequestConfig) => {
@@ -225,6 +250,18 @@ class EngineActionHandler {
 
 	public updateInputLabel = async (inputID: string, data: UpdateInputLabelData, config?: AxiosRequestConfig) => {
 		return this.updateInputLabelEA.run(config, [inputID, data]);
+	};
+
+	public trainModel = async (modelID: string, data: ITrainModelData, config?: AxiosRequestConfig) => {
+		return this.trainModelEA.run(config, [modelID, data]);
+	};
+
+	public testModel = async (modelID: string, data: FormData, config?: AxiosRequestConfig) => {
+		return this.testModelEA.run(config, [modelID, data]);
+	};
+
+	public getTelemeteryGPUState = async (config?: AxiosRequestConfig) => {
+		return this.getTelemetryGPUStateEA.run(config);
 	};
 }
 

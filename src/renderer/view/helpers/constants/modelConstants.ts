@@ -1,18 +1,3 @@
-/**
- * **Engine** `MODELS:model_status` value for idling
- */
-export const IDLE = 'idle';
-
-/**
- * **Engine** `MODELS:model_status` value for training
- */
-export const TRAINING = 'training';
-
-/**
- * **Engine** `MODELS:model_status` value for error
- */
-export const ERROR = 'error';
-
 // Constants that represent model types and their verbose representation
 type Model_Type = [string, string];
 

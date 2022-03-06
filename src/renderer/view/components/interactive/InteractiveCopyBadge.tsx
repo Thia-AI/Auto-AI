@@ -1,13 +1,14 @@
 import React, { useRef } from 'react';
 
-import { Badge, Text } from '@chakra-ui/react';
+import { Badge, Text, TypographyProps } from '@chakra-ui/react';
 
 import './InteractiveCopyBadge.css';
 
 interface Props {
-	badgeID: string | undefined;
+	badgeID: string | undefined | null;
 	lengthToClip?: number;
 	hoverLabel?: string;
+	fontSize?: TypographyProps['fontSize'];
 }
 /**
  * A badge that allows for copying on click.
@@ -29,6 +30,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 			maxW='full'
 			cursor='pointer'
 			ref={badgeIDRef}
+			fontSize={props.fontSize ?? 'xs'}
 			my='2'
 			title={props.hoverLabel ?? 'Copy ID'}
 			px='1'

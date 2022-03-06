@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Box, Center, Spinner, Text, HStack, Spacer, VStack, Icon, chakra } from '@chakra-ui/react';
 import { connect } from 'react-redux';
@@ -41,6 +41,11 @@ interface Props {
 const DatasetCardC = React.memo((props: Props) => {
 	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
 
+	useEffect(() => {
+		return () => {
+			props.resetSelectedDatasetAction();
+		};
+	}, []);
 	const renderImage = () => {
 		if (!imageLoaded) {
 			return (

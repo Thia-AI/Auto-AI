@@ -53,3 +53,7 @@ EXTERNAL_DEPENDENCIES_DIR_NAME = 'external_dependencies'
 # libvips version 8.1.1
 ED_VIPS = Path('.')
 ED_VIPS_DIR_NAME = 'vips'
+
+"""Engine Runtime Config"""
+ENGINE_GPU_TASK_RUNNING = False
+ENGINE_TEST_TASK_RUNNING = False

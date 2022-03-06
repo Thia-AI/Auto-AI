@@ -1,14 +1,15 @@
-from typing import List
+import uuid
+from collections import deque
 from threading import Timer
 from typing import Deque
-from collections import deque
-import time
-import uuid
-from sio_namespaces.job_namespace import jobs_namespace
+from typing import List
 
-from log.logger import log
-from job.base_job import BaseJob
 from db.commands.job_commands import add_job
+from config import constants
+from config import config as c
+from job.base_job import BaseJob
+from log.logger import log
+from sio_namespaces.job_namespace import jobs_namespace
 
 
 class JobCreator:
@@ -64,6 +65,8 @@ class JobManager:
             if job.has_started() and job.has_finished():
                 self.job_queue.remove(job)
                 jobs_namespace.update_users_of_job_finishing(job.id().hex)
+            if job.has_cancelled():
+                self.job_queue.remove(job)
         """Then run all jobs in the queue if they have not already started"""
         log(f"Job Queue Length: {len(self.job_queue)}", log_it=self.logging)
         for job in list(self.job_queue):
@@ -91,6 +94,27 @@ class JobManager:
 
     def add_job(self, job: BaseJob):
         self.job_queue.append(job)
+
+    def cancel_job(self, job_id):
+        job_cancelled = False
+        job_found = False
+        for job in self.job_queue:
+            if job.id().hex == job_id:
+                log(f'Cancelling job: {job.id().hex}')
+                job_found = True
+                try:
+                    job.exit()
+                except SystemExit:
+                    log(f'Job Cancelled: {job.id().hex}')
+                    if job.job_name() in constants.GPU_JOBS:
+                        c.ENGINE_GPU_TASK_RUNNING = False
+                        if job.job_name() == constants.IMAGE_CLASSIFICATION_TEST_JOB_NAME:
+                            c.ENGINE_TEST_TASK_RUNNING = False
+                    job_cancelled = True
+                except Exception as e:
+                    log(e)
+                    job_cancelled = False
+        return job_found, job_cancelled
 
     def __call__(self, *args, **kwargs):
         raise TypeError("JobManager must be accessed through `instance()`.")

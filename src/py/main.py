@@ -1,14 +1,15 @@
 import glob
 import json
 import os
+import tempfile
 from pathlib import Path
 
 import numpy as np
 from dateutil import parser
 from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_socketio import SocketIO
+from werkzeug.utils import secure_filename
 
-import config.config
 from config import config
 from config import constants
 from config.constants import ModelStatus
@@ -24,7 +25,7 @@ from db.commands.input_commands import get_all_inputs, pagination_get_next_page_
 from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row
 from env import environment
 # Jobs
@@ -32,11 +33,12 @@ from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from helpers.encoding import b64_encode, b64_decode
 from helpers.route import validate_req_json
 # Other
-from job.job import JobCreator
+from job.job import JobCreator, JobManager
 from log.logger import log
 from model_config.jobs.model_config_jobs import ModelCreationJob
 # Socket IO
 from sio_namespaces.job_namespace import jobs_namespace
+from train.jobs.test_ic_model import TestImageClassificationModelJob
 from train.jobs.train_ic_job import TrainImageClassifierJob
 
 app = Flask(__name__, instance_path=Path(os.path.dirname(os.path.realpath(__file__))) / 'instance')
@@ -177,9 +179,10 @@ def train_model_route(model_id):
     for row in rows:
         model = model_from_row(row)
 
-    if model['model_status'] == ModelStatus.TRAINING.value:
+    status = model['model_status']
+    if status == ModelStatus.TRAINING.value or status == ModelStatus.RETRAINING.value or status == ModelStatus.STARTING_TRAINING:
         return {'Error': 'Model is currently being trained'}, 400
-    if model['model_status'] == ModelStatus.TRAINED.value:
+    if status == ModelStatus.TRAINED.value:
         return {'Error': 'Model has already been trained'}, 400
 
     dataset_id = req_data['dataset_id']
@@ -197,6 +200,58 @@ def train_model_route(model_id):
         return {'Error': 'Dataset contains unlabelled inputs'}, 400
     # Train
     ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
+    update_model_train_job_id(model_id, ids[0])
+    update_model_status(model_id, ModelStatus.STARTING_TRAINING)
+    return {'ids': ids}, 202
+
+
+@app.route('/job/<string:job_id>/cancel', methods=['DELETE'])
+def cancel_job(job_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+
+    if len(job_id) != 32:
+        return {'Error': "ID of job is of incorrect length"}, 400
+    rows = get_job(job_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of job does not exist"}, 400
+    job = {}
+    for row in rows:
+        job = job_from_row(row)
+    if job['job_name'] not in constants.CANCELLABLE_JOBS:
+        return {'Error': 'Only Testing jobs can be cancelled'}
+    job_found, job_cancelled = JobManager.get_instance().cancel_job(job_id)
+    return {'job_cancelled_successfully': job_cancelled, 'job_found': job_found}, 200
+
+
+@app.route('/model/<string:model_id>/test', methods=['POST'])
+def test_model_route(model_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(model_id) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(model_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of model does not exist"}, 400
+    model = {}
+    for row in rows:
+        model = model_from_row(row)
+
+    status = model['model_status']
+    if status != ModelStatus.TRAINED.value:
+        return {'Error': 'Model must be trained to test'}, 400
+
+    files = request.files.getlist('files')
+    if len(files) == 0:
+        return {'Error': 'Did not attach any images to test'}, 400
+    filenames = []
+    temp_dir = Path(tempfile.mkdtemp())
+    for file in files:
+        filename = temp_dir / secure_filename(file.filename)
+        try:
+            file.save(filename)
+            filenames.append(filename)
+        except Exception:
+            log(f'Unable to save {filename}')
+    ids = JobCreator().create(TestImageClassificationModelJob([temp_dir, filenames, model['model_name'], model['extra_data']])).queue()
     return {'ids': ids}, 202
 
 
@@ -715,6 +770,14 @@ def get_gpu_memory_info_route():
         gpu_memory_info[f'/device:GPU:{gpu.id}'] = curr_gpu
     out['gpu_memory_info'] = gpu_memory_info
     return out, 200
+
+
+@app.route('/telemetry/gpu_state', methods=['GET'])
+def get_gpu_state_route():
+    return {
+               'gpu_task_running': config.ENGINE_GPU_TASK_RUNNING,
+               'test_task_running': config.ENGINE_TEST_TASK_RUNNING
+           }, 200
 
 
 if __name__ == '__main__':

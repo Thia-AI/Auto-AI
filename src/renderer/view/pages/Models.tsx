@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { ModelCard } from '../components/model-card/ModelCard';
+import { Model, nullModel } from '../helpers/constants/engineDBTypes';
 
 interface Props {
 	push: Push;
@@ -14,7 +15,7 @@ interface Props {
 
 const ModelsC = (props: Props) => {
 	const match = useRouteMatch();
-	const [models, setModels] = useState([]);
+	const [models, setModels] = useState<Model[]>([]);
 	const [isLoaded, setIsLoaded] = useState(false);
 
 	useEffect(() => {
@@ -32,18 +33,7 @@ const ModelsC = (props: Props) => {
 		return Array(8)
 			.fill('')
 			.map((_, i) => {
-				return (
-					<ModelCard
-						key={i}
-						modelID=''
-						isLoaded={isLoaded}
-						modelTitle=''
-						modelStatus=''
-						dateCreated=''
-						modelType=''
-						onClick={() => {}}
-					/>
-				);
+				return <ModelCard key={i} isLoaded={isLoaded} model={nullModel} onClick={() => {}} />;
 			});
 	};
 
@@ -51,13 +41,9 @@ const ModelsC = (props: Props) => {
 		return models.map((model) => {
 			return (
 				<ModelCard
-					key={model['id']}
+					key={model.id}
 					isLoaded={isLoaded}
-					modelID={model['id']}
-					modelTitle={model['model_name']}
-					modelStatus={model['model_status']}
-					dateCreated={model['date_created']}
-					modelType={model['model_type']}
+					model={model}
 					onClick={() => props.push(`${match.path}/${model['id']}`)}
 				/>
 			);

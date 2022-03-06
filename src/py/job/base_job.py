@@ -1,9 +1,10 @@
+import time
 from abc import ABC, abstractmethod
+from datetime import datetime
 from threading import Thread
 from uuid import UUID
+
 from overrides import EnforceOverrides, overrides
-from datetime import datetime
-import time
 
 from log.logger import log
 
@@ -16,6 +17,7 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         self.__job_name: str = job_name
         self.__has_started = False
         self.__has_finished = False
+        self.__has_cancelled = False
         self.__id: UUID = None
         self.__status = initial_status
         self.__date_started = None
@@ -35,6 +37,10 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         update_job(self)
         self.time_started = time.time()
 
+    @abstractmethod
+    def exit(self):
+        raise SystemExit()
+
     def get_date_started(self):
         return self.__date_started
 
@@ -46,6 +52,9 @@ class BaseJob(ABC, Thread, EnforceOverrides):
 
     def has_started(self):
         return self.__has_started
+
+    def has_cancelled(self):
+        return self.__has_cancelled
 
     def progress(self):
         return self.__progress
@@ -70,6 +79,12 @@ class BaseJob(ABC, Thread, EnforceOverrides):
 
     def has_finished(self):
         return self.__has_finished
+
+    def set_job_cancelled(self, update_db=True):
+        self.__has_cancelled = True
+        if update_db:
+            from db.commands.job_commands import update_job
+            update_job(self)
 
     def clean_up_job(self):
         self.time_finished = time.time()

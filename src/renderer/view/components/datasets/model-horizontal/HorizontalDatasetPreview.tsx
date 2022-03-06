@@ -17,8 +17,6 @@ import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { CreateDataset } from './CreateDataset';
 import { DatasetCard, FillerDatasetCard } from './DatasetCard';
 import { isFirstLetterVowel } from '_/renderer/view/helpers/textHelper';
-import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetActions';
-import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IAppState } from '_/renderer/state/reducers';
@@ -26,7 +24,6 @@ import { IDatasetListReducer } from '_/renderer/state/dataset-list/model/reducer
 
 interface Props {
 	modelType: string;
-	resetSelectedDatasetAction: () => IResetSelectedDatasetAction;
 	refreshDataset: () => void;
 	datasetList: IDatasetListReducer;
 	datasetLoading: boolean;
@@ -75,8 +72,8 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 							Datasets
 						</Text>
 						<Text color='gray.500' fontSize='sm'>
-							Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'}{' '}
-							{verboseModelType} dataset to train on
+							Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'} {verboseModelType} dataset to
+							train on
 						</Text>
 					</Box>
 					<Spacer />
@@ -119,6 +116,5 @@ const mapStateToProps = (state: IAppState) => ({
  * Displays all datasets a model can be trained on.
  */
 export const HorizontalDatasetPreview = connect(mapStateToProps, {
-	resetSelectedDatasetAction,
 	refreshDataset: refreshDatasetListAction,
 })(HorizontalDatasetPreviewC);

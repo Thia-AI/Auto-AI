@@ -14,8 +14,16 @@ import { IMenuOpenReducer, ISelectedPageReducer } from './side-menu/model/reduce
 import { changeSelectedPageReducer, openSideMenuReducer } from './side-menu/SideModelReducers';
 import { selectedDatasetReducer } from './choose-dataset-train/ChooseDatasetReducers';
 import { ISelectedDatasetReducer } from './choose-dataset-train/model/reducerTypes';
-import { datasetListLoadingReducer, datasetListReducer, datasetPreviewFilesReducer } from './dataset-list/DatasetListReducers';
-import { IDatasetListLoadingReducer, IDatasetListReducer, IDatasetPreviewFilesReducer } from './dataset-list/model/reducerTypes';
+import {
+	datasetListLoadingReducer,
+	datasetListReducer,
+	datasetPreviewFilesReducer,
+} from './dataset-list/DatasetListReducers';
+import {
+	IDatasetListLoadingReducer,
+	IDatasetListReducer,
+	IDatasetPreviewFilesReducer,
+} from './dataset-list/model/reducerTypes';
 import { notificationsReducer } from './notifications/NotificationReducers';
 import { INotificationsReducer } from './notifications/model/reducerTypes';
 import { activeDatasetReducer } from './active-dataset-page/ActiveDatasetReducers';

@@ -44,8 +44,9 @@ class DBManager(object):
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS jobs (
                id varchar(32) not null primary key, 
                job_name text not null, 
-               has_started integer not null, 
-               has_finished integer not null, 
+               has_started integer default 0, 
+               has_finished integer default 0, 
+               has_cancelled integer default 0,
                status text,
                progress integer,
                progress_max integer,
@@ -61,7 +62,9 @@ class DBManager(object):
                 model_type_extra text not null,
                 date_created datetime not null,
                 date_last_accessed datetime not null,
-                model_status text not null 
+                model_status text not null, 
+                latest_train_job_id varchar(32),
+                extra_data json
             )''')
             # Datasets
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS datasets (

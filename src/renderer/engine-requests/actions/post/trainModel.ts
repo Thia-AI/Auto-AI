@@ -2,27 +2,27 @@ import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineAction } from '../../base/iEngineAction';
 
 /**
- * Data for adding a label.
+ * Data for training a model.
  */
-export interface IAddLabelData {
-	label: string;
-	color: string;
+export interface ITrainModelData {
+	dataset_id: string;
 }
-class AddLabelEngineAction implements IEngineAction {
+
+class TrainModelEngineAction implements IEngineAction {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
-		this.actionName = 'Add Label';
-		this.apiName = '/dataset';
+		this.actionName = 'Train Model';
+		this.apiName = '/model';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, IAddLabelData]) => {
+	run = async (config?: AxiosRequestConfig, data?: [string, ITrainModelData]) => {
 		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/labels/add`, data[1], config);
+			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/train`, data[1], config);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;
@@ -31,4 +31,4 @@ class AddLabelEngineAction implements IEngineAction {
 	};
 }
 
-export { AddLabelEngineAction };
+export { TrainModelEngineAction };
