@@ -37,7 +37,6 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         update_job(self)
         self.time_started = time.time()
 
-    @abstractmethod
     def exit(self):
         raise SystemExit()
 
