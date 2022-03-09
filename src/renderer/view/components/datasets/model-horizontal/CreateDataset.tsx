@@ -14,7 +14,6 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
-import { push, Push } from 'connected-react-router';
 
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { IMAGE_CLASSIFICATION } from '_view_helpers/constants/modelConstants';
@@ -24,11 +23,10 @@ import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetL
 interface Props {
 	onClose: () => void;
 	isOpen: boolean;
-	push: Push;
 	refreshDataset: () => void;
 }
 
-const CreateDatasetC = React.memo((props: Props) => {
+const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) => {
 	// Toast
 	const toast = useToast();
 	// Dataset creation status
@@ -72,13 +70,16 @@ const CreateDatasetC = React.memo((props: Props) => {
 			duration: 1500,
 			isClosable: false,
 		});
-		props.onClose();
-		props.refreshDataset();
+		onClose();
+		refreshDataset();
 	};
 	return (
 		<Modal
-			isOpen={props.isOpen}
-			onClose={props.onClose}
+			isOpen={isOpen}
+			onClose={() => {
+				setDatasetName('');
+				onClose();
+			}}
 			isCentered
 			blockScrollOnMount={true}
 			motionPreset='slideInBottom'
@@ -115,6 +116,5 @@ const CreateDatasetC = React.memo((props: Props) => {
  * Modal that opens when creating a new dataset.
  */
 export const CreateDataset = connect(null, {
-	push,
 	refreshDataset: refreshDatasetListAction,
 })(CreateDatasetC);
