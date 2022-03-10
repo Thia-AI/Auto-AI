@@ -7,5 +7,5 @@ import React from 'react';
  * @react
  */
 export const ODModelContent = () => {
-	return <Box w='full' h='300px' bg='purple.500'></Box>;
+	return <Box w='full' h='300px' bg='purple.500' />;
 };

@@ -74,6 +74,8 @@
 		"react/no-multi-comp": ["warn", { "ignoreStateless": true }],
 		"react/jsx-pascal-case": "error",
 		"react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
+		"react/jsx-closing-tag-location": "warn",
+		"react/self-closing-comp": "warn",
 		// Other
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],

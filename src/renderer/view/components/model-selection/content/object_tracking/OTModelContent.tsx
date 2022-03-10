@@ -7,5 +7,5 @@ import React from 'react';
  * @react
  */
 export const OTModelContent = () => {
-	return <Box w='full' h='300px' bg='green.500'></Box>;
+	return <Box w='full' h='300px' bg='green.500' />;
 };

@@ -49,7 +49,8 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 					h='35px'
 					variant='outline'
 					colorScheme='gray'
-					isLoading></Button>
+					isLoading
+				/>
 			);
 		}
 	};
