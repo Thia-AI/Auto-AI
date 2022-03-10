@@ -75,7 +75,10 @@
 		"react/jsx-pascal-case": "error",
 		"react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
 		"react/jsx-closing-tag-location": "warn",
+		"react/jsx-tag-spacing": ["warn", { "beforeClosing": "never" }],
 		"react/self-closing-comp": "warn",
+		"react/no-string-refs": "error",
+		"react/jsx-wrap-multilines": "warn",
 		// Other
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
