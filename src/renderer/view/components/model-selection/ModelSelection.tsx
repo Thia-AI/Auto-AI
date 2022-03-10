@@ -111,6 +111,8 @@ const ModelSelectionC = React.memo((props: Props) => {
 	);
 });
 
+ModelSelectionC.displayName = 'ModelSelection';
+
 const mapStateToProps = (state: IAppState) => {
 	return {
 		modalOpenedState: state.openCloseModelSelection,

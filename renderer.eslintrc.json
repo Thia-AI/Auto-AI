@@ -66,7 +66,12 @@
 		"indent": "off",
 		"no-prototype-builtins": "off",
 		"no-constant-condition": ["error", { "checkLoops": false }],
-		"react/display-name": "off",
+		"react/display-name": [
+			"error",
+			{
+				"ignoreTranspilerName": false
+			}
+		],
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],

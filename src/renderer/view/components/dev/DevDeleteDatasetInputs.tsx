@@ -73,3 +73,5 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 		</HStack>
 	);
 });
+
+DevDeleteDatasetInputs.displayName = 'DevDeleteDatasetInputs';

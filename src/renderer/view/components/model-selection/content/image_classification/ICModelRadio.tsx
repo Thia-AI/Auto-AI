@@ -5,7 +5,11 @@ import { Box, useRadio, UseRadioProps } from '@chakra-ui/react';
 interface Props extends UseRadioProps {
 	children?: React.ReactNode;
 }
-const RadioCard = React.memo((props: Props) => {
+
+/**
+ * Radio card for selecting the model type when creating a new image classification model.
+ */
+export const ICModelRadioCard = React.memo((props: Props) => {
 	const { getInputProps, getCheckboxProps } = useRadio(props);
 
 	const input = getInputProps();
@@ -41,4 +45,4 @@ const RadioCard = React.memo((props: Props) => {
 	);
 });
 
-export { RadioCard };
+ICModelRadioCard.displayName = 'RadioCard';

@@ -84,6 +84,8 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 	return render();
 });
 
+DatasetSingleInputPreviewDetailsC.displayName = 'DatasetSingleInputPreviewDetails';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeInputs: state.activeDatasetInputs,
 	activeInputPreviewID: state.activeDatasetInputsPreviewID,

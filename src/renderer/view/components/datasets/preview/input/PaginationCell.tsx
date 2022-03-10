@@ -99,6 +99,8 @@ const PaginationCellC = React.memo(
 	},
 );
 
+PaginationCellC.displayName = 'PaginationCell';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,
 	selectedInputPreviewID: state.activeDatasetInputsPreviewID,

@@ -59,6 +59,8 @@ const LabelC = React.memo(({ label, index, openCloseDeleteLabel }: Props) => {
 	);
 });
 
+LabelC.displayName = 'Label';
+
 /**
  * Individual label in {@link LabelsList `LabelsList`}.
  */

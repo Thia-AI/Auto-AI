@@ -49,3 +49,5 @@ export const ProfileSelectButton = React.memo((props: FlexProps) => {
 		</Flex>
 	);
 });
+
+ProfileSelectButton.displayName = 'ProfileSelectButton';

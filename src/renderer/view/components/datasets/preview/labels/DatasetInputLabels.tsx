@@ -183,6 +183,8 @@ const DatasetInputLabelsC = React.memo(
 	},
 );
 
+DatasetInputLabelsC.displayName = 'DatasetInputLabels';
+
 interface LabelLeftIconProps {
 	count: number;
 	color: string;
@@ -197,6 +199,9 @@ const LabelLeftIcon = React.memo(({ count, color }: LabelLeftIconProps) => {
 		</Box>
 	);
 });
+
+LabelLeftIcon.displayName = 'LabelLeftIcon';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,
 	activeDatasetInputs: state.activeDatasetInputs,

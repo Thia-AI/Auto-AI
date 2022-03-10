@@ -218,6 +218,8 @@ const DragNDropC = React.memo(
 	},
 );
 
+DragNDropC.displayName = 'DragNDrop';
+
 const mapStateToProps = (state: IAppState) => ({
 	files: state.datasetPreviewFiles.value,
 	pathname: state.router.location.pathname,

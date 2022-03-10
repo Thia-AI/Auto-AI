@@ -60,3 +60,5 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 		</Flex>
 	);
 });
+
+TestModelImagePreview.displayName = 'TestModelImagePreview';

@@ -7,7 +7,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { EngineActionHandler } from '_engine_requests/engineActionHandler';
 import { HorizontalDatasetPreview } from '../components/datasets/model-horizontal/HorizontalDatasetPreview';
-import { Model, ModelStatus, nullModel } from '../helpers/constants/engineDBTypes';
+import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineDBTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { ISelectedDatasetReducer } from '_/renderer/state/choose-dataset-train/model/reducerTypes';
@@ -20,10 +20,10 @@ interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
 	resetSelectedDataset: () => IResetSelectedDatasetAction;
 }
-const Model = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props) => {
+const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props) => {
 	const modelID = useRouteMatch().params['id'];
 	const [dataLoaded, setDataLoaded] = useState(false);
-	const [model, setModel] = useState<Model>(nullModel);
+	const [model, setModel] = useState<ModelPage>(nullModel);
 	const toast = useToast();
 
 	const fetchModel = async () => {
@@ -123,6 +123,8 @@ const Model = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props) =>
 	);
 });
 
+ModelPage.displayName = 'ModelPage';
+
 const mapStateToProps = (state: IAppState) => ({
 	selectedDatasetID: state.selectedDataset,
 });
@@ -132,4 +134,4 @@ const mapStateToProps = (state: IAppState) => ({
  */
 export default connect(mapStateToProps, {
 	resetSelectedDataset: resetSelectedDatasetAction,
-})(Model);
+})(ModelPage);

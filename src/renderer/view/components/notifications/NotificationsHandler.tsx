@@ -10,11 +10,7 @@ import { Job } from '../../helpers/constants/engineDBTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
-import {
-	IPC_CONNECT_SOCKET,
-	IPC_ENGINE_JOB_FINISHED,
-	IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
-} from '_/shared/ipcChannels';
+import { IPC_CONNECT_SOCKET, IPC_ENGINE_JOB_FINISHED, IPC_NOTIFICATIONS_SHOW_NOTIFICATION } from '_/shared/ipcChannels';
 
 interface Props {
 	notifications: IJobNotification[];
@@ -22,87 +18,87 @@ interface Props {
 	sendNotification: (notification: IJobNotification) => void;
 }
 
-const NotificationsHandlerC = React.memo(
-	({ notifications, sendNotification, engineStarted }: Props) => {
-		const toast = useToast();
-		/**
-		 * Map of jobID -> Notification key-value pair that represents the "active" notifications
-		 */
-		interface INotificationMap {
-			[jobID: string]: IJobNotification;
+const NotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
+	const toast = useToast();
+	/**
+	 * Map of jobID -> Notification key-value pair that represents the "active" notifications
+	 */
+	interface INotificationMap {
+		[jobID: string]: IJobNotification;
+	}
+
+	const [notificationMap, setNotificationMap] = useState<INotificationMap>({});
+	const setupSocket = async () => {
+		await ipcRenderer.invoke(IPC_CONNECT_SOCKET);
+	};
+	// On mount
+	useEffect(() => {
+		if (engineStarted.value) {
+			setupSocket();
 		}
+	}, [engineStarted]);
+	/**
+	 * Gets the status of a job.
+	 *
+	 * @param jobID UUID hex representation of the job ID to get the status of.
+	 * @returns `[false, job response object]` if no error, and `[true, error object]` if error.
+	 */
+	const getJobIDStatus = async (jobID: string): Promise<[boolean, Job]> => {
+		try {
+			const res = await EngineRequestConfig.get(`/job/${jobID}`);
+			return [false, res.data];
+		} catch (_err) {
+			const err = _err as AxiosError;
+			return [true, err.response?.data];
+		}
+	};
 
-		const [notificationMap, setNotificationMap] = useState<INotificationMap>({});
-		const setupSocket = async () => {
-			await ipcRenderer.invoke(IPC_CONNECT_SOCKET);
-		};
-		// On mount
-		useEffect(() => {
-			if (engineStarted.value) {
-				setupSocket();
-			}
-		}, [engineStarted]);
-		/**
-		 * Gets the status of a job.
-		 *
-		 * @param jobID UUID hex representation of the job ID to get the status of.
-		 * @returns `[false, job response object]` if no error, and `[true, error object]` if error.
-		 */
-		const getJobIDStatus = async (jobID: string): Promise<[boolean, Job]> => {
-			try {
-				const res = await EngineRequestConfig.get(`/job/${jobID}`);
-				return [false, res.data];
-			} catch (_err) {
-				const err = _err as AxiosError;
-				return [true, err.response?.data];
-			}
-		};
-
-		useEffect(() => {
-			ipcRenderer.on(IPC_ENGINE_JOB_FINISHED, async (e, jobID: string) => {
-				// TODO: Do something when there's an error (maybe there needs to be a universal retry/error)
-				// system.
-				const [wasError, job] = await getJobIDStatus(jobID); // eslint-disable-line @typescript-eslint/no-unused-vars
-				sendNotification({
-					job: job as Job,
-					dismissAfter: 1250,
-				});
+	useEffect(() => {
+		ipcRenderer.on(IPC_ENGINE_JOB_FINISHED, async (e, jobID: string) => {
+			// TODO: Do something when there's an error (maybe there needs to be a universal retry/error)
+			// system.
+			const [wasError, job] = await getJobIDStatus(jobID); // eslint-disable-line @typescript-eslint/no-unused-vars
+			sendNotification({
+				job: job as Job,
+				dismissAfter: 1250,
 			});
-		}, []);
-		// For each time notifications change
-		useEffect(() => {
-			const newNotifMap: INotificationMap = {};
-			// Get new notifications
-			for (let i = 0; i < notifications.length; i++) {
-				const notif = notifications[i];
-				if (!notificationMap.hasOwnProperty(notif.job.id)) {
-					// This is a new notification, send it!!
-					if (!document.hasFocus()) {
-						(async function () {
-							await ipcRenderer.invoke(
-								IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
-								'Job Update',
-								`Finished ${notif.job.job_name} job`,
-							);
-						})();
-					}
-					// Show UI notification regardless
-					toast({
-						title: 'Success',
-						description: `Finished ${notif.job.job_name} job`,
-						status: 'success',
-						duration: notif.dismissAfter,
-						isClosable: false,
-					});
+		});
+	}, []);
+	// For each time notifications change
+	useEffect(() => {
+		const newNotifMap: INotificationMap = {};
+		// Get new notifications
+		for (let i = 0; i < notifications.length; i++) {
+			const notif = notifications[i];
+			if (!notificationMap.hasOwnProperty(notif.job.id)) {
+				// This is a new notification, send it!!
+				if (!document.hasFocus()) {
+					(async function () {
+						await ipcRenderer.invoke(
+							IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
+							'Job Update',
+							`Finished ${notif.job.job_name} job`,
+						);
+					})();
 				}
-				// Update notificationMap
-				newNotifMap[notif.job.id] = notif;
+				// Show UI notification regardless
+				toast({
+					title: 'Success',
+					description: `Finished ${notif.job.job_name} job`,
+					status: 'success',
+					duration: notif.dismissAfter,
+					isClosable: false,
+				});
 			}
-			setNotificationMap(newNotifMap);
-		}, [notifications]);
-		return <></>;
-	},
-);
+			// Update notificationMap
+			newNotifMap[notif.job.id] = notif;
+		}
+		setNotificationMap(newNotifMap);
+	}, [notifications]);
+	return <></>;
+});
+
+NotificationsHandlerC.displayName = 'NotificationsHandler';
 
 const mapStateToProps = (state: IAppState) => ({
 	notifications: state.notifications.value,

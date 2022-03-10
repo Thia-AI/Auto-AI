@@ -108,3 +108,5 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 		</HStack>
 	);
 });
+
+ModelCard.displayName = 'ModelCard';

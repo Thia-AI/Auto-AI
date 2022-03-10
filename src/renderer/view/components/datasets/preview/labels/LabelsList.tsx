@@ -204,6 +204,8 @@ const LabelsListC = React.memo(
 	},
 );
 
+LabelsListC.displayName = 'LabelsList';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,
 });

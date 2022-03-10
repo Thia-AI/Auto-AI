@@ -43,3 +43,5 @@ export const NavItem = React.memo((props: NavItemProps) => {
 		</HStack>
 	);
 });
+
+NavItem.displayName = 'NavItem';

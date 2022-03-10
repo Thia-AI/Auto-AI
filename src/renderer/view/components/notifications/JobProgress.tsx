@@ -82,6 +82,8 @@ const JobProgressC = React.memo((props: Props) => {
 	return render();
 });
 
+JobProgressC.displayName = 'JobProgress';
+
 /**
  * Component that auto-monitors a Job ID and updates it's UI slider
  */

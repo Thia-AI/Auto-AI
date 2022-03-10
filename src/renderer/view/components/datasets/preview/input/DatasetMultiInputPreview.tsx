@@ -167,6 +167,8 @@ const DatasetMultiInputPreviewC = React.memo(
 	},
 );
 
+DatasetMultiInputPreviewC.displayName = 'DatasetMultiInputPreview';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDatasetInputs: state.activeDatasetInputs,
 	nextPageCursor: state.nextPageCursor,

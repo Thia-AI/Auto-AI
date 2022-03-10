@@ -56,6 +56,8 @@ const DatasetInputPreviewC = React.memo((props: Props) => {
 	);
 });
 
+DatasetInputPreviewC.displayName = 'DatasetInputPreview';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDatasetInputs: state.activeDatasetInputs,
 	pathname: state.router.location.pathname,

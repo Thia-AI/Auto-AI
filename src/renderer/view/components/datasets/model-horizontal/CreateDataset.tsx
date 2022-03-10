@@ -112,6 +112,8 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 	);
 });
 
+CreateDatasetC.displayName = 'CreateDataset';
+
 /**
  * Modal that opens when creating a new dataset.
  */

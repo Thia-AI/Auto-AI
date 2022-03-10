@@ -25,6 +25,8 @@ const HamburgerC = React.memo((props: Props) => {
 	);
 });
 
+HamburgerC.displayName = 'Hamburger';
+
 const mapStateToProps = () => ({});
 
 /**

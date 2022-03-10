@@ -33,6 +33,8 @@ const NewModelC = React.memo((props: Props) => {
 	);
 });
 
+NewModelC.displayName = 'NewModel';
+
 const mapStateToProps = () => {
 	return {};
 };
