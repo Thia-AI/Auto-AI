@@ -18,6 +18,7 @@
 	},
 	"plugins": ["react", "@typescript-eslint", "import", "jsdoc"],
 	"rules": {
+		// Require JSDoc
 		"jsdoc/require-jsdoc": [
 			"error",
 			{
@@ -66,10 +67,14 @@
 		"indent": "off",
 		"no-prototype-builtins": "off",
 		"no-constant-condition": ["error", { "checkLoops": false }],
+		// React
 		"react/display-name": ["error", { "ignoreTranspilerName": false }],
 		"react/destructuring-assignment": ["error", "always"],
 		"react/jsx-boolean-value": ["warn", "never"],
 		"react/no-multi-comp": ["warn", { "ignoreStateless": true }],
+		"react/jsx-pascal-case": "error",
+		"react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
+		// Other
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],
