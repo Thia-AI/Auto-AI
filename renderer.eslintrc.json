@@ -69,6 +69,7 @@
 		"react/display-name": ["error", { "ignoreTranspilerName": false }],
 		"react/destructuring-assignment": ["error", "always"],
 		"react/jsx-boolean-value": ["warn", "never"],
+		"react/no-multi-comp": ["warn", { "ignoreStateless": true }],
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],
