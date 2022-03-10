@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Box } from '@chakra-ui/react';
 
@@ -14,8 +14,8 @@ interface Props {
 	selectedModel: ISelectedModelReducer;
 }
 
-class ModelSelectionBodyC extends PureComponent<Props> {
-	renderBody = (selectedModel: number) => {
+const ModelSelectionBodyC = React.memo(({ selectedModel }: Props) => {
+	const renderBody = (selectedModel: number) => {
 		switch (selectedModel) {
 			case 0:
 				return <ICModelContent />;
@@ -28,10 +28,10 @@ class ModelSelectionBodyC extends PureComponent<Props> {
 		}
 	};
 
-	render() {
-		return <Box mt='6'>{this.renderBody(this.props.selectedModel.value)}</Box>;
-	}
-}
+	return <Box mt='6'>{renderBody(selectedModel.value)}</Box>;
+});
+
+ModelSelectionBodyC.displayName = 'ModelSelectionBody';
 
 const mapStateToProps = (state: IAppState) => ({
 	selectedModel: state.selectedModel,
