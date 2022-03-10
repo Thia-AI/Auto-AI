@@ -68,6 +68,7 @@
 		"no-constant-condition": ["error", { "checkLoops": false }],
 		"react/display-name": ["error", { "ignoreTranspilerName": false }],
 		"react/destructuring-assignment": ["error", "always"],
+		"react/jsx-boolean-value": ["warn", "never"],
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],

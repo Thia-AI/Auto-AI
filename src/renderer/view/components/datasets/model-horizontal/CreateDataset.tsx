@@ -81,7 +81,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 				onClose();
 			}}
 			isCentered
-			blockScrollOnMount={true}
+			blockScrollOnMount
 			motionPreset='slideInBottom'
 			scrollBehavior='inside'>
 			<ModalOverlay />

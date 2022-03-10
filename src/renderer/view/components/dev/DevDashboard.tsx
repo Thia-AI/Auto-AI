@@ -47,7 +47,7 @@ export const DevDashboard = React.memo(() => {
 				isOpen={isDashboardOpen}
 				onClose={() => setIsDashboardOpen(false)}
 				isCentered
-				blockScrollOnMount={true}
+				blockScrollOnMount
 				motionPreset='slideInBottom'
 				scrollBehavior='inside'>
 				<ModalOverlay />

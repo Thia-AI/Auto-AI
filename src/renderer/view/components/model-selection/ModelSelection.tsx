@@ -33,7 +33,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 	return (
 		<Modal
 			isOpen={props.modalOpenedState.value}
-			blockScrollOnMount={true}
+			blockScrollOnMount
 			onClose={props.openCloseModelSelectionAction}
 			motionPreset='slideInBottom'
 			size={isLargerThan1280 ? '6xl' : '4xl'}
