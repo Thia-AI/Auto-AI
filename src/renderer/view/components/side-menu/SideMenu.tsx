@@ -1,15 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-	Drawer,
-	DrawerOverlay,
-	DrawerBody,
-	DrawerContent,
-	Box,
-	Flex,
-	Stack,
-	Circle,
-} from '@chakra-ui/react';
+import { Drawer, DrawerOverlay, DrawerBody, DrawerContent, Box, Flex, Stack, Circle } from '@chakra-ui/react';
 import { BiAddToQueue, BiBox, BiCog, BiHome, BiPackage, BiRecycle, BiServer } from 'react-icons/bi';
 import { push, Push } from 'connected-react-router';
 
@@ -208,6 +199,8 @@ const SideMenuC = React.memo((props: Props) => {
 		</Drawer>
 	);
 });
+
+SideMenuC.displayName = 'SideMenu';
 
 const mapStateToProps = (state: IAppState) => ({
 	sideMenuOpen: state.sideMenuOpen,

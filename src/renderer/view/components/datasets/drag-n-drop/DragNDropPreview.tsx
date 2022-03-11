@@ -65,6 +65,9 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 		</Box>
 	);
 });
+
+DragNDropPreviewC.displayName = 'DragNDropPreview';
+
 const mapStateToProps = (state: IAppState) => ({
 	files: state.datasetPreviewFiles.value,
 });

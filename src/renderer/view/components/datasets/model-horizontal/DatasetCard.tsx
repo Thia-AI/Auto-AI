@@ -155,6 +155,9 @@ const DatasetCardC = React.memo((props: Props) => {
 		</>
 	);
 });
+
+DatasetCardC.displayName = 'DatasetCard';
+
 const mapStateToProps = (state: IAppState) => ({
 	selectedDatasetID: state.selectedDataset,
 });

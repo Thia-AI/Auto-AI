@@ -47,3 +47,5 @@ export const SimpleStat = React.memo(({ label, value, percentage = false }: Prop
 		</Box>
 	);
 });
+
+SimpleStat.displayName = 'SimpleStat';

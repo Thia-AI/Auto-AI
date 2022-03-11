@@ -18,6 +18,7 @@
 	},
 	"plugins": ["react", "@typescript-eslint", "import", "jsdoc"],
 	"rules": {
+		// Require JSDoc
 		"jsdoc/require-jsdoc": [
 			"error",
 			{
@@ -66,7 +67,24 @@
 		"indent": "off",
 		"no-prototype-builtins": "off",
 		"no-constant-condition": ["error", { "checkLoops": false }],
-		"react/display-name": "off",
+		// React
+		"react/display-name": ["error", { "ignoreTranspilerName": false }],
+		"react/destructuring-assignment": ["error", "always"],
+		"react/jsx-boolean-value": ["warn", "never"],
+		"react/no-multi-comp": ["warn", { "ignoreStateless": true }],
+		"react/jsx-pascal-case": "error",
+		"react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
+		"react/jsx-closing-tag-location": "warn",
+		"react/jsx-tag-spacing": ["warn", { "beforeClosing": "never" }],
+		"react/self-closing-comp": "warn",
+		"react/no-string-refs": "error",
+		"react/jsx-wrap-multilines": "warn",
+		"react/prefer-stateless-function": "error",
+		"react/hook-use-state": "error",
+		"react/no-danger": "error",
+		"react/no-unstable-nested-components": "error",
+		"react/void-dom-elements-no-children": "warn",
+		// Other
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],

@@ -24,17 +24,10 @@ interface Props {
 
 const StatusIndicatorC = React.memo((props: Props) => {
 	return (
-		<Popover
-			isLazy
-			lazyBehavior='keepMounted'
-			arrowSize={4}
-			closeOnEsc={false}
-			arrowPadding={12}>
+		<Popover isLazy lazyBehavior='keepMounted' arrowSize={4} closeOnEsc={false} arrowPadding={12}>
 			<PopoverTrigger>
 				<Box
-					className={`${
-						props.engineStarted.value ? props.onColor + '-once' : props.offColor
-					}`}
+					className={`${props.engineStarted.value ? props.onColor + '-once' : props.offColor}`}
 					w='13px'
 					h='13px'
 					css={{ '-webkit-app-region': 'no-drag', transition: 'all 300ms ease' }}
@@ -62,6 +55,8 @@ const StatusIndicatorC = React.memo((props: Props) => {
 		</Popover>
 	);
 });
+
+StatusIndicatorC.displayName = 'StatusIndicator';
 
 const mapStateToProps = (state: IAppState) => ({
 	engineStarted: state.engineStarted,

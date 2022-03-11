@@ -43,7 +43,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 								maxW='70%'
 								bgColor={`rgba(${r}, ${g}, ${b}, 0.25)`}
 								color={`rgba(${r}, ${g}, ${b}, 1)`}>
-								<Text isTruncated={true} fontWeight='normal'>
+								<Text isTruncated fontWeight='normal'>
 									{activeInput.label}
 								</Text>
 							</Badge>
@@ -54,7 +54,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 								Name:
 							</Heading>
 							<Badge fontSize='xs' maxW='70%' variant='subtle' textTransform='none'>
-								<Text isTruncated={true} fontWeight='normal'>
+								<Text isTruncated fontWeight='normal'>
 									{activeInput.file_name}
 								</Text>
 							</Badge>
@@ -65,7 +65,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 								Created:
 							</Heading>
 							<Badge fontSize='xs' maxW='70%' variant='subtle' textTransform='none'>
-								<Text isTruncated={true} fontWeight='normal'>
+								<Text isTruncated fontWeight='normal'>
 									{new Date(activeInput.date_created).toLocaleDateString('en-US', {
 										day: 'numeric',
 										month: 'long',
@@ -83,6 +83,8 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 
 	return render();
 });
+
+DatasetSingleInputPreviewDetailsC.displayName = 'DatasetSingleInputPreviewDetails';
 
 const mapStateToProps = (state: IAppState) => ({
 	activeInputs: state.activeDatasetInputs,

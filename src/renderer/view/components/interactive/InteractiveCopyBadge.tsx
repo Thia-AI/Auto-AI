@@ -56,3 +56,5 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 		</Badge>
 	);
 });
+
+InteractiveCopyBadge.displayName = 'InteractiveCopyBadge';

@@ -485,6 +485,8 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 	return render();
 });
 
+ActiveTrainJobC.displayName = 'ActiveTrainJob';
+
 /**
  * Component that renders the UI in a model page when a train job ID is present.
  * Renders training status and evaluation metrics.

@@ -28,3 +28,5 @@ export const NavGroup = React.memo((props: NavGroupProps) => {
 		</Box>
 	);
 });
+
+NavGroup.displayName = 'NavGroup';

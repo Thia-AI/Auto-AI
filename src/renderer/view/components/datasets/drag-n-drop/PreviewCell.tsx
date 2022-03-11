@@ -105,6 +105,8 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	return render();
 }, areEqual);
 
+DragNDropPreviewCellC.displayName = 'DragNDropPreviewCell';
+
 const mapStateToProps = (state: IAppState) => ({
 	file_paths: state.datasetPreviewFiles.value,
 });

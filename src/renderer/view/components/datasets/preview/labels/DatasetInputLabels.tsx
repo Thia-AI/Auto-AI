@@ -169,7 +169,7 @@ const DatasetInputLabelsC = React.memo(
 											/>
 										}
 										onClick={() => assignLabelToCurrentInput(label)}>
-										<Text isTruncated={true}>{label}</Text>
+										<Text isTruncated>{label}</Text>
 									</Button>
 								</WrapItem>
 							);
@@ -182,6 +182,8 @@ const DatasetInputLabelsC = React.memo(
 		return render();
 	},
 );
+
+DatasetInputLabelsC.displayName = 'DatasetInputLabels';
 
 interface LabelLeftIconProps {
 	count: number;
@@ -197,6 +199,9 @@ const LabelLeftIcon = React.memo(({ count, color }: LabelLeftIconProps) => {
 		</Box>
 	);
 });
+
+LabelLeftIcon.displayName = 'LabelLeftIcon';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,
 	activeDatasetInputs: state.activeDatasetInputs,

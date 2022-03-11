@@ -30,7 +30,7 @@ const LabelC = React.memo(({ label, index, openCloseDeleteLabel }: Props) => {
 				</Text>
 			</Center>
 			<Center w='80%' pr='15px'>
-				<Text fontWeight='light' fontSize='md' isTruncated={true}>
+				<Text fontWeight='light' fontSize='md' isTruncated>
 					{label}
 				</Text>
 			</Center>
@@ -58,6 +58,8 @@ const LabelC = React.memo(({ label, index, openCloseDeleteLabel }: Props) => {
 		</Draggable>
 	);
 });
+
+LabelC.displayName = 'Label';
 
 /**
  * Individual label in {@link LabelsList `LabelsList`}.

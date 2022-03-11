@@ -81,7 +81,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 				onClose();
 			}}
 			isCentered
-			blockScrollOnMount={true}
+			blockScrollOnMount
 			motionPreset='slideInBottom'
 			scrollBehavior='inside'>
 			<ModalOverlay />
@@ -111,6 +111,8 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 		</Modal>
 	);
 });
+
+CreateDatasetC.displayName = 'CreateDataset';
 
 /**
  * Modal that opens when creating a new dataset.

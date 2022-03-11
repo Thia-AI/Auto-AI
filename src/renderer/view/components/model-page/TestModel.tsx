@@ -316,3 +316,5 @@ export const TestModel = React.memo(({ model }: Props) => {
 		</>
 	);
 });
+
+TestModel.displayName = 'TestModel';

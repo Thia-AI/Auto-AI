@@ -20,7 +20,7 @@ import { push, Push } from 'connected-react-router';
 import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/ChooseModelActions';
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
-import { RadioCard } from './ICModelRadio';
+import { ICModelRadioCard } from './ICModelRadio';
 import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { changeSelectedPage } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
@@ -170,9 +170,9 @@ const ICModelContentC = React.memo((props: Props) => {
 						{radioOptions.map((value) => {
 							const radio = getRadioProps({ value });
 							return (
-								<RadioCard key={value} {...radio}>
+								<ICModelRadioCard key={value} {...radio}>
 									{value}
-								</RadioCard>
+								</ICModelRadioCard>
 							);
 						})}
 					</VStack>
@@ -192,12 +192,13 @@ const ICModelContentC = React.memo((props: Props) => {
 		</VStack>
 	);
 });
-const mapStateToProps = () => ({});
+
+ICModelContentC.displayName = 'ICModelContent';
 
 /**
  * Image classification model content description.
  */
-export const ICModelContent = connect(mapStateToProps, {
+export const ICModelContent = connect(null, {
 	openCloseModelSelectionAction,
 	push,
 	changeSelectedPage,

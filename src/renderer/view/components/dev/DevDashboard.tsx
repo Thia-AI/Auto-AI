@@ -47,7 +47,7 @@ export const DevDashboard = React.memo(() => {
 				isOpen={isDashboardOpen}
 				onClose={() => setIsDashboardOpen(false)}
 				isCentered
-				blockScrollOnMount={true}
+				blockScrollOnMount
 				motionPreset='slideInBottom'
 				scrollBehavior='inside'>
 				<ModalOverlay />
@@ -60,8 +60,7 @@ export const DevDashboard = React.memo(() => {
 									Delete Dataset Inputs
 								</Text>
 								<Text fontSize='sm' mt='1' color='gray.200'>
-									Given dataset ID, deletes the inputs of a dataset (not the
-									dataset itself)
+									Given dataset ID, deletes the inputs of a dataset (not the dataset itself)
 								</Text>
 								<Divider mt='2' />
 							</Box>
@@ -76,3 +75,5 @@ export const DevDashboard = React.memo(() => {
 
 	return isDev ? render() : null;
 });
+
+DevDashboard.displayName = 'DevDashboard';

@@ -59,13 +59,7 @@ const ModelPreviewCardC = React.memo((props: Props) => {
 						{props.cardTitle}
 					</Box>
 				</Flex>
-				<Box
-					mt='1'
-					fontWeight='medium'
-					as='h5'
-					lineHeight='tight'
-					isTruncated
-					fontSize='md'>
+				<Box mt='1' fontWeight='medium' as='h5' lineHeight='tight' isTruncated fontSize='md'>
 					{props.cardDescription}
 				</Box>
 				<Box as='p' mt='2' color='gray.600' fontSize='xs'>
@@ -76,11 +70,9 @@ const ModelPreviewCardC = React.memo((props: Props) => {
 	);
 });
 
-const mapStateToProps = () => ({});
+ModelPreviewCardC.displayName = 'ModelPreviewCard';
 
 /**
  * Card for previewing of models when creating new model.
  */
-export const ModelPreviewCard = connect(mapStateToProps, { changeSelectedModelAction })(
-	ModelPreviewCardC,
-);
+export const ModelPreviewCard = connect(null, { changeSelectedModelAction })(ModelPreviewCardC);

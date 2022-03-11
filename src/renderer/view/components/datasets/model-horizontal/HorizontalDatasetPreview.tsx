@@ -107,6 +107,9 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 		</>
 	);
 });
+
+HorizontalDatasetPreviewC.displayName = 'HorizontalDatasetPreview';
+
 const mapStateToProps = (state: IAppState) => ({
 	datasetList: state.datasetList,
 	datasetLoading: state.datasetListLoading.value,

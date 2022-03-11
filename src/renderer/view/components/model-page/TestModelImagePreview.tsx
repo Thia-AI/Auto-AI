@@ -35,7 +35,7 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 						backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`,
 					}}
 					borderColor={trainedLabel.color}>
-					<Text isTruncated={true}>{testedLabel}</Text>
+					<Text isTruncated>{testedLabel}</Text>
 				</Button>
 			);
 		} else if (testRunning) {
@@ -49,7 +49,8 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 					h='35px'
 					variant='outline'
 					colorScheme='gray'
-					isLoading></Button>
+					isLoading
+				/>
 			);
 		}
 	};
@@ -60,3 +61,5 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 		</Flex>
 	);
 });
+
+TestModelImagePreview.displayName = 'TestModelImagePreview';

@@ -107,3 +107,5 @@ export const RouterPrompt = React.memo(
 		) : null;
 	},
 );
+
+RouterPrompt.displayName = 'RouterPrompt';

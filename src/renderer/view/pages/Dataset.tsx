@@ -29,7 +29,7 @@ interface Props {
 	changeActiveDataset: (activeDataset: Dataset, labels: Labels) => IChangeActiveDatasetAction;
 }
 
-const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) => {
+const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) => {
 	const datasetID = useRouteMatch().params['id'];
 	// const [dataset, setDataset] = useState<Dataset | undefined>(undefined);
 
@@ -113,12 +113,12 @@ const DatasetPageC = React.memo(({ activeDataset, changeActiveDataset }: Props) 
 	);
 });
 
+DatasetPage.displayName = 'DatasetPage';
+
 const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,
 });
 
-const DatasetPage = connect(mapStateToProps, {
+export default connect(mapStateToProps, {
 	changeActiveDataset,
-})(DatasetPageC);
-
-export default DatasetPage;
+})(DatasetPage);

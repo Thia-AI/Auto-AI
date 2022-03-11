@@ -122,7 +122,7 @@ const DatasetSingleInputPreviewC = React.memo(
 			return (
 				<Box w={w} h='full' bg='gray.800' borderLeftRadius='md' overflow='hidden' ref={containerRef}>
 					<TransformWrapper
-						limitToBounds={true}
+						limitToBounds
 						maxScale={maxScale}
 						panning={{ velocityDisabled: false }}
 						pinch={{ disabled: true }}>

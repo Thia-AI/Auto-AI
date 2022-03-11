@@ -24,56 +24,53 @@ interface Props {
 	isLabelDeleting: boolean;
 }
 
-const DeleteLabelC = React.memo(
-	({ deleteLabelValue, openCloseDeleteLabel, deleteLabel, isLabelDeleting }: Props) => {
-		const { openCloseValue, labelValue } = deleteLabelValue;
+const DeleteLabelC = React.memo(({ deleteLabelValue, openCloseDeleteLabel, deleteLabel, isLabelDeleting }: Props) => {
+	const { openCloseValue, labelValue } = deleteLabelValue;
 
-		const cancelDeleteRef = useRef(null);
+	const cancelDeleteRef = useRef(null);
 
-		return (
-			<AlertDialog
-				isCentered
-				isOpen={openCloseValue}
-				leastDestructiveRef={cancelDeleteRef}
-				onClose={() => openCloseDeleteLabel('')}>
-				<AlertDialogOverlay>
-					<AlertDialogContent>
-						<AlertDialogHeader flexDir='column'>
-							<Badge ml='0.5' fontSize='sm' colorScheme='red' mb='2'>
-								DANGER ZONE
-							</Badge>
+	return (
+		<AlertDialog
+			isCentered
+			isOpen={openCloseValue}
+			leastDestructiveRef={cancelDeleteRef}
+			onClose={() => openCloseDeleteLabel('')}>
+			<AlertDialogOverlay>
+				<AlertDialogContent>
+					<AlertDialogHeader flexDir='column'>
+						<Badge ml='0.5' fontSize='sm' colorScheme='red' mb='2'>
+							DANGER ZONE
+						</Badge>
 
-							<Text isTruncated fontWeight='normal'>
-								Delete Label: {labelValue}
-							</Text>
-						</AlertDialogHeader>
-						<AlertDialogBody>
-							<Text fontSize='sm'>
-								Are you sure? This will delete the label and reset all respective
-								image labels to &rsquo;unlabelled&rsquo; ...
-							</Text>
-						</AlertDialogBody>
-						<AlertDialogFooter>
-							<Button
-								ref={cancelDeleteRef}
-								variant='ghost'
-								onClick={() => openCloseDeleteLabel('')}>
-								Cancel
-							</Button>
-							<Button
-								isLoading={isLabelDeleting}
-								colorScheme='red'
-								ml='3'
-								onClick={() => deleteLabel(labelValue)}>
-								Delete
-							</Button>
-						</AlertDialogFooter>
-					</AlertDialogContent>
-				</AlertDialogOverlay>
-			</AlertDialog>
-		);
-	},
-);
+						<Text isTruncated fontWeight='normal'>
+							Delete Label: {labelValue}
+						</Text>
+					</AlertDialogHeader>
+					<AlertDialogBody>
+						<Text fontSize='sm'>
+							Are you sure? This will delete the label and reset all respective image labels to
+							&rsquo;unlabelled&rsquo; ...
+						</Text>
+					</AlertDialogBody>
+					<AlertDialogFooter>
+						<Button ref={cancelDeleteRef} variant='ghost' onClick={() => openCloseDeleteLabel('')}>
+							Cancel
+						</Button>
+						<Button
+							isLoading={isLabelDeleting}
+							colorScheme='red'
+							ml='3'
+							onClick={() => deleteLabel(labelValue)}>
+							Delete
+						</Button>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialogOverlay>
+		</AlertDialog>
+	);
+});
+
+DeleteLabelC.displayName = 'DeleteLabel';
 
 const mapStateToProps = (state: IAppState) => ({
 	deleteLabelValue: state.openCloseDeleteLabel,

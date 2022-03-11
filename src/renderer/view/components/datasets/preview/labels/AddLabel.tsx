@@ -127,6 +127,8 @@ const AddLabelC = React.memo(
 	},
 );
 
+AddLabelC.displayName = 'AddLabel';
+
 interface ButtonProps {
 	isLoading: boolean;
 }
@@ -137,6 +139,8 @@ const AddLabelInputButton = React.memo(({ isLoading }: ButtonProps) => {
 		</Button>
 	);
 });
+
+AddLabelInputButton.displayName = 'AddLabelInputButton';
 
 const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,

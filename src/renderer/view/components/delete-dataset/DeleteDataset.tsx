@@ -111,6 +111,8 @@ const DeleteDatasetC = React.memo((props: Props) => {
 	);
 });
 
+DeleteDatasetC.displayName = 'DeleteDataset';
+
 const mapStateToProps = (state: IAppState) => ({
 	deleteDatasetData: state.openCloseDeleteDataset,
 });

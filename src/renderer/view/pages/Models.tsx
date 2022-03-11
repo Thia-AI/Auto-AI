@@ -13,7 +13,7 @@ interface Props {
 	push: Push;
 }
 
-const ModelsC = (props: Props) => {
+const ModelsC = ({ push }: Props) => {
 	const match = useRouteMatch();
 	const [models, setModels] = useState<Model[]>([]);
 	const [isLoaded, setIsLoaded] = useState(false);
@@ -44,7 +44,7 @@ const ModelsC = (props: Props) => {
 					key={model.id}
 					isLoaded={isLoaded}
 					model={model}
-					onClick={() => props.push(`${match.path}/${model['id']}`)}
+					onClick={() => push(`${match.path}/${model['id']}`)}
 				/>
 			);
 		});

@@ -15,3 +15,5 @@ export const DatasetLabelInputPreview = React.memo(() => {
 		</Flex>
 	);
 });
+
+DatasetLabelInputPreview.displayName = 'DatasetLabelInputPreview';
