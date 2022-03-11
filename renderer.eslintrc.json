@@ -79,6 +79,11 @@
 		"react/self-closing-comp": "warn",
 		"react/no-string-refs": "error",
 		"react/jsx-wrap-multilines": "warn",
+		"react/prefer-stateless-function": "error",
+		"react/hook-use-state": "error",
+		"react/no-danger": "error",
+		"react/no-unstable-nested-components": "error",
+		"react/void-dom-elements-no-children": "warn",
 		// Other
 		"linebreak-style": "off",
 		"quotes": ["error", "single", { "avoidEscape": true }],
