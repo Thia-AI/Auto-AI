@@ -62,7 +62,7 @@ const DatasetSingleInputPreviewC = React.memo(
 			}
 			if (image.width < containerWidth && image.height < containerHeight) {
 				// Change back to positive
-				newPositionY *= -1;
+				newPositionY = Math.abs(newPositionY);
 			}
 			if (image.width == containerWidth) {
 				newPositionX = 0;
