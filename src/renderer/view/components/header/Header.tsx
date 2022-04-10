@@ -15,6 +15,7 @@ import { getDevEngineStatus, notifyEngineStarted } from '_/renderer/state/engine
 import { StatusIndicator } from './StatusIndicator';
 import {
 	IPC_ENGINE_STARTED,
+	IPC_RUNTIME_IS_DEV,
 	IPC_SHOW_CLOSE_WINDOW_DIALOG,
 	IPC_WINDOW_CLOSED,
 	IPC_WINDOW_MAXIMIZE,
@@ -23,6 +24,9 @@ import {
 	IPC_WINDOW_UNMAXIMIZE,
 	IPC_WINDOW_UNMAXIMIZED,
 } from '_/shared/ipcChannels';
+import { useSigninCheck } from 'reactfire';
+import { IMenuOpenCloseAction } from '_/renderer/state/side-menu/model/actionTypes';
+import { openCloseSideMenu } from '_/renderer/state/side-menu/SideModelAction';
 
 interface Props {
 	maximizedClass: IHeaderMaximizedChangedReducer;
@@ -30,13 +34,31 @@ interface Props {
 	engineStarted: IEngineStatusReducer;
 	listenForEngineStart: () => IEngineStartedAction;
 	getDevReloadEngineStatus: () => void;
+	openCloseSideMenu: () => IMenuOpenCloseAction;
 }
 
 const HeaderC = React.memo((props: Props) => {
+	const { status, data: signInCheckResult } = useSigninCheck();
+
 	useEffect(() => {
 		initToggleMaxRestoreButtons();
 		checkForEngineStart();
 	}, []);
+
+	useEffect(() => {
+		const openSideMenu = (event: KeyboardEvent) => {
+			if (event.key == 'Escape' && signInCheckResult && signInCheckResult.signedIn) {
+				event.preventDefault();
+				props.openCloseSideMenu();
+			}
+		};
+
+		window.addEventListener('keydown', openSideMenu);
+
+		return () => {
+			window.removeEventListener('keydown', openSideMenu);
+		};
+	}, [signInCheckResult]);
 
 	/**
 	 * Closes the **renderer**'s BrowserWindow.
@@ -95,16 +117,31 @@ const HeaderC = React.memo((props: Props) => {
 	/**
 	 * Register IPC for checking for **Engine** being started at creation of component.
 	 */
-	const checkForEngineStart = () => {
+	const checkForEngineStart = async () => {
 		// only for dev environment when you reload the app with Ctrl+R
 		// when engine has already started
-		props.getDevReloadEngineStatus();
+		if (await ipcRenderer.invoke(IPC_RUNTIME_IS_DEV)) {
+			props.getDevReloadEngineStatus();
+		}
 
 		ipcRenderer.on(IPC_ENGINE_STARTED, () => {
 			props.listenForEngineStart();
 		});
 	};
 
+	const displayLoggedInHeaderComponents = () => {
+		if (signInCheckResult && signInCheckResult.signedIn)
+			return (
+				<Flex w='full' h='full'>
+					<Hamburger />
+					<Spacer />
+					<Center mr='5'>
+						<StatusIndicator onColor='pulse-green' offColor='pulse-red' />
+					</Center>
+				</Flex>
+			);
+		else return null;
+	};
 	return (
 		<Box
 			zIndex='99'
@@ -122,13 +159,7 @@ const HeaderC = React.memo((props: Props) => {
 				display='grid'
 				css={{ '-webkit-app-region': 'drag' }}
 				gridTemplateColumns='auto 138px'>
-				<Flex w='full' h='full'>
-					<Hamburger />
-					<Spacer />
-					<Center mr='5'>
-						<StatusIndicator onColor='pulse-green' offColor='pulse-red' />
-					</Center>
-				</Flex>
+				{displayLoggedInHeaderComponents()}
 				<Box
 					id='window-controls'
 					d='grid'
@@ -192,4 +223,5 @@ export const Header = connect(mapStateToProps, {
 	changeHeaderMaximized,
 	listenForEngineStart: notifyEngineStarted,
 	getDevReloadEngineStatus: getDevEngineStatus,
+	openCloseSideMenu,
 })(HeaderC);

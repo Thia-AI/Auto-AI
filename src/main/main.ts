@@ -7,6 +7,8 @@ import * as url from 'url';
 import { BrowserWindow, app, ipcMain, Menu, protocol } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
+import { FirebaseApp, initializeApp } from 'firebase/app';
+import { Express, NextFunction, RequestHandler, Response, Request } from 'express';
 import { cpus } from 'os';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
@@ -14,7 +16,7 @@ import { EngineShellDev } from './engine-shell/engineShellDev';
 import { EngineShellProd } from './engine-shell/engineShellProd';
 import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
-import { MainWindowIPCActions } from './ipc/window-action/mainWindowIPCActions';
+import { WindowIPCActions } from './ipc/windowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
 import { RUNTIME_GLOBALS } from './config/runtimeGlobals';
 import { isEmulatedDev } from './helpers/dev';
@@ -27,13 +29,21 @@ import {
 	IPC_WORKER_TASK_ASSIGNED,
 	IPC_WORKER_TASK_DONE,
 	IPC_WORKER_TASK_RECEIVED,
+	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 } from '_/shared/ipcChannels';
+import { startServer } from './server/server';
+import { OAuthCredential } from 'firebase/auth';
+import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const numCPUs = cpus().length;
 
+let firebaseApp: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
+let loginWindow: BrowserWindow | null;
+
 let engineShell: EngineShellProd | EngineShellDev;
-let mainWindowIPCActions: MainWindowIPCActions;
+let mainWindowIPCActions: WindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
 
 const availableWorkers: BrowserWindow[] = [];
@@ -66,14 +76,26 @@ preRendererAppInit();
  * Creates the main window for **renderer**.
  */
 const createWindow = (): void => {
-	// Create the browser window.
+	// Create the login browser window.
+	loginWindow = new BrowserWindow({
+		height: 640,
+		width: 480,
+		minHeight: 525,
+		minWidth: 400,
+		frame: true,
+		show: false,
+		title: 'Login',
+		autoHideMenuBar: true,
+	});
+	// Create the main browser window.
 	mainWindow = new BrowserWindow({
 		height: 768,
 		width: 955,
 		minHeight: 650,
 		minWidth: 825,
 		frame: false,
-
+		title: APP_NAME,
+		autoHideMenuBar: true,
 		show: false,
 		icon: path.join(__dirname, '..', 'build', 'icon.ico'),
 		backgroundColor: '#1A202C',
@@ -83,6 +105,7 @@ const createWindow = (): void => {
 			nodeIntegration: true,
 			contextIsolation: false,
 			backgroundThrottling: false,
+			nativeWindowOpen: true,
 		},
 	});
 
@@ -93,15 +116,17 @@ const createWindow = (): void => {
 
 	// replace menu with custom menu
 	mainWindow.removeMenu();
+	loginWindow.removeMenu();
 
-	Menu.setApplicationMenu(menu);
+	mainWindow.setMenu(menu);
+	loginWindow.setMenu(menu);
 
 	// must initialize IPC handler and Engine loading renderer
 	launchEngine();
 
 	engineIPCActionHandler = new EngineIPCActionHandler(mainWindow, engineJobsSIOConnection); // eslint-disable-line @typescript-eslint/no-unused-vars
 
-	mainWindowIPCActions = new MainWindowIPCActions(mainWindow); // eslint-disable-line @typescript-eslint/no-unused-vars
+	mainWindowIPCActions = new WindowIPCActions(mainWindow, loginWindow); // eslint-disable-line @typescript-eslint/no-unused-vars
 
 	// and load the index.html of the renderer
 	mainWindow
@@ -116,12 +141,22 @@ const createWindow = (): void => {
 			/* no action */
 		});
 
+	loginWindow?.loadURL('https://localhost:8443/login/login.html').finally(() => {
+		// No action
+	});
+
 	// Emitted when the window is closed.
 	mainWindow.on('closed', () => {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
-		mainWindow = null;
+		app.exit(1);
+	});
+
+	loginWindow.on('close', (e) => {
+		e.preventDefault();
+		loginWindow?.webContents.closeDevTools();
+		loginWindow?.hide();
 	});
 };
 
@@ -165,6 +200,51 @@ const createWorker = () => {
 	return browserWindowWorker;
 };
 
+const startWebServices = async () => {
+	return startServer()
+		.then(async (appServer) => {
+			const server = appServer as Express;
+			registerServerAPI(server, 'post', '/api/loginToken', apiPostLoginToken);
+		})
+		.catch((err) => {
+			throw err;
+		});
+};
+
+type ExpressMethods = 'get' | 'head' | 'post' | 'delete' | 'put' | 'connect' | 'options' | 'trace' | 'patch';
+
+const apiPostLoginToken = async (req: Request, res: Response, next: NextFunction) => {
+	const uid: string = req.body['uid'];
+	if (firebaseApp) {
+		const functions = getFunctions(firebaseApp);
+		const getToken = httpsCallable(functions, 'customToken');
+		const customParams = {
+			userid: uid,
+			serviceAccountId: firebaseAdminConfig.serviceAccountId,
+			projectId: firebaseAdminConfig.projectId,
+		};
+		try {
+			const result = await getToken(customParams);
+			const customToken = result.data as string;
+			// Send token to main window
+			mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, customToken);
+			loginWindow?.webContents.closeDevTools();
+			loginWindow?.hide();
+		} catch (error) {
+			console.log('ERROR:', error);
+		}
+		res.status(200).send();
+		return;
+	}
+	res.status(503).send('App not initialized');
+	// mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, req.body);
+	// loginWindow?.webContents.closeDevTools();
+	// loginWindow?.hide();
+};
+const registerServerAPI = (server: Express, method: ExpressMethods, url: string, apiRouteFunction) => {
+	console.log('Registering Server API');
+	server[method](url, apiRouteFunction);
+};
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is
  * running already, and developer reloads **renderer**, it doesn't get stuck on the 'Starting Engine' part).
@@ -197,7 +277,7 @@ const registerShortcuts = (win: BrowserWindow) => {
 const launchEngine = () => {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}
@@ -233,6 +313,8 @@ if (!isSingleInstance) {
 			});
 			console.log('Extension loaded:', extension);
 		}
+		firebaseApp = initializeApp(firebaseConfig);
+		await startWebServices();
 		initRendererDev();
 		createWindow();
 		registerShortcuts(mainWindow!);

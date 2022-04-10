@@ -1,11 +1,12 @@
 const lodash = require('lodash');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 
 const path = require('path');
 
-function srcPaths(src) {
-	return path.join(__dirname, src);
+function srcPaths(...srcs) {
+	return path.join(__dirname, ...srcs);
 }
 
 const isEnvProduction = process.env.NODE_ENV === 'production';
@@ -78,6 +79,7 @@ const commonConfig = {
 // #endregion
 
 const mainConfig = lodash.cloneDeep(commonConfig);
+
 mainConfig.entry = './src/main/main.ts';
 mainConfig.target = 'electron-main';
 mainConfig.output.filename = 'main.bundle.js';
@@ -112,9 +114,15 @@ mainConfig.externals = {
 };
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
-rendererConfig.entry = './src/renderer/view/renderer.tsx';
+
+rendererConfig.entry = path.join(__dirname, 'src', 'renderer', 'view', 'Renderer.tsx');
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
+// Needed for authentication persistence. See https://github.com/firebase/firebase-js-sdk/issues/6066
+rendererConfig.resolve.alias['@firebase/auth'] = path.resolve(
+	__dirname,
+	'node_modules/@firebase/auth/dist/esm2017/index.js',
+);
 rendererConfig.plugins = [
 	new HtmlWebpackPlugin({
 		template: path.resolve(__dirname, './public/index.html'),
@@ -122,13 +130,28 @@ rendererConfig.plugins = [
 ];
 
 const hiddenRendererConfig = lodash.cloneDeep(commonConfig);
+
 hiddenRendererConfig.entry = './src/worker/worker.ts';
 hiddenRendererConfig.target = 'electron-renderer';
 hiddenRendererConfig.output.filename = 'worker.bundle.js';
 hiddenRendererConfig.plugins = [
 	new HtmlWebpackPlugin({
-		template: path.resolve(__dirname, './public/worker.html'),
+		template: path.resolve(__dirname, 'public', 'worker.html'),
 		filename: 'worker.html',
 	}),
 ];
-module.exports = [mainConfig, rendererConfig, hiddenRendererConfig];
+
+const appServerLoginConfig = lodash.cloneDeep(commonConfig);
+
+appServerLoginConfig.entry = path.join(__dirname, 'src', 'login-renderer', 'LoginRenderer.tsx');
+appServerLoginConfig.target = 'web';
+appServerLoginConfig.output.path = srcPaths('dist', 'server');
+appServerLoginConfig.output.filename = 'login-renderer.bundle.js';
+appServerLoginConfig.plugins = [
+	new HtmlWebpackPlugin({
+		template: path.resolve(__dirname, 'public', 'server', 'login.html'),
+		filename: 'login.html',
+	}),
+];
+
+module.exports = [mainConfig, rendererConfig, hiddenRendererConfig, appServerLoginConfig];

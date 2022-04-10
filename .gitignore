@@ -36,3 +36,7 @@ Thumbs.db
 !src/utils/line-awesome/dist
 
 datasets/**
+
+# firebase
+**/firebase-functions/**
+src/renderer/firebase/firebase.ts

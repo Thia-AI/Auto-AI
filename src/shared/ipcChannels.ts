@@ -12,6 +12,15 @@ export const IPC_RUNTIME_IS_DEV = 'runtime:isDev';
  */
 export const IPC_NOTIFICATIONS_SHOW_NOTIFICATION = 'notifications:showNotification';
 
+// LOGIN WINDOW / AUTHENTICATION
+
+/**
+ * Used for showing the login window when needing to login
+ */
+export const IPC_SHOW_LOGIN_WINDOW = 'loginWindow:show';
+
+export const IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER = 'auth:sendCredentialToMainRenderer';
+
 // DEVELOPMENT ONLY
 
 /**

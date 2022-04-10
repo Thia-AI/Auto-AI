@@ -1,9 +1,12 @@
 import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
+import { OAuthCredential } from 'firebase/auth';
 import {
 	IPC_DRAG_AND_DROP_SELECT_FOLDER,
 	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
 	IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
+	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 	IPC_SHOW_CLOSE_WINDOW_DIALOG,
+	IPC_SHOW_LOGIN_WINDOW,
 	IPC_WINDOW_CLOSED,
 	IPC_WINDOW_FOCUS,
 	IPC_WINDOW_MAXIMIZE,
@@ -12,20 +15,27 @@ import {
 	IPC_WINDOW_UNMAXIMIZE,
 	IPC_WINDOW_UNMAXIMIZED,
 } from '_/shared/ipcChannels';
+import { isEmulatedDev } from '../helpers/dev';
 
 /**
  * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}.
  */
-class MainWindowIPCActions {
-	protected _window: BrowserWindow;
+class WindowIPCActions {
+	private _mainWindow: BrowserWindow;
+	private _loginWindow: BrowserWindow;
 
-	constructor(window: BrowserWindow) {
-		this._window = window;
+	constructor(mainWindow: BrowserWindow, loginWindow: BrowserWindow) {
+		this._mainWindow = mainWindow;
+		this._loginWindow = loginWindow;
 		this.initIPCActions();
 	}
 
 	get window() {
-		return this._window;
+		return this._mainWindow;
+	}
+
+	get loginWindow() {
+		return this._loginWindow;
 	}
 
 	/**
@@ -91,22 +101,27 @@ class MainWindowIPCActions {
 		});
 
 		// NotificationsHandler
-		ipcMain.handle(
-			IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
-			async (e, title: string, body: string) => {
-				const notif = new Notification({
-					title,
-					body,
-				});
+		ipcMain.handle(IPC_NOTIFICATIONS_SHOW_NOTIFICATION, async (e, title: string, body: string) => {
+			const notif = new Notification({
+				title,
+				body,
+			});
 
-				notif.on('click', async (e) => {
-					e.preventDefault();
-					this.window.focus();
-				});
+			notif.on('click', async (e) => {
+				e.preventDefault();
+				this.window.focus();
+			});
 
-				notif.show();
-			},
-		);
+			notif.show();
+		});
+
+		// Login Window
+		ipcMain.handle(IPC_SHOW_LOGIN_WINDOW, () => {
+			this.loginWindow.show();
+			if (isEmulatedDev) {
+				this.loginWindow.webContents.openDevTools({ mode: 'detach' });
+			}
+		});
 
 		// Handle unmaximize / maximize of window
 		this.window.on('maximize', () => {
@@ -119,4 +134,4 @@ class MainWindowIPCActions {
 	};
 }
 
-export { MainWindowIPCActions };
+export { WindowIPCActions };
