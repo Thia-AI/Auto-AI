@@ -8,7 +8,7 @@ import cors from 'cors';
 import path from 'path';
 import { parse } from 'url';
 
-let certFingerprint: string = '';
+let certFingerprint = '';
 let appServer: Express | undefined = undefined;
 let webTLS: https.Server | undefined = undefined;
 
@@ -18,6 +18,11 @@ export const webAppConfig = {
 	hostUrl: 'https://localhost:8443',
 };
 
+/**
+ * Starts express server from **main**.
+ *
+ * @returns Express Server that is created.
+ */
 export const startServer = () => {
 	return new Promise((resolve, reject) => {
 		try {
@@ -68,6 +73,11 @@ export const startServer = () => {
 	});
 };
 
+/**
+ * Creates self signed certificate and HTTPS server options using that certificate.
+ *
+ * @returns HTTPS server options.
+ */
 const getWebOptionsOnStartup = (): https.ServerOptions => {
 	const attrs: pki.CertificateField[] = [
 		{ name: 'commonName', value: app.name },
@@ -95,6 +105,14 @@ const getWebOptionsOnStartup = (): https.ServerOptions => {
  * condition that it happens with our self-signed cert. We do this check by examining the cert fingerprint.
  *
  * See  {@link https://www.electronjs.org/docs/latest/api/app#event-certificate-error `certificate-error`}.
+ *
+ * @param event Node event.
+ * @param webContents Electron BrowserWindow WebContents.
+ * @param url Url of the certificate the app fail to authenticate.
+ * @param error Error emmitted.
+ * @param certificate Electron Certificate.
+ * @param callback Function that needs to be called with true if we want to consider
+ * the certificate as trusted or false otherwise.
  */
 const checkCertificate = (
 	event: Event,
@@ -103,22 +121,28 @@ const checkCertificate = (
 	error: string,
 	certificate: Certificate,
 	callback: (isTrusted: boolean) => void,
-	isMainFrame: boolean,
 ) => {
 	// disable the certificate signing error only if this is our certificate
 	const currURL = parse(webContents.getURL());
 	const domainName = currURL.hostname?.replace(/^[^.]+\./g, '');
 	let isOurCert = true;
-	// if (certificate.fingerprint == certFingerprint || domainName == 'firebaseapp.com') {
-	event.preventDefault();
-	// isOurCert = true;
-	// }
+	if (certificate.fingerprint == certFingerprint || domainName == 'firebaseapp.com') {
+		event.preventDefault();
+		isOurCert = true;
+	}
 	callback(isOurCert);
 };
 
 /**
+ *
+ */
+/**
  * Another security check. This function is in the express routing chain for /api/... calls.
  * It will check that /api calls cannot come from an external computer.
+ *
+ * @param req Express request object.
+ * @param res Express response object.
+ * @param next Express next function.
  */
 const checkAPICallsNotFromExternalSource = (req: Request, res: Response, next: NextFunction) => {
 	const referer = (req.headers ?? {}).host ?? '';
