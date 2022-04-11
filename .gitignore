@@ -39,4 +39,3 @@ datasets/**
 
 # firebase
 **/firebase-functions/**
-src/renderer/firebase/firebase.ts
