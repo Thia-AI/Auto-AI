@@ -1,8 +1,10 @@
 // Template for a firebase config
 
-import { AppOptions } from 'firebase-admin/app';
 import { FirebaseOptions } from 'firebase/app';
 
+/**
+ * Firebase Config.
+ */
 export const firebaseConfig: FirebaseOptions = {
 	apiKey: '',
 	authDomain: '',
@@ -13,7 +15,10 @@ export const firebaseConfig: FirebaseOptions = {
 	measurementId: '',
 };
 
-export const firebaseAdminConfig: AppOptions = {
+/**
+ * Firebase Admin Config.
+ */
+export const firebaseAdminConfig = {
 	serviceAccountId: '',
 	projectId: '',
 };

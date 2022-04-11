@@ -4,12 +4,11 @@ import { isEmulatedDev } from '../helpers/dev';
 /**
  * Electron menu
  */
-const mainWindowMenu = new Menu();
-const loginWindowMenu = new Menu();
+const menu = new Menu();
 
 // only add toggleDevTools and reloading if in devleopment mode
 if (isEmulatedDev) {
-	mainWindowMenu.append(
+	menu.append(
 		new MenuItem({
 			role: 'toggleDevTools',
 			accelerator: 'Ctrl+Shift+I',
@@ -17,7 +16,7 @@ if (isEmulatedDev) {
 		}),
 	);
 
-	mainWindowMenu.append(
+	menu.append(
 		new MenuItem({
 			role: 'forceReload',
 			accelerator: 'Ctrl+Shift+R',
@@ -25,7 +24,7 @@ if (isEmulatedDev) {
 		}),
 	);
 
-	mainWindowMenu.append(
+	menu.append(
 		new MenuItem({
 			role: 'reload',
 			accelerator: 'Ctrl+R',
@@ -34,4 +33,4 @@ if (isEmulatedDev) {
 	);
 }
 
-export { mainWindowMenu as menu };
+export { menu };

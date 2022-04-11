@@ -1,10 +1,8 @@
 import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
-import { OAuthCredential } from 'firebase/auth';
 import {
 	IPC_DRAG_AND_DROP_SELECT_FOLDER,
 	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
 	IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
-	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 	IPC_SHOW_CLOSE_WINDOW_DIALOG,
 	IPC_SHOW_LOGIN_WINDOW,
 	IPC_WINDOW_CLOSED,

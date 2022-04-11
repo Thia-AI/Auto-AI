@@ -4,11 +4,11 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, Menu, protocol } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Express, NextFunction, RequestHandler, Response, Request } from 'express';
+import { Express, Response, Request } from 'express';
 import { cpus } from 'os';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
@@ -32,7 +32,6 @@ import {
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 } from '_/shared/ipcChannels';
 import { startServer } from './server/server';
-import { OAuthCredential } from 'firebase/auth';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
@@ -200,7 +199,12 @@ const createWorker = () => {
 	return browserWindowWorker;
 };
 
-const startWebServices = async () => {
+/**
+ * Starts HTTPS server controlled by **main** and registers its APIs.
+ *
+ * @returns Promise that resolves when server is started and APIs are registered.
+ */
+const startWebServices = async (): Promise<void> => {
 	return startServer()
 		.then(async (appServer) => {
 			const server = appServer as Express;
@@ -211,9 +215,20 @@ const startWebServices = async () => {
 		});
 };
 
+/**
+ * Different types of Express HTTP methods.
+ */
 type ExpressMethods = 'get' | 'head' | 'post' | 'delete' | 'put' | 'connect' | 'options' | 'trace' | 'patch';
 
-const apiPostLoginToken = async (req: Request, res: Response, next: NextFunction) => {
+/**
+ * API for creating custom tokens after authenticating with firebase.
+ * Passes custom token to the main **renderer**.
+ *
+ * @param req Express request object.
+ * @param res Express response object.
+ * @returns Promise.
+ */
+const apiPostLoginToken = async (req: Request, res: Response) => {
 	const uid: string = req.body['uid'];
 	if (firebaseApp) {
 		const functions = getFunctions(firebaseApp);
@@ -237,10 +252,16 @@ const apiPostLoginToken = async (req: Request, res: Response, next: NextFunction
 		return;
 	}
 	res.status(503).send('App not initialized');
-	// mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, req.body);
-	// loginWindow?.webContents.closeDevTools();
-	// loginWindow?.hide();
 };
+
+/**
+ * Registers an Express API to an Express server.
+ *
+ * @param server Express server.
+ * @param method HTTP method type.
+ * @param url URL to register API function to.
+ * @param apiRouteFunction API function.
+ */
 const registerServerAPI = (server: Express, method: ExpressMethods, url: string, apiRouteFunction) => {
 	console.log('Registering Server API');
 	server[method](url, apiRouteFunction);

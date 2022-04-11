@@ -1,11 +1,8 @@
-import React, { useEffect, Suspense, lazy } from 'react';
-import { connect } from 'react-redux';
+import React, { Suspense, lazy } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { ConnectedRouter as Router } from 'connected-react-router';
 import { Center, Spinner } from '@chakra-ui/react';
 
-import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
-import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
 import { history } from '_state/store';
 
 import { Header } from './components/header/Header';
@@ -83,6 +80,12 @@ export const App = React.memo(() => {
 
 App.displayName = 'App';
 
+// eslint-disable-next-line jsdoc/require-param
+/**
+ * AuthWrapper that renders children if signed into firebase.
+ *
+ * @react
+ */
 export const AuthWrapper = ({
 	children,
 	fallback,

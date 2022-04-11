@@ -38,7 +38,7 @@ interface Props {
 }
 
 const HeaderC = React.memo((props: Props) => {
-	const { status, data: signInCheckResult } = useSigninCheck();
+	const { data: signInCheckResult } = useSigninCheck();
 
 	useEffect(() => {
 		initToggleMaxRestoreButtons();

@@ -1,19 +1,7 @@
 import React, { useEffect } from 'react';
-import { Box, Button, Center, Heading, useToast } from '@chakra-ui/react';
-import { auth as UIAuth } from 'firebaseui';
-import { useFirebaseApp, useAuth } from 'reactfire';
-import {
-	GoogleAuthProvider,
-	getAuth,
-	signInWithPopup,
-	getRedirectResult,
-	OAuthCredential,
-	signInWithCredential,
-	indexedDBLocalPersistence,
-	browserLocalPersistence,
-	signInWithCustomToken,
-	setPersistence,
-} from 'firebase/auth';
+import { Button, Center, Heading, useToast } from '@chakra-ui/react';
+import { useAuth } from 'reactfire';
+import { browserLocalPersistence, signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
 import { IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, IPC_SHOW_LOGIN_WINDOW } from '_/shared/ipcChannels';
 
@@ -23,7 +11,6 @@ import { IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, IPC_SHOW_LOGIN_WINDOW } from
  * @react
  */
 const LandingPage = () => {
-	const app = useFirebaseApp();
 	const auth = useAuth();
 	const toast = useToast();
 
