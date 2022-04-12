@@ -32,7 +32,7 @@ const commonConfig = {
 			_engine_requests: srcPaths(path.join('src', 'renderer', 'engine-requests')),
 		},
 		extensions: ['.js', '.json', '.ts', '.tsx'],
-		modules: [srcPaths('node_modules')],
+		// modules: [srcPaths('node_modules')],
 	},
 	module: {
 		rules: [
@@ -116,14 +116,15 @@ mainConfig.externals = {
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
 
-rendererConfig.entry = path.join(__dirname, 'src', 'renderer', 'view', 'Renderer.tsx');
+// rendererConfig.entry = path.join(__dirname, 'src', 'renderer', 'view', 'Renderer.tsx');
+rendererConfig.entry = './src/renderer/view/Renderer.tsx';
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
 // Needed for authentication persistence. See https://github.com/firebase/firebase-js-sdk/issues/6066
-// rendererConfig.resolve.alias['@firebase/auth'] = path.resolve(
-// 	__dirname,
-// 	'node_modules/@firebase/auth/dist/esm2017/index.js',
-// );
+rendererConfig.resolve.alias['@firebase/auth'] = path.resolve(
+	__dirname,
+	'node_modules/@firebase/auth/dist/esm2017/index.js',
+);
 rendererConfig.plugins = [
 	new HtmlWebpackPlugin({
 		template: path.resolve(__dirname, './public/index.html'),
