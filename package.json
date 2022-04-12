@@ -113,7 +113,8 @@
 		"redux-thunk": "^2.3.0",
 		"rooks": "^5.8.0",
 		"selfsigned": "^2.0.0",
-		"socket.io-client": "^4.4.0",
+		"socket.io": "^4.4.1",
+		"socket.io-client": "^4.4.1",
 		"webpack-node-externals": "^3.0.0"
 	},
 	"devDependencies": {

@@ -116,9 +116,6 @@ class WindowIPCActions {
 		// Login Window
 		ipcMain.handle(IPC_SHOW_LOGIN_WINDOW, () => {
 			this.loginWindow.show();
-			if (isEmulatedDev) {
-				this.loginWindow.webContents.openDevTools({ mode: 'detach' });
-			}
 		});
 
 		// Handle unmaximize / maximize of window

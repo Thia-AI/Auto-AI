@@ -30,10 +30,12 @@ import {
 	IPC_WORKER_TASK_DONE,
 	IPC_WORKER_TASK_RECEIVED,
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
+	IPC_LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
 } from '_/shared/ipcChannels';
 import { startServer } from './server/server';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { Server } from 'socket.io';
 
 const numCPUs = cpus().length;
 
@@ -206,9 +208,10 @@ const createWorker = () => {
  */
 const startWebServices = async (): Promise<void> => {
 	return startServer()
-		.then(async (appServer) => {
-			const server = appServer as Express;
-			registerServerAPI(server, 'post', '/api/loginToken', apiPostLoginToken);
+		.then(async (webServicesReturnArray: any) => {
+			const server = webServicesReturnArray[0] as Express;
+			const io = webServicesReturnArray[1] as Server;
+			registerServerAPI(server, 'post', '/api/loginToken', apiPostLoginToken, io);
 		})
 		.catch((err) => {
 			throw err;
@@ -228,7 +231,8 @@ type ExpressMethods = 'get' | 'head' | 'post' | 'delete' | 'put' | 'connect' | '
  * @param res Express response object.
  * @returns Promise.
  */
-const apiPostLoginToken = async (req: Request, res: Response) => {
+const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
+	console.log('Encoder:', io.encoder);
 	const uid: string = req.body['uid'];
 	if (firebaseApp) {
 		const functions = getFunctions(firebaseApp);
@@ -241,10 +245,13 @@ const apiPostLoginToken = async (req: Request, res: Response) => {
 		try {
 			const result = await getToken(customParams);
 			const customToken = result.data as string;
+			// Send login finished event to login window
+			io.emit(IPC_LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE);
 			// Send token to main window
 			mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, customToken);
 			loginWindow?.webContents.closeDevTools();
 			loginWindow?.hide();
+			mainWindow?.focus();
 		} catch (error) {
 			console.log('ERROR:', error);
 		}
@@ -262,9 +269,11 @@ const apiPostLoginToken = async (req: Request, res: Response) => {
  * @param url URL to register API function to.
  * @param apiRouteFunction API function.
  */
-const registerServerAPI = (server: Express, method: ExpressMethods, url: string, apiRouteFunction) => {
+const registerServerAPI = (server: Express, method: ExpressMethods, url: string, apiRouteFunction, ...extraParams) => {
 	console.log('Registering Server API');
-	server[method](url, apiRouteFunction);
+	server[method](url, (req, res) => {
+		return apiRouteFunction(req, res, ...extraParams);
+	});
 };
 /**
  * Initializes IPC handler for development engine running check (so that when **Engine** is

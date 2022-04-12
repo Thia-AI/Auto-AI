@@ -21,6 +21,8 @@ export const IPC_SHOW_LOGIN_WINDOW = 'loginWindow:show';
 
 export const IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER = 'auth:sendCredentialToMainRenderer';
 
+export const IPC_LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE = 'loginWindow:loginWorkflowComplete';
+
 // DEVELOPMENT ONLY
 
 /**

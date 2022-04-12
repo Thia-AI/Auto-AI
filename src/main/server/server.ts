@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import path from 'path';
 import { parse } from 'url';
+import { Server } from 'socket.io';
 
 let certFingerprint = '';
 let appServer: Express | undefined = undefined;
@@ -62,9 +63,13 @@ export const startServer = () => {
 			);
 			// Start secure web server
 			webTLS = https.createServer(getWebOptionsOnStartup(), appServer);
+
+			// Socket IO
+			const io = new Server(webTLS);
+
 			webTLS.listen(webAppConfig.port, () => {
 				console.log('TLS server started on port ', (webTLS?.address() as object)['port']);
-				resolve(appServer);
+				resolve([appServer, io]);
 			});
 		} catch (error) {
 			console.error('Error starting web server: ', error);
