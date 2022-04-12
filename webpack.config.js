@@ -32,6 +32,7 @@ const commonConfig = {
 			_engine_requests: srcPaths(path.join('src', 'renderer', 'engine-requests')),
 		},
 		extensions: ['.js', '.json', '.ts', '.tsx'],
+		modules: [srcPaths('node_modules')],
 	},
 	module: {
 		rules: [
