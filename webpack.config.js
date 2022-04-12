@@ -119,10 +119,10 @@ rendererConfig.entry = path.join(__dirname, 'src', 'renderer', 'view', 'Renderer
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
 // Needed for authentication persistence. See https://github.com/firebase/firebase-js-sdk/issues/6066
-rendererConfig.resolve.alias['@firebase/auth'] = path.resolve(
-	__dirname,
-	'node_modules/@firebase/auth/dist/esm2017/index.js',
-);
+// rendererConfig.resolve.alias['@firebase/auth'] = path.resolve(
+// 	__dirname,
+// 	'node_modules/@firebase/auth/dist/esm2017/index.js',
+// );
 rendererConfig.plugins = [
 	new HtmlWebpackPlugin({
 		template: path.resolve(__dirname, './public/index.html'),
