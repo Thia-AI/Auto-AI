@@ -81,7 +81,7 @@ const commonConfig = {
 
 const mainConfig = lodash.cloneDeep(commonConfig);
 
-mainConfig.entry = './src/main/main.ts';
+mainConfig.entry = srcPaths('src', 'main', 'main.ts');
 mainConfig.target = 'electron-main';
 mainConfig.output.filename = 'main.bundle.js';
 mainConfig.plugins = [
@@ -116,8 +116,7 @@ mainConfig.externals = {
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
 
-// rendererConfig.entry = path.join(__dirname, 'src', 'renderer', 'view', 'Renderer.tsx');
-rendererConfig.entry = './src/renderer/view/Renderer.tsx';
+rendererConfig.entry = srcPaths('src', 'renderer', 'view', 'Renderer.tsx');
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
 // Needed for authentication persistence. See https://github.com/firebase/firebase-js-sdk/issues/6066
@@ -133,7 +132,7 @@ rendererConfig.plugins = [
 
 const hiddenRendererConfig = lodash.cloneDeep(commonConfig);
 
-hiddenRendererConfig.entry = './src/worker/worker.ts';
+hiddenRendererConfig.entry = srcPaths('src', 'worker', 'worker.ts');
 hiddenRendererConfig.target = 'electron-renderer';
 hiddenRendererConfig.output.filename = 'worker.bundle.js';
 hiddenRendererConfig.plugins = [
@@ -145,7 +144,7 @@ hiddenRendererConfig.plugins = [
 
 const appServerLoginConfig = lodash.cloneDeep(commonConfig);
 
-appServerLoginConfig.entry = path.join(__dirname, 'src', 'login-renderer', 'LoginRenderer.tsx');
+appServerLoginConfig.entry = srcPaths('src', 'login-renderer', 'LoginRenderer.tsx');
 appServerLoginConfig.target = 'web';
 appServerLoginConfig.output.path = srcPaths('dist', 'server');
 appServerLoginConfig.output.filename = 'login-renderer.bundle.js';
