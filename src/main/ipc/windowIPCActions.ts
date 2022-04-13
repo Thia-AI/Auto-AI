@@ -13,7 +13,6 @@ import {
 	IPC_WINDOW_UNMAXIMIZE,
 	IPC_WINDOW_UNMAXIMIZED,
 } from '_/shared/ipcChannels';
-import { isEmulatedDev } from '../helpers/dev';
 
 /**
  * Class that contains IPC actions pertaining to the main renderer {@link BrowserWindow BrowserWindow}.

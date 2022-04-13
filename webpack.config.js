@@ -51,7 +51,7 @@ const commonConfig = {
 				use: ['style-loader', 'css-loader'],
 			},
 			{
-				test: /\.(png|jpg|jpeg|gif|svg)$/i,
+				test: /\.(png|jpg|jpeg|gif)$/i,
 				use: [
 					{
 						loader: 'url-loader',
@@ -60,6 +60,11 @@ const commonConfig = {
 						},
 					},
 				],
+			},
+			{
+				test: /\.svg$/i,
+				issuer: /\.[jt]sx?$/,
+				use: ['@svgr/webpack'],
 			},
 			{
 				test: /\.(ico|icns|woff(2)?|ttf|otf|eot)(\?v=\d+\.\d+\.\d+)?$/,

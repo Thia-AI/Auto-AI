@@ -30,7 +30,7 @@ import {
 	IPC_WORKER_TASK_DONE,
 	IPC_WORKER_TASK_RECEIVED,
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
-	IPC_LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
+	LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
 } from '_/shared/ipcChannels';
 import { startServer } from './server/server';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
@@ -207,15 +207,18 @@ const createWorker = () => {
  * @returns Promise that resolves when server is started and APIs are registered.
  */
 const startWebServices = async (): Promise<void> => {
-	return startServer()
-		.then(async (webServicesReturnArray: any) => {
-			const server = webServicesReturnArray[0] as Express;
-			const io = webServicesReturnArray[1] as Server;
-			registerServerAPI(server, 'post', '/api/loginToken', apiPostLoginToken, io);
-		})
-		.catch((err) => {
-			throw err;
-		});
+	return (
+		startServer()
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			.then(async (webServicesReturnArray: any) => {
+				const server = webServicesReturnArray[0] as Express;
+				const io = webServicesReturnArray[1] as Server;
+				registerServerAPI(server, 'post', '/api/loginToken', apiPostLoginToken, io);
+			})
+			.catch((err) => {
+				throw err;
+			})
+	);
 };
 
 /**
@@ -229,10 +232,10 @@ type ExpressMethods = 'get' | 'head' | 'post' | 'delete' | 'put' | 'connect' | '
  *
  * @param req Express request object.
  * @param res Express response object.
+ * @param io Socket-IO server instance.
  * @returns Promise.
  */
 const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
-	console.log('Encoder:', io.encoder);
 	const uid: string = req.body['uid'];
 	if (firebaseApp) {
 		const functions = getFunctions(firebaseApp);
@@ -246,7 +249,7 @@ const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
 			const result = await getToken(customParams);
 			const customToken = result.data as string;
 			// Send login finished event to login window
-			io.emit(IPC_LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE);
+			io.emit(LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE);
 			// Send token to main window
 			mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, customToken);
 			loginWindow?.webContents.closeDevTools();
@@ -268,6 +271,7 @@ const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
  * @param method HTTP method type.
  * @param url URL to register API function to.
  * @param apiRouteFunction API function.
+ * @param extraParams Extra parameters that are passed to the `apiRouteFunction`.
  */
 const registerServerAPI = (server: Express, method: ExpressMethods, url: string, apiRouteFunction, ...extraParams) => {
 	console.log('Registering Server API');
