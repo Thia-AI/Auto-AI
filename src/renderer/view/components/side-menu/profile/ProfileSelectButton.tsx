@@ -2,11 +2,15 @@ import { Box, Flex, HStack, Image, useMenuButton, FlexProps } from '@chakra-ui/r
 import React from 'react';
 import { HiSelector } from 'react-icons/hi';
 
+type Props = {
+	displayName?: string | null;
+	imageURL?: string;
+};
 /**
  * Side menu profile button.
  */
-export const ProfileSelectButton = React.memo((props: FlexProps) => {
-	const buttonProps = useMenuButton(props);
+export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props) => {
+	const buttonProps = useMenuButton();
 	return (
 		<Flex
 			as='button'
@@ -26,17 +30,10 @@ export const ProfileSelectButton = React.memo((props: FlexProps) => {
 			transition='all 0.2s'
 			_active={{ bg: 'gray.600' }}>
 			<HStack flex='1' spacing='3'>
-				<Image
-					w='8'
-					h='8'
-					rounded='md'
-					objectFit='cover'
-					alt='Chakra UI'
-					src='https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MzV8fG1hbiUyMHNpbWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=100'
-				/>
+				<Image w='8' h='8' rounded='md' objectFit='cover' alt='Chakra UI' src={imageURL} />
 				<Box textAlign='start'>
 					<Box isTruncated fontWeight='semibold'>
-						Ritesh
+						{displayName}
 					</Box>
 					<Box isTruncated fontSize='xs' color='gray.400'>
 						ID 233223

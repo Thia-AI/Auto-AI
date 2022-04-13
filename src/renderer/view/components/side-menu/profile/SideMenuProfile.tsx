@@ -15,11 +15,11 @@ import {
 	Button,
 	AlertDialogContent,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { signOut } from 'firebase/auth';
 import { connect } from 'react-redux';
 import { ProfileSelectButton } from './ProfileSelectButton';
-import { useAuth } from 'reactfire';
+import { useAuth, useUser } from 'reactfire';
 import { IMenuOpenCloseAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { openCloseSideMenu } from '_/renderer/state/side-menu/SideModelAction';
 
@@ -27,18 +27,25 @@ interface Props {
 	openCloseSideMenu: () => IMenuOpenCloseAction;
 }
 
+type potentiallyUndefinedString = string | undefined;
+
 const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 	const auth = useAuth();
+	const { data: user } = useUser();
+
 	const { isOpen: isSignoutDialogOpen, onOpen: signoutDialogOpen, onClose: onSignoutDialogClose } = useDisclosure();
 	const cancelSignoutRef = React.useRef(null);
 
 	return (
 		<>
 			<Menu>
-				<ProfileSelectButton />
+				<ProfileSelectButton
+					displayName={user?.displayName}
+					imageURL={user?.photoURL as potentiallyUndefinedString}
+				/>
 				<MenuList shadow='lg' py='4' color={useColorModeValue('gray.600', 'gray.200')} px='3'>
 					<Text fontSize='sm' fontWeight='medium' mb='2'>
-						joe.biden@chakra-ui.com
+						{user?.email}
 					</Text>
 					<MenuDivider />
 					<MenuItem fontWeight='light' fontSize='sm' rounded='md'>
