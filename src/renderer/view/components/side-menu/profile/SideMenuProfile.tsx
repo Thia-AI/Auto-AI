@@ -15,7 +15,7 @@ import {
 	Button,
 	AlertDialogContent,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { signOut } from 'firebase/auth';
 import { connect } from 'react-redux';
 import { ProfileSelectButton } from './ProfileSelectButton';
