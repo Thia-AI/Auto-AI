@@ -91,7 +91,6 @@ export const AuthWrapper = ({
 	fallback,
 }: React.PropsWithChildren<{ fallback: JSX.Element }>): JSX.Element => {
 	const { status, data: signInCheckResult } = useSigninCheck();
-	console.log(signInCheckResult);
 	if (!children) {
 		throw new Error('Children must be provided');
 	}
