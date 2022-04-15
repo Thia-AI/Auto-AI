@@ -3,6 +3,7 @@
 		"parser": {
 			"syntax": "ecmascript",
 			"jsx": true,
+			"tsx": true,
 			"dynamicImport": true,
 			"privateMethod": true,
 			"functionBind": false,
@@ -23,5 +24,6 @@
 		"targets": {
 			"electron": 16
 		}
-	}
+	},
+	"sourceMaps": true
 }
