@@ -14,9 +14,15 @@ const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
 // #region Common settings
 const commonConfig = {
-	devtool: isEnvDevelopment ? 'eval-source-map' : false,
+	// Uncomment 'eval-source-map' and comment out 'eval-cheap-module-source-map' when you need better source maps.
+	// devtool of 'eval' has the best performance.
+	// devtool: isEnvDevelopment ? 'eval-source-map' : false,
+	devtool: isEnvDevelopment ? 'eval-cheap-module-source-map' : false,
 	mode: isEnvProduction ? 'production' : 'development',
-	output: { path: srcPaths('dist') },
+	output: {
+		path: srcPaths('dist'),
+		pathinfo: false,
+	},
 	node: { __dirname: false, __filename: false },
 	resolve: {
 		alias: {
