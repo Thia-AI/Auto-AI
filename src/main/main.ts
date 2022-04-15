@@ -311,7 +311,7 @@ const registerShortcuts = (win: BrowserWindow) => {
 const launchEngine = () => {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}

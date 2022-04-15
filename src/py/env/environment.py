@@ -89,10 +89,20 @@ def init_environment_pre_gpu() -> None:
     msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
 
     # Disable default logger that comes with flask
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     flask_logger = logging.getLogger('werkzeug')
     flask_logger.disabled = True
 
+
+def add_path_to_path_env(path: Path):
+    os.environ['PATH'] = str(path.absolute()) + os.pathsep + os.environ['PATH']
+
+
+# First thing we do is set up paths and configs
+init_environment_pre_gpu()
+
+
+def init_environment_post_gpu():
     from tensorflow.python.client import device_lib
 
     def get_available_gpus():
@@ -101,13 +111,6 @@ def init_environment_pre_gpu() -> None:
                 local_device_protos if x.device_type == 'GPU']
 
     log("Available GPUs: " + json.dumps(get_available_gpus(), indent=2), True)
-
-
-def add_path_to_path_env(path: Path):
-    os.environ['PATH'] = str(path.absolute()) + os.pathsep + os.environ['PATH']
-
-
-def init_environment_post_gpu():
     # Connect DBManager
     DBManager.get_instance()
     # Start the job manager
