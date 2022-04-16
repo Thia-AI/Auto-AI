@@ -22,6 +22,7 @@ import {
 	HStack,
 	Checkbox,
 } from '@chakra-ui/react';
+import { useHistory } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE } from '_/shared/ipcChannels';
@@ -36,42 +37,22 @@ const webAppConfig = {
 
 const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 
-export const Login = React.memo(() => {
+interface Props {
+	setSignInLoading: (signInStatus: boolean) => void;
+	signInLoading: boolean;
+}
+const Login = React.memo(({ signInLoading, setSignInLoading }: Props) => {
 	const auth = useAuth();
 	const provider = new GoogleAuthProvider();
-	const [signInLoading, setSignInLoading] = useState(false);
+	const history = useHistory();
+
 	provider.setCustomParameters({
 		prompt: 'select_account consent',
 	});
 	const googleLogin = async () => {
 		await signInWithRedirect(auth, provider);
 	};
-	useEffect(() => {
-		getOAuthResponse();
-	}, []);
 
-	useEffect(() => {
-		const socket = io(webAppConfig.hostUrl);
-		socket.on(LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, () => {
-			// Loaded
-			setSignInLoading(false);
-		});
-		return () => {
-			socket.disconnect();
-		};
-	}, []);
-
-	const getOAuthResponse = async () => {
-		const result = await getRedirectResult(auth);
-		if (result) {
-			setSignInLoading(true);
-			const credential = GoogleAuthProvider.credentialFromResult(result);
-			// Send that result to backend to create custom token
-			await axios.post('https://localhost:8443/api/loginToken', {
-				uid: result.user.uid,
-			});
-		}
-	};
 	return (
 		<Center w='full' h='full'>
 			<VStack spacing='5' w={{ base: '65%', sm: '67%', md: '70%' }}>
@@ -88,12 +69,12 @@ export const Login = React.memo(() => {
 				</Box>
 				<VStack spacing='3' w='full'>
 					<FormControl variant='floating' isRequired>
-						<Input id='email' placeholder=' ' type='email' />
+						<Input placeholder=' ' type='email' />
 						<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Email Address</FormLabel>
-						<FormErrorMessage>Your First name is invalid</FormErrorMessage>
+						<FormErrorMessage>Email is invalid</FormErrorMessage>
 					</FormControl>
 					<FormControl variant='floating' isRequired>
-						<Input id='password' placeholder=' ' type='password' />
+						<Input placeholder=' ' type='password' />
 						<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Password</FormLabel>
 						<FormErrorMessage>Your First name is invalid</FormErrorMessage>
 					</FormControl>
@@ -109,6 +90,12 @@ export const Login = React.memo(() => {
 				<Button variant='solid' colorScheme='teal' w='full'>
 					Sign in
 				</Button>
+				<HStack justify='space-around'>
+					<Text fontSize='sm'>New to Thia?</Text>
+					<Button variant='link' colorScheme='teal' size='sm' onClick={() => history.push('/register')}>
+						<Text fontSize='sm'>Sign up</Text>
+					</Button>
+				</HStack>
 				<Button
 					bg='#4285F4'
 					borderRadius='sm'
@@ -129,3 +116,5 @@ export const Login = React.memo(() => {
 		</Center>
 	);
 });
+
+export default Login;
