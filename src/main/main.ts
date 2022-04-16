@@ -79,9 +79,9 @@ preRendererAppInit();
 const createWindow = (): void => {
 	// Create the login browser window.
 	loginWindow = new BrowserWindow({
-		height: 640,
+		height: 720,
 		width: 480,
-		minHeight: 525,
+		minHeight: 625,
 		minWidth: 400,
 		frame: true,
 		show: false,
