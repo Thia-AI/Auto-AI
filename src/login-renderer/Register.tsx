@@ -13,6 +13,7 @@ import {
 	chakra,
 	Wrap,
 	Container,
+	useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { FirebaseError } from 'firebase/app';
@@ -20,6 +21,7 @@ import {
 	GoogleAuthProvider,
 	signInWithRedirect,
 	signInWithEmailAndPassword,
+	updateProfile,
 	AuthErrorCodes,
 	AuthError,
 	createUserWithEmailAndPassword,
@@ -35,11 +37,13 @@ const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 interface Props {
 	setRegisterLoading: (signInStatus: boolean) => void;
 	registerLoading: boolean;
+	postLoginToken: (uid: string) => Promise<void>;
 }
-const Register = React.memo(({ setRegisterLoading, registerLoading }: Props) => {
+const Register = React.memo(({ setRegisterLoading, registerLoading, postLoginToken }: Props) => {
 	const auth = useAuth();
 	const provider = new GoogleAuthProvider();
 	const history = useHistory();
+	const toast = useToast();
 
 	const [userRegistrationDetails, setUserRegistrationDetails] = useState({
 		fullName: '',
@@ -117,11 +121,11 @@ const Register = React.memo(({ setRegisterLoading, registerLoading }: Props) => 
 				break;
 			case 'password':
 				// Password input handling
-				const passwordPattern = /(?=.*[0-9]+)(?=.*[a-z]+)(?=.*[A-Z]+).{6,}/;
+				const passwordPattern = /(?=.*[0-9a-zA-Z]).{6,}/;
 				if (!val.match(passwordPattern)) {
 					setUserRegistrationErrorMessages({
 						...userRegistrationErrorMessages,
-						password: 'Weak password',
+						password: 'Weak password, 6 alpha-num chars',
 					});
 					//
 				} else {
@@ -150,15 +154,76 @@ const Register = React.memo(({ setRegisterLoading, registerLoading }: Props) => 
 
 	const registerNewAccount = async () => {
 		// TODO: Validate user registration details first
-		// TODO: Create new user and update their user profile with the display name.
+		let userRegistrationDetailsFilledOut = true;
+		for (const registrationDetailKey in userRegistrationDetails) {
+			if (userRegistrationDetails[registrationDetailKey] == '') {
+				userRegistrationDetailsFilledOut = false;
+				break;
+			}
+		}
+		if (!userRegistrationDetailsFilledOut) {
+			// Not all details filled out
+			toast({
+				title: 'Error',
+				description: 'Registration not filled out',
+				status: 'error',
+				duration: 1500,
+				isClosable: false,
+			});
+			return;
+		}
+		let userRegistrationErrorExists = false;
+		for (const errorMessageKey in userRegistrationErrorMessages) {
+			if (userRegistrationErrorMessages[errorMessageKey] != '') {
+				userRegistrationErrorExists = true;
+				break;
+			}
+		}
+		if (userRegistrationErrorExists) {
+			// Not all details filled out
+			toast({
+				title: 'Error',
+				description: 'Registration contains an error',
+				status: 'error',
+				duration: 1500,
+				isClosable: false,
+			});
+			return;
+		}
 		createUserWithEmailAndPassword(auth, userRegistrationDetails.emailAddress, userRegistrationDetails.password)
-			.then((userCredential) => {
-				console.log(userCredential.user.uid);
+			.then(async (userCredential) => {
+				await updateProfile(userCredential.user, {
+					displayName: userRegistrationDetails.fullName,
+				});
+				await postLoginToken(userCredential.user.uid);
 			})
 			.catch((error: AuthError) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
-				if (errorMessage == AuthErrorCodes.EMAIL_EXISTS) {
+				if (errorCode == AuthErrorCodes.EMAIL_EXISTS) {
+					toast({
+						title: 'Error',
+						description: 'Email already exists',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
+				} else if (errorCode == AuthErrorCodes.WEAK_PASSWORD) {
+					toast({
+						title: 'Error',
+						description: 'Password is too weak',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
+				} else if (errorCode == AuthErrorCodes.INVALID_EMAIL) {
+					toast({
+						title: 'Error',
+						description: 'Invalid email',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
 				}
 			});
 		// See:

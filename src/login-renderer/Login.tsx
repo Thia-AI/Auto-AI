@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { AuthProvider, useAuth, useFirebaseApp } from 'reactfire';
 import { auth as UIAuth } from 'firebaseui';
-import { getRedirectResult, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import {
+	getRedirectResult,
+	GoogleAuthProvider,
+	signInWithRedirect,
+	signInWithEmailAndPassword,
+	AuthError,
+} from 'firebase/auth';
 import {
 	Box,
 	Button,
@@ -23,28 +29,39 @@ import { useHistory } from 'react-router-dom';
 import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_normal_ios.svg';
 import thiaIcon from '_public/icon.png';
 
-const webAppConfig = {
-	port: '8443',
-	hostPort: 'localhost:8443',
-	hostUrl: 'https://localhost:8443',
-};
-
 const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 
 interface Props {
 	setSignInLoading: (signInStatus: boolean) => void;
 	signInLoading: boolean;
+	postLoginToken: (uid: string) => Promise<void>;
 }
-const Login = React.memo(({ signInLoading, setSignInLoading }: Props) => {
+const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: Props) => {
 	const auth = useAuth();
 	const provider = new GoogleAuthProvider();
 	const history = useHistory();
+
+	const [emailAddress, setEmailAddress] = useState('');
+	const [password, setPassword] = useState('');
 
 	provider.setCustomParameters({
 		prompt: 'select_account consent',
 	});
 	const googleLogin = async () => {
 		await signInWithRedirect(auth, provider);
+	};
+
+	const emailLogin = () => {
+		signInWithEmailAndPassword(auth, emailAddress, password)
+			.then(async (userCredential) => {
+				await postLoginToken(userCredential.user.uid);
+			})
+			.catch((error: AuthError) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorMessage);
+				// TODO: Error handling for sign in
+			});
 	};
 
 	return (
@@ -63,12 +80,26 @@ const Login = React.memo(({ signInLoading, setSignInLoading }: Props) => {
 				</Box>
 				<VStack spacing='3' w='full'>
 					<FormControl variant='floating' isRequired>
-						<Input placeholder=' ' type='email' />
+						<Input
+							placeholder=' '
+							type='email'
+							value={emailAddress}
+							onChange={(e) => {
+								setEmailAddress(e.target.value);
+							}}
+						/>
 						<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Email Address</FormLabel>
 						<FormErrorMessage>Email is invalid</FormErrorMessage>
 					</FormControl>
 					<FormControl variant='floating' isRequired>
-						<Input placeholder=' ' type='password' />
+						<Input
+							placeholder=' '
+							value={password}
+							onChange={(e) => {
+								setPassword(e.target.value);
+							}}
+							type='password'
+						/>
 						<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Password</FormLabel>
 						<FormErrorMessage>Your First name is invalid</FormErrorMessage>
 					</FormControl>
@@ -81,7 +112,7 @@ const Login = React.memo(({ signInLoading, setSignInLoading }: Props) => {
 						<Text fontSize='sm'>Forgot password</Text>
 					</Button>
 				</HStack>
-				<Button variant='solid' colorScheme='teal' w='full'>
+				<Button variant='solid' colorScheme='teal' w='full' onClick={emailLogin}>
 					Sign in
 				</Button>
 				<HStack justify='space-around'>

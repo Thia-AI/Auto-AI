@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { getAuth, getRedirectResult, GoogleAuthProvider } from 'firebase/auth';
 import { getFunctions } from 'firebase/functions';
 import { AuthProvider, FunctionsProvider, useAuth, useFirebaseApp } from 'reactfire';
-import { BrowserRouter, HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import { io } from 'socket.io-client';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE } from '_/shared/ipcChannels';
@@ -18,6 +18,7 @@ export const LoginApp = React.memo(() => {
 	const app = useFirebaseApp();
 	const auth = getAuth(app);
 	const functions = getFunctions(app);
+	const history = useHistory();
 
 	const Login = lazy(() => import('./Login'));
 	const Register = lazy(() => import('./Register'));
@@ -44,43 +45,53 @@ export const LoginApp = React.memo(() => {
 			setSignInLoading(true);
 			const credential = GoogleAuthProvider.credentialFromResult(result);
 			// Send that result to backend to create custom token
-			await axios.post('https://localhost:8443/api/loginToken', {
-				uid: result.user.uid,
-			});
-			// TODO: Change route back to '/' and check if it worked.
+			await postLoginToken(result.user.uid);
 		}
+	};
+
+	const postLoginToken = async (uid: string) => {
+		await axios.post('https://localhost:8443/api/loginToken', {
+			uid,
+		});
+		history.push('/');
 	};
 	return (
 		<AuthProvider sdk={auth}>
 			<FunctionsProvider sdk={functions}>
-				<HashRouter>
-					<Suspense
-						fallback={
-							<Center w='full' h='full' marginTop='var(--header-height)'>
-								<Spinner color='gray.600' size='lg' />
-							</Center>
-						}>
-						<Switch>
-							<Route
-								exact
-								path='/'
-								component={() => (
-									<Login signInLoading={signInLoading} setSignInLoading={setSignInLoading} />
-								)}
-							/>
-							<Route
-								exact
-								path='/register'
-								component={() => (
-									<Register registerLoading={signInLoading} setRegisterLoading={setSignInLoading} />
-								)}
-							/>
-							<Route exact path='*'>
-								<Redirect to='/' />
-							</Route>
-						</Switch>
-					</Suspense>
-				</HashRouter>
+				<Suspense
+					fallback={
+						<Center w='full' h='full' marginTop='var(--header-height)'>
+							<Spinner color='gray.600' size='lg' />
+						</Center>
+					}>
+					<Switch>
+						<Route
+							exact
+							path='/'
+							component={() => (
+								<Login
+									signInLoading={signInLoading}
+									setSignInLoading={setSignInLoading}
+									postLoginToken={postLoginToken}
+								/>
+							)}
+						/>
+						<Route
+							exact
+							path='/register'
+							component={() => (
+								<Register
+									registerLoading={signInLoading}
+									setRegisterLoading={setSignInLoading}
+									postLoginToken={postLoginToken}
+								/>
+							)}
+						/>
+						<Route exact path='*'>
+							<Redirect to='/' />
+						</Route>
+					</Switch>
+				</Suspense>
 			</FunctionsProvider>
 		</AuthProvider>
 	);
