@@ -25,6 +25,7 @@ import {
 	AuthErrorCodes,
 	AuthError,
 	createUserWithEmailAndPassword,
+	sendEmailVerification,
 } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -195,7 +196,21 @@ const Register = React.memo(({ setRegisterLoading, registerLoading, postLoginTok
 				await updateProfile(userCredential.user, {
 					displayName: userRegistrationDetails.fullName,
 				});
-				await postLoginToken(userCredential.user.uid, 'local');
+				if (!userCredential.user.emailVerified) {
+					// Send verification email
+					await sendEmailVerification(userCredential.user);
+					toast({
+						title: 'Info',
+						description: 'Email verification sent, check your email',
+						status: 'info',
+						duration: 1500,
+						isClosable: false,
+					});
+					history.push('/');
+				} else {
+					// Email already verified (don't know when this will happen but it's here in case it does)
+					await postLoginToken(userCredential.user.uid, 'local');
+				}
 			})
 			.catch((error: FirebaseError) => {
 				const errorCode = error.code;

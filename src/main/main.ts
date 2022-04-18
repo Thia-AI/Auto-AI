@@ -251,7 +251,6 @@ const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
 			const customToken = result.data as string;
 			// Send login finished event to login window
 			io.emit(LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE);
-			console.log('DMAN NIGGGGAAA');
 			// Send token to main window
 			mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, customToken, persistence);
 			loginWindow?.webContents.closeDevTools();

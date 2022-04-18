@@ -91,13 +91,25 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 		setSignInLoading(true);
 		signInWithEmailAndPassword(auth, emailAddress, password)
 			.then(async (userCredential) => {
-				setPassword('');
-				setEmailAddress('');
-				let persistence: PERSISTENCE_TYPE = 'local';
-				if (!rememberMe) {
-					persistence = 'session';
+				if (!userCredential.user.emailVerified) {
+					setPassword('');
+					toast({
+						title: 'Info',
+						description: 'Email not verified, check your email',
+						status: 'info',
+						duration: 1500,
+						isClosable: false,
+					});
+					setSignInLoading(false);
+				} else {
+					setPassword('');
+					setEmailAddress('');
+					let persistence: PERSISTENCE_TYPE = 'local';
+					if (!rememberMe) {
+						persistence = 'session';
+					}
+					await postLoginToken(userCredential.user.uid, persistence);
 				}
-				await postLoginToken(userCredential.user.uid, persistence);
 			})
 			.catch((error: FirebaseError) => {
 				const errorCode = error.code;
@@ -116,6 +128,7 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 						duration: 1500,
 						isClosable: false,
 					});
+					setSignInLoading(false);
 				} else if (errorCode == AuthErrorCodes.INVALID_EMAIL) {
 					toast({
 						title: 'Error',
@@ -124,6 +137,7 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 						duration: 1500,
 						isClosable: false,
 					});
+					setSignInLoading(false);
 				}
 			});
 	};
