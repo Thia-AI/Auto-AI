@@ -29,6 +29,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useAuth } from 'reactfire';
+import { PERSISTENCE_TYPE } from '_/shared/appConstants';
 
 import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_normal_ios.svg';
 
@@ -37,7 +38,7 @@ const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 interface Props {
 	setRegisterLoading: (signInStatus: boolean) => void;
 	registerLoading: boolean;
-	postLoginToken: (uid: string) => Promise<void>;
+	postLoginToken: (uid: string, persistence: PERSISTENCE_TYPE) => Promise<void>;
 }
 const Register = React.memo(({ setRegisterLoading, registerLoading, postLoginToken }: Props) => {
 	const auth = useAuth();
@@ -153,10 +154,9 @@ const Register = React.memo(({ setRegisterLoading, registerLoading, postLoginTok
 	};
 
 	const registerNewAccount = async () => {
-		// TODO: Validate user registration details first
 		let userRegistrationDetailsFilledOut = true;
 		for (const registrationDetailKey in userRegistrationDetails) {
-			if (userRegistrationDetails[registrationDetailKey] == '') {
+			if (userRegistrationDetails[registrationDetailKey].trim() == '') {
 				userRegistrationDetailsFilledOut = false;
 				break;
 			}
@@ -195,9 +195,9 @@ const Register = React.memo(({ setRegisterLoading, registerLoading, postLoginTok
 				await updateProfile(userCredential.user, {
 					displayName: userRegistrationDetails.fullName,
 				});
-				await postLoginToken(userCredential.user.uid);
+				await postLoginToken(userCredential.user.uid, 'local');
 			})
-			.catch((error: AuthError) => {
+			.catch((error: FirebaseError) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
 				if (errorCode == AuthErrorCodes.EMAIL_EXISTS) {
@@ -226,10 +226,6 @@ const Register = React.memo(({ setRegisterLoading, registerLoading, postLoginTok
 					});
 				}
 			});
-		// See:
-		// https://stackoverflow.com/questions/37413111/adding-the-displayname-whilst-using-createuserwithemailandpassword
-		// https://firebase.google.com/docs/auth/web/manage-users#update_a_users_profile
-		// https://firebase.google.com/docs/reference/js/auth.md#updateprofile
 	};
 
 	return (

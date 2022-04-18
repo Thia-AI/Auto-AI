@@ -5,7 +5,7 @@ import { AuthProvider, FunctionsProvider, useAuth, useFirebaseApp } from 'reactf
 import { BrowserRouter, HashRouter, Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import { io } from 'socket.io-client';
-import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE } from '_/shared/ipcChannels';
+import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
 import axios from 'axios';
 
 const webAppConfig = {
@@ -22,6 +22,7 @@ export const LoginApp = React.memo(() => {
 
 	const Login = lazy(() => import('./Login'));
 	const Register = lazy(() => import('./Register'));
+	// TODO: Split up state for registering with email, google login, and sign in with email
 	const [signInLoading, setSignInLoading] = useState(false);
 
 	useEffect(() => {
@@ -45,13 +46,14 @@ export const LoginApp = React.memo(() => {
 			setSignInLoading(true);
 			const credential = GoogleAuthProvider.credentialFromResult(result);
 			// Send that result to backend to create custom token
-			await postLoginToken(result.user.uid);
+			await postLoginToken(result.user.uid, 'local');
 		}
 	};
 
-	const postLoginToken = async (uid: string) => {
+	const postLoginToken = async (uid: string, persistence: PERSISTENCE_TYPE) => {
 		await axios.post('https://localhost:8443/api/loginToken', {
 			uid,
+			persistence,
 		});
 		history.push('/');
 	};

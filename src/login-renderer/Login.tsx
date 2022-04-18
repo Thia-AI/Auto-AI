@@ -7,6 +7,7 @@ import {
 	signInWithRedirect,
 	signInWithEmailAndPassword,
 	AuthError,
+	AuthErrorCodes,
 } from 'firebase/auth';
 import {
 	Box,
@@ -24,25 +25,37 @@ import {
 	FormLabel,
 	HStack,
 	Checkbox,
+	useToast,
 } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
 import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_normal_ios.svg';
 import thiaIcon from '_public/icon.png';
+import { FirebaseError } from 'firebase/app';
+import { PERSISTENCE_TYPE } from '_/shared/appConstants';
 
 const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 
 interface Props {
 	setSignInLoading: (signInStatus: boolean) => void;
 	signInLoading: boolean;
-	postLoginToken: (uid: string) => Promise<void>;
+	postLoginToken: (uid: string, persistence: PERSISTENCE_TYPE) => Promise<void>;
 }
 const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: Props) => {
 	const auth = useAuth();
 	const provider = new GoogleAuthProvider();
 	const history = useHistory();
+	const toast = useToast();
+
+	const [rememberMe, setRememberMe] = useState(true);
 
 	const [emailAddress, setEmailAddress] = useState('');
 	const [password, setPassword] = useState('');
+
+	const [emailErrorMessage, setEmailErrorMessage] = useState('');
+	const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+
+	const [emailFocusedOnce, setEmailFocusedOnce] = useState(false);
+	const [passwordFocusedOnce, setPasswordFocusedOnce] = useState(false);
 
 	provider.setCustomParameters({
 		prompt: 'select_account consent',
@@ -52,15 +65,66 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 	};
 
 	const emailLogin = () => {
+		if (password.trim() == '' || emailAddress.trim() == '') {
+			toast({
+				title: 'Error',
+				description: 'Login form not filled out',
+				status: 'error',
+				duration: 1500,
+				isClosable: false,
+			});
+			return;
+		}
+		// Email address input handling
+		const emailAddressPattern =
+			/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		if (!emailAddress.match(emailAddressPattern)) {
+			toast({
+				title: 'Error',
+				description: 'Invalid email',
+				status: 'error',
+				duration: 1500,
+				isClosable: false,
+			});
+			return;
+		}
+		setSignInLoading(true);
 		signInWithEmailAndPassword(auth, emailAddress, password)
 			.then(async (userCredential) => {
-				await postLoginToken(userCredential.user.uid);
+				setPassword('');
+				setEmailAddress('');
+				let persistence: PERSISTENCE_TYPE = 'local';
+				if (!rememberMe) {
+					persistence = 'session';
+				}
+				await postLoginToken(userCredential.user.uid, persistence);
 			})
-			.catch((error: AuthError) => {
+			.catch((error: FirebaseError) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
 				console.log(errorMessage);
-				// TODO: Error handling for sign in
+
+				if (
+					errorCode == AuthErrorCodes.INVALID_PASSWORD ||
+					errorCode == AuthErrorCodes.USER_DELETED ||
+					errorCode == AuthErrorCodes.INTERNAL_ERROR
+				) {
+					toast({
+						title: 'Error',
+						description: 'Invalid email or password',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
+				} else if (errorCode == AuthErrorCodes.INVALID_EMAIL) {
+					toast({
+						title: 'Error',
+						description: 'Invalid email',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
+				}
 			});
 	};
 
@@ -79,33 +143,52 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 					</Stack>
 				</Box>
 				<VStack spacing='3' w='full'>
-					<FormControl variant='floating' isRequired>
+					<FormControl variant='floating' isRequired isInvalid={emailFocusedOnce && emailErrorMessage != ''}>
 						<Input
 							placeholder=' '
 							type='email'
 							value={emailAddress}
+							onBlur={() => setEmailFocusedOnce(true)}
 							onChange={(e) => {
-								setEmailAddress(e.target.value);
+								const val = e.target.value;
+								// Email address input handling
+								const emailAddressPattern =
+									/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+								if (!val.match(emailAddressPattern)) {
+									// Invalid email address pattern
+									setEmailErrorMessage('Invalid email address');
+								} else setEmailErrorMessage('');
+								setEmailAddress(val);
 							}}
 						/>
 						<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Email Address</FormLabel>
-						<FormErrorMessage>Email is invalid</FormErrorMessage>
+						<FormErrorMessage>{emailErrorMessage}</FormErrorMessage>
 					</FormControl>
-					<FormControl variant='floating' isRequired>
+					<FormControl
+						variant='floating'
+						isRequired
+						isInvalid={passwordFocusedOnce && passwordErrorMessage != ''}>
 						<Input
 							placeholder=' '
 							value={password}
+							onBlur={() => setPasswordFocusedOnce(true)}
 							onChange={(e) => {
-								setPassword(e.target.value);
+								const val = e.target.value;
+								if (val.trim().length == 0) {
+									setPasswordErrorMessage('Enter a password');
+								} else {
+									setPasswordErrorMessage('');
+								}
+								setPassword(val);
 							}}
 							type='password'
 						/>
 						<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Password</FormLabel>
-						<FormErrorMessage>Your First name is invalid</FormErrorMessage>
+						<FormErrorMessage>{passwordErrorMessage}</FormErrorMessage>
 					</FormControl>
 				</VStack>
 				<HStack justify='space-between' w='full' align='baseline'>
-					<Checkbox defaultIsChecked size='sm'>
+					<Checkbox isChecked={rememberMe} size='sm' onChange={(e) => setRememberMe(e.target.checked)}>
 						<Text fontSize='sm'>Remember me</Text>
 					</Checkbox>
 					<Button variant='link' colorScheme='teal' size='sm'>
