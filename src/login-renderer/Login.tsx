@@ -9,6 +9,7 @@ import {
 	sendEmailVerification,
 	AuthError,
 	AuthErrorCodes,
+	sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
 	Box,
@@ -71,6 +72,56 @@ const Login = React.memo(
 			await signInWithRedirect(auth, provider);
 		};
 
+		// No the name of this function is not a mistake.
+		// I will unironically fire anyone who changes this :D
+		const forgorPassword = async () => {
+			if (emailAddress.trim() == '') {
+				toast({
+					title: 'Error',
+					description: 'Please enter an email',
+					status: 'error',
+					duration: 1500,
+					isClosable: false,
+				});
+				return;
+			}
+			sendPasswordResetEmail(auth, emailAddress)
+				.then(() => {
+					toast({
+						title: 'Info',
+						description: 'Sent password reset email, check your inbox',
+						status: 'info',
+						duration: 1500,
+						isClosable: false,
+					});
+				})
+				.catch((error: FirebaseError) => {
+					const errorCode = error.code;
+
+					if (
+						errorCode == AuthErrorCodes.INVALID_PASSWORD ||
+						errorCode == AuthErrorCodes.USER_DELETED ||
+						errorCode == AuthErrorCodes.INTERNAL_ERROR
+					) {
+						toast({
+							title: 'Error',
+							description: 'Invalid email or password',
+							status: 'error',
+							duration: 1500,
+							isClosable: false,
+						});
+					} else if (errorCode == AuthErrorCodes.INVALID_EMAIL) {
+						toast({
+							title: 'Error',
+							description: 'Invalid email',
+							status: 'error',
+							duration: 1500,
+							isClosable: false,
+						});
+					}
+				});
+		};
+
 		const resendEmailVerification = () => {
 			if (password.trim() == '' || emailAddress.trim() == '') {
 				toast({
@@ -121,7 +172,6 @@ const Login = React.memo(
 				})
 				.catch((error: FirebaseError) => {
 					const errorCode = error.code;
-					const errorMessage = error.message;
 
 					if (
 						errorCode == AuthErrorCodes.INVALID_PASSWORD ||
@@ -197,7 +247,6 @@ const Login = React.memo(
 				})
 				.catch((error: FirebaseError) => {
 					const errorCode = error.code;
-					const errorMessage = error.message;
 
 					if (
 						errorCode == AuthErrorCodes.INVALID_PASSWORD ||
@@ -294,7 +343,7 @@ const Login = React.memo(
 						<Checkbox isChecked={rememberMe} size='sm' onChange={(e) => setRememberMe(e.target.checked)}>
 							<Text fontSize='sm'>Remember me</Text>
 						</Checkbox>
-						<Button variant='link' colorScheme='teal' size='sm'>
+						<Button variant='link' colorScheme='teal' size='sm' onClick={forgorPassword}>
 							<Text fontSize='sm'>Forgot password</Text>
 						</Button>
 					</HStack>

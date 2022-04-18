@@ -223,7 +223,6 @@ const Register = React.memo(
 				})
 				.catch((error: FirebaseError) => {
 					const errorCode = error.code;
-					const errorMessage = error.message;
 					if (errorCode == AuthErrorCodes.EMAIL_EXISTS) {
 						toast({
 							title: 'Error',
