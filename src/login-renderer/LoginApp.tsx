@@ -22,14 +22,20 @@ export const LoginApp = React.memo(() => {
 
 	const Login = lazy(() => import('./Login'));
 	const Register = lazy(() => import('./Register'));
-	// TODO: Split up state for registering with email, google login, and sign in with email
-	const [signInLoading, setSignInLoading] = useState(false);
+
+	const [googleSignInLoading, setGoogleSignInLoading] = useState(false);
+	const [googleRegisteringLoading, setGoogleRegisteringLoading] = useState(false);
+	const [emailSignInLoading, setEmailSignInLoading] = useState(false);
+	const [emailRegisteringLoading, setEmailRegisteringLoading] = useState(false);
 
 	useEffect(() => {
 		const socket = io(webAppConfig.hostUrl);
 		socket.on(LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, () => {
 			// Loaded
-			setSignInLoading(false);
+			setGoogleSignInLoading(false);
+			setEmailSignInLoading(false);
+			setEmailRegisteringLoading(false);
+			setGoogleRegisteringLoading(false);
 		});
 		return () => {
 			socket.disconnect();
@@ -43,7 +49,8 @@ export const LoginApp = React.memo(() => {
 	const getOAuthResponse = async () => {
 		const result = await getRedirectResult(auth);
 		if (result) {
-			setSignInLoading(true);
+			setGoogleSignInLoading(true);
+			setGoogleRegisteringLoading(true);
 			const credential = GoogleAuthProvider.credentialFromResult(result);
 			// Send that result to backend to create custom token
 			await postLoginToken(result.user.uid, 'local');
@@ -72,8 +79,9 @@ export const LoginApp = React.memo(() => {
 							path='/'
 							component={() => (
 								<Login
-									signInLoading={signInLoading}
-									setSignInLoading={setSignInLoading}
+									googleSignInLoading={googleSignInLoading}
+									emailSignInLoading={emailSignInLoading}
+									setEmailSignInLoading={setEmailSignInLoading}
 									postLoginToken={postLoginToken}
 								/>
 							)}
@@ -83,8 +91,9 @@ export const LoginApp = React.memo(() => {
 							path='/register'
 							component={() => (
 								<Register
-									registerLoading={signInLoading}
-									setRegisterLoading={setSignInLoading}
+									googleRegisteringLoading={googleRegisteringLoading}
+									emailRegisteringLoading={emailRegisteringLoading}
+									setEmailRegisteringLoading={setEmailRegisteringLoading}
 									postLoginToken={postLoginToken}
 								/>
 							)}
