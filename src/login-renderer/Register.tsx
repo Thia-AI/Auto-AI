@@ -281,6 +281,7 @@ const Register = React.memo(
 							<Input
 								name='fullName'
 								placeholder='Full Name'
+								autoFocus
 								type='text'
 								onBlur={handleRegistrationInputsFocused}
 								onChange={handleRegistrationInputsChange}
