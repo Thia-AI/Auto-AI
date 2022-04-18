@@ -43,7 +43,6 @@ export const App = React.memo(() => {
 					<DevDashboard />
 					<Router history={history}>
 						<Header />
-
 						<Suspense
 							fallback={
 								<Center w='full' h='full' marginTop='var(--header-height)'>

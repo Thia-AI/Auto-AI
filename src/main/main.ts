@@ -30,8 +30,8 @@ import {
 	IPC_WORKER_TASK_DONE,
 	IPC_WORKER_TASK_RECEIVED,
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
-	LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
 } from '_/shared/ipcChannels';
+import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
 import { startServer } from './server/server';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -79,9 +79,9 @@ preRendererAppInit();
 const createWindow = (): void => {
 	// Create the login browser window.
 	loginWindow = new BrowserWindow({
-		height: 640,
+		height: 720,
 		width: 480,
-		minHeight: 525,
+		minHeight: 625,
 		minWidth: 400,
 		frame: true,
 		show: false,
@@ -237,6 +237,7 @@ type ExpressMethods = 'get' | 'head' | 'post' | 'delete' | 'put' | 'connect' | '
  */
 const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
 	const uid: string = req.body['uid'];
+	const persistence: PERSISTENCE_TYPE = req.body['persistence'];
 	if (firebaseApp) {
 		const functions = getFunctions(firebaseApp);
 		const getToken = httpsCallable(functions, 'customToken');
@@ -250,8 +251,9 @@ const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
 			const customToken = result.data as string;
 			// Send login finished event to login window
 			io.emit(LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE);
+			console.log('DMAN NIGGGGAAA');
 			// Send token to main window
-			mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, customToken);
+			mainWindow?.webContents.send(IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, customToken, persistence);
 			loginWindow?.webContents.closeDevTools();
 			loginWindow?.hide();
 			mainWindow?.focus();
@@ -311,7 +313,7 @@ const registerShortcuts = (win: BrowserWindow) => {
 const launchEngine = () => {
 	/* eslint-disable  @typescript-eslint/no-unused-vars */
 	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow, true);
+		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
 	} else {
 		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
 	}

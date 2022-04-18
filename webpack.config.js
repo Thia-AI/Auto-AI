@@ -1,7 +1,7 @@
 const lodash = require('lodash');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const nodeExternals = require('webpack-node-externals');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const path = require('path');
 
@@ -14,9 +14,15 @@ const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
 // #region Common settings
 const commonConfig = {
-	devtool: isEnvDevelopment ? 'eval-source-map' : false,
+	// Uncomment 'eval-source-map' and comment out 'eval-cheap-module-source-map' when you need better source maps.
+	// devtool of 'eval' has the best performance.
+	// devtool: isEnvDevelopment ? 'eval-source-map' : false,
+	devtool: isEnvDevelopment ? 'eval-cheap-module-source-map' : false,
 	mode: isEnvProduction ? 'production' : 'development',
-	output: { path: srcPaths('dist') },
+	output: {
+		path: srcPaths('dist'),
+		pathinfo: false,
+	},
 	node: { __dirname: false, __filename: false },
 	resolve: {
 		alias: {
@@ -37,14 +43,22 @@ const commonConfig = {
 	module: {
 		rules: [
 			{
-				test: /\.jsx?$/,
+				test: /\.(js|jsx)$/,
 				exclude: /node_modules/,
 				loader: 'swc-loader',
 			},
 			{
 				test: /\.(ts|tsx)$/,
 				exclude: /node_modules/,
-				loader: 'ts-loader',
+				loader: 'swc-loader',
+				options: {
+					jsc: {
+						parser: {
+							syntax: 'typescript',
+							tsx: true,
+						},
+					},
+				},
 			},
 			{
 				test: /\.(scss|css)$/,
@@ -81,6 +95,7 @@ const commonConfig = {
 	experiments: {
 		topLevelAwait: true,
 	},
+	plugins: [new ForkTsCheckerWebpackPlugin()],
 };
 // #endregion
 
@@ -89,7 +104,7 @@ const mainConfig = lodash.cloneDeep(commonConfig);
 mainConfig.entry = srcPaths('src', 'main', 'main.ts');
 mainConfig.target = 'electron-main';
 mainConfig.output.filename = 'main.bundle.js';
-mainConfig.plugins = [
+mainConfig.plugins.push(
 	new CopyPlugin({
 		patterns: [
 			{
@@ -112,7 +127,7 @@ mainConfig.plugins = [
 			},
 		],
 	}),
-];
+);
 // For socket-io re-rendering
 mainConfig.externals = {
 	bufferutil: 'bufferutil',
@@ -129,23 +144,23 @@ rendererConfig.resolve.alias['@firebase/auth'] = path.resolve(
 	__dirname,
 	'node_modules/@firebase/auth/dist/esm2017/index.js',
 );
-rendererConfig.plugins = [
+rendererConfig.plugins.push(
 	new HtmlWebpackPlugin({
 		template: path.resolve(__dirname, './public/index.html'),
 	}),
-];
+);
 
 const hiddenRendererConfig = lodash.cloneDeep(commonConfig);
 
 hiddenRendererConfig.entry = srcPaths('src', 'worker', 'worker.ts');
 hiddenRendererConfig.target = 'electron-renderer';
 hiddenRendererConfig.output.filename = 'worker.bundle.js';
-hiddenRendererConfig.plugins = [
+hiddenRendererConfig.plugins.push(
 	new HtmlWebpackPlugin({
 		template: path.resolve(__dirname, 'public', 'worker.html'),
 		filename: 'worker.html',
 	}),
-];
+);
 
 const appServerLoginConfig = lodash.cloneDeep(commonConfig);
 
@@ -153,11 +168,11 @@ appServerLoginConfig.entry = srcPaths('src', 'login-renderer', 'LoginRenderer.ts
 appServerLoginConfig.target = 'web';
 appServerLoginConfig.output.path = srcPaths('dist', 'server');
 appServerLoginConfig.output.filename = 'login-renderer.bundle.js';
-appServerLoginConfig.plugins = [
+appServerLoginConfig.plugins.push(
 	new HtmlWebpackPlugin({
 		template: path.resolve(__dirname, 'public', 'server', 'login.html'),
 		filename: 'login.html',
 	}),
-];
+);
 
 module.exports = [mainConfig, rendererConfig, hiddenRendererConfig, appServerLoginConfig];

@@ -10,6 +10,8 @@ from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
 
+from env import environment
+
 from config import config
 from config import constants
 from config.constants import ModelStatus
@@ -27,9 +29,8 @@ from db.commands.input_commands import get_train_data_from_all_inputs
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row
-from env import environment
+
 # Jobs
-from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
 from helpers.encoding import b64_encode, b64_decode
 from helpers.route import validate_req_json
 # Other
@@ -84,6 +85,7 @@ def upload_inputs_route(uuid: str):
     if len(files) == 0:
         return {'Error': "Didn't receive any input, try again with input"}, 400
 
+    from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
     ids = JobCreator().create(BulkFileTransferJob((uuid, files))).queue()
     return {'ids': ids}, 202
 
@@ -785,9 +787,6 @@ if __name__ == '__main__':
     from multiprocessing import freeze_support
 
     freeze_support()
-
-    # First thing we do is initialize file paths, env variables, etc.
-    environment.init_environment_pre_gpu()
     import tensorflow as tf
 
     io = SocketIO(app, async_mode='threading')
