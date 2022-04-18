@@ -1,12 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Center, Heading, useToast } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
-import {
-	browserLocalPersistence,
-	browserSessionPersistence,
-	signInWithCustomToken,
-	setPersistence,
-} from 'firebase/auth';
+import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
 import { IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, IPC_SHOW_LOGIN_WINDOW } from '_/shared/ipcChannels';
 import { persistenceMap, PERSISTENCE_TYPE } from '_/shared/appConstants';
