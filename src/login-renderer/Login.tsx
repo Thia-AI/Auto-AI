@@ -6,6 +6,7 @@ import {
 	GoogleAuthProvider,
 	signInWithRedirect,
 	signInWithEmailAndPassword,
+	sendEmailVerification,
 	AuthError,
 	AuthErrorCodes,
 } from 'firebase/auth';
@@ -64,7 +65,84 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 		await signInWithRedirect(auth, provider);
 	};
 
-	const emailLogin = () => {
+	const resendEmailVerification = () => {
+		if (password.trim() == '' || emailAddress.trim() == '') {
+			toast({
+				title: 'Error',
+				description: 'Please enter an email',
+				status: 'error',
+				duration: 1500,
+				isClosable: false,
+			});
+			return;
+		}
+		// Email address input handling
+		const emailAddressPattern =
+			/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		if (!emailAddress.match(emailAddressPattern)) {
+			toast({
+				title: 'Error',
+				description: 'Invalid email',
+				status: 'error',
+				duration: 1500,
+				isClosable: false,
+			});
+			return;
+		}
+
+		signInWithEmailAndPassword(auth, emailAddress, password)
+			.then(async (userCredential) => {
+				if (userCredential.user.emailVerified) {
+					// User is already verified
+					toast({
+						title: 'Info',
+						description: 'Email is already verified',
+						status: 'info',
+						duration: 1500,
+						isClosable: false,
+					});
+				} else {
+					await sendEmailVerification(userCredential.user);
+					toast({
+						title: 'Info',
+						description: 'Email verification sent, check your email',
+						status: 'info',
+						duration: 1500,
+						isClosable: false,
+					});
+				}
+			})
+			.catch((error: FirebaseError) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+
+				if (
+					errorCode == AuthErrorCodes.INVALID_PASSWORD ||
+					errorCode == AuthErrorCodes.USER_DELETED ||
+					errorCode == AuthErrorCodes.INTERNAL_ERROR
+				) {
+					toast({
+						title: 'Error',
+						description: 'Invalid email or password',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
+					setSignInLoading(false);
+				} else if (errorCode == AuthErrorCodes.INVALID_EMAIL) {
+					toast({
+						title: 'Error',
+						description: 'Invalid email',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+					});
+					setSignInLoading(false);
+				}
+			});
+	};
+
+	const emailLogin = async () => {
 		if (password.trim() == '' || emailAddress.trim() == '') {
 			toast({
 				title: 'Error',
@@ -114,7 +192,6 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 			.catch((error: FirebaseError) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
-				console.log(errorMessage);
 
 				if (
 					errorCode == AuthErrorCodes.INVALID_PASSWORD ||
@@ -211,6 +288,9 @@ const Login = React.memo(({ signInLoading, setSignInLoading, postLoginToken }: P
 				</HStack>
 				<Button variant='solid' colorScheme='teal' w='full' onClick={emailLogin}>
 					Sign in
+				</Button>
+				<Button variant='outline' colorScheme='gray' w='full' onClick={resendEmailVerification}>
+					Resend Email Verification
 				</Button>
 				<HStack justify='space-around'>
 					<Text fontSize='sm'>New to Thia?</Text>
