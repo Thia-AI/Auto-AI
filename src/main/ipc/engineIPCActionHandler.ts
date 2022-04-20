@@ -1,8 +1,19 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import { Socket } from 'socket.io-client';
-import { IPC_CONNECT_SOCKET, IPC_ENGINE_JOB_FINISHED, IPC_RUNTIME_IS_DEV } from '_/shared/ipcChannels';
+const isDev = require('electron-is-dev');
+import {
+	IPC_CONNECT_SOCKET,
+	IPC_ENGINE_JOB_FINISHED,
+	IPC_ENGINE_START,
+	IPC_ENGINE_STOP,
+	IPC_RUNTIME_IS_DEV,
+} from '_/shared/ipcChannels';
 
 import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
+import { EngineHandler } from '../engine-shell/engineHandler';
+import { EngineShellDev } from '../engine-shell/engineShellDev';
+import { EngineShellProd } from '../engine-shell/engineShellProd';
+
 /**
  * Class that contains IPC actions pertaining to **Engine**.
  */
@@ -14,10 +25,13 @@ class EngineIPCActionHandler {
 	 */
 	private socket: Socket;
 
+	private engineShell: EngineShellDev | EngineShellProd | null;
+
 	constructor(window: BrowserWindow, socket: Socket) {
 		this.window = window;
 		// Socket init
 		this.socket = socket;
+		this.engineShell = null;
 		this.initSocketEvents(this.socket);
 		this.initIPCListening();
 	}
@@ -53,6 +67,31 @@ class EngineIPCActionHandler {
 		ipcMain.handle(IPC_CONNECT_SOCKET, async () => {
 			this.socket.connect();
 		});
+
+		ipcMain.handle(IPC_ENGINE_STOP, () => {
+			if (this.engineShell) {
+				console.log('ENGINE_STOP CALLED');
+				this.engineShell.shutDownEngine();
+				this.engineShell = null;
+			}
+		});
+
+		ipcMain.handle(IPC_ENGINE_START, () => {
+			this.launchEngine();
+		});
+	};
+
+	/**
+	 * Launches **Engine**.
+	 */
+	launchEngine = () => {
+		/* eslint-disable  @typescript-eslint/no-unused-vars */
+		if (isDev) {
+			this.engineShell = EngineHandler.getInstance().createDevEngine(this.window);
+		} else {
+			this.engineShell = EngineHandler.getInstance().createProdEngine(this.window);
+		}
+		/* eslint-enable  @typescript-eslint/no-unused-vars */
 	};
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */

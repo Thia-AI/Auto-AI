@@ -40,6 +40,13 @@ export class EngineShellProd extends EngineShell {
 	};
 
 	/**
+	 * Shuts down production engine.
+	 */
+	shutDownEngine(): void {
+		this.engine.kill();
+		this.notifyRendererThatEngineHasStopped();
+	}
+	/**
 	 * Overriden method for setting up listener for when prod **Engine** process exit's unexpectedly.
 	 */
 	onExitSetup = () => {

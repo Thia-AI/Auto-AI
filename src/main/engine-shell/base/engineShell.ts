@@ -2,12 +2,12 @@ import { AxiosError } from 'axios';
 import { BrowserWindow } from 'electron';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
-import { IPC_ENGINE_STARTED } from '_/shared/ipcChannels';
+import { IPC_ENGINE_STARTED, IPC_ENGINE_STOPPED } from '_/shared/ipcChannels';
 
 /**
  * Base class for creating an EngineShell to deploy and manage **Engine**'s state.
  */
-export class EngineShell {
+export abstract class EngineShell {
 	protected window: BrowserWindow | null;
 	private engineCheckTimeoutId: number | undefined;
 	private engineCheckRetries: number;
@@ -44,10 +44,7 @@ export class EngineShell {
 	 * @param exitCode The exit code for why the **Engine** process exited.
 	 * @param exitSignal The exit signal for why the **Engine** process exited.
 	 */
-	protected onExitUniversal = (
-		exitCode: number | null,
-		exitSignal: string | NodeJS.Signals | null,
-	) => {
+	protected onExitUniversal = (exitCode: number | null, exitSignal: string | NodeJS.Signals | null) => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		console.log(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
 	};
@@ -78,7 +75,7 @@ export class EngineShell {
 	 * (either due to the **Engine** process not starting in the first place, latency between **Engine** server
 	 *  [if remote] being too high, or computer being too slow to launch **Engine** in a timely manner).
 	 */
-	protected notifyOnceEngineHasStarted = async (retries = 20): Promise<boolean | undefined> => {
+	protected notifyOnceEngineHasStarted = async (retries = 100): Promise<boolean | undefined> => {
 		for (let i = 0; i < retries; i++) {
 			const timeout = this.engineCheckTimeout;
 			const initialTime = new Date().getTime();
@@ -88,7 +85,6 @@ export class EngineShell {
 				this.notifyRendererThatEngineHasStarted();
 				this.engineCheckTimeoutId = undefined;
 				this.resetEngineCheckTimeout();
-				RUNTIME_GLOBALS.engineRunning = true;
 				return true;
 			} catch (error) {
 				this.engineCheckRetries++;
@@ -112,8 +108,22 @@ export class EngineShell {
 	 * Notifies **renderer** that the **Engine** process has started.
 	 */
 	private notifyRendererThatEngineHasStarted = () => {
+		RUNTIME_GLOBALS.engineRunning = true;
 		this.window?.webContents.send(IPC_ENGINE_STARTED);
 	};
+
+	/**
+	 * Notifies **renderer** that the **Engine** process has stopped.
+	 */
+	protected notifyRendererThatEngineHasStopped = () => {
+		RUNTIME_GLOBALS.engineRunning = false;
+		this.window?.webContents.send(IPC_ENGINE_STOPPED);
+	};
+
+	/**
+	 * Abstract method that shuts down engine.
+	 */
+	abstract shutDownEngine(): void;
 }
 
 /**

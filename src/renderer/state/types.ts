@@ -1,9 +1,14 @@
 // Engine Status
 
 /**
- * When the engine has started
+ * When the engine has started.
  */
 export const ENGINE_STARTED = 'ENGINE_STARTED';
+
+/**
+ * When engine has stopped.
+ */
+export const ENGINE_STOPPED = 'ENGINE_STOPPED';
 /**
  * For checking the engine status TODO: Change naming from dev to dynamic because that's what it really does
  * and we only use it during dev right now because of reloading but later we will need to get it dynamically.

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { ConnectedRouter as Router } from 'connected-react-router';
 import { Center, Spinner } from '@chakra-ui/react';
@@ -11,6 +11,8 @@ import { NotificationsHandler } from './components/notifications/NotificationsHa
 import { DevDashboard } from './components/dev/DevDashboard';
 import { AuthProvider, useFirebaseApp, useSigninCheck } from 'reactfire';
 import { getAuth } from 'firebase/auth';
+import { ipcRenderer } from 'electron';
+import { IPC_ENGINE_START, IPC_ENGINE_STOP } from '_/shared/ipcChannels';
 
 /**
  * Main portion of the **renderer**.
@@ -90,6 +92,21 @@ export const AuthWrapper = ({
 	fallback,
 }: React.PropsWithChildren<{ fallback: JSX.Element }>): JSX.Element => {
 	const { status, data: signInCheckResult } = useSigninCheck();
+
+	const startStopEngineOnAuthChange = async () => {
+		if (status !== 'loading') {
+			if (signInCheckResult.signedIn) {
+				// Logged in
+				await ipcRenderer.invoke(IPC_ENGINE_START);
+			} else {
+				// Logged out
+				await ipcRenderer.invoke(IPC_ENGINE_STOP);
+			}
+		}
+	};
+	useEffect(() => {
+		startStopEngineOnAuthChange();
+	}, [status, signInCheckResult]);
 	if (!children) {
 		throw new Error('Children must be provided');
 	}
@@ -103,6 +120,7 @@ export const AuthWrapper = ({
 		return children as JSX.Element;
 	}
 
+	console.log('not logging in');
 	return fallback;
 };
 

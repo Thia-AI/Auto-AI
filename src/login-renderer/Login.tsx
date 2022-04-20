@@ -198,6 +198,7 @@ const Login = React.memo(
 				});
 		};
 
+		// TODO: On enter, click sign in
 		const emailLogin = async () => {
 			if (password.trim() == '' || emailAddress.trim() == '') {
 				toast({

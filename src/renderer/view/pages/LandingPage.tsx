@@ -29,7 +29,6 @@ const LandingPage = () => {
 					.then(() => {
 						signInWithCustomToken(auth, customToken)
 							.then((userCredential) => {
-								console.log('SIGNED IN');
 								toast({
 									title: 'Login Successful',
 									description: `Welcome ${userCredential.user.displayName}`,

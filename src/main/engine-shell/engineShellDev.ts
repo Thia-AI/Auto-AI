@@ -22,11 +22,7 @@ export class EngineShellDev extends EngineShell {
 	 */
 	constructor(window: BrowserWindow | null) {
 		super(window);
-
-		this.engine = new PythonShell(
-			path.join(__dirname, '..', 'src', 'py', 'main.py'),
-			this.options,
-		);
+		this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), this.options);
 		this.notifyOnceEngineHasStarted();
 		this.onDataChangeSetup();
 		this.onExitSetup();
@@ -40,6 +36,15 @@ export class EngineShellDev extends EngineShell {
 			this.onDataChangeUniversal(message);
 		});
 	};
+
+	/**
+	 * Shuts down dev engine.
+	 */
+	shutDownEngine(): void {
+		console.log('Shutting down engine');
+		this.engine.kill();
+		this.notifyRendererThatEngineHasStopped();
+	}
 
 	/**
 	 * Overriden method for setting up listener for when dev **Engine** process exit's unexpectedly.
