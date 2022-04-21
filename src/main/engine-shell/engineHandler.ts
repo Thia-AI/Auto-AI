@@ -51,12 +51,8 @@ export class EngineHandler {
 	 * Engine .exe process rather than the .py code.
 	 * @returns A {@link EngineShellDev `development EngineShell`} or a {@link EngineShellProd `production EngineShell`} (if `simulateProd = true` environment with development **App**) instance.
 	 */
-	public createDevEngine = (
-		window: BrowserWindow | null,
-		simulateProd = false,
-	): EngineShellDev | EngineShellProd => {
-		if (simulateProd)
-			return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true);
+	public createDevEngine = (window: BrowserWindow | null, simulateProd = false): EngineShellDev | EngineShellProd => {
+		if (simulateProd) return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true);
 
 		return new EngineShellDev(window);
 	};

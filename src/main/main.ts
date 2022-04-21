@@ -12,9 +12,6 @@ import { Express, Response, Request } from 'express';
 import { cpus } from 'os';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
-import { EngineShellDev } from './engine-shell/engineShellDev';
-import { EngineShellProd } from './engine-shell/engineShellProd';
-import { EngineHandler } from './engine-shell/engineHandler';
 import { menu } from './menu/menu';
 import { WindowIPCActions } from './ipc/windowIPCActions';
 import { EngineIPCActionHandler } from './ipc/engineIPCActionHandler';
@@ -43,7 +40,6 @@ let firebaseApp: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
 let loginWindow: BrowserWindow | null;
 
-let engineShell: EngineShellProd | EngineShellDev;
 let mainWindowIPCActions: WindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
 
@@ -123,7 +119,6 @@ const createWindow = (): void => {
 	loginWindow.setMenu(menu);
 
 	// must initialize IPC handler and Engine loading renderer
-	launchEngine();
 
 	engineIPCActionHandler = new EngineIPCActionHandler(mainWindow, engineJobsSIOConnection); // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -305,18 +300,6 @@ const registerShortcuts = (win: BrowserWindow) => {
 			win.webContents.send(IPC_DEV_TOGGLE_DEV_DASHBOARD);
 		});
 	}
-};
-/**
- * Launches **Engine**.
- */
-const launchEngine = () => {
-	/* eslint-disable  @typescript-eslint/no-unused-vars */
-	if (isDev) {
-		engineShell = EngineHandler.getInstance().createDevEngine(mainWindow);
-	} else {
-		engineShell = EngineHandler.getInstance().createProdEngine(mainWindow);
-	}
-	/* eslint-enable  @typescript-eslint/no-unused-vars */
 };
 
 // Returns true if this instance of the App is the primary,
