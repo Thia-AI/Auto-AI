@@ -22,6 +22,7 @@ import { ProfileSelectButton } from './ProfileSelectButton';
 import { useAuth, useUser } from 'reactfire';
 import { IMenuOpenCloseAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { openCloseSideMenu } from '_/renderer/state/side-menu/SideModelAction';
+import DefaultProfilePic from '_utils/images/default_profile_pic.png';
 
 interface Props {
 	openCloseSideMenu: () => IMenuOpenCloseAction;
@@ -41,7 +42,7 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 			<Menu>
 				<ProfileSelectButton
 					displayName={user?.displayName}
-					imageURL={user?.photoURL as potentiallyUndefinedString}
+					imageURL={(user?.photoURL as potentiallyUndefinedString) ?? DefaultProfilePic}
 				/>
 				<MenuList shadow='lg' py='4' color={useColorModeValue('gray.600', 'gray.200')} px='3'>
 					<Text fontSize='sm' fontWeight='medium' mb='2'>
