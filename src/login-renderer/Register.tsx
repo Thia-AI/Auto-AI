@@ -77,6 +77,21 @@ const Register = React.memo(
 			passwordRetype: false,
 		});
 
+		useEffect(() => {
+			const registerOnEnter = async (event: KeyboardEvent) => {
+				if (event.key == 'Enter') {
+					await registerNewAccount();
+				}
+			};
+
+			window.addEventListener('keypress', registerOnEnter);
+
+			return () => {
+				window.removeEventListener('keypress', registerOnEnter);
+			};
+			// useEffect would have too many dependencies to where it would basically change
+			// each refresh so no point in adding them all.
+		});
 		const googleLogin = async () => {
 			await signInWithRedirect(auth, provider);
 		};

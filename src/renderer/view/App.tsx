@@ -125,19 +125,15 @@ export const AuthWrapper = ({
 };
 
 const AuthRoute = () => {
-	const Login = lazy(() => import('./pages/LandingPage'));
-	const Register = lazy(() => import('./pages/Register'));
+	const Landing = lazy(() => import('./pages/LandingPage'));
 
 	return (
 		<Switch>
-			<Route exact path='/login'>
-				<Login />
-			</Route>
-			<Route exact path='/create-account'>
-				<Register />
+			<Route exact path='/landing'>
+				<Landing />
 			</Route>
 			<Route exact path='*'>
-				<Redirect to='/login' />
+				<Redirect to='/landing' />
 			</Route>
 		</Switch>
 	);

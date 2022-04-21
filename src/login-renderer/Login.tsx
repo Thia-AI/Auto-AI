@@ -68,6 +68,22 @@ const Login = React.memo(
 		const [emailFocusedOnce, setEmailFocusedOnce] = useState(false);
 		const [passwordFocusedOnce, setPasswordFocusedOnce] = useState(false);
 
+		useEffect(() => {
+			const signInOnEnter = async (event: KeyboardEvent) => {
+				if (event.key == 'Enter') {
+					await emailLogin();
+				}
+			};
+
+			window.addEventListener('keypress', signInOnEnter);
+
+			return () => {
+				window.removeEventListener('keypress', signInOnEnter);
+			};
+
+			// useEffect would have too many dependencies to where it would basically change
+			// each refresh so no point in adding them all.
+		});
 		const googleLogin = async () => {
 			await signInWithRedirect(auth, provider);
 		};
