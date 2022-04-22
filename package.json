@@ -47,7 +47,8 @@
 		"buildVersion": "1",
 		"extraResources": [
 			"./extraResources/**"
-		]
+		],
+		"afterPack": "./electron-builder/hooks/afterPack.js"
 	},
 	"author": "Ritesh Ahlawat",
 	"license": "SEE LICENSE IN LICENSE",
@@ -127,6 +128,7 @@
 		"@types/react-router-dom": "^5.1.7",
 		"@typescript-eslint/eslint-plugin": "^5.8.1",
 		"@typescript-eslint/parser": "^5.8.1",
+		"asarmor": "^2.0.0",
 		"copy-webpack-plugin": "^10.2.0",
 		"cross-env": "^7.0.3",
 		"css-loader": "^6.5.1",
