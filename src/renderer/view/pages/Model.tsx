@@ -15,6 +15,7 @@ import { ActiveTrainJob } from '../components/model-page/ActiveTrainJob';
 import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetActions';
 import { TestModel } from '../components/model-page/TestModel';
+import { ExportModel } from '../components/model-page/ExportModel';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -81,6 +82,12 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 		}
 	};
 
+	const renderExportModel = () => {
+		if (model.model_status == ModelStatus.TRAINED) {
+			return <ExportModel model={model} />;
+		}
+	};
+
 	return (
 		<VStack
 			px='6'
@@ -113,6 +120,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 			<HorizontalDatasetPreview modelType={model.model_type} />
 			{renderActiveTrainingJob()}
 			{renderTestModel()}
+			{renderExportModel()}
 			<Spacer />
 			<Center w='full'>
 				<Button colorScheme='blue' isDisabled={!canTrainModel()} isLoading={!dataLoaded} onClick={trainModel}>
