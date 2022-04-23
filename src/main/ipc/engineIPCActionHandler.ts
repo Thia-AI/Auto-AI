@@ -77,7 +77,9 @@ class EngineIPCActionHandler {
 		});
 
 		ipcMain.handle(IPC_ENGINE_START, () => {
-			this.launchEngine();
+			if (!this.engineShell) {
+				this.launchEngine();
+			}
 		});
 	};
 
