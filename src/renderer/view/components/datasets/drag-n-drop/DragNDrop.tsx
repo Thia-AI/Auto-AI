@@ -66,7 +66,10 @@ const DragNDropC = React.memo(
 		 */
 		const selectFolder = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 			e.preventDefault();
-			const folder: OpenDialogReturnValue = await ipcRenderer.invoke(IPC_DRAG_AND_DROP_SELECT_FOLDER);
+			const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
+				IPC_DRAG_AND_DROP_SELECT_FOLDER,
+				'Select Folder to Upload',
+			);
 
 			if (folder.canceled) return;
 			try {

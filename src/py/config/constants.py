@@ -43,6 +43,19 @@ class AutoNameEnum(Enum):
         return name
 
 
+class ModelExportType(AutoNameEnum):
+    """Enum that contains different model export types"""
+    SAVED_MODEL = auto()
+    LITE = auto()
+    JS = auto()
+
+
+class ModelExportStatus(AutoNameEnum):
+    """Enum that contains the different status of model exports"""
+    EXPORTING = auto()
+    EXPORTED = auto()
+
+
 class ModelStatus(AutoNameEnum):
     """Enum that contains different statuses (or states) a model can be in at any given time."""
     IDLE = auto()

@@ -88,10 +88,10 @@ class WindowIPCActions {
 			return files;
 		});
 
-		ipcMain.handle(IPC_DRAG_AND_DROP_SELECT_FOLDER, async () => {
+		ipcMain.handle(IPC_DRAG_AND_DROP_SELECT_FOLDER, async (_e, title: string) => {
 			const files = await dialog.showOpenDialog(this.window, {
-				title: 'Select Folder to Upload',
-				properties: ['openDirectory', 'dontAddToRecent'],
+				title,
+				properties: ['openDirectory', 'dontAddToRecent', 'createDirectory', 'promptToCreate'],
 			});
 
 			return files;

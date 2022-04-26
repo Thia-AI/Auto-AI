@@ -136,6 +136,20 @@ export enum ModelStatus {
 export type PossibleModelStatuses = keyof typeof ModelStatus;
 
 /**
+ * Different export types for a model.
+ */
+export enum ModelExportType {
+	SAVED_MODEL = 'SAVED_MODEL',
+	LITE = 'LITE',
+	JS = 'JS',
+}
+
+/**
+ * Type that represents all possible model exports.
+ */
+export type PossibleModelExportTypes = keyof typeof ModelExportType;
+
+/**
  * **Engine**'s DB Models table.
  */
 export interface Model {

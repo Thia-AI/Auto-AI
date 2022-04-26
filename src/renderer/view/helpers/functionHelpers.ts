@@ -29,6 +29,24 @@ export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) =
 	} while (true);
 };
 
+export const waitTillEngineJobCompleteInterval = (
+	jobID: string,
+	setState: (state: [boolean, any] | null) => void,
+	timeout = 1000,
+) => {
+	const timer = window.setInterval(async () => {
+		const config: AxiosRequestConfig = {
+			timeout,
+		};
+		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobID, config);
+		if (err || resData.has_finished || resData.has_cancelled) {
+			setState([err, resData]);
+			clearInterval(timer);
+		}
+	}, timeout);
+	return timer;
+};
+
 /**
  * Helper method to sleep in async/await.
  *
