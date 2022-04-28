@@ -13,7 +13,7 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineDBTypes';
+import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineDBTypes';
 import TensorFlowLogo from '_utils/images/TensorFlow Brand Assets/TensorFlow Logo/Primary/SVG/FullColorPrimary Icon.svg';
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';
@@ -33,10 +33,70 @@ const CharkaTensorFlowLogo = chakra(TensorFlowLogo);
 export const ExportModel = React.memo(({ model }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 
-	const [savedModelExportDisabled, setSavedModelExportDisabled] = useState(false);
-	const [liteExportDisabled, setLiteExportDisabled] = useState(true);
-	const [jsExportDisabled, setJsExportDisabled] = useState(true);
+	const [modelExportDisabled, setModelExportDisabled] = useState(true);
 
+	const [savedModelExporting, setSavedModelExporting] = useState(false);
+	const [liteExporting, setLiteExporting] = useState(false);
+	const [jsExporting, setJsExporting] = useState(false);
+
+	const [exportModelEngineResponse, setExportModelEngineResponse] = useState<[boolean, any] | null>(null);
+	const [exportModelJobWatchIntervalID, setExportModelJobWatchIntervalID] = useState<number | null>(null);
+
+	useEffect(() => {
+		// Once export job has finished.
+		if (exportModelEngineResponse) {
+			setExportModelEngineResponse(null);
+			setModelExportDisabled(false);
+			setSavedModelExporting(false);
+			setLiteExporting(false);
+			setJsExporting(false);
+		}
+	}, [exportModelEngineResponse]);
+
+	useEffect(() => {
+		// Clear interval for waiting for export job to complete
+		// because component unmounted.
+		return () => {
+			if (exportModelJobWatchIntervalID) {
+				clearInterval(exportModelJobWatchIntervalID);
+			}
+		};
+	}, [exportModelJobWatchIntervalID]);
+
+	useEffect(() => {
+		const checkIfAnyActiveExportJobs = async () => {
+			const [activeExportError, activeExportResData] =
+				await EngineActionHandler.getInstance().getActiveModelExports(model.id);
+			if (!activeExportError && activeExportResData['exports']) {
+				const activeExport: Export[] = activeExportResData['exports'];
+				let savedModelExporting = false;
+				let liteModelExporting = false;
+				let jsModelExporting = false;
+				activeExport.forEach((activeExport) => {
+					if (activeExport.export_type == 'SAVED_MODEL') {
+						savedModelExporting = true;
+						setSavedModelExporting(true);
+					} else if (activeExport.export_type == 'LITE') {
+						liteModelExporting = true;
+						setLiteExporting(true);
+					} else if (activeExport.export_type == 'JS') {
+						jsModelExporting = true;
+						setJsExporting(true);
+					}
+					// Wait till export job has completed
+					setExportModelJobWatchIntervalID(
+						waitTillEngineJobCompleteInterval(activeExport.export_job_id, setExportModelEngineResponse),
+					);
+				});
+
+				setModelExportDisabled(savedModelExporting || liteModelExporting || jsModelExporting);
+			} else {
+				setModelExportDisabled(false);
+			}
+		};
+
+		checkIfAnyActiveExportJobs();
+	}, []);
 	return (
 		<Box
 			w={isLargerThan1280 ? '90%' : 'full'}
@@ -67,7 +127,12 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					title='TF SavedModel'
 					exportType={ModelExportType.SAVED_MODEL}
 					modelID={model.id}
-					isDisabled={savedModelExportDisabled}
+					setExportModelEngineResponse={setExportModelEngineResponse}
+					exporting={savedModelExporting}
+					setExporting={setSavedModelExporting}
+					setIsDisabled={setModelExportDisabled}
+					setExportModelJobWatchIntervalID={setExportModelJobWatchIntervalID}
+					isDisabled={modelExportDisabled}
 					description='Export your model in a TF SavedModel format to run your model on desktop devices or docker container.'
 				/>
 				<ExtraModelTypeButton
@@ -75,7 +140,12 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					title='TF Lite'
 					exportType={ModelExportType.LITE}
 					modelID={model.id}
-					isDisabled={liteExportDisabled}
+					exporting={liteExporting}
+					setExportModelEngineResponse={setExportModelEngineResponse}
+					setExporting={setLiteExporting}
+					setIsDisabled={setModelExportDisabled}
+					setExportModelJobWatchIntervalID={setExportModelJobWatchIntervalID}
+					isDisabled={modelExportDisabled}
 					description='Export your model in a TF Lite format to run your model on the edge or mobile devices.'
 				/>
 				<ExtraModelTypeButton
@@ -83,7 +153,12 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					title='TensorFlow.js'
 					exportType={ModelExportType.JS}
 					modelID={model.id}
-					isDisabled={jsExportDisabled}
+					exporting={jsExporting}
+					setExportModelEngineResponse={setExportModelEngineResponse}
+					setExporting={setJsExporting}
+					setIsDisabled={setModelExportDisabled}
+					setExportModelJobWatchIntervalID={setExportModelJobWatchIntervalID}
+					isDisabled={modelExportDisabled}
 					description='Export your model in a TensorFlow.js format to run your model on the browser or Node.js.'
 				/>
 			</Wrap>
@@ -99,34 +174,31 @@ interface ExtraModelTypeButton {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	iconSrc: ChakraComponent<any, {}>;
 	modelID: string;
+	exporting: boolean;
+	setExporting: (exporting: boolean) => void;
+	setExportModelEngineResponse: (engineResponse: [boolean, any] | null) => void;
+	setExportModelJobWatchIntervalID: (intervalID: number | null) => void;
 	exportType: PossibleModelExportTypes;
-	isDisabled?: boolean;
+	isDisabled: boolean;
+	setIsDisabled: (isDisabled: boolean) => void;
 }
 
 const ExtraModelTypeButton = React.memo(
-	({ title, description, iconSrc, isDisabled, modelID, exportType }: ExtraModelTypeButton) => {
-		const [exporting, setExporting] = useState(false);
+	({
+		title,
+		description,
+		iconSrc,
+		isDisabled,
+		modelID,
+		exportType,
+		setExportModelJobWatchIntervalID,
+		setExportModelEngineResponse,
+		exporting,
+		setExporting,
+		setIsDisabled,
+	}: ExtraModelTypeButton) => {
 		const toast = useToast();
-		const [exportModelEngineResponse, setExportModelEngineResponse] = useState<[boolean, any] | null>(null);
-		const [exportModelJobWatchIntervalID, setExportModelJobWatchIntervalID] = useState<number | null>(null);
 
-		useEffect(() => {
-			if (exportModelEngineResponse) {
-				// waiting for export job to complete finished.
-				setExportModelEngineResponse(null);
-				setExporting(false);
-			}
-		}, [exportModelEngineResponse]);
-
-		useEffect(() => {
-			// Clear interval for waiting for export job to complete
-			// because component unmounted.
-			return () => {
-				if (exportModelJobWatchIntervalID) {
-					clearInterval(exportModelJobWatchIntervalID);
-				}
-			};
-		}, [exportModelJobWatchIntervalID]);
 		const exportModel = async () => {
 			if (!isDisabled) {
 				const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
@@ -135,6 +207,7 @@ const ExtraModelTypeButton = React.memo(
 				);
 				if (folder.canceled) return;
 				setExporting(true);
+				setIsDisabled(true);
 				const [exportModelErrorExists, exportModelResData] =
 					await EngineActionHandler.getInstance().exportModel(modelID, {
 						export_type: exportType,
@@ -149,6 +222,7 @@ const ExtraModelTypeButton = React.memo(
 						isClosable: false,
 					});
 					setExporting(false);
+					setIsDisabled(false);
 					return;
 				}
 				// Wait till export job has completed

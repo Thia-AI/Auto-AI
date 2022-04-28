@@ -54,6 +54,7 @@ class ModelExportStatus(AutoNameEnum):
     """Enum that contains the different status of model exports"""
     EXPORTING = auto()
     EXPORTED = auto()
+    ERROR = auto()
 
 
 class ModelStatus(AutoNameEnum):

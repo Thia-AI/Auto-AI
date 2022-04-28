@@ -1,8 +1,7 @@
-import uuid
 from datetime import datetime
 
-from db.commands.base_commands import DBCommand
 from config.constants import ModelExportStatus
+from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
 
@@ -21,3 +20,16 @@ def update_export_status(export_job_id: str, export_status: str):
                     command='''UPDATE exports SET export_status = ? WHERE id = ?''',
                     values=(export_status, export_job_id))
     DBManager.get_instance().execute(cmd)
+
+
+def get_active_model_exports(model_id: str):
+    cmd = DBCommand(name=f"Get active exports for model: {model_id}",
+                    command='''
+                    SELECT e.*
+                    FROM exports as e,
+                         models as m
+                    WHERE e.model_id = m.id
+                      AND e.model_id = ?
+                      AND e.export_status = ?''',
+                    values=(model_id, ModelExportStatus.EXPORTING.value))
+    return DBManager.get_instance().execute(cmd)

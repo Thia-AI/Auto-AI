@@ -20,7 +20,7 @@ from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
     increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count
 # Export commands
-from db.commands.export_commands import add_export_to_db
+from db.commands.export_commands import add_export_to_db, get_active_model_exports
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
     reset_labels_of_inputs, get_input, update_input_label
@@ -29,7 +29,7 @@ from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status
-from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row
+from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from env import environment
 from exports.export_model_job import ExportModelJob
 # Jobs
@@ -197,6 +197,24 @@ def export_model_route(model_id: str):
     ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir])).queue()
     add_export_to_db(model_id, ids[0], str(save_dir.absolute()), req_data['export_type'], export_id)
     return {'ids': ids}, 202
+
+
+@app.route('/model/<string:model_id>/active_exports', methods=['GET'])
+def get_active_model_exports_route(model_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(model_id) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(model_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of model does not exist"}, 400
+    rows = get_active_model_exports(model_id)
+    exports = []
+    for row in rows:
+        export = export_from_row(row)
+        exports.append(export)
+    if len(exports) == 0:
+        return {'exports': None}, 200
+    return {'exports': exports}, 200
 
 
 @app.route('/model/<string:model_id>/train', methods=['POST'])
