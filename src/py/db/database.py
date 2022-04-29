@@ -93,6 +93,18 @@ class DBManager(object):
                 color text not null,
                 foreign key (dataset_id) references datasets(id)
             )''')
+            # Exports
+            self.__connection.execute('''CREATE TABLE IF NOT EXISTS exports (
+                id varchar(32) not null primary key,
+                export_status text not null,
+                export_type text not null,
+                save_path text not null,
+                export_date datetime not null,
+                export_job_id varchar(32) not null,
+                model_id varchar(32) not null,
+                foreign key (model_id) references models(id),
+                foreign key (export_job_id) references jobs(id)
+            )''')
         except sqlite3.Error as e:
             log("[SQLITE] - failed to create table")
             log(str(e))

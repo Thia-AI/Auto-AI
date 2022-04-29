@@ -136,6 +136,59 @@ export enum ModelStatus {
 export type PossibleModelStatuses = keyof typeof ModelStatus;
 
 /**
+ * Different statuses of a model being exported.
+ */
+export enum ModelExportStatus {
+	EXPORTING = 'EXPORTING',
+	EXPORTED = 'EXPORTED',
+	ERROR = 'ERROR',
+}
+
+/**
+ * Type that represents all model export statuses.
+ */
+export type PossibleModelExportStatuses = keyof typeof ModelExportStatus;
+
+/**
+ * Different export types for a model.
+ */
+export enum ModelExportType {
+	SAVED_MODEL = 'SAVED_MODEL',
+	LITE = 'LITE',
+}
+
+/**
+ * Type that represents all possible model exports.
+ */
+export type PossibleModelExportTypes = keyof typeof ModelExportType;
+
+/**
+ * **Engine**'s DB Exports table.
+ */
+export interface Export {
+	id: string;
+	export_status: PossibleModelExportStatuses;
+	export_type: PossibleModelExportTypes;
+	save_path: string;
+	export_job_id: string;
+	model_id: string;
+	export_date: string;
+}
+
+/**
+ * Empty export.
+ */
+export const nullExport: Export = {
+	id: '',
+	export_date: '',
+	export_status: 'EXPORTING',
+	export_type: 'SAVED_MODEL',
+	save_path: '',
+	model_id: '',
+	export_job_id: '',
+};
+
+/**
  * **Engine**'s DB Models table.
  */
 export interface Model {

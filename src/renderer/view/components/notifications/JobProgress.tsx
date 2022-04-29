@@ -15,8 +15,7 @@ const JobProgressC = React.memo((props: Props) => {
 	const { jobID, clearJobIDState, initialJob } = props;
 
 	const intervalTime = 750;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const [intervalID, setIntervalID] = useState<any>();
+	const [intervalID, setIntervalID] = useState<number>();
 	const [job, setJob] = useState<Job>(nullJob);
 
 	// We set here so that it displays the proper job name and progress
@@ -33,7 +32,7 @@ const JobProgressC = React.memo((props: Props) => {
 			clearInterval(intervalID);
 		} else {
 			setIntervalID(
-				setInterval(async () => {
+				window.setInterval(async () => {
 					const [err, resData] = await EngineActionHandler.getInstance().getJob(jobID, {
 						timeout: intervalTime - 100,
 					});

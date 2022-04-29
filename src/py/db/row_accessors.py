@@ -15,6 +15,18 @@ def dataset_from_row(row):
     }
 
 
+def export_from_row(row):
+    return {
+        'id': row['id'],
+        'export_status': row['export_status'],
+        'export_type': row['export_type'],
+        'save_path': row['save_path'],
+        'export_job_id': row['export_job_id'],
+        'model_id': row['model_id'],
+        'export_date': row['export_date']
+    }
+
+
 def job_from_row(row):
     extra_data = row['extra_data']
     if extra_data is not None:

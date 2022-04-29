@@ -30,6 +30,33 @@ export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) =
 };
 
 /**
+ * Helper method that uses an interval to check if a job has finished.
+ *
+ * @param jobID Job ID retrieved when starting a job.
+ * @param setState Set state function.
+ * @param timeout How often should it should sleep for before making the next request.
+ * @returns Interval ID.
+ */
+export const waitTillEngineJobCompleteInterval = (
+	jobID: string,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	setState: (state: [boolean, any] | null) => void,
+	timeout = 1000,
+) => {
+	const timer = window.setInterval(async () => {
+		const config: AxiosRequestConfig = {
+			timeout,
+		};
+		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobID, config);
+		if (err || resData.has_finished || resData.has_cancelled) {
+			setState([err, resData]);
+			clearInterval(timer);
+		}
+	}, timeout);
+	return timer;
+};
+
+/**
  * Helper method to sleep in async/await.
  *
  * @param ms Milliseconds to sleep for.

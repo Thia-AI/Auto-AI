@@ -24,6 +24,8 @@ import { GetTrainJobEngineAction } from './actions/get/getTrainJobs';
 import { TestModelEngineAction } from './actions/post/testModel';
 import { GetTelemetryGPUStateEngineAction } from './actions/get/getTelemetryGPUState';
 import { CancelJobEA } from './actions/delete/cancelJob';
+import { ExportModelEngineAction, IExportModelData } from './actions/post/exportModel';
+import { GetActiveModelExportsEngineAction } from './actions/get/getActiveModelExports';
 
 /**
  * Class that manages all EngineActions.
@@ -43,6 +45,8 @@ class EngineActionHandler {
 	private getModelEA!: GetModelEngineAction;
 	private trainModelEA!: TrainModelEngineAction;
 	private testModelEA!: TestModelEngineAction;
+	private exportModelEA!: ExportModelEngineAction;
+	private getActiveModelExportsEA!: GetActiveModelExportsEngineAction;
 	// Datasets
 	private createDatasetEA!: CreateDatasetEngineAction;
 	private getDatasetsEA!: GetDatasetsEngineAction;
@@ -119,6 +123,8 @@ class EngineActionHandler {
 		this.getModelEA = new GetModelEngineAction(this._engineRequest);
 		this.trainModelEA = new TrainModelEngineAction(this._engineRequest);
 		this.testModelEA = new TestModelEngineAction(this._engineRequest);
+		this.exportModelEA = new ExportModelEngineAction(this._engineRequest);
+		this.getActiveModelExportsEA = new GetActiveModelExportsEngineAction(this._engineRequest);
 		// Datasets
 		this.createDatasetEA = new CreateDatasetEngineAction(this._engineRequest);
 		this.getDatasetsEA = new GetDatasetsEngineAction(this._engineRequest);
@@ -262,6 +268,14 @@ class EngineActionHandler {
 
 	public getTelemeteryGPUState = async (config?: AxiosRequestConfig) => {
 		return this.getTelemetryGPUStateEA.run(config);
+	};
+
+	public exportModel = async (modelID: string, data: IExportModelData, config?: AxiosRequestConfig) => {
+		return this.exportModelEA.run(config, [modelID, data]);
+	};
+
+	public getActiveModelExports = async (modelID: string, config?: AxiosRequestConfig) => {
+		return this.getActiveModelExportsEA.run(config, modelID);
 	};
 }
 
