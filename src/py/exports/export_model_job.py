@@ -46,7 +46,5 @@ class ExportModelJob(BaseJob):
                     f.write(tflite_model)
             except Exception as e:
                 log('Error:', e)
-        elif export_type == ModelExportType.JS.value:
-            log('JS operation not implemented')
         update_export_status(export_id, ModelExportStatus.EXPORTED.value)
         super().clean_up_job()

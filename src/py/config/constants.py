@@ -47,7 +47,6 @@ class ModelExportType(AutoNameEnum):
     """Enum that contains different model export types"""
     SAVED_MODEL = auto()
     LITE = auto()
-    JS = auto()
 
 
 class ModelExportStatus(AutoNameEnum):

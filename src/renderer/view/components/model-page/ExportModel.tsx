@@ -148,19 +148,6 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					isDisabled={modelExportDisabled}
 					description='Export your model in a TF Lite format to run your model on the edge or mobile devices.'
 				/>
-				<ExtraModelTypeButton
-					iconSrc={CharkaTensorFlowLogo}
-					title='TensorFlow.js'
-					exportType={ModelExportType.JS}
-					modelID={model.id}
-					exporting={jsExporting}
-					setExportModelEngineResponse={setExportModelEngineResponse}
-					setExporting={setJsExporting}
-					setIsDisabled={setModelExportDisabled}
-					setExportModelJobWatchIntervalID={setExportModelJobWatchIntervalID}
-					isDisabled={modelExportDisabled}
-					description='Export your model in a TensorFlow.js format to run your model on the browser or Node.js.'
-				/>
 			</Wrap>
 		</Box>
 	);

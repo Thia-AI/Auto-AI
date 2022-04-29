@@ -155,7 +155,6 @@ export type PossibleModelExportStatuses = keyof typeof ModelExportStatus;
 export enum ModelExportType {
 	SAVED_MODEL = 'SAVED_MODEL',
 	LITE = 'LITE',
-	JS = 'JS',
 }
 
 /**
