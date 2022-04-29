@@ -12,6 +12,7 @@ class GetActiveModelExportsEngineAction implements IEngineAction {
 		this.apiName = '/model';
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	run = async (config?: AxiosRequestConfig, data?: string): Promise<[boolean, any]> => {
 		try {
 			const res = await this.engineRequest.get(`${this.apiName}/${data}/active_exports`, config);

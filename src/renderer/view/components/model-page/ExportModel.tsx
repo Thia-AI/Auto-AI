@@ -18,7 +18,7 @@ import TensorFlowLogo from '_utils/images/TensorFlow Brand Assets/TensorFlow Log
 import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER } from '_/shared/ipcChannels';
-import { waitTillEngineJobComplete, waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
+import { waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
 
 interface Props {
 	model: Model;
@@ -37,8 +37,8 @@ export const ExportModel = React.memo(({ model }: Props) => {
 
 	const [savedModelExporting, setSavedModelExporting] = useState(false);
 	const [liteExporting, setLiteExporting] = useState(false);
-	const [jsExporting, setJsExporting] = useState(false);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [exportModelEngineResponse, setExportModelEngineResponse] = useState<[boolean, any] | null>(null);
 	const [exportModelJobWatchIntervalID, setExportModelJobWatchIntervalID] = useState<number | null>(null);
 
@@ -49,7 +49,6 @@ export const ExportModel = React.memo(({ model }: Props) => {
 			setModelExportDisabled(false);
 			setSavedModelExporting(false);
 			setLiteExporting(false);
-			setJsExporting(false);
 		}
 	}, [exportModelEngineResponse]);
 
@@ -71,7 +70,6 @@ export const ExportModel = React.memo(({ model }: Props) => {
 				const activeExport: Export[] = activeExportResData['exports'];
 				let savedModelExporting = false;
 				let liteModelExporting = false;
-				let jsModelExporting = false;
 				activeExport.forEach((activeExport) => {
 					if (activeExport.export_type == 'SAVED_MODEL') {
 						savedModelExporting = true;
@@ -79,9 +77,6 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					} else if (activeExport.export_type == 'LITE') {
 						liteModelExporting = true;
 						setLiteExporting(true);
-					} else if (activeExport.export_type == 'JS') {
-						jsModelExporting = true;
-						setJsExporting(true);
 					}
 					// Wait till export job has completed
 					setExportModelJobWatchIntervalID(
@@ -89,7 +84,7 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					);
 				});
 
-				setModelExportDisabled(savedModelExporting || liteModelExporting || jsModelExporting);
+				setModelExportDisabled(savedModelExporting || liteModelExporting);
 			} else {
 				setModelExportDisabled(false);
 			}
@@ -163,6 +158,7 @@ interface ExtraModelTypeButton {
 	modelID: string;
 	exporting: boolean;
 	setExporting: (exporting: boolean) => void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	setExportModelEngineResponse: (engineResponse: [boolean, any] | null) => void;
 	setExportModelJobWatchIntervalID: (intervalID: number | null) => void;
 	exportType: PossibleModelExportTypes;
@@ -230,13 +226,7 @@ const ExtraModelTypeButton = React.memo(
 				cursor={isDisabled ? 'not-allowed' : 'pointer'}
 				willChange='transform'
 				transition='all 200ms ease'
-				_hover={
-					!isDisabled
-						? {
-								transform: 'scale(1.03)',
-						  }
-						: {}
-				}>
+				_hover={!isDisabled ? { transform: 'scale(1.03)' } : {}}>
 				<HStack>
 					<Icon as={iconSrc} w={12} h={12} />
 					<Spacer />

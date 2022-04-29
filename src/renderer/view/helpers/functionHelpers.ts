@@ -29,8 +29,17 @@ export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) =
 	} while (true);
 };
 
+/**
+ * Helper method that uses an interval to check if a job has finished.
+ *
+ * @param jobID Job ID retrieved when starting a job.
+ * @param setState Set state function.
+ * @param timeout How often should it should sleep for before making the next request.
+ * @returns Interval ID.
+ */
 export const waitTillEngineJobCompleteInterval = (
 	jobID: string,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	setState: (state: [boolean, any] | null) => void,
 	timeout = 1000,
 ) => {
