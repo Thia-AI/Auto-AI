@@ -14,6 +14,8 @@ export abstract class EngineShell {
 	private engineCheckTimeout: number;
 	private engineCheckTimeoutInitial: number;
 	private engineCheckTimeoutIncreaseAmount: number;
+	private stopWaitingForEngineStartFlag: boolean;
+
 	/**
 	 * Instantiate an **Engine** Shell.
 	 *
@@ -25,6 +27,7 @@ export abstract class EngineShell {
 		this.engineCheckTimeoutInitial = 500;
 		this.engineCheckTimeout = this.engineCheckTimeoutInitial;
 		this.engineCheckTimeoutIncreaseAmount = 750;
+		this.stopWaitingForEngineStartFlag = false;
 	}
 
 	/**
@@ -47,6 +50,10 @@ export abstract class EngineShell {
 	protected onExitUniversal = (exitCode: number | null, exitSignal: string | NodeJS.Signals | null) => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		console.log(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
+	};
+
+	protected shutDownEngineUniversal = () => {
+		this.stopWaitingForEngineStartFlag = true;
 	};
 
 	/**
@@ -77,6 +84,10 @@ export abstract class EngineShell {
 	 */
 	protected notifyOnceEngineHasStarted = async (retries = 100): Promise<boolean | undefined> => {
 		for (let i = 0; i < retries; i++) {
+			// If Engine was shut down before it started, we need to stop checking for it.
+			if (this.stopWaitingForEngineStartFlag) {
+				return;
+			}
 			const timeout = this.engineCheckTimeout;
 			const initialTime = new Date().getTime();
 			try {

@@ -43,6 +43,7 @@ export class EngineShellProd extends EngineShell {
 	 * Shuts down production engine.
 	 */
 	shutDownEngine(): void {
+		this.shutDownEngineUniversal();
 		this.engine.kill();
 		this.notifyRendererThatEngineHasStopped();
 	}

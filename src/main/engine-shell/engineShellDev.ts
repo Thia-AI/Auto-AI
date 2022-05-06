@@ -42,6 +42,7 @@ export class EngineShellDev extends EngineShell {
 	 */
 	shutDownEngine(): void {
 		console.log('Shutting down engine');
+		this.shutDownEngineUniversal();
 		this.engine.kill();
 		this.notifyRendererThatEngineHasStopped();
 	}
