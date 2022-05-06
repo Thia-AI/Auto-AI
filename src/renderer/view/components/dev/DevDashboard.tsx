@@ -10,17 +10,26 @@ import {
 	VStack,
 	Box,
 	Divider,
+	useToast,
 } from '@chakra-ui/react';
 
 import { ipcRenderer } from 'electron';
 import { DevDeleteDatasetInputs } from './DevDeleteDatasetInputs';
-import { IPC_DEV_TOGGLE_DEV_DASHBOARD, IPC_RUNTIME_IS_DEV } from '_/shared/ipcChannels';
+import {
+	IPC_DEV_COPY_ID_TOKEN,
+	IPC_DEV_COPY_UID,
+	IPC_DEV_TOGGLE_DEV_DASHBOARD,
+	IPC_RUNTIME_IS_DEV,
+} from '_/shared/ipcChannels';
+import { useAuth } from 'reactfire';
 
 /**
  * Dev panel (only works during development).
  */
 export const DevDashboard = React.memo(() => {
 	const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+	const auth = useAuth();
+	const toast = useToast();
 
 	const [isDev, setIsDev] = useState(false);
 
@@ -37,8 +46,56 @@ export const DevDashboard = React.memo(() => {
 			isDashboardOpen ? setIsDashboardOpen(false) : setIsDashboardOpen(true);
 		});
 
+		ipcRenderer.on(IPC_DEV_COPY_ID_TOKEN, async () => {
+			if (auth.currentUser) {
+				const idToken = await auth.currentUser.getIdToken(false);
+
+				navigator.clipboard.writeText(idToken);
+				toast({
+					title: 'Success',
+					description: 'User ID Token Copied',
+					status: 'success',
+					duration: 1000,
+					isClosable: false,
+				});
+			} else {
+				toast({
+					title: 'Warning',
+					description: 'No User',
+					status: 'warning',
+					duration: 1000,
+					isClosable: false,
+				});
+			}
+		});
+
+		ipcRenderer.on(IPC_DEV_COPY_UID, async () => {
+			if (auth.currentUser) {
+				const uid = await auth.currentUser.uid;
+
+				navigator.clipboard.writeText(uid);
+				toast({
+					title: 'Success',
+					description: 'User UID Copied',
+					status: 'success',
+					duration: 1000,
+					isClosable: false,
+				});
+			} else {
+				toast({
+					title: 'Warning',
+					description: 'No User',
+					status: 'warning',
+					duration: 1000,
+					isClosable: false,
+				});
+			}
+		});
+
 		return () => {
 			ipcRenderer.removeAllListeners(IPC_DEV_TOGGLE_DEV_DASHBOARD);
+			ipcRenderer.removeAllListeners(IPC_DEV_COPY_ID_TOKEN);
+			ipcRenderer.removeAllListeners(IPC_DEV_COPY_UID);
 		};
 	}, [isDashboardOpen]);
 	const render = () => {

@@ -120,7 +120,6 @@ export const AuthWrapper = ({
 		return children as JSX.Element;
 	}
 
-	console.log('not logging in');
 	return fallback;
 };
 

@@ -32,6 +32,10 @@ export const IPC_DEV_ENGINE_STARTED = 'dev:engineStarted';
 
 export const IPC_DEV_TOGGLE_DEV_DASHBOARD = 'dev:toggleDevDashboard';
 
+export const IPC_DEV_COPY_ID_TOKEN = 'dev:copyIdToken';
+
+export const IPC_DEV_COPY_UID = 'dev:copyUid';
+
 // DRAG AND DROP
 
 /**

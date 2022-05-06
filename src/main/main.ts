@@ -27,6 +27,8 @@ import {
 	IPC_WORKER_TASK_DONE,
 	IPC_WORKER_TASK_RECEIVED,
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
+	IPC_DEV_COPY_ID_TOKEN,
+	IPC_DEV_COPY_UID,
 } from '_/shared/ipcChannels';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
 import { startServer } from './server/server';
@@ -298,6 +300,14 @@ const registerShortcuts = (win: BrowserWindow) => {
 		// Opens dev dashboard on renderer
 		register(win, 'Ctrl+Shift+Q', () => {
 			win.webContents.send(IPC_DEV_TOGGLE_DEV_DASHBOARD);
+		});
+
+		register(win, 'Ctrl+Shift+T', () => {
+			win.webContents.send(IPC_DEV_COPY_ID_TOKEN);
+		});
+
+		register(win, 'Ctrl+Shift+U', () => {
+			win.webContents.send(IPC_DEV_COPY_UID);
 		});
 	}
 };
