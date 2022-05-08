@@ -18,7 +18,7 @@ import { updateActiveDatasetInputLabelAction } from '_/renderer/state/active-dat
 import { IUpdateDatasetInputLabelAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { updateDatasetLabelAction } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IUpdateDatasetLabelAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -65,7 +65,7 @@ const DatasetInputLabelsC = React.memo(
 				// Then send to Engine
 				// PUT /dataset/input/<input_id>/new_label
 				// previousLabel, currentlabel
-				await EngineActionHandler.getInstance().updateInputLabel(activeInput.id, {
+				await EngineRequestHandler.getInstance().updateInputLabel(activeInput.id, {
 					previous_label: activeInput.label,
 					new_label: label,
 				});

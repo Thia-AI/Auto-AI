@@ -10,7 +10,7 @@ import { Label } from './Label';
 import { IAppState } from '_/renderer/state/reducers';
 import { InputErrorText } from './InputErrorText';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { openCloseDeleteLabelAction } from '_/renderer/state/delete-modals/DeleteModalsActions';
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { DeleteLabel } from './DeleteLabel';
@@ -86,7 +86,7 @@ const LabelsListC = React.memo(
 			setLabels(labelsCpy);
 
 			const [updateLabelsOrderErr, updateLabelsOrderRes] =
-				await EngineActionHandler.getInstance().updateLabelsOrder(activeDataset.value.dataset.id, {
+				await EngineRequestHandler.getInstance().updateLabelsOrder(activeDataset.value.dataset.id, {
 					labels: labelsCpy,
 				});
 			if (updateLabelsOrderErr) {
@@ -127,7 +127,7 @@ const LabelsListC = React.memo(
 			if (activeDataset.value.dataset.id.length == 0) return;
 
 			setIsLabelDeleting(true);
-			const [deleteLabelErr, deleteLabelRes] = await EngineActionHandler.getInstance().deleteLabelFromDataset(
+			const [deleteLabelErr, deleteLabelRes] = await EngineRequestHandler.getInstance().deleteLabelFromDataset(
 				activeDataset.value.dataset.id,
 				{
 					label: label,

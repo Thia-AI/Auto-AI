@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class UploadImageToDatasetEngineAction implements IEngineAction {
+class UploadImageToDatasetEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -15,11 +15,7 @@ class UploadImageToDatasetEngineAction implements IEngineAction {
 		try {
 			if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
-			const res = await this.engineRequest.post(
-				`${this.apiName}/${data[0]}/inputs/upload`,
-				data[1],
-				config,
-			);
+			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/inputs/upload`, data[1], config);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;
@@ -28,4 +24,4 @@ class UploadImageToDatasetEngineAction implements IEngineAction {
 	};
 }
 
-export { UploadImageToDatasetEngineAction };
+export { UploadImageToDatasetEngineRequest };

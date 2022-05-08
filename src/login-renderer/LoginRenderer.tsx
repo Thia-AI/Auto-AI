@@ -8,6 +8,11 @@ import { theme } from '_/shared/chakraTheme';
 import { LoginApp } from './LoginApp';
 
 import '_public/login-style.css';
+import { BackendRequestHandler } from '_/renderer/backend-requests/backendRequestHandler';
+import BackendRequestConfig from '_/shared/backendRequestConfig';
+
+const backendRequestHandler = BackendRequestHandler.getInstance();
+backendRequestHandler.initInstances(BackendRequestConfig);
 
 ReactDOM.render(
 	<>

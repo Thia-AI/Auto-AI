@@ -1,10 +1,10 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * EngineAction class for to run 'GET /devices' route on **Engine**.
  */
-class GetDevicesEngineAction implements IEngineAction {
+class GetDevicesEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -35,4 +35,4 @@ class GetDevicesEngineAction implements IEngineAction {
 	};
 }
 
-export { GetDevicesEngineAction };
+export { GetDevicesEngineRequest };

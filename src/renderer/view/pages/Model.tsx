@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { HorizontalDatasetPreview } from '../components/datasets/model-horizontal/HorizontalDatasetPreview';
 import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineDBTypes';
 import { connect } from 'react-redux';
@@ -28,7 +28,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 	const toast = useToast();
 
 	const fetchModel = async () => {
-		const [error, resData] = await EngineActionHandler.getInstance().getModel(modelID);
+		const [error, resData] = await EngineRequestHandler.getInstance().getModel(modelID);
 		if (!error) {
 			setModel(resData);
 		}
@@ -48,7 +48,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 		// Make sure a dataset is selected to be trained on
 		if (selectedDatasetID.value.length > 0) {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const [error, _] = await EngineActionHandler.getInstance().trainModel(modelID, {
+			const [error, _] = await EngineRequestHandler.getInstance().trainModel(modelID, {
 				dataset_id: selectedDatasetID.value,
 			});
 			if (!error) {

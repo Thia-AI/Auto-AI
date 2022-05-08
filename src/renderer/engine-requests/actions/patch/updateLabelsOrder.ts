@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class UpdateLabelsOrderEngineAction implements IEngineAction {
+class UpdateLabelsOrderEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -16,11 +16,7 @@ class UpdateLabelsOrderEngineAction implements IEngineAction {
 		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.patch(
-				`${this.apiName}/${data[0]}/labels/order`,
-				data[1],
-				config,
-			);
+			const res = await this.engineRequest.patch(`${this.apiName}/${data[0]}/labels/order`, data[1], config);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;
@@ -29,4 +25,4 @@ class UpdateLabelsOrderEngineAction implements IEngineAction {
 	};
 }
 
-export { UpdateLabelsOrderEngineAction };
+export { UpdateLabelsOrderEngineRequest };

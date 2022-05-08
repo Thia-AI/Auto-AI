@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * Data for adding a label.
@@ -8,7 +8,7 @@ export interface IAddLabelData {
 	label: string;
 	color: string;
 }
-class AddLabelEngineAction implements IEngineAction {
+class AddLabelEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -31,4 +31,4 @@ class AddLabelEngineAction implements IEngineAction {
 	};
 }
 
-export { AddLabelEngineAction };
+export { AddLabelEngineRequest };

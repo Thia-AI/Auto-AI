@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Input, InputGroup, InputRightElement, useToast } from '@chakra-ui/react';
 import { IoAddOutline } from 'react-icons/io5';
 
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { Dataset, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
@@ -58,7 +58,7 @@ const AddLabelC = React.memo(
 				return;
 			}
 			setLabelUploading(true);
-			const [addLabelErr, addLabelRes] = await EngineActionHandler.getInstance().addLabelToDataset(
+			const [addLabelErr, addLabelRes] = await EngineRequestHandler.getInstance().addLabelToDataset(
 				activeDataset.value.dataset.id,
 				{
 					label: labelValue,

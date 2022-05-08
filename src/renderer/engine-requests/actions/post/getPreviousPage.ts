@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * Data for getting previous cursor page.
@@ -10,7 +10,7 @@ export interface IGetPreviousPageData {
 		current_cursor_date: string;
 	};
 }
-class GetPreviousPageEngineAction implements IEngineAction {
+class GetPreviousPageEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -36,4 +36,4 @@ class GetPreviousPageEngineAction implements IEngineAction {
 	};
 }
 
-export { GetPreviousPageEngineAction };
+export { GetPreviousPageEngineRequest };

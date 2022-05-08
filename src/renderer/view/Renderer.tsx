@@ -12,18 +12,22 @@ import '_public/style.css';
 
 import { App } from './App';
 import { configureStore } from '../state/store';
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { firebaseConfig } from '../firebase/firebase';
 import { theme } from '_/shared/chakraTheme';
+import { BackendRequestHandler } from '../backend-requests/backendRequestHandler';
+import BackendRequestConfig from '_/shared/backendRequestConfig';
 
 /**
  * Redux store.
  */
 export const store = configureStore();
 
-const engineActionHandler = EngineActionHandler.getInstance();
-engineActionHandler.initInstances(EngineRequestConfig);
+const engineRequestHandler = EngineRequestHandler.getInstance();
+const backendRequestHandler = BackendRequestHandler.getInstance();
+engineRequestHandler.initInstances(EngineRequestConfig);
+backendRequestHandler.initInstances(BackendRequestConfig);
 
 ReactDOM.render(
 	<>

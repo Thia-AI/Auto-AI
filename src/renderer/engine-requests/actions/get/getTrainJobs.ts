@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class GetTrainJobEngineAction implements IEngineAction {
+class GetTrainJobEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -23,4 +23,4 @@ class GetTrainJobEngineAction implements IEngineAction {
 	};
 }
 
-export { GetTrainJobEngineAction };
+export { GetTrainJobEngineRequest };

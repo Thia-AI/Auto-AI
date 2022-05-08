@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * Data for getting a dataset label.
@@ -8,7 +8,7 @@ export interface IGetDatasetLabelData {
 	datasetID: string;
 	labelValue: string;
 }
-class GetDatasetLabelEngineAction implements IEngineAction {
+class GetDatasetLabelEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -33,4 +33,4 @@ class GetDatasetLabelEngineAction implements IEngineAction {
 	};
 }
 
-export { GetDatasetLabelEngineAction };
+export { GetDatasetLabelEngineRequest };

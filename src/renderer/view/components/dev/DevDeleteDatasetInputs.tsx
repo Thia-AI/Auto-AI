@@ -11,7 +11,7 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import { AiFillDatabase } from 'react-icons/ai';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 
 /**
@@ -30,7 +30,7 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 	const deleteInputs = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
 		setInputsDeleting(true);
-		const [deleteInputsErr, deleteInputsRes] = await EngineActionHandler.getInstance().deleteAllInputsFromDataset(
+		const [deleteInputsErr, deleteInputsRes] = await EngineRequestHandler.getInstance().deleteAllInputsFromDataset(
 			value,
 		);
 		if (deleteInputsErr) {

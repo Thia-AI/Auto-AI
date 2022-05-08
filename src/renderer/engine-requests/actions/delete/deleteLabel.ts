@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * Data for deleting a label.
@@ -7,7 +7,7 @@ import { IEngineAction } from '../../base/iEngineAction';
 export interface IDeleteLabelData {
 	label: string;
 }
-class DeleteLabelEngineAction implements IEngineAction {
+class DeleteLabelEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -33,4 +33,4 @@ class DeleteLabelEngineAction implements IEngineAction {
 	};
 }
 
-export { DeleteLabelEngineAction };
+export { DeleteLabelEngineRequest };

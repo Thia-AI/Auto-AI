@@ -1,6 +1,6 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { PossibleModelExportTypes } from '_/renderer/view/helpers/constants/engineDBTypes';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * Data for exporting a model.
@@ -10,7 +10,7 @@ export interface IExportModelData {
 	save_dir: string;
 }
 
-class ExportModelEngineAction implements IEngineAction {
+class ExportModelEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -33,4 +33,4 @@ class ExportModelEngineAction implements IEngineAction {
 	};
 }
 
-export { ExportModelEngineAction };
+export { ExportModelEngineRequest };

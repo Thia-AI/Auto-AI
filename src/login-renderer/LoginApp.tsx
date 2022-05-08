@@ -7,6 +7,7 @@ import { Center, Spinner } from '@chakra-ui/react';
 import { io } from 'socket.io-client';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
 import axios from 'axios';
+import { BackendRequestHandler } from '_/renderer/backend-requests/backendRequestHandler';
 
 const webAppConfig = {
 	port: '8443',
@@ -49,6 +50,10 @@ export const LoginApp = React.memo(() => {
 	const getOAuthResponse = async () => {
 		const result = await getRedirectResult(auth);
 		if (result) {
+			const idToken = await result.user.getIdToken();
+			await BackendRequestHandler.getInstance().setNewUserRoles(idToken, {
+				uid: result.user.uid,
+			});
 			setGoogleSignInLoading(true);
 			setGoogleRegisteringLoading(true);
 			const credential = GoogleAuthProvider.credentialFromResult(result);

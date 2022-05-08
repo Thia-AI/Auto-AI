@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineDBTypes';
 import TensorFlowLogo from '_utils/images/TensorFlow Brand Assets/TensorFlow Logo/Primary/SVG/FullColorPrimary Icon.svg';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER } from '_/shared/ipcChannels';
 import { waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
@@ -65,7 +65,7 @@ export const ExportModel = React.memo(({ model }: Props) => {
 	useEffect(() => {
 		const checkIfAnyActiveExportJobs = async () => {
 			const [activeExportError, activeExportResData] =
-				await EngineActionHandler.getInstance().getActiveModelExports(model.id);
+				await EngineRequestHandler.getInstance().getActiveModelExports(model.id);
 			if (!activeExportError && activeExportResData['exports']) {
 				const activeExport: Export[] = activeExportResData['exports'];
 				let savedModelExporting = false;
@@ -192,7 +192,7 @@ const ExtraModelTypeButton = React.memo(
 				setExporting(true);
 				setIsDisabled(true);
 				const [exportModelErrorExists, exportModelResData] =
-					await EngineActionHandler.getInstance().exportModel(modelID, {
+					await EngineRequestHandler.getInstance().exportModel(modelID, {
 						export_type: exportType,
 						save_dir: folder.filePaths[0],
 					});

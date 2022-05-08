@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
  * Data for training a model.
@@ -8,7 +8,7 @@ export interface ITrainModelData {
 	dataset_id: string;
 }
 
-class TrainModelEngineAction implements IEngineAction {
+class TrainModelEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -31,4 +31,4 @@ class TrainModelEngineAction implements IEngineAction {
 	};
 }
 
-export { TrainModelEngineAction };
+export { TrainModelEngineRequest };

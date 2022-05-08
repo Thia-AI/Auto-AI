@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { IMAGE_CLASSIFICATION } from '_view_helpers/constants/modelConstants';
 import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
@@ -41,7 +41,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 	// TODO: Add input validation as in ICModelContent:createModel
 	const createDataset = async () => {
 		setDatasetCreating(true);
-		const [createDatasetErr, createDatasetRes] = await EngineActionHandler.getInstance().createDataset({
+		const [createDatasetErr, createDatasetRes] = await EngineRequestHandler.getInstance().createDataset({
 			name: datasetName,
 			type: IMAGE_CLASSIFICATION[0],
 		});

@@ -25,7 +25,7 @@ import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpe
 import { changeSelectedPage } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
@@ -104,7 +104,7 @@ const ICModelContentC = React.memo((props: Props) => {
 		if (wasError) return;
 		// No error, send create model action
 		setModelCreating(true);
-		const [createModelErr, createModelRes] = await EngineActionHandler.getInstance().createModel({
+		const [createModelErr, createModelRes] = await EngineRequestHandler.getInstance().createModel({
 			model_name: modelNameValue,
 			model_type: 'image_classification',
 			model_type_extra: modelTypeValue.toLowerCase(),

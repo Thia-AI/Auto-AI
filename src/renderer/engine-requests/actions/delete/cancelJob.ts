@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class CancelJobEngineAction implements IEngineAction {
+class CancelJobEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -23,4 +23,4 @@ class CancelJobEngineAction implements IEngineAction {
 	};
 }
 
-export { CancelJobEngineAction as CancelJobEA };
+export { CancelJobEngineRequest };

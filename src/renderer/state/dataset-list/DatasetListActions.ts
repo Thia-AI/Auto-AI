@@ -1,6 +1,6 @@
 import { Dispatch } from 'react';
 import { ThunkAction } from 'redux-thunk';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 
 import { DATASET_LOADING, REFRESH_DATASET_LIST, UPDATE_DATASET_PREVIEW_UPLOAD_FILES } from '../types';
 import {
@@ -19,7 +19,7 @@ export const refreshDatasetListAction =
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async (dispatch: Dispatch<IRefreshDatasetListAction | ILoadingDatasetListAction>, getState) => {
 		dispatch(datasetListLoadingAction(true));
-		const [error, resData] = await EngineActionHandler.getInstance().getDatasets();
+		const [error, resData] = await EngineRequestHandler.getInstance().getDatasets();
 		const state = getState();
 
 		if (error) {

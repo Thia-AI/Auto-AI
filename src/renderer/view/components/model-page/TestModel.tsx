@@ -16,7 +16,7 @@ import { useDropzone, FileRejection, ErrorCode } from 'react-dropzone';
 
 import { Model, TestJob } from '../../helpers/constants/engineDBTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { RouterPrompt } from '../routing/RouterPrompt';
 
@@ -64,7 +64,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 
 	const cancelJob = async (jobID: string | null) => {
 		if (jobID) {
-			const [cancelJobError, cancelJobResData] = await EngineActionHandler.getInstance().cancelJob(jobID);
+			const [cancelJobError, cancelJobResData] = await EngineRequestHandler.getInstance().cancelJob(jobID);
 			if (!cancelJobError && cancelJobResData['job_found']) {
 				if (cancelJobResData['job_cancelled_successfully']) {
 					// Job cancelled successfully
@@ -140,7 +140,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			for (let i = 0; i < selectedFiles.length; i++) {
 				formData.append('files', selectedFiles[i]);
 			}
-			const [testModelError, testModelResData] = await EngineActionHandler.getInstance().testModel(
+			const [testModelError, testModelResData] = await EngineRequestHandler.getInstance().testModel(
 				model.id,
 				formData,
 				{
@@ -163,7 +163,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			const testJobIDTemp: string = testModelResData['ids'][0];
 			setTestJobID(testJobIDTemp);
 			await waitTillEngineJobComplete(testJobIDTemp);
-			const [jobError, jobResData] = await EngineActionHandler.getInstance().getJob(testJobIDTemp);
+			const [jobError, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
 			if (jobError) {
 				toast({
 					title: 'Error',

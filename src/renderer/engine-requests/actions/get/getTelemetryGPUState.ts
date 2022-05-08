@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class GetTelemetryGPUStateEngineAction implements IEngineAction {
+class GetTelemetryGPUStateEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -23,4 +23,4 @@ class GetTelemetryGPUStateEngineAction implements IEngineAction {
 	};
 }
 
-export { GetTelemetryGPUStateEngineAction };
+export { GetTelemetryGPUStateEngineRequest };

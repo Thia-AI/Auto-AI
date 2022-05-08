@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class GetDatasetEngineAction implements IEngineAction {
+class GetDatasetEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -23,4 +23,4 @@ class GetDatasetEngineAction implements IEngineAction {
 	};
 }
 
-export { GetDatasetEngineAction };
+export { GetDatasetEngineRequest };

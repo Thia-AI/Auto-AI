@@ -52,6 +52,9 @@ export abstract class EngineShell {
 		console.log(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
 	};
 
+	/**
+	 * Universal method to be ran each time **Engine** process needs to be shutdown.
+	 */
 	protected shutDownEngineUniversal = () => {
 		this.stopWaitingForEngineStartFlag = true;
 	};

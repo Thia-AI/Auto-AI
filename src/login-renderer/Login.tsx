@@ -34,6 +34,7 @@ import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_nor
 import thiaIcon from '_public/icon.png';
 import { FirebaseError } from 'firebase/app';
 import { PERSISTENCE_TYPE } from '_/shared/appConstants';
+import { BackendRequestHandler } from '_/renderer/backend-requests/backendRequestHandler';
 
 const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 
@@ -253,6 +254,10 @@ const Login = React.memo(
 						});
 						setEmailSignInLoading(false);
 					} else {
+						const idToken = await userCredential.user.getIdToken();
+						await BackendRequestHandler.getInstance().setNewUserRoles(idToken, {
+							uid: userCredential.user.uid,
+						});
 						setPassword('');
 						setEmailAddress('');
 						let persistence: PERSISTENCE_TYPE = 'local';

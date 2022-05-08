@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { JobProgress } from '../../notifications/JobProgress';
 import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { DatasetLabelInputPreview } from '../preview/DatasetLabelInputPreview';
@@ -102,7 +102,7 @@ const DragNDropC = React.memo(
 				}
 				// Get dataset ID from the path (recall that dataset page has route of /dataset/<dataset-id>)
 				const datasetID = pathname.split('/').pop() ?? '';
-				const [uploadImageErr, uploadImageRes] = await EngineActionHandler.getInstance().uploadImagesToDataset(
+				const [uploadImageErr, uploadImageRes] = await EngineRequestHandler.getInstance().uploadImagesToDataset(
 					datasetID,
 					{
 						files: filesCpy,
@@ -120,7 +120,7 @@ const DragNDropC = React.memo(
 					return;
 				}
 				// Get initial job that is passed down to the JobProgress component
-				const [err, resData] = await EngineActionHandler.getInstance().getJob(uploadImageRes['ids'][0]);
+				const [err, resData] = await EngineRequestHandler.getInstance().getJob(uploadImageRes['ids'][0]);
 				if (!err) {
 					setUploadJob(resData as Job);
 				}

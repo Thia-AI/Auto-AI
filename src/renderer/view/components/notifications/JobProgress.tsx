@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, HStack, Progress, Spacer, Text } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { Job, nullJob } from '../../helpers/constants/engineDBTypes';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 
 interface Props {
 	jobID?: string;
@@ -33,7 +33,7 @@ const JobProgressC = React.memo((props: Props) => {
 		} else {
 			setIntervalID(
 				window.setInterval(async () => {
-					const [err, resData] = await EngineActionHandler.getInstance().getJob(jobID, {
+					const [err, resData] = await EngineRequestHandler.getInstance().getJob(jobID, {
 						timeout: intervalTime - 100,
 					});
 

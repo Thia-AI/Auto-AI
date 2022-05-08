@@ -14,7 +14,7 @@ import {
 import { useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { Dataset, Labels, nullDataset } from '_view_helpers/constants/engineDBTypes';
 import { getVerboseModelType } from '../helpers/modelHelper';
 import { InteractiveCopyBadge } from '../components/interactive/InteractiveCopyBadge';
@@ -36,8 +36,8 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 
 	const refreshDataset = useCallback(async () => {
-		const [datasetError, datasetResData] = await EngineActionHandler.getInstance().getDataset(datasetID);
-		const [datasetLabelsError, datasetLabelsResData] = await EngineActionHandler.getInstance().getDatasetLabels(
+		const [datasetError, datasetResData] = await EngineRequestHandler.getInstance().getDataset(datasetID);
+		const [datasetLabelsError, datasetLabelsResData] = await EngineRequestHandler.getInstance().getDatasetLabels(
 			datasetID,
 		);
 		if (!datasetError && !datasetLabelsError) {

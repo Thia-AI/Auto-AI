@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import {
 	GET_NEXT_PAGE_INPUTS,
 	GET_PREVIOUS_PAGE_INPUTS,
@@ -39,7 +39,7 @@ export const getPreviousPageInputsAction =
 		>,
 		getState,
 	) => {
-		const [error, resData] = await EngineActionHandler.getInstance().getPreviousPage(datasetID, cursorDate);
+		const [error, resData] = await EngineRequestHandler.getInstance().getPreviousPage(datasetID, cursorDate);
 		const state = getState();
 		if (error) {
 			dispatch({
@@ -79,7 +79,7 @@ export const getNextPageInputsAction =
 		>,
 		getState,
 	) => {
-		const [error, resData] = await EngineActionHandler.getInstance().getNextPage(datasetID, cursorDate);
+		const [error, resData] = await EngineRequestHandler.getInstance().getNextPage(datasetID, cursorDate);
 		const state = getState();
 		if (error) {
 			dispatch({

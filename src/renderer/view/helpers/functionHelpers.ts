@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 
 // Random helper functions
 
@@ -19,7 +19,7 @@ export const waitTillEngineJobComplete = async (jobId: string, timeout = 1000) =
 			timeout,
 		};
 		const initialTime = new Date().getTime();
-		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobId, config);
+		const [err, resData] = await EngineRequestHandler.getInstance().getJob(jobId, config);
 		if (err || resData.has_finished || resData.has_cancelled) {
 			return [err, resData];
 		}
@@ -47,7 +47,7 @@ export const waitTillEngineJobCompleteInterval = (
 		const config: AxiosRequestConfig = {
 			timeout,
 		};
-		const [err, resData] = await EngineActionHandler.getInstance().getJob(jobID, config);
+		const [err, resData] = await EngineRequestHandler.getInstance().getJob(jobID, config);
 		if (err || resData.has_finished || resData.has_cancelled) {
 			setState([err, resData]);
 			clearInterval(timer);

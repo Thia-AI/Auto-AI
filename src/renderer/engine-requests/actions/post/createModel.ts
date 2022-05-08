@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { IEngineAction } from '../../base/iEngineAction';
+import { IEngineRequest } from '../../base/iEngineRequest';
 
-class CreateModelEngineAction implements IEngineAction {
+class CreateModelEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
@@ -22,4 +22,4 @@ class CreateModelEngineAction implements IEngineAction {
 	};
 }
 
-export { CreateModelEngineAction };
+export { CreateModelEngineRequest };

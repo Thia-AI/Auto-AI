@@ -18,7 +18,7 @@ import { openCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/Del
 import { IAppState } from '_/renderer/state/reducers';
 import { Dataset, nullDataset } from '../../helpers/constants/engineDBTypes';
 import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/model/actionTypes';
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 
@@ -73,7 +73,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 							onClick={async () => {
 								setDatasetDeleting(true);
 								const [deleteDatasetErr, deleteDatasetRes] =
-									await EngineActionHandler.getInstance().deleteDataset(datasetValue.id);
+									await EngineRequestHandler.getInstance().deleteDataset(datasetValue.id);
 								if (deleteDatasetErr) {
 									toast({
 										title: 'Error',

@@ -5,7 +5,7 @@ import { Box, VStack } from '@chakra-ui/react';
 import { push, Push } from 'connected-react-router';
 import { connect } from 'react-redux';
 
-import { EngineActionHandler } from '_engine_requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { ModelCard } from '../components/model-card/ModelCard';
 import { Model, nullModel } from '../helpers/constants/engineDBTypes';
 
@@ -20,7 +20,7 @@ const ModelsC = ({ push }: Props) => {
 
 	useEffect(() => {
 		const fetchModels = async () => {
-			const [error, resData] = await EngineActionHandler.getInstance().getModels();
+			const [error, resData] = await EngineRequestHandler.getInstance().getModels();
 			setIsLoaded(true);
 			if (!error) {
 				setModels(resData['models']);

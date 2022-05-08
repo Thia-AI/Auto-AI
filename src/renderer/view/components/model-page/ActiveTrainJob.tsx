@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import isValidHTMLProp from '@emotion/is-prop-valid';
 
-import { EngineActionHandler } from '_/renderer/engine-requests/engineActionHandler';
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { nullTrainJob, TrainJob, TrainJobStatus } from '../../helpers/constants/engineDBTypes';
@@ -238,7 +238,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 	};
 
 	const getTrainingJob = useCallback(async () => {
-		const [error, resData] = await EngineActionHandler.getInstance().getTrainJob(trainJobID);
+		const [error, resData] = await EngineRequestHandler.getInstance().getTrainJob(trainJobID);
 		if (!error) {
 			setTrainingJob(resData);
 			// Set data loaded if it is the first time
