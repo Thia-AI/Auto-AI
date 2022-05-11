@@ -4,7 +4,7 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, protocol } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol, shell } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { FirebaseApp, initializeApp } from 'firebase/app';
@@ -119,6 +119,24 @@ const createWindow = (): void => {
 
 	mainWindow.setMenu(menu);
 	loginWindow.setMenu(menu);
+
+	// Triggers when link is opened
+	mainWindow.webContents.on('will-navigate', (e, urlDestination) => {
+		const parsedUrl = new url.URL(urlDestination);
+		if (parsedUrl.protocol !== 'file:') {
+			e.preventDefault();
+			shell.openExternal(urlDestination);
+		}
+	});
+
+	// Triggers when loadUrl is fired and when react-router route is changed
+	mainWindow.webContents.on('did-navigate-in-page', (e, urlDestination) => {
+		const parsedUrl = new url.URL(urlDestination);
+		if (parsedUrl.protocol !== 'file:') {
+			e.preventDefault();
+			shell.openExternal(urlDestination);
+		}
+	});
 
 	// must initialize IPC handler and Engine loading renderer
 
