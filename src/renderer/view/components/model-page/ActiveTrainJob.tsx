@@ -370,25 +370,38 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						shouldWrapChildren
 						justify='space-evenly'
 						direction={{ base: 'column', md: 'row' }}>
-						<SimpleStat label='AUC ROC' value={roundNumber(trainingJob.extra_data.evaluation_result.auc)} />
+						<SimpleStat
+							label='AU PRC'
+							statTitle='Area Under Precision Recall Curve'
+							statDescription='Usually between 0.5-1.0, higher values inidicate a more accurate model.'
+							value={roundNumber(trainingJob.extra_data.evaluation_result.prc)}
+						/>
 						<SimpleStat
 							label='Accuracy'
+							statTitle='Accuracy'
+							statDescription='Percentage of predictions that were correct.'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.accuracy)}
 						/>
 
 						<SimpleStat
 							label='Precision'
+							statTitle='Precision'
+							statDescription='Percentage of positive predictions that were correct.'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.precision)}
 						/>
 						<SimpleStat
 							label='Recall'
+							statTitle='Recall'
+							statDescription='Percentage of total relevant predictions. Also known as "true positive rate".'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.recall)}
 						/>
 						<SimpleStat
 							label='Log Loss'
+							statTitle='Log Loss'
+							statDescription='Cross-entropy between predictions and true value. Log loss is between 0-infinity, lower values indicates a more accurate model.'
 							value={roundNumber(trainingJob.extra_data.evaluation_result.loss)}
 						/>
 					</Wrap>
