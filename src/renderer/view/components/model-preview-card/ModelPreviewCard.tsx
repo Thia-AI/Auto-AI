@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Image, Divider, Flex, Badge } from '@chakra-ui/react';
+import { Box, Divider, Flex, Badge, chakra } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
 
@@ -22,9 +22,10 @@ interface Props {
 const ModelPreviewCardC = React.memo((props: Props) => {
 	return (
 		<Box
-			boxShadow='xl'
+			boxShadow='lg'
 			minW='275px'
-			maxH='lg'
+			w='275px'
+			maxH='290px'
 			// borderWidth='1px'
 			borderTopWidth='1px'
 			borderRadius='lg'
@@ -32,11 +33,12 @@ const ModelPreviewCardC = React.memo((props: Props) => {
 			cursor='pointer'
 			onClick={() => props.changeSelectedModelAction(props.selectedModelNumber)}>
 			<LazyLoad>
-				<Image
+				<chakra.img
 					src={props.imageSrc}
 					alt='Image'
-					htmlWidth='275px'
-					fit='cover'
+					width='275px'
+					height='175px'
+					objectFit='cover'
 					borderTopRadius='lg'
 					borderColor='gray.900'
 				/>

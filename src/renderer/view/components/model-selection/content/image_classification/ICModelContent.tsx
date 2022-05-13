@@ -2,17 +2,19 @@ import React, { useState, ChangeEvent } from 'react';
 import {
 	Box,
 	VStack,
-	Flex,
 	Text,
 	Input,
-	Badge,
-	useColorModeValue,
 	Center,
 	Button,
 	HStack,
-	SlideFade,
 	useRadioGroup,
 	useToast,
+	FormControl,
+	FormLabel,
+	FormErrorMessage,
+	Heading,
+	Wrap,
+	Link,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { push, Push } from 'connected-react-router';
@@ -39,20 +41,24 @@ const ICModelContentC = React.memo((props: Props) => {
 	// Model Name
 	const [modelNameValue, setModelNameValue] = useState('');
 	const [modelNameValid, setModelNameValid] = useState(false);
-	const [modelNameError, setModelNameError] = useState('Enter A Name');
+	const INITIAL_MODEL_NAME_ERROR = 'Enter a name for your model.';
+	const [modelNameError, setModelNameError] = useState(INITIAL_MODEL_NAME_ERROR);
 
 	// Model Creation Status
 	const [modelCreating, setModelCreating] = useState(false);
+	const [modelNameInputFocusedOnce, setModelNameInputFocusedOnce] = useState(false);
 
 	// Errors
 	const validList = [[modelNameValid, modelNameError]];
 
-	// Dark/Light mode colors
-	const inputColor = useColorModeValue('gray.700', 'gray.300');
-
 	// Radio Cards
-	const radioOptions = ['Balanced', 'Performance', 'Accuracy'];
-	const [modelTypeValue, setModelTypeValue] = React.useState(radioOptions[0]);
+	const radioOptions = ['Fast', 'Balanced', 'Precise'];
+	const radioOptionDescriptions = [
+		'A model that is more focused on being smaller and faster at the cost of being less accurate.',
+		'A model that is both relatively fast and fairly accurate.',
+		"A model that is more focused on it's accuracy at the cost of being slower and larger",
+	];
+	const [modelTypeValue, setModelTypeValue] = useState(radioOptions[1]);
 
 	const { getRootProps, getRadioProps } = useRadioGroup({
 		name: 'framework',
@@ -70,13 +76,13 @@ const ICModelContentC = React.memo((props: Props) => {
 
 		// validate
 		if (name.length === 0) {
-			setModelNameError('Enter A Name');
+			setModelNameError(INITIAL_MODEL_NAME_ERROR);
 			setModelNameValid(false);
 			return;
 		}
 		const regex = /^[a-zA-Z0-9-_]+$/;
 		if (name.search(regex) === -1) {
-			setModelNameError('Alphanumeric Characters Only');
+			setModelNameError('Alphanumeric characters only');
 			setModelNameValid(false);
 			return;
 		}
@@ -138,46 +144,66 @@ const ICModelContentC = React.memo((props: Props) => {
 		props.push('/models');
 	};
 	return (
-		<VStack spacing='2'>
-			<Center h='125px'>
-				<Text as='h1' fontSize='4xl'>
-					Description [To Be Added]
+		<VStack spacing='5'>
+			<VStack w='full' alignItems='flex-start'>
+				<Text fontSize='15px'>
+					Image classification is the task of one (single-label classification) or more (multi-label
+					classification) labels to a given image. Thia trains a deep learning model on the images and labels
+					in your dataset.
 				</Text>
-			</Center>
-			<Flex direction='row' w='full'>
-				<Box>
-					<Text fontWeight='semibold' color={inputColor} as='h4' fontSize='sm' pl='1' mb='1'>
-						Name
-					</Text>
+				<Text fontSize='15px'>
+					For example, you could train a model that classifies different types of fashion clothing to
+					automatically label user&#39;s clothes in your e-commerce website. Or you could use it to
+					automatically detect intruders from your CCTV footage, identify objects from satellite images,
+					automatically perform visual inspection and quality control of assembly lines - suffice to say, list
+					is endless.
+				</Text>
+				<Text fontSize='15px'>
+					Instead of developing the expertise of deep learning, which is undergoing rapid improvements each
+					day, let Thia handle it.
+				</Text>
+				{/* // TODO: Change this URL to a prop that redirects to thia documentation for that specific model type */}
+				<Link fontSize='sm' href='https://google.ca'>
+					Learn more
+				</Link>
+			</VStack>
+			<Heading as='h4' size='md' alignSelf='flex-start'>
+				Model Details
+			</Heading>
+			<Box w='full' px='2' pt='1'>
+				<FormControl variant='floating' isRequired isInvalid={modelNameInputFocusedOnce && !modelNameValid}>
 					<Input
-						isInvalid={!modelNameValid}
 						onChange={handleModelNameChange}
+						onBlur={() => setModelNameInputFocusedOnce(true)}
 						value={modelNameValue}
-						variant='filled'
-						placeholder="Enter the model's name"
+						placeholder=' '
+						type='email'
 					/>
-					<SlideFade offsetY='10px' in={!modelNameValid}>
-						<Badge colorScheme='red'>{modelNameError}</Badge>
-					</SlideFade>
-				</Box>
-			</Flex>
-			<Flex direction='row' w='full' pt='4'>
-				<Box w='full'>
-					<Text fontWeight='semibold' color={inputColor} as='h4' fontSize='sm' pl='1' mb='1'>
-						Model Type:
-					</Text>
-					<VStack {...group} alignItems='flex-start' w='full'>
-						{radioOptions.map((value) => {
-							const radio = getRadioProps({ value });
-							return (
-								<ICModelRadioCard key={value} {...radio}>
-									{value}
-								</ICModelRadioCard>
-							);
-						})}
-					</VStack>
-				</Box>
-			</Flex>
+					<FormLabel bg='var(--chakra-colors-gray-800) !important'>Model Name</FormLabel>
+					<FormErrorMessage>{modelNameError}</FormErrorMessage>
+				</FormControl>
+			</Box>
+			<Heading as='h4' size='md' alignSelf='flex-start' pt='3'>
+				Model Type
+			</Heading>
+			<Box w='full' px='2' pt='1'>
+				<Wrap
+					{...group}
+					shouldWrapChildren
+					justify='space-evenly'
+					spacing='4'
+					w='full'
+					direction={{ base: 'column', md: 'row' }}>
+					{radioOptions.map((value, i) => {
+						const radio = getRadioProps({ value });
+						return (
+							<ICModelRadioCard key={value} {...radio} description={radioOptionDescriptions[i]}>
+								{value}
+							</ICModelRadioCard>
+						);
+					})}
+				</Wrap>
+			</Box>
 
 			<Center pt='8'>
 				<HStack spacing='3'>

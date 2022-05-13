@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Heading, VStack } from '@chakra-ui/react';
 import React from 'react';
 
 /**
@@ -7,5 +7,19 @@ import React from 'react';
  * @react
  */
 export const ODModelContent = () => {
-	return <Box w='full' h='300px' bg='purple.500' />;
+	return (
+		<VStack w='full' alignItems='flex-start'>
+			<Heading>
+				Coming soon to an AutoML near you{' '}
+				{/* 
+					Seperate text needed with normal font weight 
+					See bug in chrome 96: https://bugs.chromium.org/p/chromium/issues/detail?id=1266022&q=emoji&can=1
+				*/}
+				<Heading display='inline' fontWeight='normal'>
+					😉
+				</Heading>
+				...
+			</Heading>
+		</VStack>
+	);
 };

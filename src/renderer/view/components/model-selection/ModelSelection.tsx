@@ -21,7 +21,8 @@ import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/mo
 import { ModelPreviewCard } from '../model-preview-card/ModelPreviewCard';
 import { ModelSelectionBody } from './ModelSelectionBody';
 
-import Preview from '_utils/images/placeholder-image.jpg';
+import ObjectDetectionPreview from '_utils/images/object_detection_card_bg_compressed.jpg';
+import ImageClassificationPreview from '_utils/images/image_classification_card_bg.jpg';
 
 interface Props {
 	modalOpenedState: IOpenCloseModelSelectionReducer;
@@ -40,7 +41,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 			isCentered
 			scrollBehavior='inside'>
 			<ModalOverlay />
-			<ModalContent transition='all 200ms' overflow='hidden'>
+			<ModalContent transition='all 200ms' overflow='hidden' bg='gray.800' h='full'>
 				<ModalHeader>Select Model</ModalHeader>
 				<ModalCloseButton size='sm' />
 				<ModalBody
@@ -58,6 +59,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 						spacing='14px'
 						overflowX='auto'
 						pb='3'
+						px='4'
 						sx={{
 							'&::-webkit-scrollbar': {
 								h: '8px',
@@ -73,7 +75,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 							updatedDate='06/06/2021'
 							badgeColorScheme='teal'
 							cardDescription='Image classifier trained on your dataset.'
-							imageSrc={Preview}
+							imageSrc={ImageClassificationPreview}
 							selectedModelNumber={0}
 						/>
 						<ModelPreviewCard
@@ -82,26 +84,8 @@ const ModelSelectionC = React.memo((props: Props) => {
 							cardTitle='Object Detection'
 							updatedDate='06/06/2021'
 							cardDescription='Detect objects from images or video.'
-							imageSrc={Preview}
+							imageSrc={ObjectDetectionPreview}
 							selectedModelNumber={1}
-						/>
-						<ModelPreviewCard
-							badge='tba'
-							cardTitle='Object Tracking'
-							badgeColorScheme='red'
-							updatedDate='05/23/2021'
-							cardDescription='Detect and track objects throughout their lifecycle in a video.'
-							imageSrc={Preview}
-							selectedModelNumber={2}
-						/>
-						<ModelPreviewCard
-							badge='tba'
-							cardTitle='Generative Model'
-							badgeColorScheme='red'
-							updatedDate='06/03/2021'
-							cardDescription='Generates images similar to those trained on.'
-							imageSrc={Preview}
-							selectedModelNumber={3}
 						/>
 					</HStack>
 					<ModelSelectionBody />

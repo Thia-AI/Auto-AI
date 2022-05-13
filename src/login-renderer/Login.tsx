@@ -320,6 +320,7 @@ const Login = React.memo(
 							<Input
 								placeholder=' '
 								autoFocus
+								w='full'
 								type='email'
 								value={emailAddress}
 								onBlur={() => setEmailFocusedOnce(true)}
