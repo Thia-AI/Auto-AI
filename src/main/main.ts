@@ -353,11 +353,15 @@ if (!isSingleInstance) {
 	// Some APIs can only be used after this event occurs.
 	app.whenReady().then(async () => {
 		if (isDev) {
-			const extension = await installExtension([REACT_DEVELOPER_TOOLS], {
-				loadExtensionOptions: { allowFileAccess: true },
-				forceDownload: true,
-			});
-			console.log('Extension loaded:', extension);
+			try {
+				const extension = await installExtension([REACT_DEVELOPER_TOOLS], {
+					loadExtensionOptions: { allowFileAccess: true },
+					forceDownload: true,
+				});
+				console.log('Extension loaded:', extension);
+			} catch (err) {
+				console.log('Error loading extensions: ', err);
+			}
 		}
 		firebaseApp = initializeApp(firebaseConfig);
 		await startWebServices();
