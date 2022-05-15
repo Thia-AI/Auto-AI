@@ -60,6 +60,7 @@ class DBManager(object):
                 model_name text not null, 
                 model_type text not null,
                 model_type_extra text not null,
+                labelling_type text not null,
                 date_created datetime not null,
                 date_last_accessed datetime not null,
                 model_status text not null, 

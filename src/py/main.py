@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 
 from config import config
 from config import constants
-from config.constants import ModelStatus, ModelExportType
+from config.constants import ModelStatus, ModelExportType, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -151,12 +151,15 @@ def create_model_route():
     req_data_format = {
         'model_name': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
         'model_type': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
-        'model_type_extra': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
+        'model_type_extra': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+        'labelling_type': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY
     }
     error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
-    # check to see if model already exists
+    if req_data['labelling_type'] not in POSSIBLE_MODEL_LABELLING_TYPES:
+        return {'Error': f"Labelling type: '{req_data['labelling_type']}' an is invalid labelling type"}, 400
+    # Check to see if model already exists
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400
     ids = JobCreator().create(ModelCreationJob(req_data)).queue()
@@ -190,8 +193,7 @@ def export_model_route(model_id: str):
     # Make sure folder is empty
     if save_dir.exists() and save_dir.is_dir():
         return {'Error': f"'save_dir' cannot contain folder with same name as model name: '{model['model_name']}'"}, 400
-    possible_export_types = [export_type.value for export_type in ModelExportType]
-    if req_data['export_type'] not in possible_export_types:
+    if req_data['export_type'] not in POSSIBLE_MODEL_EXPORT_TYPES:
         return {'Error': f"Export type: '{req_data['export_type']}' an is invalid export type"}, 400
     export_id = uuid.uuid4().hex
     ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir])).queue()

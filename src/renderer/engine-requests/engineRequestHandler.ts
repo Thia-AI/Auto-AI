@@ -14,7 +14,7 @@ import { GetPreviousPageEngineRequest, IGetPreviousPageData } from './actions/po
 import { UpdateLabelsOrderEngineRequest } from './actions/patch/updateLabelsOrder';
 import { AddLabelEngineRequest, IAddLabelData } from './actions/post/addLabel';
 import { CreateDatasetEngineRequest } from './actions/post/createDataset';
-import { CreateModelEngineRequest } from './actions/post/createModel';
+import { CreateModelData, CreateModelEngineRequest } from './actions/post/createModel';
 import { UploadImageToDatasetEngineRequest } from './actions/post/uploadImageToDataset';
 import { GetDatasetLabelsEngineRequest } from './actions/get/getDatasetLabels';
 import { GetDatasetLabelEngineRequest, IGetDatasetLabelData } from './actions/get/getDatasetLabel';
@@ -151,7 +151,7 @@ export class EngineRequestHandler {
 		return this.cancelJobER.run(config, jobID);
 	};
 
-	public createModel = async (data: object, config?: AxiosRequestConfig) => {
+	public createModel = async (data: CreateModelData, config?: AxiosRequestConfig) => {
 		return this.createModelER.run(config, data);
 	};
 

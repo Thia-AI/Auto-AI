@@ -49,6 +49,17 @@ class ModelExportType(AutoNameEnum):
     LITE = auto()
 
 
+POSSIBLE_MODEL_EXPORT_TYPES = [export_type.value for export_type in ModelExportType]
+
+
+class ModelLabellingType(AutoNameEnum):
+    """Enum that contains different model labelling types"""
+    SINGLE_LABEL = auto()
+
+
+POSSIBLE_MODEL_LABELLING_TYPES = [export_type.value for export_type in ModelLabellingType]
+
+
 class ModelExportStatus(AutoNameEnum):
     """Enum that contains the different status of model exports"""
     EXPORTING = auto()

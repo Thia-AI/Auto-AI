@@ -51,24 +51,52 @@ const ICModelContentC = React.memo((props: Props) => {
 	// Errors
 	const validList = [[modelNameValid, modelNameError]];
 
-	// Radio Cards
-	const radioOptions = ['Fast', 'Balanced', 'Precise'];
-	const radioOptionDescriptions = [
+	// Radio Card - Model Type
+
+	const modelTypeRadioOptions = ['Fast', 'Balanced', 'Precise'];
+	const modelTypeRadioDescriptions = [
 		'A model that is more focused on being smaller and faster at the cost of being less accurate.',
 		'A model that is both relatively fast and fairly accurate.',
 		"A model that is more focused on it's accuracy at the cost of being slower and larger",
 	];
-	const [modelTypeValue, setModelTypeValue] = useState(radioOptions[1]);
+	const [modelTypeValue, setModelTypeValue] = useState(modelTypeRadioOptions[1]);
 
-	const { getRootProps, getRadioProps } = useRadioGroup({
-		name: 'framework',
+	const { getRootProps: getModelTypeRootProps, getRadioProps: getModelTypeRadioProps } = useRadioGroup({
+		name: 'modelType',
 		defaultValue: modelTypeValue,
 		onChange: (nextValue: string) => {
 			setModelTypeValue(nextValue);
 		},
 	});
 
-	const group = getRootProps();
+	const modelTypeGroup = getModelTypeRootProps();
+
+	// Radio card - Labelling Type
+
+	const labellingTypeRadioOptions = ['Single-Label', 'Multi-Label'];
+	const labellingTypeForEngine = ['SINGLE_LABEL', 'MULTI_LABEL'];
+	const labellingTypeRadioDisabled = [false, true];
+	const labellingTypeRadioTitle: Array<string | undefined> = [undefined, 'Unavailable labelling type'];
+	const labellingTypeRadioDescriptions = [
+		'Each image is assigned a single label',
+		'Each image can be assigned with more than one label.',
+	];
+
+	const [labellingType, setLabellingType] = useState(labellingTypeRadioOptions[0]);
+
+	const { getRootProps: getLabellingTypeRootProps, getRadioProps: getLabellingTypeRadioProps } = useRadioGroup({
+		name: 'labellingType',
+		defaultValue: labellingType,
+		onChange: (nextValue: string) => {
+			setLabellingType(nextValue);
+		},
+	});
+
+	const labellingTypeGroup = getLabellingTypeRootProps();
+
+	const getLabellingTypeForEngine = (labellingType: string) => {
+		return labellingTypeForEngine[labellingTypeRadioOptions.indexOf(labellingType)];
+	};
 
 	const handleModelNameChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const name = event.target.value;
@@ -114,6 +142,7 @@ const ICModelContentC = React.memo((props: Props) => {
 			model_name: modelNameValue,
 			model_type: 'image_classification',
 			model_type_extra: modelTypeValue.toLowerCase(),
+			labelling_type: getLabellingTypeForEngine(labellingType),
 		});
 		// If error occurred when sending the Engine Action
 		if (createModelErr) {
@@ -188,23 +217,51 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Heading>
 			<Box w='full' px='2' pt='1'>
 				<Wrap
-					{...group}
+					{...modelTypeGroup}
 					shouldWrapChildren
 					justify='space-evenly'
 					spacing='4'
 					w='full'
 					direction={{ base: 'column', md: 'row' }}>
-					{radioOptions.map((value, i) => {
-						const radio = getRadioProps({ value });
+					{modelTypeRadioOptions.map((value, i) => {
+						const modelTypeRadio = getModelTypeRadioProps({ value });
 						return (
-							<ICModelRadioCard key={value} {...radio} description={radioOptionDescriptions[i]}>
+							<ICModelRadioCard
+								key={value}
+								{...modelTypeRadio}
+								description={modelTypeRadioDescriptions[i]}>
 								{value}
 							</ICModelRadioCard>
 						);
 					})}
 				</Wrap>
 			</Box>
-
+			<Heading as='h4' size='md' alignSelf='flex-start' pt='3'>
+				Labelling Type
+			</Heading>
+			<Box w='full' px='2' pt='1'>
+				<Wrap
+					{...labellingTypeGroup}
+					shouldWrapChildren
+					justify='space-evenly'
+					spacing='4'
+					w='full'
+					direction={{ base: 'column', md: 'row' }}>
+					{labellingTypeRadioOptions.map((value, i) => {
+						const labellingTypeRadio = getLabellingTypeRadioProps({ value });
+						return (
+							<ICModelRadioCard
+								key={value}
+								{...labellingTypeRadio}
+								isDisabled={labellingTypeRadioDisabled[i]}
+								title={labellingTypeRadioTitle[i]}
+								description={labellingTypeRadioDescriptions[i]}>
+								{value}
+							</ICModelRadioCard>
+						);
+					})}
+				</Wrap>
+			</Box>
 			<Center pt='8'>
 				<HStack spacing='3'>
 					<Button isLoading={modelCreating} loadingText='Creating' colorScheme='teal' onClick={createModel}>
