@@ -1,6 +1,23 @@
 import React, { useEffect } from 'react';
 
-import { Center, VStack, Text, HStack, Badge, Skeleton, Spacer, Button, useToast } from '@chakra-ui/react';
+import {
+	Center,
+	VStack,
+	Text,
+	HStack,
+	Badge,
+	Skeleton,
+	Spacer,
+	Button,
+	useToast,
+	Box,
+	Menu,
+	MenuButton,
+	IconButton,
+	MenuList,
+	MenuItem,
+	useDisclosure,
+} from '@chakra-ui/react';
 import { useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -16,6 +33,8 @@ import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-tra
 import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetActions';
 import { TestModel } from '../components/model-page/TestModel';
 import { ExportModel } from '../components/model-page/ExportModel';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { DeleteModel } from '../components/model-page/DeleteModel';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -25,6 +44,11 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 	const modelID = useRouteMatch().params['id'];
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
+	const {
+		isOpen: deleteModelDialogOpen,
+		onOpen: openDeleteModelDialog,
+		onClose: closeDeleteModelDialog,
+	} = useDisclosure();
 	const toast = useToast();
 
 	const fetchModel = async () => {
@@ -89,45 +113,66 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 	};
 
 	return (
-		<VStack
-			px='6'
-			w='full'
-			spacing='4'
-			h='full'
-			alignItems='flex-start'
-			marginTop='var(--header-height)'
-			py='4'
-			overflowY='auto'
-			sx={{
-				'&::-webkit-scrollbar': {
-					w: '10px',
-					bg: 'gray.600',
-				},
-				'&::-webkit-scrollbar-thumb': {
-					bg: 'gray.900',
-				},
-			}}>
-			<Skeleton w='400px' mb='6' isLoaded={model.id.length != 0}>
-				<HStack pt='1' alignItems='center'>
-					<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated ml='4'>
-						{model.model_name}:
-					</Text>
-					<Badge fontSize='sm' colorScheme='purple' ml='1'>
-						{getVerboseModelType(model.model_type)}
-					</Badge>
-				</HStack>
-			</Skeleton>
-			<HorizontalDatasetPreview modelType={model.model_type} />
-			{renderActiveTrainingJob()}
-			{renderTestModel()}
-			{renderExportModel()}
-			<Spacer />
-			<Center w='full'>
-				<Button colorScheme='blue' isDisabled={!canTrainModel()} isLoading={!dataLoaded} onClick={trainModel}>
-					Train
-				</Button>
-			</Center>
-		</VStack>
+		<>
+			<VStack
+				px='6'
+				w='full'
+				spacing='4'
+				h='full'
+				alignItems='flex-start'
+				marginTop='var(--header-height)'
+				py='4'
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': {
+						w: '10px',
+						bg: 'gray.600',
+					},
+					'&::-webkit-scrollbar-thumb': {
+						bg: 'gray.900',
+					},
+				}}>
+				<Skeleton w='full' mb='6' isLoaded={model.id.length != 0}>
+					<HStack pt='1' alignItems='center'>
+						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated ml='4'>
+							{model.model_name}:
+						</Text>
+						<Badge fontSize='sm' colorScheme='purple' ml='1'>
+							{getVerboseModelType(model.model_type)}
+						</Badge>
+						<Spacer />
+						<Box>
+							<Menu autoSelect isLazy lazyBehavior='keepMounted' closeOnSelect={false}>
+								<MenuButton
+									as={IconButton}
+									aria-label='Model Options'
+									icon={<BsThreeDotsVertical />}
+									variant='ghost'
+								/>
+								<MenuList>
+									<MenuItem onClick={() => openDeleteModelDialog()}>Delete</MenuItem>
+								</MenuList>
+							</Menu>
+						</Box>
+					</HStack>
+				</Skeleton>
+				<HorizontalDatasetPreview modelType={model.model_type} />
+				{renderActiveTrainingJob()}
+				{renderTestModel()}
+				{renderExportModel()}
+				<Spacer />
+				<Center w='full'>
+					<Button
+						colorScheme='blue'
+						isDisabled={!canTrainModel()}
+						isLoading={!dataLoaded}
+						onClick={trainModel}>
+						Train
+					</Button>
+				</Center>
+			</VStack>
+			<DeleteModel dialogOpen={deleteModelDialogOpen} model={model} onClose={closeDeleteModelDialog} />
+		</>
 	);
 });
 

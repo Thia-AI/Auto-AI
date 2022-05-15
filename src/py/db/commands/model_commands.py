@@ -16,6 +16,13 @@ def create_model(uuid: str, model_name: str, model_type: str, model_type_extra: 
     DBManager.get_instance().execute(cmd)
 
 
+def delete_model(model_id: str):
+    cmd = DBCommand(name=f"Delete Model {model_id}",
+                    command='''DELETE FROM models WHERE id = ?''',
+                    values=(model_id,))
+    DBManager.get_instance().execute(cmd)
+
+
 def update_model_status(model_id: str, status: ModelStatus):
     cmd = DBCommand(name=f"Update Model: {model_id}'s status to {status.value}",
                     command=f'''UPDATE models SET model_status = ? WHERE id = ?''',

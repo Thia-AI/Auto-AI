@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 
 from config import config
 from config import constants
-from config.constants import ModelStatus, ModelExportType, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES
+from config.constants import ModelStatus, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -38,7 +38,8 @@ from helpers.route import validate_req_json
 # Other
 from job.job import JobCreator, JobManager
 from log.logger import log
-from model_config.jobs.model_config_jobs import ModelCreationJob
+from model_config.jobs.create_model_job import ModelCreationJob
+from model_config.jobs.delete_model_job import ModelDeletionJob
 # Socket IO
 from sio_namespaces.job_namespace import jobs_namespace
 from train.jobs.test_ic_model import TestImageClassificationModelJob
@@ -163,6 +164,21 @@ def create_model_route():
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400
     ids = JobCreator().create(ModelCreationJob(req_data)).queue()
+    return {'ids': ids}, 202
+
+
+@app.route('/model/<string:model_id>', methods=['DELETE'])
+def delete_model_route(model_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(model_id) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(model_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of model does not exist"}, 400
+    model = {}
+    for row in rows:
+        model = model_from_row(row)
+    ids = JobCreator().create(ModelDeletionJob(model)).queue()
     return {'ids': ids}, 202
 
 

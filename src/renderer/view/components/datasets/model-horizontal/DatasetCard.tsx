@@ -25,7 +25,6 @@ import {
 	IResetSelectedDatasetAction,
 } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 
-import './DatasetCard.css';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
 
@@ -40,7 +39,6 @@ interface Props {
 
 const DatasetCardC = React.memo((props: Props) => {
 	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
-
 	useEffect(() => {
 		return () => {
 			props.resetSelectedDatasetAction();

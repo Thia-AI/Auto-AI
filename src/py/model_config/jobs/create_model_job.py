@@ -2,7 +2,6 @@ import os
 from overrides import overrides
 import json
 import uuid
-from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
 
 from job.base_job import BaseJob

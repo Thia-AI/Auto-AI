@@ -26,6 +26,7 @@ import { GetTelemetryGPUStateEngineRequest } from './actions/get/getTelemetryGPU
 import { CancelJobEngineRequest } from './actions/delete/cancelJob';
 import { ExportModelEngineRequest, IExportModelData } from './actions/post/exportModel';
 import { GetActiveModelExportsEngineRequest } from './actions/get/getActiveModelExports';
+import { DeleteModelEngineRequest } from './actions/delete/deleteModel';
 
 /**
  * Class that manages all Engine Requests.
@@ -48,6 +49,7 @@ export class EngineRequestHandler {
 	private testModelER!: TestModelEngineRequest;
 	private exportModelER!: ExportModelEngineRequest;
 	private getActiveModelExportsER!: GetActiveModelExportsEngineRequest;
+	private deleteModelER!: DeleteModelEngineRequest;
 	// Datasets
 	private createDatasetER!: CreateDatasetEngineRequest;
 	private getDatasetsER!: GetDatasetsEngineRequest;
@@ -108,6 +110,7 @@ export class EngineRequestHandler {
 		this.testModelER = new TestModelEngineRequest(this.engineRequest);
 		this.exportModelER = new ExportModelEngineRequest(this.engineRequest);
 		this.getActiveModelExportsER = new GetActiveModelExportsEngineRequest(this.engineRequest);
+		this.deleteModelER = new DeleteModelEngineRequest(this.engineRequest);
 		// Datasets
 		this.createDatasetER = new CreateDatasetEngineRequest(this.engineRequest);
 		this.getDatasetsER = new GetDatasetsEngineRequest(this.engineRequest);
@@ -153,6 +156,10 @@ export class EngineRequestHandler {
 
 	public createModel = async (data: CreateModelData, config?: AxiosRequestConfig) => {
 		return this.createModelER.run(config, data);
+	};
+
+	public deleteModel = async (modelID: string, config?: AxiosRequestConfig) => {
+		return this.deleteModelER.run(config, modelID);
 	};
 
 	public getModels = async (config?: AxiosRequestConfig) => {
