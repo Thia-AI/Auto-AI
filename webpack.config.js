@@ -66,14 +66,10 @@ const commonConfig = {
 			},
 			{
 				test: /\.(png|jpg|jpeg|gif)$/i,
-				use: [
-					{
-						loader: 'url-loader',
-						options: {
-							limit: 12000,
-						},
-					},
-				],
+				type: 'asset/resource',
+				generator: {
+					filename: 'images/[hash][ext][query]',
+				},
 			},
 			{
 				test: /\.svg$/i,
@@ -82,9 +78,9 @@ const commonConfig = {
 			},
 			{
 				test: /\.(ico|icns|woff(2)?|ttf|otf|eot)(\?v=\d+\.\d+\.\d+)?$/,
-				loader: 'file-loader',
-				options: {
-					name: '[path][name].[ext]',
+				type: 'asset/resource',
+				generator: {
+					filename: 'fonts/[hash][ext][query]',
 				},
 			},
 		],

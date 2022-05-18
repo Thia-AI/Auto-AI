@@ -66,14 +66,6 @@ p {
 	margin-bottom: 0;
 }
 
-h1 {
-	font-family: Visby-Medium, sans-serif;
-}
-
-p {
-	font-family: Visby, sans-serif;
-}
-
 .tooltip {
 	font-size: 12px;
 	transition: all 200ms;
