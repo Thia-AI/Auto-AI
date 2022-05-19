@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { FirebaseAppProvider } from 'reactfire';
 import { firebaseConfig } from '_/renderer/firebase/firebase';
 import { HashRouter } from 'react-router-dom';
-import { theme } from '_/shared/chakraTheme';
+import { theme } from '_/shared/theming/chakraTheme';
 import { LoginApp } from './LoginApp';
 
 import '_public/login-style.css';

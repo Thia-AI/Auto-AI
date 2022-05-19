@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 /**
- *	Configuration for **Engine** API requests
+ *	Configuration for Backend API requests
  */
 const BackendRequestConfig = axios.create({
 	// baseURL: 'http://127.0.0.1:3987',
