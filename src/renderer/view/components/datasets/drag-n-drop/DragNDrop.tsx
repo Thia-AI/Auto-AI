@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Center, HStack, Text, Button, VStack, useToast, Flex } from '@chakra-ui/react';
+import { Center, HStack, Text, Button, VStack, useToast, Flex, useColorModeValue as mode } from '@chakra-ui/react';
 import { promises } from 'fs';
 import { extname, sep } from 'path';
 import { ipcRenderer, OpenDialogReturnValue } from 'electron';
@@ -35,6 +35,7 @@ const DragNDropC = React.memo(
 
 		const [fileDirectory, setFileDirectory] = useState('');
 		const [imagesUploading, setImagesUploading] = useState(false);
+		const inputColor = mode('thia.gray.700', 'thia.gray.300');
 
 		const [uploadJobID, setUploadJobID] = useState<string | undefined>(undefined);
 
@@ -162,16 +163,16 @@ const DragNDropC = React.memo(
 						willChange='border-color'
 						py='8'
 						_hover={{
-							borderColor: 'green.500',
+							borderColor: 'thia.purple.400',
 						}}
 						cursor='pointer'
 						border='2px dashed'
 						borderRadius='md'
 						transition='all 250ms ease'
 						outline='none'
-						borderColor='gray.500'
+						borderColor={inputColor}
 						overflow='hidden'
-						color='gray.600'
+						color={inputColor}
 						onClick={selectMultipleFiles}>
 						<Text fontSize='md' isTruncated>
 							Select *.png or *.jpg images
@@ -182,16 +183,16 @@ const DragNDropC = React.memo(
 						willChange='border-color'
 						py='8'
 						_hover={{
-							borderColor: 'green.500',
+							borderColor: 'thia.purple.400',
 						}}
 						cursor='pointer'
 						border='2px dashed'
 						borderRadius='md'
 						transition='all 250ms ease'
 						outline='none'
-						borderColor='gray.500'
+						borderColor={inputColor}
 						overflow='hidden'
-						color='gray.600'
+						color={inputColor}
 						onClick={selectFolder}>
 						<Text fontSize='md'>Select folder containing images (faster)</Text>
 					</Center>
@@ -200,11 +201,11 @@ const DragNDropC = React.memo(
 							isLoading={imagesUploading}
 							w='full'
 							variant='ghost'
-							colorScheme='green'
+							colorScheme='thia.purple'
 							onClick={uploadFiles}>
 							Upload
 						</Button>
-						<Button w='full' variant='outline' colorScheme='blue' onClick={clearFiles}>
+						<Button w='full' variant='outline' colorScheme='thia.gray' onClick={clearFiles}>
 							Clear
 						</Button>
 					</VStack>

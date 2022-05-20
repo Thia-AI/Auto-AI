@@ -40,7 +40,6 @@ const DatasetInputPreviewC = React.memo((props: Props) => {
 			h='full'
 			ml='2'
 			flexDir='column'
-			id='sex'
 			borderTopRightRadius='sm'
 			borderBottomRightRadius='sm'
 			overflow='hidden'>

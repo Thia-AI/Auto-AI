@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { ModelCard } from '../components/model-card/ModelCard';
 import { Model, nullModel } from '../helpers/constants/engineDBTypes';
+import { useVerticalScrollbar } from '_/shared/theming/hooks';
 
 interface Props {
 	push: Push;
@@ -17,6 +18,7 @@ const ModelsC = ({ push }: Props) => {
 	const match = useRouteMatch();
 	const [models, setModels] = useState<Model[]>([]);
 	const [isLoaded, setIsLoaded] = useState(false);
+	const verticalScrollBarSX = useVerticalScrollbar('10px');
 
 	useEffect(() => {
 		const fetchModels = async () => {
@@ -56,21 +58,7 @@ const ModelsC = ({ push }: Props) => {
 		} else return renderSkeleton();
 	};
 	return (
-		<Box
-			w='full'
-			h='full'
-			marginTop='var(--header-height)'
-			pt='4'
-			overflowY='auto'
-			sx={{
-				'&::-webkit-scrollbar': {
-					w: '8px',
-					bg: 'gray.600',
-				},
-				'&::-webkit-scrollbar-thumb': {
-					bg: 'gray.900',
-				},
-			}}>
+		<Box w='full' h='full' marginTop='var(--header-height)' pt='4' overflowY='auto' sx={verticalScrollBarSX}>
 			<VStack spacing='4' pb='4'>
 				{render()}
 			</VStack>

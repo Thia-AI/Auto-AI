@@ -31,6 +31,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useAuth } from 'reactfire';
 import { PERSISTENCE_TYPE } from '_/shared/appConstants';
+import { useVerticalScrollbar } from '_/shared/theming/hooks';
 
 import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_normal_ios.svg';
 
@@ -53,6 +54,7 @@ const Register = React.memo(
 
 		const history = useHistory();
 		const toast = useToast();
+		const verticalScrollBarSX = useVerticalScrollbar();
 
 		const [userRegistrationDetails, setUserRegistrationDetails] = useState({
 			fullName: '',
@@ -268,19 +270,7 @@ const Register = React.memo(
 		};
 
 		return (
-			<Center
-				w='full'
-				h='full'
-				overflowX='hidden'
-				sx={{
-					'&::-webkit-scrollbar': {
-						w: '8px',
-						bg: 'gray.600',
-					},
-					'&::-webkit-scrollbar-thumb': {
-						bg: 'gray.900',
-					},
-				}}>
+			<Center w='full' h='full' overflowX='hidden' sx={verticalScrollBarSX}>
 				<Stack spacing='4'>
 					<Center>
 						<Heading size={useBreakpointValue({ base: 'xl', md: '2xl' })}>Register</Heading>
@@ -290,9 +280,7 @@ const Register = React.memo(
 							isInvalid={
 								userRegistrationFocusedOnce.fullName && userRegistrationErrorMessages.fullName != ''
 							}>
-							<FormLabel fontSize='14px' bgColor='var(--chakra-colors-gray-800) !important'>
-								Name
-							</FormLabel>
+							<FormLabel fontSize='14px'>Name</FormLabel>
 							<Input
 								name='fullName'
 								placeholder='Full Name'
@@ -308,9 +296,7 @@ const Register = React.memo(
 								userRegistrationFocusedOnce.emailAddress &&
 								userRegistrationErrorMessages.emailAddress != ''
 							}>
-							<FormLabel fontSize='14px' bgColor='var(--chakra-colors-gray-800) !important'>
-								Email
-							</FormLabel>
+							<FormLabel fontSize='14px'>Email</FormLabel>
 							<Input
 								name='emailAddress'
 								placeholder='E-mail Address'
@@ -326,9 +312,7 @@ const Register = React.memo(
 							isInvalid={
 								userRegistrationFocusedOnce.password && userRegistrationErrorMessages.password != ''
 							}>
-							<FormLabel fontSize='14px' bgColor='var(--chakra-colors-gray-800) !important'>
-								Password
-							</FormLabel>
+							<FormLabel fontSize='14px'>Password</FormLabel>
 							<Input
 								name='password'
 								placeholder='Password'
@@ -343,9 +327,7 @@ const Register = React.memo(
 								userRegistrationFocusedOnce.passwordRetype &&
 								userRegistrationErrorMessages.passwordRetype != ''
 							}>
-							<FormLabel fontSize='14px' bgColor='var(--chakra-colors-gray-800) !important'>
-								Re-type Password
-							</FormLabel>
+							<FormLabel fontSize='14px'>Re-type Password</FormLabel>
 							<Input
 								name='passwordRetype'
 								placeholder='Re-type Password'

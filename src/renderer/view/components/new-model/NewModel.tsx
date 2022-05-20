@@ -22,7 +22,7 @@ const NewModelC = React.memo((props: Props) => {
 		<Center w='50%' h='50%'>
 			<Button
 				variant='outline'
-				colorScheme='teal'
+				colorScheme='thia.purple'
 				onClick={() => {
 					props.changeSelectedModel(0);
 					props.openCloseModelSelectionAction();

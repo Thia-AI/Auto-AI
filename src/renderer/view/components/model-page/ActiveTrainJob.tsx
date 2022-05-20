@@ -64,7 +64,8 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 	const [accuracySeries, setAccuracySeries] = useState<ApexChartSeriesItem[]>([]);
 	const [lossSeries, setLossSeries] = useState<ApexChartSeriesItem[]>([]);
 
-	const sectionBG = mode('white', 'gray.700');
+	const sectionBG = mode('thia.gray.200', 'thia.gray.700');
+	const trainingJobProgressTextColor = mode('thia.gray.700', 'thia.gray.300');
 	// purple.600
 	const trainingGraphBestPointBGColor = mode('white', '#6B46C1');
 	const trainingGraphBestPointMarkerStrokeColor = mode('white', '#805AD5');
@@ -222,7 +223,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 			switch (trainingJob.extra_data.status) {
 				case TrainJobStatus.TRAINED:
 				case TrainJobStatus.EVALUATED:
-					return 'purple';
+					return 'thia.purple';
 				case TrainJobStatus.TRAINING:
 				case TrainJobStatus.STARTING_TRAINING:
 					return 'green';
@@ -231,7 +232,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 				case TrainJobStatus.ERROR:
 					return 'red';
 				default:
-					return 'gray';
+					return 'thia.gray';
 			}
 		}
 		return 'gray';
@@ -311,7 +312,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 			switch (trainingJob.extra_data.status) {
 				case TrainJobStatus.TRAINED:
 				case TrainJobStatus.EVALUATED:
-					return <Progress value={100} size='xs' colorScheme='purple' />;
+					return <Progress value={100} size='xs' colorScheme='thia.purple' />;
 				case TrainJobStatus.TRAINING:
 				case TrainJobStatus.STARTING_TRAINING:
 					return <Progress size='xs' colorScheme='green' isIndeterminate />;
@@ -360,7 +361,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Evaluation
 						</Text>
-						<Text color='gray.500' fontSize='sm'>
+						<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 							The results of evaluating your model.
 						</Text>
 					</Box>
@@ -427,7 +428,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 							<Text as='h3' fontWeight='bold' fontSize='lg'>
 								Training Job
 							</Text>
-							<Text color='gray.500' fontSize='sm'>
+							<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 								The latest training job.
 							</Text>
 						</Box>
@@ -438,7 +439,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 							hoverLabel='Copy Training Job ID'
 						/>
 					</HStack>
-					<Box bg='gray.750' px='2' py='3' borderRadius='sm' w='full'>
+					<Box bg={mode('thia.gray.300', 'thia.gray.800')} px='2' py='3' borderRadius='sm' w='full'>
 						<VStack spacing='1' w='full'>
 							<HStack w='full' alignItems='baseline'>
 								<Skeleton isLoaded={isInitialDataLoaded} maxW='60%' w='80px'>
@@ -449,7 +450,11 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 
 								<Spacer />
 								<Skeleton isLoaded={isInitialDataLoaded}>
-									<Text fontSize='0.9rem' pr='1.5' fontFamily='mono' color='gray.500'>
+									<Text
+										fontSize='0.9rem'
+										pr='1.5'
+										fontFamily='mono'
+										color={trainingJobProgressTextColor}>
 										{getEpochsText()}
 									</Text>
 								</Skeleton>
@@ -461,7 +466,12 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 								maxW='full'
 								w='full'
 								noOfLines={1}>
-								<Text fontFamily='mono' fontSize='0.8rem' pl='1.5' color='gray.600' isTruncated>
+								<Text
+									fontFamily='mono'
+									fontSize='0.8rem'
+									pl='1.5'
+									color={trainingJobProgressTextColor}
+									isTruncated>
 									{trainingJob.extra_data?.status_description}
 								</Text>
 							</SkeletonText>

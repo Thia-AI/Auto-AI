@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Flex, Badge, chakra } from '@chakra-ui/react';
+import { Box, Divider, Flex, Badge, chakra, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
 
@@ -50,21 +50,21 @@ const ModelPreviewCardC = React.memo((props: Props) => {
 					<Badge borderRadius='full' px='2' colorScheme={props.badgeColorScheme}>
 						{props.badge}
 					</Badge>
-					<Box
+					<Text
 						flexGrow={2}
-						color='gray.500'
+						color={mode('thia.purple.400', 'thia.purple.350')}
 						fontWeight='semibold'
 						letterSpacing='wide'
 						fontSize='xs'
 						textTransform='uppercase'
 						ml='2'>
 						{props.cardTitle}
-					</Box>
+					</Text>
 				</Flex>
 				<Box mt='1' fontWeight='medium' as='h5' lineHeight='tight' isTruncated fontSize='md'>
 					{props.cardDescription}
 				</Box>
-				<Box as='p' mt='2' color='gray.600' fontSize='xs'>
+				<Box as='p' mt='2' color={mode('thia.gray.700', 'thia.gray.400')} fontSize='xs'>
 					Updated {props.updatedDate}
 				</Box>
 			</Box>

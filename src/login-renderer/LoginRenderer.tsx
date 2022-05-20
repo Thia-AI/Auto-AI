@@ -8,6 +8,11 @@ import { theme } from '_/shared/theming/chakraTheme';
 import { LoginApp } from './LoginApp';
 
 import '_public/login-style.css';
+// Fonts
+import '@fontsource/poppins';
+import '@fontsource/open-sans';
+import '@fontsource/jetbrains-mono';
+
 import { BackendRequestHandler } from '_/renderer/backend-requests/backendRequestHandler';
 import BackendRequestConfig from '_/shared/backendRequestConfig';
 

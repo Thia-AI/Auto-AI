@@ -12,6 +12,7 @@ import {
 	Divider,
 	Skeleton,
 	ThemingProps,
+	useColorModeValue,
 } from '@chakra-ui/react';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
@@ -31,12 +32,13 @@ interface Props {
  * Card representing a model in the
  */
 export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
+	const modelCardBG = useColorModeValue('thia.gray.700', 'thia.gray.700');
 	const statusColor = (): ThemingProps['colorScheme'] => {
 		switch (model.model_status) {
 			case ModelStatus.IDLE:
-				return 'gray';
+				return 'thia.gray';
 			case ModelStatus.TRAINED:
-				return 'purple';
+				return 'thia.purple';
 			case ModelStatus.TRAINING:
 			case ModelStatus.STARTING_TRAINING:
 				return 'green';
@@ -63,7 +65,7 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 			px='4'
 			borderRadius='lg'
 			boxShadow='lg'
-			bg='gray.850'>
+			bg={modelCardBG}>
 			<VStack spacing='2' alignItems='flex-start'>
 				<SkeletonCircle isLoaded={isLoaded} size='10'>
 					<Avatar

@@ -42,6 +42,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 
 	const toast = useToast();
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
+	const inputColor = mode('thia.gray.700', 'thia.gray.500');
 
 	const onDrop = useCallback((acceptedFiles: File[], rejected: FileRejection[]) => {
 		// Do something with the files
@@ -207,7 +208,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			}
 		}
 		return (
-			<Text color={error ? 'red.400' : 'gray.600'} opacity={error ? 0.8 : 1}>
+			<Text color={error ? 'red.400' : inputColor} opacity={error ? 0.8 : 1}>
 				{text}
 			</Text>
 		);
@@ -250,13 +251,13 @@ export const TestModel = React.memo(({ model }: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('white', 'gray.700')}
+				bg={mode('thia.gray.200', 'thia.gray.700')}
 				shadow='base'>
 				<Box>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Predict
 					</Text>
-					<Text color='gray.500' fontSize='sm'>
+					<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 						Test your model by predicting images on it.
 					</Text>
 				</Box>
@@ -266,16 +267,16 @@ export const TestModel = React.memo(({ model }: Props) => {
 						willChange='border-color'
 						py='8'
 						_hover={{
-							borderColor: 'green.500',
+							borderColor: 'thia.purple.400',
 						}}
 						cursor='pointer'
 						border='2px dashed'
 						borderRadius='md'
 						transition='all 250ms ease'
 						outline='none'
-						borderColor={isDragReject ? 'red.400' : 'gray.500'}
+						borderColor={isDragReject ? 'red.400' : inputColor}
 						overflow='hidden'
-						color='gray.600'
+						color={mode('thia.dark.700', 'thia.dark.500')}
 						{...getRootProps()}>
 						<chakra.input {...getInputProps()} disabled={testRunning} />
 						{renderDragText()}
@@ -284,7 +285,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 						<Button
 							w='full'
 							variant='ghost'
-							colorScheme='green'
+							colorScheme='thia.purple'
 							onClick={testModel}
 							isLoading={testRunning}
 							loadingText='Running Test'>
@@ -293,7 +294,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 						<Button
 							w='full'
 							variant='outline'
-							colorScheme='blue'
+							colorScheme='thia.gray'
 							onClick={() => {
 								setSelectedFiles([]);
 								setTestJobPredictions([]);

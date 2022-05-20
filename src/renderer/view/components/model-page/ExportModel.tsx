@@ -10,6 +10,7 @@ import {
 	HStack,
 	Spacer,
 	Spinner,
+	useColorModeValue as mode,
 	useToast,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
@@ -101,13 +102,13 @@ export const ExportModel = React.memo(({ model }: Props) => {
 			alignSelf='center'
 			px='8'
 			rounded='lg'
-			bg='gray.700'
+			bg={mode('thia.gray.200', 'thia.gray.700')}
 			shadow='base'>
 			<Box mb='8' w='full'>
 				<Text as='h3' fontWeight='bold' fontSize='lg'>
 					Export
 				</Text>
-				<Text color='gray.500' fontSize='sm'>
+				<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 					Export your model in the format you need.
 				</Text>
 			</Box>
@@ -220,7 +221,7 @@ const ExtraModelTypeButton = React.memo(
 				py='4'
 				pt='1'
 				opacity={isDisabled ? '0.4' : '1'}
-				bg='gray.750'
+				bg={mode('thia.gray.300', 'thia.gray.800')}
 				rounded='sm'
 				onClick={exportModel}
 				cursor={isDisabled ? 'not-allowed' : 'pointer'}
@@ -235,7 +236,14 @@ const ExtraModelTypeButton = React.memo(
 				<Heading as='h6' size='sm'>
 					{title}
 				</Heading>
-				<Text mt='1' fontSize='13px' color='gray.400' fontWeight='thin' as='p' maxW='250px' textAlign='left'>
+				<Text
+					mt='1'
+					fontSize='13px'
+					color={mode('thia.gray.700', 'thia.gray.300')}
+					fontWeight='thin'
+					as='p'
+					maxW='250px'
+					textAlign='left'>
 					{description}
 				</Text>
 			</Box>

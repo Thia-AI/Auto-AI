@@ -1,6 +1,17 @@
 import React, { useEffect } from 'react';
 
-import { Box, Center, Spinner, Text, HStack, Spacer, VStack, Icon, chakra } from '@chakra-ui/react';
+import {
+	Box,
+	Center,
+	Spinner,
+	Text,
+	HStack,
+	Spacer,
+	VStack,
+	Icon,
+	chakra,
+	useColorModeValue as mode,
+} from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { FiEdit } from 'react-icons/fi';
@@ -72,7 +83,7 @@ const DatasetCardC = React.memo((props: Props) => {
 			<Box
 				willChange='box-shadow'
 				transition='box-shadow 200ms ease'
-				bg='gray.750'
+				bg={mode('thia.gray.300', 'thia.gray.800')}
 				borderRadius='md'
 				w='275px'
 				boxShadow={
@@ -105,13 +116,12 @@ const DatasetCardC = React.memo((props: Props) => {
 							transition='all 200ms'
 							as={FiEdit}
 							outline='none'
-							color='gray.300'
+							color={mode('thia.gray.700', 'thia.gray.300')}
 							onClick={(e) => {
 								e.stopPropagation();
-
 								props.push(`/dataset/${props.dataset.id}`);
 							}}
-							_hover={{ color: 'teal.500', transform: 'scale(1.1)' }}
+							_hover={{ color: mode('thia.purple.400', 'thia.purple.300'), transform: 'scale(1.1)' }}
 						/>
 						<ReactTooltip
 							id='editTooltip'

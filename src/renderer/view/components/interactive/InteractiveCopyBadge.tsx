@@ -35,7 +35,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 			title={props.hoverLabel ?? 'Copy ID'}
 			px='1'
 			opacity='0.6'
-			bg='gray.900'
+			bg='thia.gray.900'
 			onClick={(e) => {
 				// Prevent onclick from propogating up
 				e.stopPropagation();
@@ -50,7 +50,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 					}
 				}, 150);
 			}}>
-			<Text w='full' h='full' color='gray.600' isTruncated>
+			<Text w='full' h='full' color='thia.gray.200' isTruncated>
 				{renderBadgeID()}
 			</Text>
 		</Badge>

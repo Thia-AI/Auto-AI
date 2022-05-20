@@ -208,7 +208,7 @@ const ICModelContentC = React.memo((props: Props) => {
 						placeholder=' '
 						type='email'
 					/>
-					<FormLabel bg='var(--chakra-colors-gray-800) !important'>Model Name</FormLabel>
+					<FormLabel>Model Name</FormLabel>
 					<FormErrorMessage>{modelNameError}</FormErrorMessage>
 				</FormControl>
 			</Box>

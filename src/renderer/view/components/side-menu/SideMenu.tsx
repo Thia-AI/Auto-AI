@@ -30,6 +30,7 @@ import {
 	SETTINGS_PAGE,
 	HELP_PAGE,
 } from '_/renderer/view/helpers/constants/pageConstants';
+import { useVerticalScrollbar } from '_/shared/theming/hooks';
 
 interface Props {
 	sideMenuOpen: IMenuOpenReducer;
@@ -39,6 +40,7 @@ interface Props {
 	selectedPage: ISelectedPageReducer;
 }
 const SideMenuC = React.memo((props: Props) => {
+	const scrollBarSX = useVerticalScrollbar();
 	return (
 		<Drawer
 			isOpen={props.sideMenuOpen.value}
@@ -49,25 +51,10 @@ const SideMenuC = React.memo((props: Props) => {
 			size='xs'>
 			<DrawerOverlay />
 			<DrawerContent zIndex='2'>
-				<DrawerBody bg='gray.900'>
+				<DrawerBody>
 					<Flex h='full' w='full' direction='column' pt='6'>
 						<SideMenuProfile />
-						<Stack
-							spacing='8'
-							flex='1'
-							overflow='auto'
-							mt='4'
-							pt='4'
-							pr='6'
-							sx={{
-								'&::-webkit-scrollbar': {
-									w: '8px',
-									bg: 'gray.600',
-								},
-								'&::-webkit-scrollbar-thumb': {
-									bg: 'gray.900',
-								},
-							}}>
+						<Stack spacing='8' flex='1' overflow='auto' mt='4' pt='4' pr='6' sx={scrollBarSX}>
 							<Stack spacing='1'>
 								<NavItem
 									onClick={() => {

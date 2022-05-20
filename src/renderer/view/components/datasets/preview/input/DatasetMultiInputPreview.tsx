@@ -19,6 +19,7 @@ import {
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { MdImageNotSupported } from 'react-icons/md';
+import { useHorizontalScrollbar } from '_/shared/theming/hooks';
 interface Props {
 	h: LayoutProps['h'];
 	activeDatasetInputs: IActiveDatasetInputsReducer;
@@ -46,6 +47,7 @@ const DatasetMultiInputPreviewC = React.memo(
 		const datasetID = activeDataset.value.dataset?.id;
 		const isThereANextPage = nextPageCursor.value !== null;
 		const isThereAPreviousPage = previousPageCursor.value !== null;
+		const horizontalScrollbar = useHorizontalScrollbar('5px');
 
 		const navigatePaginationWithKeyboard = useCallback(
 			(event: KeyboardEvent) => {
@@ -102,17 +104,7 @@ const DatasetMultiInputPreviewC = React.memo(
 						bg='gray.800'
 						borderRadius='md'
 						overflowY='hidden'
-						sx={{
-							'&::-webkit-scrollbar': {
-								h: '5px',
-								bg: 'gray.600',
-								borderBottomLeftRadius: 'sm',
-								borderBottomRightRadius: 'sm',
-							},
-							'&::-webkit-scrollbar-thumb': {
-								bg: 'gray.900',
-							},
-						}}>
+						sx={horizontalScrollbar}>
 						{Array(activeDatasetInputs.value.length)
 							.fill(0)
 							.map((_, i) => {
@@ -132,7 +124,7 @@ const DatasetMultiInputPreviewC = React.memo(
 						size='xs'
 						variant='solid'
 						title='Previous Page'
-						colorScheme='teal'
+						colorScheme='thia.purple'
 						iconSpacing='0'
 						borderRadius='full'
 						isDisabled={!isThereAPreviousPage}
@@ -150,7 +142,7 @@ const DatasetMultiInputPreviewC = React.memo(
 						px='0'
 						size='xs'
 						variant='solid'
-						colorScheme='teal'
+						colorScheme='thia.purple'
 						title='Next Page'
 						iconSpacing='0'
 						borderRadius='full'

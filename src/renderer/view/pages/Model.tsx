@@ -35,6 +35,7 @@ import { TestModel } from '../components/model-page/TestModel';
 import { ExportModel } from '../components/model-page/ExportModel';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { DeleteModel } from '../components/model-page/DeleteModel';
+import { useVerticalScrollbar } from '_/shared/theming/hooks';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -44,6 +45,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 	const modelID = useRouteMatch().params['id'];
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
+	const verticalScrollBarSX = useVerticalScrollbar('10px');
 	const {
 		isOpen: deleteModelDialogOpen,
 		onOpen: openDeleteModelDialog,
@@ -123,15 +125,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 				marginTop='var(--header-height)'
 				py='4'
 				overflowY='auto'
-				sx={{
-					'&::-webkit-scrollbar': {
-						w: '10px',
-						bg: 'gray.600',
-					},
-					'&::-webkit-scrollbar-thumb': {
-						bg: 'gray.900',
-					},
-				}}>
+				sx={verticalScrollBarSX}>
 				<Skeleton w='full' mb='6' isLoaded={model.id.length != 0}>
 					<HStack pt='1' alignItems='center'>
 						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated ml='4'>
@@ -149,8 +143,15 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 									icon={<BsThreeDotsVertical />}
 									variant='ghost'
 								/>
-								<MenuList>
-									<MenuItem onClick={() => openDeleteModelDialog()}>Delete</MenuItem>
+								<MenuList px='3'>
+									<MenuItem
+										bg='red.400'
+										rounded='md'
+										_active={{ bg: 'red.500' }}
+										_focus={{ bg: 'red.450' }}
+										onClick={() => openDeleteModelDialog()}>
+										Delete
+									</MenuItem>
 								</MenuList>
 							</Menu>
 						</Box>
@@ -163,7 +164,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 				<Spacer />
 				<Center w='full'>
 					<Button
-						colorScheme='blue'
+						colorScheme='thia.purple'
 						isDisabled={!canTrainModel()}
 						isLoading={!dataLoaded}
 						onClick={trainModel}>

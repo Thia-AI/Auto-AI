@@ -19,6 +19,7 @@ import { IUpdateDatasetInputLabelAction } from '_/renderer/state/active-dataset-
 import { updateDatasetLabelAction } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IUpdateDatasetLabelAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
+import { useVerticalScrollbar } from '_/shared/theming/hooks';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -33,6 +34,7 @@ const DatasetInputLabelsC = React.memo(
 		const [ordererdLabelsByCount, setOrdererdLabelsByCount] = useState<string[]>([]);
 		const [ordererdLabelsByPreference, setOrdererdLabelsByPreference] = useState<string[]>([]);
 
+		const verticalScrollbar = useVerticalScrollbar('4px');
 		useEffect(() => {
 			// Set ordererd by preference labels only once dataset has been received
 			if (activeDataset.value.dataset) {
@@ -131,15 +133,7 @@ const DatasetInputLabelsC = React.memo(
 					maxH='65%'
 					overflowY='auto'
 					overflowX='hidden'
-					sx={{
-						'&::-webkit-scrollbar': {
-							w: '4px',
-							bg: 'gray.600',
-						},
-						'&::-webkit-scrollbar-thumb': {
-							bg: 'gray.900',
-						},
-					}}>
+					sx={verticalScrollbar}>
 					{ordererdLabelsByCount.map((label) => {
 						// Check if label exists before rendering. This needs to be done to prevent
 						// issues when label is deleted from activeDataset but the ordererd labels hasn't updated yet

@@ -36,7 +36,6 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 
 	const { isOpen: isSignoutDialogOpen, onOpen: signoutDialogOpen, onClose: onSignoutDialogClose } = useDisclosure();
 	const cancelSignoutRef = React.useRef(null);
-
 	return (
 		<>
 			<Menu>

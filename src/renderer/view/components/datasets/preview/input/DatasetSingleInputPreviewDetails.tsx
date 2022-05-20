@@ -1,4 +1,4 @@
-import { Badge, Box, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { Badge, Box, Heading, HStack, Text, VStack, useColorModeValue as mode } from '@chakra-ui/react';
 import React from 'react';
 import { connect } from 'react-redux';
 import {
@@ -16,6 +16,7 @@ interface Props {
 }
 const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, activeInputs, activeDataset }: Props) => {
 	const activeInput = activeInputs.value[activeInputPreviewID.value] ?? nullInput;
+	const detailsBG = mode('thia.gray.400', 'thia.gray.850');
 
 	const render = () => {
 		if (activeInput.id.length > 0 && activeDataset.value.labels[activeInput.label]) {
@@ -30,7 +31,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 						borderRadius='md'
 						px='2'
 						py='3'
-						bg='gray.800'
+						bg={detailsBG}
 						justifyContent='flex-start'
 						alignItems='flex-start'>
 						{/* Label */}
@@ -53,7 +54,12 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 							<Heading as='h6' size='xs'>
 								Name:
 							</Heading>
-							<Badge fontSize='xs' maxW='70%' variant='subtle' textTransform='none'>
+							<Badge
+								fontSize='xs'
+								maxW='70%'
+								variant='subtle'
+								colorScheme='thia.gray'
+								textTransform='none'>
 								<Text isTruncated fontWeight='normal'>
 									{activeInput.file_name}
 								</Text>
@@ -64,7 +70,12 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 							<Heading as='h6' size='xs'>
 								Created:
 							</Heading>
-							<Badge fontSize='xs' maxW='70%' variant='subtle' textTransform='none'>
+							<Badge
+								fontSize='xs'
+								maxW='70%'
+								variant='subtle'
+								colorScheme='thia.gray'
+								textTransform='none'>
 								<Text isTruncated fontWeight='normal'>
 									{new Date(activeInput.date_created).toLocaleDateString('en-US', {
 										day: 'numeric',

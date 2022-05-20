@@ -21,6 +21,7 @@ import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IAppState } from '_/renderer/state/reducers';
 import { IDatasetListReducer } from '_/renderer/state/dataset-list/model/reducerTypes';
+import { useHorizontalScrollbar } from '_/shared/theming/hooks';
 
 interface Props {
 	modelType: string;
@@ -30,10 +31,10 @@ interface Props {
 }
 const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
 	const verboseModelType = getVerboseModelType(props.modelType);
-
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
+	const horizontalScrollBarSX = useHorizontalScrollbar();
+
 	useEffect(() => {
 		props.refreshDataset();
 	}, []);
@@ -64,39 +65,24 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('white', 'gray.700')}
+				bg={mode('thia.gray.200', 'thia.gray.700')}
 				shadow='base'>
 				<HStack mb='8' w='full'>
 					<Box>
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Datasets
 						</Text>
-						<Text color='gray.500' fontSize='sm'>
+						<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 							Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'} {verboseModelType} dataset to
 							train on
 						</Text>
 					</Box>
 					<Spacer />
-					<Button onClick={onOpen} variant='ghost' colorScheme='green'>
+					<Button onClick={onOpen} variant='ghost' colorScheme='thia.purple'>
 						Add
 					</Button>
 				</HStack>
-				<HStack
-					pl='2'
-					w='full'
-					minH='325px'
-					spacing='4'
-					overflowX='auto'
-					pb='4'
-					sx={{
-						'&::-webkit-scrollbar': {
-							h: '8px',
-							bg: 'gray.600',
-						},
-						'&::-webkit-scrollbar-thumb': {
-							bg: 'gray.900',
-						},
-					}}>
+				<HStack pl='2' w='full' minH='325px' spacing='4' overflowX='auto' pb='4' sx={horizontalScrollBarSX}>
 					{renderCards()}
 					{/* Extra div at the end so that there's some artificial padding */}
 					<Box minH='1px' visibility='hidden' minW='1px' />

@@ -25,6 +25,7 @@ export default {
 					px: 1,
 					my: 2,
 					transformOrigin: 'left top',
+					bg: 'thia.gray.800',
 				},
 			},
 		},

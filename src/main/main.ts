@@ -97,7 +97,7 @@ const createWindow = (): void => {
 		autoHideMenuBar: true,
 		show: false,
 		icon: path.join(__dirname, '..', 'build', 'icon.ico'),
-		backgroundColor: '#1A202C',
+		backgroundColor: '#1F1F1F',
 		webPreferences: {
 			webSecurity: true,
 			devTools: isEmulatedDev,

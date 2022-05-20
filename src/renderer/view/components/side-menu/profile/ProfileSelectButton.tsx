@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Image, useMenuButton } from '@chakra-ui/react';
+import { Box, Flex, HStack, Image, useColorModeValue, useMenuButton } from '@chakra-ui/react';
 import React from 'react';
 import { HiSelector } from 'react-icons/hi';
 
@@ -11,6 +11,8 @@ type Props = {
  */
 export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props) => {
 	const buttonProps = useMenuButton();
+	const profileBG = useColorModeValue('thia.gray.400', 'thia.gray.700');
+	const profileBGActive = useColorModeValue('thia.gray.300', 'thia.gray.600');
 	return (
 		<Flex
 			as='button'
@@ -19,7 +21,7 @@ export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props)
 			display='flex'
 			alignItems='center'
 			rounded='lg'
-			bg='gray.700'
+			bg={profileBG}
 			px='3'
 			pt='2'
 			pb='4'
@@ -28,7 +30,7 @@ export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props)
 			cursor='pointer'
 			outline='0'
 			transition='all 0.2s'
-			_active={{ bg: 'gray.600' }}>
+			_active={{ bg: profileBGActive }}>
 			<HStack flex='1' spacing='3'>
 				<Image w='8' h='8' rounded='md' objectFit='cover' alt='Chakra UI' src={imageURL} />
 				<Box textAlign='start'>

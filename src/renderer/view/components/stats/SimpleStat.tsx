@@ -10,7 +10,7 @@ import {
 	Stack,
 	Text,
 	useBreakpointValue,
-	useColorModeValue,
+	useColorModeValue as mode,
 } from '@chakra-ui/react';
 import { BiHelpCircle } from 'react-icons/bi';
 import './SimpleStat.css';
@@ -30,12 +30,12 @@ export const SimpleStat = React.memo(({ label, value, percentage = false, statDe
 	return (
 		<Box
 			minW={225}
-			bg='gray.800'
+			bg={mode('thia.gray.300', 'thia.gray.800')}
 			pl={{ base: '4', lg: '7' }}
 			pr={{ base: '1.5', lg: '3' }}
 			py={{ base: '3', lg: '4' }}
 			borderRadius='lg'
-			boxShadow={useColorModeValue('sm', 'sm-dark')}>
+			boxShadow={mode('sm', 'sm-dark')}>
 			<Stack>
 				<HStack w='full'>
 					<Text fontSize='sm' color='muted'>
@@ -47,7 +47,7 @@ export const SimpleStat = React.memo(({ label, value, percentage = false, statDe
 						data-for={`evaluationMetric-${label}-tooltip`}
 						fontSize='xl'
 						transform='translateY(-7px)'
-						color='gray.300'
+						color={mode('thia.gray.700', 'thia.gray.300')}
 						cursor='pointer'
 						as={BiHelpCircle}
 					/>

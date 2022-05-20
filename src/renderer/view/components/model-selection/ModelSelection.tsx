@@ -23,6 +23,7 @@ import { ModelSelectionBody } from './ModelSelectionBody';
 
 import ObjectDetectionPreview from '_utils/images/object_detection_card_bg_compressed.jpg';
 import ImageClassificationPreview from '_utils/images/image_classification_card_bg.jpg';
+import { useHorizontalScrollbar, useVerticalScrollbar } from '_/shared/theming/hooks';
 
 interface Props {
 	modalOpenedState: IOpenCloseModelSelectionReducer;
@@ -31,6 +32,8 @@ interface Props {
 
 const ModelSelectionC = React.memo((props: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
+	const verticalScrollBarSX = useVerticalScrollbar();
+	const horizontalScrollBarSX = useHorizontalScrollbar();
 	return (
 		<Modal
 			isOpen={props.modalOpenedState.value}
@@ -41,34 +44,11 @@ const ModelSelectionC = React.memo((props: Props) => {
 			isCentered
 			scrollBehavior='inside'>
 			<ModalOverlay />
-			<ModalContent transition='all 200ms' overflow='hidden' bg='gray.800' h='full'>
+			<ModalContent transition='all 200ms' overflow='hidden' h='full'>
 				<ModalHeader>Select Model</ModalHeader>
 				<ModalCloseButton size='sm' />
-				<ModalBody
-					mt='2'
-					sx={{
-						'&::-webkit-scrollbar': {
-							w: '8px',
-							bg: 'gray.600',
-						},
-						'&::-webkit-scrollbar-thumb': {
-							bg: 'gray.900',
-						},
-					}}>
-					<HStack
-						spacing='14px'
-						overflowX='auto'
-						pb='3'
-						px='4'
-						sx={{
-							'&::-webkit-scrollbar': {
-								h: '8px',
-								bg: 'gray.600',
-							},
-							'&::-webkit-scrollbar-thumb': {
-								bg: 'gray.900',
-							},
-						}}>
+				<ModalBody mt='2' sx={verticalScrollBarSX}>
+					<HStack spacing='14px' overflowX='auto' pb='3' px='4' sx={horizontalScrollBarSX}>
 						<ModelPreviewCard
 							badge='new'
 							cardTitle='Image Classification'

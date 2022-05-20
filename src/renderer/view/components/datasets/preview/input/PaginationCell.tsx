@@ -107,7 +107,7 @@ const mapStateToProps = (state: IAppState) => ({
 });
 
 /**
- * A single cell of the {@link PreviewDatasetPagination `PreviewDatasetPagination`} component that displays a single dataset input.
+ * A single cell of that displays a single dataset input.
  */
 export const PaginationCell = connect(mapStateToProps, {
 	setActivePreviewID: setActiveDatasetInputsPreviewIDAction,

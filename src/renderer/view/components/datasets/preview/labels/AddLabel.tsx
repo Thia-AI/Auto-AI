@@ -134,7 +134,11 @@ interface ButtonProps {
 }
 const AddLabelInputButton = React.memo(({ isLoading }: ButtonProps) => {
 	return (
-		<Button borderTopLeftRadius='none' borderBottomLeftRadius='none' colorScheme='green' isLoading={isLoading}>
+		<Button
+			borderTopLeftRadius='none'
+			borderBottomLeftRadius='none'
+			colorScheme='thia.purple'
+			isLoading={isLoading}>
 			<IoAddOutline transform='scale(2)' />
 		</Button>
 	);

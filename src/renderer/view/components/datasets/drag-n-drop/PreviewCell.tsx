@@ -1,6 +1,17 @@
 import React, { useEffect } from 'react';
 
-import { Box, Center, chakra, Flex, HStack, Icon, Spacer, Spinner, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Center,
+	chakra,
+	Flex,
+	HStack,
+	Icon,
+	Spacer,
+	Spinner,
+	Text,
+	useColorModeValue as mode,
+} from '@chakra-ui/react';
 import { areEqual } from 'react-window';
 import { parse } from 'path';
 import { connect } from 'react-redux';
@@ -34,6 +45,8 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 
 	const { style, columnIndex, rowIndex, data, file_paths } = props;
 	const { rowCount, directory } = data;
+	const spinnerColor = mode('thia.gray.300', 'thia.gray.600');
+	const cellBG = mode('thia.gray.300', 'thia.gray.800');
 
 	const itemIndex = columnIndex * rowCount + rowIndex;
 
@@ -48,8 +61,8 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	// TODO: Add lazy loading of background image
 	const renderLoading = () => {
 		return (
-			<Center w='full' h='full' boxShadow='lg' bg='gray.700' borderRadius='md'>
-				<Spinner color='gray.600' />
+			<Center w='full' h='full'>
+				<Spinner color={spinnerColor} />
 			</Center>
 		);
 	};
@@ -57,7 +70,7 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const renderLoaded = () => {
 		return (
 			<Box p='2' style={style}>
-				<Flex boxShadow='lg' w='full' h='full' flexDir='column' bg='gray.700' borderRadius='md'>
+				<Flex boxShadow='md' w='full' h='full' flexDir='column' bg={cellBG} borderRadius='sm'>
 					<chakra.img style={{ height: '80%', objectFit: 'cover' }} src={imageSrc} loading='eager' />
 					<HStack
 						borderBottomRadius='md'
@@ -68,7 +81,6 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 						h='20%'
 						py='1'
 						px='1'
-						bg='gray.850'
 						fontSize='10px'
 						color='gray.300'>
 						<Text isTruncated>{file_name}</Text>

@@ -1,4 +1,4 @@
-import { Box, Center, Text } from '@chakra-ui/react';
+import { Box, Center, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import AutoSizer from './AutoSizer.jsx';
@@ -15,6 +15,7 @@ interface DragProps {
 const DragNDropPreviewC = React.memo((props: DragProps) => {
 	const { files, directory } = props;
 
+	const previewPanelTextColor = mode('thia.gray.600', 'thia.gray.400');
 	const gridHeight = 520;
 	const itemHeight = 125;
 	const itemWidth = 125;
@@ -36,13 +37,13 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 			borderRadius='sm'
 			h={gridHeight + 2 * gridContainerPadding + 'px'}
 			mb='4'
-			bg='gray.750'>
+			bg={mode('thia.gray.400', 'thia.gray.750')}>
 			<AutoSizer>
 				{({ height, width }) => {
 					if (files.length === 0)
 						return (
 							<Center w={width} h={height}>
-								<Text fontSize='6xl' fontWeight='semibold' color='gray.700'>
+								<Text fontSize='6xl' fontWeight='semibold' color={previewPanelTextColor}>
 									Preview Panel
 								</Text>
 							</Center>

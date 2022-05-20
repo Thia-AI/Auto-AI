@@ -1,4 +1,4 @@
-import { Box, HStack } from '@chakra-ui/react';
+import { Box, HStack, useColorModeValue } from '@chakra-ui/react';
 import * as React from 'react';
 import { BsCaretRightFill } from 'react-icons/bs';
 
@@ -19,6 +19,8 @@ interface NavItemProps {
  */
 export const NavItem = React.memo((props: NavItemProps) => {
 	const { active, subtle, icon, children, label, endElement } = props;
+	const navItemBackground = useColorModeValue('thia.purple.350', 'thia.purple.350');
+	const navItemActive = useColorModeValue('thia.purple.300', 'thia.purple.300');
 	return (
 		<HStack
 			w='full'
@@ -28,14 +30,19 @@ export const NavItem = React.memo((props: NavItemProps) => {
 			cursor='pointer'
 			userSelect='none'
 			rounded='md'
+			color={active ? 'currentcolor' : 'thia.gray.300'}
 			transition='all 0.2s'
-			bg={active ? 'gray.700' : undefined}
-			_hover={{ bg: 'gray.700' }}
-			_active={{ bg: 'gray.600' }}>
-			<Box fontWeight='light' fontSize='lg' color={active ? 'currentcolor' : 'gray.400'}>
+			bg={active ? navItemBackground : undefined}
+			_hover={{ bg: navItemBackground, color: 'currentcolor' }}
+			_active={{ bg: navItemActive }}>
+			<Box fontWeight='light' fontSize='lg'>
 				{icon}
 			</Box>
-			<Box pl='1' flex='1' fontWeight='thin' color={subtle ? 'gray.400' : undefined}>
+			<Box
+				pl='1'
+				flex='1'
+				fontWeight='thin'
+				color={active ? 'currentcolor' : subtle ? 'thia.gray.300' : undefined}>
 				{label}
 			</Box>
 			{endElement && !children && <Box>{endElement}</Box>}
