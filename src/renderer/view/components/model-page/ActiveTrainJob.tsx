@@ -63,6 +63,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const [accuracySeries, setAccuracySeries] = useState<ApexChartSeriesItem[]>([]);
 	const [lossSeries, setLossSeries] = useState<ApexChartSeriesItem[]>([]);
+	const sectionTextColor = mode('thia.gray.700', 'thia.gray.300');
 
 	const sectionBG = mode('thia.gray.200', 'thia.gray.700');
 	const trainingJobProgressTextColor = mode('thia.gray.700', 'thia.gray.300');
@@ -361,7 +362,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Evaluation
 						</Text>
-						<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
+						<Text color={sectionTextColor} fontSize='sm'>
 							The results of evaluating your model.
 						</Text>
 					</Box>
@@ -428,7 +429,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 							<Text as='h3' fontWeight='bold' fontSize='lg'>
 								Training Job
 							</Text>
-							<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
+							<Text color={sectionTextColor} fontSize='sm'>
 								The latest training job.
 							</Text>
 						</Box>

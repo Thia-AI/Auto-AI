@@ -11,8 +11,12 @@ type Props = {
  */
 export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props) => {
 	const buttonProps = useMenuButton();
-	const profileBG = useColorModeValue('thia.gray.400', 'thia.gray.700');
-	const profileBGActive = useColorModeValue('thia.gray.300', 'thia.gray.600');
+	const profileBG = useColorModeValue('thia.gray.50', 'thia.gray.750');
+	const profileBGHover = useColorModeValue('thia.gray.100', 'thia.gray.700');
+	const profileBGClicking = useColorModeValue('thia.gray.50', 'thia.gray.600');
+	const boxShadow = useColorModeValue('lg', 'sm');
+	const color = useColorModeValue('thia.gray.700', 'thia.gray.400');
+
 	return (
 		<Flex
 			as='button'
@@ -27,22 +31,24 @@ export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props)
 			pb='4'
 			fontSize='sm'
 			userSelect='none'
+			boxShadow={boxShadow}
 			cursor='pointer'
 			outline='0'
 			transition='all 0.2s'
-			_active={{ bg: profileBGActive }}>
+			_hover={{ bg: profileBGHover }}
+			_active={{ bg: profileBGClicking }}>
 			<HStack flex='1' spacing='3'>
 				<Image w='8' h='8' rounded='md' objectFit='cover' alt='Chakra UI' src={imageURL} />
 				<Box textAlign='start'>
 					<Box isTruncated fontWeight='semibold'>
 						{displayName}
 					</Box>
-					<Box isTruncated fontSize='xs' color='gray.400'>
+					<Box isTruncated fontSize='xs' color={color}>
 						ID 233223
 					</Box>
 				</Box>
 			</HStack>
-			<Box fontSize='lg' color='gray.400'>
+			<Box fontSize='lg' color={color}>
 				<HiSelector />
 			</Box>
 		</Flex>

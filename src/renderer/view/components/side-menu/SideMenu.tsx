@@ -158,12 +158,12 @@ const SideMenuC = React.memo((props: Props) => {
 						<Box>
 							<Stack spacing='1'>
 								<NavItem
+									used
 									onClick={() => {
 										props.changeSelectedPage(SETTINGS_PAGE);
 										props.push('/settings');
 										props.openCloseSideMenu();
 									}}
-									subtle
 									active={props.selectedPage.value == SETTINGS_PAGE}
 									icon={<BiCog />}
 									label='Settings'
@@ -174,7 +174,6 @@ const SideMenuC = React.memo((props: Props) => {
 										props.push('/help');
 										props.openCloseSideMenu();
 									}}
-									subtle
 									active={props.selectedPage.value == HELP_PAGE}
 									icon={<MdHelpOutline />}
 									label='Help & Support'

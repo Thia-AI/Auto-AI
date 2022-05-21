@@ -13,6 +13,7 @@ import {
 	Box,
 	Menu,
 	MenuButton,
+	useColorModeValue as mode,
 	IconButton,
 	MenuList,
 	MenuItem,
@@ -46,6 +47,9 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
+	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
+	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
+
 	const {
 		isOpen: deleteModelDialogOpen,
 		onOpen: openDeleteModelDialog,
@@ -141,14 +145,24 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 									as={IconButton}
 									aria-label='Model Options'
 									icon={<BsThreeDotsVertical />}
+									_hover={{
+										bg: menuButtonBGHover,
+									}}
+									_active={{
+										bg: menuButtonBGClicking,
+									}}
+									_focus={{
+										bg: menuButtonBGHover,
+									}}
 									variant='ghost'
 								/>
 								<MenuList px='3'>
 									<MenuItem
 										bg='red.400'
 										rounded='md'
-										_active={{ bg: 'red.500' }}
-										_focus={{ bg: 'red.450' }}
+										_active={{ bg: 'red.450' }}
+										_hover={{ bg: 'red.500' }}
+										_focus={{ bg: 'red.500' }}
 										onClick={() => openDeleteModelDialog()}>
 										Delete
 									</MenuItem>
