@@ -37,7 +37,7 @@ export const NavItem = React.memo((props: NavItemProps) => {
 			transition='all 0.2s'
 			bg={active ? navItemBackground : undefined}
 			_hover={used ? { bg: navItemBackground, color: 'currentcolor' } : { bg: undefined, color: 'thia.gray.300' }}
-			_active={{ bg: navItemActive }}>
+			_active={used ? { bg: navItemActive } : {}}>
 			<Box fontWeight='light' fontSize='lg'>
 				{icon}
 			</Box>
