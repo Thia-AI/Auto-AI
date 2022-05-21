@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Flex, VStack, useToast, useColorModeValue as mode } from '@chakra-ui/react';
+import { Box, Flex, VStack, useToast } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
 
@@ -17,7 +17,6 @@ import { DeleteLabel } from './DeleteLabel';
 import { IOpenCloseDeleteLabelAction } from '_/renderer/state/delete-modals/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
-import { modes } from 'react-transition-group/SwitchTransition';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
