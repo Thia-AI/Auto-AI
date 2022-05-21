@@ -57,6 +57,7 @@ const SideMenuC = React.memo((props: Props) => {
 						<Stack spacing='8' flex='1' overflow='auto' mt='4' pt='4' pr='6' sx={scrollBarSX}>
 							<Stack spacing='1'>
 								<NavItem
+									used={true}
 									onClick={() => {
 										props.changeSelectedPage(HOME_PAGE);
 										props.push('/');
@@ -69,6 +70,7 @@ const SideMenuC = React.memo((props: Props) => {
 							</Stack>
 							<NavGroup label='Your Thia'>
 								<NavItem
+									used={true}
 									onClick={() => {
 										props.changeSelectedPage(MODELS_PAGE);
 										props.push('/models');
