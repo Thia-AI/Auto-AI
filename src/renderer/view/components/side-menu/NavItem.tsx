@@ -29,7 +29,7 @@ export const NavItem = React.memo((props: NavItemProps) => {
 			onClick={used ? props.onClick : undefined}
 			px='3'
 			py='2'
-			cursor={used ? 'pointer' : 'default'}
+			cursor={used ? 'pointer' : 'not-allowed'}
 			userSelect='none'
 			rounded='md'
 			color={active ? 'currentcolor' : 'thia.gray.300'}
