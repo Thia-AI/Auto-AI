@@ -36,6 +36,8 @@ export const IPC_DEV_COPY_ID_TOKEN = 'dev:copyIdToken';
 
 export const IPC_DEV_COPY_UID = 'dev:copyUid';
 
+export const IPC_DEV_TOGGLE_COLOR_MODE = 'dev:toggleColorMode';
+
 // DRAG AND DROP
 
 /**

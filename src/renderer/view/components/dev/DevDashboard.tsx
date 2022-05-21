@@ -11,6 +11,7 @@ import {
 	Box,
 	Divider,
 	useToast,
+	useColorMode,
 } from '@chakra-ui/react';
 
 import { ipcRenderer } from 'electron';
@@ -18,6 +19,7 @@ import { DevDeleteDatasetInputs } from './DevDeleteDatasetInputs';
 import {
 	IPC_DEV_COPY_ID_TOKEN,
 	IPC_DEV_COPY_UID,
+	IPC_DEV_TOGGLE_COLOR_MODE,
 	IPC_DEV_TOGGLE_DEV_DASHBOARD,
 	IPC_RUNTIME_IS_DEV,
 } from '_/shared/ipcChannels';
@@ -31,6 +33,7 @@ export const DevDashboard = React.memo(() => {
 	const auth = useAuth();
 	const toast = useToast();
 
+	const { toggleColorMode, colorMode } = useColorMode();
 	const [isDev, setIsDev] = useState(false);
 
 	useEffect(() => {
@@ -92,12 +95,17 @@ export const DevDashboard = React.memo(() => {
 			}
 		});
 
+		ipcRenderer.on(IPC_DEV_TOGGLE_COLOR_MODE, () => {
+			toggleColorMode();
+		});
+
 		return () => {
 			ipcRenderer.removeAllListeners(IPC_DEV_TOGGLE_DEV_DASHBOARD);
 			ipcRenderer.removeAllListeners(IPC_DEV_COPY_ID_TOKEN);
 			ipcRenderer.removeAllListeners(IPC_DEV_COPY_UID);
+			ipcRenderer.removeAllListeners(IPC_DEV_TOGGLE_COLOR_MODE);
 		};
-	}, [isDashboardOpen]);
+	}, [isDashboardOpen, colorMode]);
 	const render = () => {
 		return (
 			<Modal
