@@ -7,6 +7,7 @@ interface NavItemProps {
 	label: string;
 	subtle?: boolean;
 	active?: boolean;
+	used?: boolean;
 	icon: React.ReactElement;
 	endElement?: React.ReactElement;
 	children?: React.ReactNode;
@@ -18,22 +19,23 @@ interface NavItemProps {
  * Individual navigation item in the side menu.
  */
 export const NavItem = React.memo((props: NavItemProps) => {
-	const { active, subtle, icon, children, label, endElement } = props;
+	const { active, subtle, icon, children, label, endElement, used } = props;
 	const navItemBackground = useColorModeValue('thia.purple.350', 'thia.purple.350');
 	const navItemActive = useColorModeValue('thia.purple.300', 'thia.purple.300');
 	return (
 		<HStack
+			opacity={used ? 1.0 : 0.2}
 			w='full'
-			onClick={props.onClick}
+			onClick={used ? props.onClick : undefined}
 			px='3'
 			py='2'
-			cursor='pointer'
+			cursor={used ? 'pointer' : 'not-allowed'}
 			userSelect='none'
 			rounded='md'
 			color={active ? 'currentcolor' : 'thia.gray.300'}
 			transition='all 0.2s'
 			bg={active ? navItemBackground : undefined}
-			_hover={{ bg: navItemBackground, color: 'currentcolor' }}
+			_hover={used ? { bg: navItemBackground, color: 'currentcolor' } : { bg: undefined, color: 'thia.gray.300' }}
 			_active={{ bg: navItemActive }}>
 			<Box fontWeight='light' fontSize='lg'>
 				{icon}
