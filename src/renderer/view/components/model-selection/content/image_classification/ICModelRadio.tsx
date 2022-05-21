@@ -37,11 +37,12 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 				title={isDisabled ? props.title : ''}
 				transition='all 200ms ease'
 				willChange='transform'
+				color='thia.gray.200'
 				_hover={!isDisabled ? { transform: 'scale(1.05)' } : {}}
 				_checked={{
-					bg: 'teal.600',
-					color: 'white',
-					borderColor: 'teal.600',
+					bg: 'thia.purple.350',
+					color: 'thia.gray.50',
+					borderColor: 'thia.purple.350',
 					transform: 'scale(1.05)',
 				}}
 				_focus={{
@@ -50,7 +51,7 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 				px='3.5'
 				py='2'>
 				<Heading size='sm'>{props.children}</Heading>
-				<Text mt='1' fontSize='13px' color='gray.400' fontWeight='thin' as='p' maxW='250px' textAlign='left'>
+				<Text mt='1' fontSize='13px' fontWeight='thin' as='p' maxW='250px' textAlign='left'>
 					{props.description}
 				</Text>
 				{/* // TODO: Change this URL to a prop that redirects to thia documentation for that specific image classification model type */}

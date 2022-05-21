@@ -88,4 +88,7 @@ export const theme = extendTheme({
 		Drawer,
 		Menu,
 	},
+	shadows: {
+		outline: '#D3C2FF',
+	},
 });
