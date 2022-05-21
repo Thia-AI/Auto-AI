@@ -27,6 +27,7 @@ export const NavItem = React.memo((props: NavItemProps) => {
 			opacity={used ? 1.0 : 0.2}
 			w='full'
 			onClick={used ? props.onClick : undefined}
+			title={used ? '' : 'Unavailable Route'}
 			px='3'
 			py='2'
 			cursor={used ? 'pointer' : 'not-allowed'}
