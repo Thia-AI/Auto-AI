@@ -46,7 +46,10 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const { style, columnIndex, rowIndex, data, file_paths } = props;
 	const { rowCount, directory } = data;
 	const spinnerColor = mode('thia.gray.300', 'thia.gray.600');
-	const cellBG = mode('thia.gray.300', 'thia.gray.800');
+	const cellBG = mode('thia.gray.100', 'thia.gray.800');
+	const cellColor = mode('thia.gray.800', 'thia.gray.300');
+	const borderColor = mode('thia.gray.150', 'thia.gray.700');
+	const shadow = mode('md', 'md');
 
 	const itemIndex = columnIndex * rowCount + rowIndex;
 
@@ -70,10 +73,18 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const renderLoaded = () => {
 		return (
 			<Box p='2' style={style}>
-				<Flex boxShadow='md' w='full' h='full' flexDir='column' bg={cellBG} borderRadius='sm'>
+				<Flex
+					shadow={shadow}
+					w='full'
+					h='full'
+					flexDir='column'
+					bg={cellBG}
+					borderWidth='1px'
+					borderColor={borderColor}
+					borderRadius='sm'
+					overflow='hidden'>
 					<chakra.img style={{ height: '80%', objectFit: 'cover' }} src={imageSrc} loading='eager' />
 					<HStack
-						borderBottomRadius='md'
 						// We move it down 1 px and slightly scale or else the corners of the parent background bleed. This is a quick hack!
 						// To see what I mean, https://stackoverflow.com/questions/16938437/white-corner-showing-on-black-box-with-border-radius
 						transform='translateY(1px) scale(1.01)'
@@ -82,7 +93,7 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 						py='1'
 						px='1'
 						fontSize='10px'
-						color='gray.300'>
+						color={cellColor}>
 						<Text isTruncated>{file_name}</Text>
 						<Spacer />
 						<Icon

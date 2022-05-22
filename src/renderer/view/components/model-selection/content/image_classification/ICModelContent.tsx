@@ -264,10 +264,14 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Box>
 			<Center pt='8'>
 				<HStack spacing='3'>
-					<Button isLoading={modelCreating} loadingText='Creating' colorScheme='teal' onClick={createModel}>
+					<Button
+						isLoading={modelCreating}
+						loadingText='Creating'
+						colorScheme='thia.purple'
+						onClick={createModel}>
 						Create
 					</Button>
-					<Button colorScheme='red' variant='ghost' onClick={props.openCloseModelSelectionAction}>
+					<Button colorScheme='thia.gray' variant='ghost' onClick={props.openCloseModelSelectionAction}>
 						Cancel
 					</Button>
 				</HStack>

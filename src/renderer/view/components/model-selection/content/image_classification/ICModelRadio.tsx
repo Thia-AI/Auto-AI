@@ -34,7 +34,7 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 				{...checkbox}
 				opacity={isDisabled ? '0.4' : '1'}
 				cursor={isDisabled ? 'not-allowed' : 'pointer'}
-				borderWidth='3px'
+				borderWidth='2px'
 				borderColor={borderColor}
 				borderRadius='sm'
 				h='125px'

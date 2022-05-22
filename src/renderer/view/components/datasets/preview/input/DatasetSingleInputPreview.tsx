@@ -55,7 +55,8 @@ const DatasetSingleInputPreviewC = React.memo(
 				readyToLoad: datasetID!.length > 0 && activeInput.id.length > 0,
 			},
 		);
-		const previewBG = mode('thia.gray.400', 'thia.gray.850');
+		const previewBG = mode('thia.gray.150', 'thia.gray.850');
+		const borderColor = mode('thia.gray.200', 'thia.gray.700');
 
 		const imgRef = useRef<HTMLImageElement | null>(null);
 		const containerRef = useRef<HTMLDivElement | null>(null);
@@ -132,7 +133,15 @@ const DatasetSingleInputPreviewC = React.memo(
 
 		const renderPreview = () => {
 			return (
-				<Box w={w} h='full' bg={previewBG} borderLeftRadius='md' overflow='hidden' ref={containerRef}>
+				<Box
+					w={w}
+					h='full'
+					bg={previewBG}
+					borderLeftRadius='md'
+					overflow='hidden'
+					borderWidth='1px'
+					borderColor={borderColor}
+					ref={containerRef}>
 					<TransformWrapper
 						limitToBounds
 						maxScale={maxScale}
