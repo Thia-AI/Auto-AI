@@ -36,6 +36,8 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const verticalScrollbar = useVerticalScrollbar('10px');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	const refreshDataset = useCallback(async () => {
 		const [datasetError, datasetResData] = await EngineRequestHandler.getInstance().getDataset(datasetID);
@@ -90,8 +92,10 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('thia.gray.200', 'thia.gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<Box mb='8'>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Upload Images

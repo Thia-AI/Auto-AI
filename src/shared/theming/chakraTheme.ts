@@ -46,7 +46,8 @@ export const theme = extendTheme({
 		thia: {
 			gray: {
 				'50': '#EBEBEB',
-				'100': '#D6D6D6',
+				'100': '#E3E3E3',
+				'150': '#D6D6D6',
 				'200': '#B8B8B8',
 				'300': '#999999',
 				'350': '#7A7A7A',

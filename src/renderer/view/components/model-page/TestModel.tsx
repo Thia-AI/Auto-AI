@@ -43,6 +43,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 	const toast = useToast();
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const inputColor = mode('thia.gray.700', 'thia.gray.500');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	const onDrop = useCallback((acceptedFiles: File[], rejected: FileRejection[]) => {
 		// Do something with the files
@@ -251,8 +253,10 @@ export const TestModel = React.memo(({ model }: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('thia.gray.200', 'thia.gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<Box>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Predict

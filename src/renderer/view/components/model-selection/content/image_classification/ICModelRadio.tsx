@@ -20,6 +20,7 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 	const isDisabled = props.isDisabled;
 	const color = mode('thia.gray.800', 'thia.gray.200');
 	const cardBG = mode('thia.purple.400', 'thia.purple.400');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 
 	return (
 		<Box as='label' position='relative' w='250px' rounded='sm'>
@@ -33,7 +34,8 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 				{...checkbox}
 				opacity={isDisabled ? '0.4' : '1'}
 				cursor={isDisabled ? 'not-allowed' : 'pointer'}
-				borderWidth='1px'
+				borderWidth='3px'
+				borderColor={borderColor}
 				borderRadius='sm'
 				h='125px'
 				title={isDisabled ? props.title : ''}

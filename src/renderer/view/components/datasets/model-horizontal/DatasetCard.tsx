@@ -50,6 +50,8 @@ interface Props {
 
 const DatasetCardC = React.memo((props: Props) => {
 	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
+	const cardBG = mode('thia.gray.100', 'thia.gray.800');
+
 	useEffect(() => {
 		return () => {
 			props.resetSelectedDatasetAction();
@@ -70,7 +72,7 @@ const DatasetCardC = React.memo((props: Props) => {
 					if (props.selectedDatasetID.value === props.dataset.id) props.resetSelectedDatasetAction();
 					else props.changeSelectedDatasetAction(props.dataset.id);
 				}}
-				borderTopRadius='lg'
+				borderTopRadius='md'
 				objectFit='cover'
 				h='200px'
 				w='full'
@@ -83,7 +85,7 @@ const DatasetCardC = React.memo((props: Props) => {
 			<Box
 				willChange='box-shadow'
 				transition='box-shadow 200ms ease'
-				bg={mode('thia.gray.300', 'thia.gray.800')}
+				bg={cardBG}
 				borderRadius='md'
 				w='275px'
 				boxShadow={
@@ -196,7 +198,7 @@ export const FillerDatasetCard = () => {
 			bgImage={Preview}
 			bgSize='cover'
 			bgPos='center'
-			boxShadow='md'
+			shadow='md'
 			w='full'
 			h='275px'>
 			<Text

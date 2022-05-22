@@ -33,7 +33,10 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const verboseModelType = getVerboseModelType(props.modelType);
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
-	const horizontalScrollBarSX = useHorizontalScrollbar();
+	const horizontalScrollBarSX = useHorizontalScrollbar('6px');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
+	const color = mode('thia.gray.700', 'thia.gray.300');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 
 	useEffect(() => {
 		props.refreshDataset();
@@ -65,14 +68,16 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('thia.gray.200', 'thia.gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<HStack mb='8' w='full'>
 					<Box>
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Datasets
 						</Text>
-						<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
+						<Text color={color} fontSize='sm'>
 							Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'} {verboseModelType} dataset to
 							train on
 						</Text>

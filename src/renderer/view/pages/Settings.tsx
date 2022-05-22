@@ -25,6 +25,7 @@ const Settings = () => {
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
 	const { colorMode, toggleColorMode } = useColorMode();
 	const textColor = mode('thia.gray.700', 'thia.gray.300');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 
 	return (
 		<VStack
@@ -47,6 +48,8 @@ const Settings = () => {
 				px='8'
 				rounded='lg'
 				spacing='6'
+				borderWidth='1px'
+				borderColor={borderColor}
 				bg={sectionBG}
 				shadow='base'>
 				<Heading as='h3' size='xl'>

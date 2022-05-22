@@ -15,6 +15,7 @@ import {
 	shouldForwardProp,
 	Wrap,
 	Flex,
+	useColorMode,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -63,13 +64,15 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const [accuracySeries, setAccuracySeries] = useState<ApexChartSeriesItem[]>([]);
 	const [lossSeries, setLossSeries] = useState<ApexChartSeriesItem[]>([]);
-	const sectionTextColor = mode('thia.gray.700', 'thia.gray.300');
 
-	const sectionBG = mode('thia.gray.200', 'thia.gray.700');
+	const { colorMode } = useColorMode();
+	const sectionTextColor = mode('thia.gray.700', 'thia.gray.300');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const evaluationCardBG = mode('thia.gray.50', 'thia.gray.800');
+	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const trainingJobProgressTextColor = mode('thia.gray.700', 'thia.gray.300');
-	// purple.600
-	const trainingGraphBestPointBGColor = mode('white', '#6B46C1');
-	const trainingGraphBestPointMarkerStrokeColor = mode('white', '#805AD5');
+	const graphBestPointBG = mode('var(--chakra-colors-thia-purple-450)', 'var(--chakra-colors-thia-purple-400)');
+	const graphBestPointColor = mode('var(--chakra-colors-thia-gray-100)', 'var(--chakra-colors-thia-gray-100)');
 
 	const roundPercentage = (element: number) => {
 		return Number((element * 100).toFixed(2));
@@ -81,7 +84,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 
 	const baseApexChartOptions: ApexOptions = {
 		theme: {
-			mode: 'dark',
+			mode: colorMode,
 		},
 		chart: {
 			redrawOnWindowResize: true,
@@ -168,8 +171,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					marker: {
 						size: 4,
 						strokeWidth: 1,
-						strokeColor: trainingGraphBestPointMarkerStrokeColor,
-						fillColor: trainingGraphBestPointBGColor,
+						fillColor: graphBestPointBG,
 					},
 					label: {
 						borderColor: '#FF4560',
@@ -178,7 +180,8 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						text: 'BEST',
 						offsetY: 5,
 						style: {
-							background: trainingGraphBestPointBGColor,
+							background: graphBestPointBG,
+							color: graphBestPointColor,
 							padding: {
 								left: 4,
 								right: 4,
@@ -197,8 +200,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					marker: {
 						size: 4,
 						strokeWidth: 1,
-						strokeColor: trainingGraphBestPointMarkerStrokeColor,
-						fillColor: trainingGraphBestPointBGColor,
+						fillColor: graphBestPointBG,
 					},
 					label: {
 						borderColor: '#FF4560',
@@ -207,7 +209,8 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						text: 'BEST',
 						offsetY: 5,
 						style: {
-							background: trainingGraphBestPointBGColor,
+							background: graphBestPointBG,
+							color: graphBestPointColor,
 							padding: {
 								left: 4,
 								right: 4,
@@ -357,7 +360,9 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					px='8'
 					rounded='lg'
 					bg={sectionBG}
-					shadow='base'>
+					borderWidth='1px'
+					borderColor={borderColor}
+					shadow='lg'>
 					<Box>
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Evaluation
@@ -423,7 +428,9 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					px='8'
 					rounded='lg'
 					bg={sectionBG}
-					shadow='base'>
+					borderWidth='1px'
+					borderColor={borderColor}
+					shadow='lg'>
 					<HStack mb='8' w='full'>
 						<Box>
 							<Text as='h3' fontWeight='bold' fontSize='lg'>
@@ -440,7 +447,15 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 							hoverLabel='Copy Training Job ID'
 						/>
 					</HStack>
-					<Box bg={mode('thia.gray.300', 'thia.gray.800')} px='2' py='3' borderRadius='sm' w='full'>
+					<Box
+						bg={evaluationCardBG}
+						px='2'
+						py='3'
+						borderRadius='sm'
+						shadow='md'
+						borderWidth='1px'
+						borderColor={borderColor}
+						w='full'>
 						<VStack spacing='1' w='full'>
 							<HStack w='full' alignItems='baseline'>
 								<Skeleton isLoaded={isInitialDataLoaded} maxW='60%' w='80px'>

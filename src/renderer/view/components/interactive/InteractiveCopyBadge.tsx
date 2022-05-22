@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import { Badge, Text, TypographyProps } from '@chakra-ui/react';
+import { Badge, Text, TypographyProps, useColorModeValue as mode } from '@chakra-ui/react';
 
 import './InteractiveCopyBadge.css';
 
@@ -15,6 +15,8 @@ interface Props {
  */
 export const InteractiveCopyBadge = React.memo((props: Props) => {
 	const badgeIDRef = useRef<HTMLDivElement>(null);
+	const badgeBG = mode('thia.gray.950', 'thia.gray.950');
+	const color = mode('thia.gray.200', 'thia.gray.200');
 
 	const renderBadgeID = () => {
 		if (!props.badgeID) return '';
@@ -35,7 +37,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 			title={props.hoverLabel ?? 'Copy ID'}
 			px='1'
 			opacity='0.6'
-			bg='thia.gray.900'
+			bg={badgeBG}
 			onClick={(e) => {
 				// Prevent onclick from propogating up
 				e.stopPropagation();
@@ -50,7 +52,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 					}
 				}, 150);
 			}}>
-			<Text w='full' h='full' color='thia.gray.200' isTruncated>
+			<Text w='full' h='full' color={color} isTruncated>
 				{renderBadgeID()}
 			</Text>
 		</Badge>

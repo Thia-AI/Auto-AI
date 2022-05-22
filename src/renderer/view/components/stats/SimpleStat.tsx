@@ -27,15 +27,20 @@ interface Props {
  * Displays a statistic.
  */
 export const SimpleStat = React.memo(({ label, value, percentage = false, statDescription, statTitle }: Props) => {
+	const statBG = mode('thia.gray.50', 'thia.gray.800');
+	const statShadow = mode('sm', 'lg-dark');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	return (
 		<Box
 			minW={225}
-			bg={mode('thia.gray.300', 'thia.gray.800')}
+			bg={statBG}
 			pl={{ base: '4', lg: '7' }}
 			pr={{ base: '1.5', lg: '3' }}
 			py={{ base: '3', lg: '4' }}
 			borderRadius='lg'
-			boxShadow={mode('sm', 'sm-dark')}>
+			borderWidth='1px'
+			borderColor={borderColor}
+			shadow={statShadow}>
 			<Stack>
 				<HStack w='full'>
 					<Text fontSize='sm' color='muted'>
