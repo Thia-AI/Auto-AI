@@ -9,16 +9,24 @@ import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHa
 import { ModelCard } from '../components/model-card/ModelCard';
 import { Model, nullModel } from '../helpers/constants/engineDBTypes';
 import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
+import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
+import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 
 interface Props {
 	push: Push;
+	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 
-const ModelsC = ({ push }: Props) => {
+const ModelsC = ({ push, changeSelectedPage }: Props) => {
 	const match = useRouteMatch();
 	const [models, setModels] = useState<Model[]>([]);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
+
+	useEffect(() => {
+		changeSelectedPage(MODELS_PAGE);
+	}, []);
 
 	useEffect(() => {
 		const fetchModels = async () => {
@@ -73,6 +81,7 @@ const mapStateToProps = () => ({});
  */
 const Models = connect(mapStateToProps, {
 	push,
+	changeSelectedPage: changeSelectedPageAction,
 })(ModelsC);
 
 export default Models;

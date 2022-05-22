@@ -13,19 +13,31 @@ import {
 	useColorMode,
 } from '@chakra-ui/react';
 import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { connect } from 'react-redux';
+import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
+import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
+import { SETTINGS_PAGE } from '../helpers/constants/pageConstants';
+
+interface Props {
+	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
+}
 
 /**
  * Settings page.
  *
  * @react
  */
-const Settings = () => {
+const Settings = ({ changeSelectedPage }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
 	const { colorMode, toggleColorMode } = useColorMode();
 	const textColor = mode('thia.gray.700', 'thia.gray.300');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+
+	useEffect(() => {
+		changeSelectedPage(SETTINGS_PAGE);
+	}, []);
 
 	return (
 		<VStack
@@ -78,4 +90,6 @@ const Settings = () => {
 	);
 };
 
-export default Settings;
+export default connect(null, {
+	changeSelectedPage: changeSelectedPageAction,
+})(Settings);

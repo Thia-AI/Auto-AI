@@ -11,7 +11,7 @@ import { IAppState } from '_state/reducers';
 import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
 import { IMenuOpenReducer, ISelectedPageReducer } from '_state/side-menu/model/reducerTypes';
 import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
-import { changeSelectedPage } from '_state/side-menu/SideModelAction';
+import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 
 import { SideMenuProfile } from './profile/SideMenuProfile';
@@ -36,7 +36,6 @@ interface Props {
 	sideMenuOpen: IMenuOpenReducer;
 	openCloseSideMenu: () => IMenuOpenCloseAction;
 	push: Push;
-	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 	selectedPage: ISelectedPageReducer;
 }
 const SideMenuC = React.memo((props: Props) => {
@@ -59,7 +58,6 @@ const SideMenuC = React.memo((props: Props) => {
 								<NavItem
 									used
 									onClick={() => {
-										props.changeSelectedPage(HOME_PAGE);
 										props.push('/');
 										props.openCloseSideMenu();
 									}}
@@ -72,7 +70,6 @@ const SideMenuC = React.memo((props: Props) => {
 								<NavItem
 									used
 									onClick={() => {
-										props.changeSelectedPage(MODELS_PAGE);
 										props.push('/models');
 										props.openCloseSideMenu();
 									}}
@@ -82,7 +79,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(JOBS_PAGE);
 										props.push('/jobs');
 										props.openCloseSideMenu();
 									}}
@@ -92,7 +88,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(EXPORTS_PAGE);
 										props.push('/exports');
 										props.openCloseSideMenu();
 									}}
@@ -102,7 +97,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(DEPLOYMENTS_PAGE);
 										props.push('/deployments');
 										props.openCloseSideMenu();
 									}}
@@ -112,7 +106,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(NOTIFICATIONS_PAGE);
 										props.push('/notifications');
 										props.openCloseSideMenu();
 									}}
@@ -122,7 +115,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(LOGS_PAGE);
 										props.push('/logs');
 										props.openCloseSideMenu();
 									}}
@@ -135,7 +127,6 @@ const SideMenuC = React.memo((props: Props) => {
 							<NavGroup label='Your Account'>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(QUOTA_PAGE);
 										props.push('/quota');
 										props.openCloseSideMenu();
 									}}
@@ -145,7 +136,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(SUBSCRIPTION_PAGE);
 										props.push('/subscription');
 										props.openCloseSideMenu();
 									}}
@@ -160,7 +150,6 @@ const SideMenuC = React.memo((props: Props) => {
 								<NavItem
 									used
 									onClick={() => {
-										props.changeSelectedPage(SETTINGS_PAGE);
 										props.push('/settings');
 										props.openCloseSideMenu();
 									}}
@@ -170,7 +159,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(HELP_PAGE);
 										props.push('/help');
 										props.openCloseSideMenu();
 									}}
@@ -201,5 +189,4 @@ const mapStateToProps = (state: IAppState) => ({
 export const SideMenu = connect(mapStateToProps, {
 	openCloseSideMenu,
 	push,
-	changeSelectedPage,
 })(SideMenuC);

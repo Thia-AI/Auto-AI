@@ -24,7 +24,7 @@ import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/mo
 
 import { ICModelRadioCard } from './ICModelRadio';
 import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
-import { changeSelectedPage } from '_state/side-menu/SideModelAction';
+import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -288,5 +288,5 @@ ICModelContentC.displayName = 'ICModelContent';
 export const ICModelContent = connect(null, {
 	openCloseModelSelectionAction,
 	push,
-	changeSelectedPage,
+	changeSelectedPage: changeSelectedPageAction,
 })(ICModelContentC);

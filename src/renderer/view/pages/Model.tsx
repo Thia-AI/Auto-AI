@@ -37,12 +37,16 @@ import { ExportModel } from '../components/model-page/ExportModel';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { DeleteModel } from '../components/model-page/DeleteModel';
 import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
+import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
+import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
 	resetSelectedDataset: () => IResetSelectedDatasetAction;
+	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
-const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props) => {
+const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeSelectedPage }: Props) => {
 	const modelID = useRouteMatch().params['id'];
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
@@ -66,6 +70,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset }: Props
 	};
 
 	useEffect(() => {
+		changeSelectedPage(MODELS_PAGE);
 		fetchModel();
 	}, []);
 
@@ -202,4 +207,5 @@ const mapStateToProps = (state: IAppState) => ({
  */
 export default connect(mapStateToProps, {
 	resetSelectedDataset: resetSelectedDatasetAction,
+	changeSelectedPage: changeSelectedPageAction,
 })(ModelPage);

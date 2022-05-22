@@ -15,7 +15,7 @@ export const openCloseSideMenu = (): IMenuOpenCloseAction => ({
  *
  * @ts
  */
-export const changeSelectedPage = (pageNumber: number): IChangeSelectedPageAction => ({
+export const changeSelectedPageAction = (pageNumber: number): IChangeSelectedPageAction => ({
 	type: CHANGE_SELECTED_PAGE,
 	payload: {
 		newPage: pageNumber,

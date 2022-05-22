@@ -15,7 +15,7 @@ import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
-import { changeSelectedPage } from '_/renderer/state/side-menu/SideModelAction';
+import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
 import { Model } from '../../helpers/constants/engineDBTypes';
 import { MODELS_PAGE } from '../../helpers/constants/pageConstants';
 import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
@@ -103,5 +103,5 @@ DeleteModelC.displayName = 'DeleteModel';
  */
 export const DeleteModel = connect(null, {
 	replace,
-	changeSelectedPage,
+	changeSelectedPage: changeSelectedPageAction,
 })(DeleteModelC);
