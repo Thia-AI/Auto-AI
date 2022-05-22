@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Heading, useRadio, UseRadioProps, Text, Link } from '@chakra-ui/react';
+import { Box, Heading, useRadio, UseRadioProps, Text, Link, useColorModeValue as mode } from '@chakra-ui/react';
 
 interface Props extends UseRadioProps {
 	children: React.ReactNode;
@@ -18,6 +18,8 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 	const input = getInputProps();
 	const checkbox = getCheckboxProps();
 	const isDisabled = props.isDisabled;
+	const color = mode('thia.gray.800', 'thia.gray.200');
+	const cardBG = mode('thia.purple.400', 'thia.purple.400');
 
 	return (
 		<Box as='label' position='relative' w='250px' rounded='sm'>
@@ -37,12 +39,12 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 				title={isDisabled ? props.title : ''}
 				transition='all 200ms ease'
 				willChange='transform'
-				color='thia.gray.200'
+				color={color}
 				_hover={!isDisabled ? { transform: 'scale(1.05)' } : {}}
 				_checked={{
-					bg: 'thia.purple.350',
+					bg: cardBG,
 					color: 'thia.gray.50',
-					borderColor: 'thia.purple.350',
+					borderColor: cardBG,
 					transform: 'scale(1.05)',
 				}}
 				_focus={{
