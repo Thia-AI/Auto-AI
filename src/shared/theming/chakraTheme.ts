@@ -16,9 +16,6 @@ export const theme = extendTheme({
 				bg: mode('thia.gray.50', 'thia.gray.800')(props),
 				fontFamily: 'Open Sans, sans-serif',
 			},
-			h4: {
-				fontSize: '12px',
-			},
 			header: {
 				bg: 'thia.gray.950',
 			},
