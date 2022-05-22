@@ -49,13 +49,6 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 						{user?.email}
 					</Text>
 					<MenuDivider />
-					<MenuItem fontWeight='light' fontSize='sm' rounded='md'>
-						Edit Profile
-					</MenuItem>
-					<MenuItem fontWeight='light' fontSize='sm' rounded='md'>
-						Notification Settings
-					</MenuItem>
-					<MenuDivider />
 					<MenuItem
 						bg='red.400'
 						_active={{ bg: 'red.450' }}
