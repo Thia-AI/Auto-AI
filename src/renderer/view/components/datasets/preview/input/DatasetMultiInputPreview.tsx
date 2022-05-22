@@ -1,4 +1,4 @@
-import { Button, Center, Flex, HStack, Icon, LayoutProps, Text } from '@chakra-ui/react';
+import { Button, Center, Flex, HStack, Icon, LayoutProps, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import React, { useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
@@ -48,6 +48,11 @@ const DatasetMultiInputPreviewC = React.memo(
 		const isThereANextPage = nextPageCursor.value !== null;
 		const isThereAPreviousPage = previousPageCursor.value !== null;
 		const horizontalScrollbar = useHorizontalScrollbar('5px');
+		const previewBG = mode('thia.gray.150', 'thia.gray.850');
+		const borderColor = mode('thia.gray.200', 'thia.gray.700');
+		const textColor = mode('thia.gray.700', 'thia.gray.300');
+		const noImageIconColor = mode('thia.purple.600', 'thia.purple.300');
+		const navButtonColor = mode('thia.gray.50', 'thia.purple.800');
 
 		const navigatePaginationWithKeyboard = useCallback(
 			(event: KeyboardEvent) => {
@@ -85,9 +90,16 @@ const DatasetMultiInputPreviewC = React.memo(
 		const renderPagination = () => {
 			if (activeDatasetInputs.value.length == 0) {
 				return (
-					<Center w='100%' h='100%' flexDir='column' bg='gray.800' borderRadius='md'>
-						<Icon as={MdImageNotSupported} boxSize='7' color='teal.300' opacity={0.3} />
-						<Text fontSize='sm' color='gray.600' fontWeight='thin' mt='2'>
+					<Center
+						w='100%'
+						h='100%'
+						flexDir='column'
+						bg={previewBG}
+						borderRadius='md'
+						borderWidth='1px'
+						borderColor={borderColor}>
+						<Icon as={MdImageNotSupported} boxSize='7' color={noImageIconColor} opacity={0.3} />
+						<Text fontSize='sm' color={textColor} fontWeight='thin' mt='2'>
 							No Images in Dataset
 						</Text>
 					</Center>
@@ -101,9 +113,11 @@ const DatasetMultiInputPreviewC = React.memo(
 						pt='1.5'
 						pb='1.5'
 						px='1.5'
-						bg='gray.800'
+						bg={previewBG}
 						borderRadius='md'
 						overflowY='hidden'
+						borderWidth='1px'
+						borderColor={borderColor}
 						sx={horizontalScrollbar}>
 						{Array(activeDatasetInputs.value.length)
 							.fill(0)
@@ -144,6 +158,7 @@ const DatasetMultiInputPreviewC = React.memo(
 						variant='solid'
 						colorScheme='thia.purple'
 						title='Next Page'
+						color={navButtonColor}
 						iconSpacing='0'
 						borderRadius='full'
 						isDisabled={!isThereANextPage}

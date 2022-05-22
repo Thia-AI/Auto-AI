@@ -16,6 +16,8 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 	const { files, directory } = props;
 
 	const previewPanelTextColor = mode('thia.gray.600', 'thia.gray.400');
+	const previewBG = mode('thia.gray.100', 'thia.gray.750');
+	const borderColor = mode('thia.gray.150', 'thia.gray.700');
 	const gridHeight = 520;
 	const itemHeight = 125;
 	const itemWidth = 125;
@@ -37,7 +39,9 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 			borderRadius='sm'
 			h={gridHeight + 2 * gridContainerPadding + 'px'}
 			mb='4'
-			bg={mode('thia.gray.400', 'thia.gray.750')}>
+			borderWidth='1px'
+			borderColor={borderColor}
+			bg={previewBG}>
 			<AutoSizer>
 				{({ height, width }) => {
 					if (files.length === 0)
@@ -51,6 +55,10 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 					return (
 						<FixedSizeGrid
 							className='drag-drop-preview'
+							style={{
+								overflowY: 'hidden',
+								background: previewBG,
+							}}
 							columnCount={columnCount}
 							columnWidth={itemWidth}
 							height={height}

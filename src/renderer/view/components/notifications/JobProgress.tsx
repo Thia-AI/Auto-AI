@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, HStack, Progress, Spacer, Text } from '@chakra-ui/react';
+import { Box, HStack, Progress, Spacer, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { Job, nullJob } from '../../helpers/constants/engineDBTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -17,7 +17,10 @@ const JobProgressC = React.memo((props: Props) => {
 	const intervalTime = 750;
 	const [intervalID, setIntervalID] = useState<number>();
 	const [job, setJob] = useState<Job>(nullJob);
-
+	const bg = mode('thia.gray.100', 'thia.gray.750');
+	const borderColor = mode('thia.gray.150', 'thia.gray.700');
+	const jobNameColor = mode('thia.gray.600', 'thia.gray.350');
+	const jobProgressColor = mode('thia.gray.700', 'thia.gray.300');
 	// We set here so that it displays the proper job name and progress
 	// even before the first setInterval() has ran below
 	useEffect(() => {
@@ -54,13 +57,21 @@ const JobProgressC = React.memo((props: Props) => {
 		if (!jobID) return <></>;
 		else
 			return (
-				<Box w='full' rounded='md' bg='gray.750' marginBottom='3' px='4' py='2'>
+				<Box
+					w='full'
+					rounded='md'
+					bg={bg}
+					marginBottom='3'
+					px='4'
+					py='2'
+					borderWidth='1px'
+					borderColor={borderColor}>
 					<HStack w='full'>
-						<Text fontSize='sm' color='gray.500' as='h6'>
+						<Text fontSize='sm' color={jobProgressColor} as='h6'>
 							{job.job_name}
 						</Text>
 						<Spacer />
-						<Text fontSize='sm' color='gray.600' as='p' pr='2'>
+						<Text fontSize='sm' color={jobNameColor} as='p' pr='2'>
 							{job.progress}/{job.progress_max}
 						</Text>
 					</HStack>
@@ -69,7 +80,7 @@ const JobProgressC = React.memo((props: Props) => {
 						borderRadius='sm'
 						my='2'
 						w='full'
-						colorScheme='green'
+						colorScheme='thia.purple'
 						min={0}
 						max={job.progress_max}
 						value={job.progress}
