@@ -18,17 +18,17 @@ from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
-    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count
+    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets
 # Export commands
-from db.commands.export_commands import add_export_to_db, get_active_model_exports
+from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    reset_labels_of_inputs, get_input, update_input_label
+    reset_labels_of_inputs, get_input, update_input_label, get_num_inputs, get_num_labels
 # Input commands
 from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from env import environment
 from exports.export_model_job import ExportModelJob
@@ -850,10 +850,28 @@ def get_gpu_memory_info_route():
 
 @app.route('/telemetry/gpu_state', methods=['GET'])
 def get_gpu_state_route():
+    log(f"ACCEPTED [{request.method}] {request.path}")
     return {
                'gpu_task_running': config.ENGINE_GPU_TASK_RUNNING,
                'test_task_running': config.ENGINE_TEST_TASK_RUNNING
            }, 200
+
+
+@app.route('/telemetry/quick_stats', methods=['GET'])
+def quick_stats_route():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    num_models = get_num_models()
+    num_exports = get_num_exports()
+    num_datasets = get_num_datasets()
+    num_images = get_num_inputs()
+    num_labels = get_num_labels()
+    return {
+        'num_models': num_models,
+        'num_exports': num_exports,
+        'num_datasets': num_datasets,
+        'num_images': num_images,
+        'num_labels': num_labels
+    }, 200
 
 
 if __name__ == '__main__':
