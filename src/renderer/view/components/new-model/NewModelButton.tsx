@@ -11,29 +11,28 @@ import {
 	IOpenCloseModelSelectionAction,
 } from '_/renderer/state/choose-model/model/actionTypes';
 
-import './NewModel.css';
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
 	changeSelectedModel: (modelNumber: number) => IChangeSelectedModelAction;
 }
 
-const NewModelC = React.memo((props: Props) => {
+const NewModelButtonC = React.memo((props: Props) => {
 	return (
-		<Center w='50%' h='50%'>
-			<Button
-				variant='outline'
-				colorScheme='thia.purple'
-				onClick={() => {
-					props.changeSelectedModel(0);
-					props.openCloseModelSelectionAction();
-				}}>
-				Create Model
-			</Button>
-		</Center>
+		<Button
+			variant='outline'
+			w='full'
+			colorScheme='thia.purple'
+			minH='35px'
+			onClick={() => {
+				props.changeSelectedModel(0);
+				props.openCloseModelSelectionAction();
+			}}>
+			Create Model
+		</Button>
 	);
 });
 
-NewModelC.displayName = 'NewModel';
+NewModelButtonC.displayName = 'NewModelButton';
 
 const mapStateToProps = () => {
 	return {};
@@ -42,7 +41,7 @@ const mapStateToProps = () => {
 /**
  * Adding a new model.
  */
-export const NewModel = connect(mapStateToProps, {
+export const NewModelButton = connect(mapStateToProps, {
 	openCloseModelSelectionAction,
 	changeSelectedModel: changeSelectedModelAction,
-})(NewModelC);
+})(NewModelButtonC);

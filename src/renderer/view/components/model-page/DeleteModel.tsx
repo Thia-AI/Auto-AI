@@ -53,7 +53,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 			setModelDeleting(false);
 			toast({
 				title: 'Success',
-				description: 'Model Created Successfully',
+				description: 'Model Deleted Successfully',
 				status: 'success',
 				duration: 1500,
 				isClosable: false,

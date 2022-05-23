@@ -27,7 +27,7 @@ import { ApexOptions } from 'apexcharts';
 import { nullTrainJob, TrainJob, TrainJobStatus } from '../../helpers/constants/engineDBTypes';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
 import { argmin } from '../../helpers/functionHelpers';
-import { SimpleStat } from '../stats/SimpleStat';
+import { StatWithLearnMore } from '../stats/StatWithLearnMore';
 
 interface Props {
 	trainJobID: string;
@@ -377,13 +377,13 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						shouldWrapChildren
 						justify='space-evenly'
 						direction={{ base: 'column', md: 'row' }}>
-						<SimpleStat
+						<StatWithLearnMore
 							label='AU PRC'
 							statTitle='Area Under Precision Recall Curve'
 							statDescription='Usually between 0.5-1.0, higher values inidicate a more accurate model.'
 							value={roundNumber(trainingJob.extra_data.evaluation_result.prc)}
 						/>
-						<SimpleStat
+						<StatWithLearnMore
 							label='Accuracy'
 							statTitle='Accuracy'
 							statDescription='Percentage of predictions that were correct.'
@@ -391,21 +391,21 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.accuracy)}
 						/>
 
-						<SimpleStat
+						<StatWithLearnMore
 							label='Precision'
 							statTitle='Precision'
 							statDescription='Percentage of positive predictions that were correct.'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.precision)}
 						/>
-						<SimpleStat
+						<StatWithLearnMore
 							label='Recall'
 							statTitle='Recall'
 							statDescription='Percentage of total relevant predictions. Also known as "true positive rate".'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.recall)}
 						/>
-						<SimpleStat
+						<StatWithLearnMore
 							label='Log Loss'
 							statTitle='Log Loss'
 							statDescription='Cross-entropy between predictions and true value. Log loss is between 0-infinity, lower values indicates a more accurate model.'
