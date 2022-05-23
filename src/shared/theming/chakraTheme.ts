@@ -19,6 +19,13 @@ export const theme = extendTheme({
 			header: {
 				bg: 'thia.gray.950',
 			},
+			'.chakra-stack__divider': {
+				borderColor: mode(
+					'var(--chakra-colors-thia-gray-300) !important',
+					'var(--chakra-colors-thia-gray-600) !important',
+				),
+				opacity: 1,
+			},
 		}),
 	},
 	config: {
