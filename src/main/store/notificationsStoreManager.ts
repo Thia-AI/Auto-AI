@@ -28,6 +28,9 @@ export class NotificationsStoreManager {
 		this.store = store;
 	}
 
+	/**
+	 * Initializes all IPC events.
+	 */
 	initIPC = () => {
 		ipcMain.on(IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS, () => {
 			const notifications = this.store.get('notifications', []);
@@ -47,6 +50,11 @@ export class NotificationsStoreManager {
 		});
 	};
 
+	/**
+	 * Adds a notification to the store.
+	 *
+	 * @param chakraNotification Notification coming from Chakra UI.
+	 */
 	addNotification = (chakraNotification: UseToastOptions) => {
 		const electronStoreNotification: ElectronStoreNotification = {
 			title: chakraNotification.title as string,
@@ -58,10 +66,18 @@ export class NotificationsStoreManager {
 		this.store.set(`notifications.${electronStoreNotification.id}`, electronStoreNotification);
 	};
 
+	/**
+	 * Deletes a notification from the store.
+	 *
+	 * @param notificationID Notification ID coming from a Chakra UI Toast.
+	 */
 	deleteNotification = (notificationID: ToastId) => {
 		this.store.delete(`notifications.${notificationID}`);
 	};
 
+	/**
+	 * Deletes all notifications from the store.
+	 */
 	deleteNotifications = () => {
 		this.store.delete('notifications');
 	};

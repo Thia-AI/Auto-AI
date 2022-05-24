@@ -226,6 +226,9 @@ const createWorker = () => {
 	return browserWindowWorker;
 };
 
+/**
+ * Sets up stores from `electron-store`.
+ */
 const setupStores = () => {
 	notificationsStore = new Store({ name: NOTIFICATIONS_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
 	notificationsStoreManager = new NotificationsStoreManager(notificationsStore);
