@@ -17,6 +17,7 @@ import { DeleteLabel } from './DeleteLabel';
 import { IOpenCloseDeleteLabelAction } from '_/renderer/state/delete-modals/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
+import { toast } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -27,8 +28,6 @@ interface Props {
 
 const LabelsListC = React.memo(
 	({ activeDataset, changeActiveDataset, openCloseDeleteLabel, getNextPageInputs }: Props) => {
-		const toast = useToast();
-
 		const [labels, setLabels] = useState<string[]>([]);
 
 		const [labelValue, setLabelValue] = useState('');

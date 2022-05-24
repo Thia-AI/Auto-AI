@@ -30,7 +30,7 @@ import {
 	SETTINGS_PAGE,
 	HELP_PAGE,
 } from '_/renderer/view/helpers/constants/pageConstants';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	sideMenuOpen: IMenuOpenReducer;

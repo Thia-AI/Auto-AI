@@ -14,12 +14,12 @@ import {
 import { IGetQuickStatsERResponse } from '_/renderer/engine-requests/actions/get/getQuickStats';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { SimpleStat } from '../stats/SimpleStat';
+import { toast } from '../../helpers/functionHelpers';
 
 export const QuickStats = React.memo(() => {
 	const [quickStats, setQuickStats] = useState<null | IGetQuickStatsERResponse>(null);
 	const [statsLoaded, setStatsLoaded] = useState(false);
 
-	const toast = useToast();
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 

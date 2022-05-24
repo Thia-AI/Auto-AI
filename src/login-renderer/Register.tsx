@@ -31,7 +31,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useAuth } from 'reactfire';
 import { PERSISTENCE_TYPE } from '_/shared/appConstants';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_normal_ios.svg';
 

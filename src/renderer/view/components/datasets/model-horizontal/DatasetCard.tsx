@@ -37,7 +37,7 @@ import {
 } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 
 interface Props {
 	dataset: Dataset;

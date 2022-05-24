@@ -19,7 +19,7 @@ import {
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { MdImageNotSupported } from 'react-icons/md';
-import { useHorizontalScrollbar } from '_/shared/theming/hooks';
+import { useHorizontalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 interface Props {
 	h: LayoutProps['h'];
 	activeDatasetInputs: IActiveDatasetInputsReducer;

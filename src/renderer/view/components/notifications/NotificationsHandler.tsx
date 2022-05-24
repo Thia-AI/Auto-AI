@@ -11,6 +11,7 @@ import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reduc
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
 import { IPC_CONNECT_SOCKET, IPC_ENGINE_JOB_FINISHED, IPC_NOTIFICATIONS_SHOW_NOTIFICATION } from '_/shared/ipcChannels';
+import { toast } from '../../helpers/functionHelpers';
 
 interface Props {
 	notifications: IJobNotification[];
@@ -19,7 +20,6 @@ interface Props {
 }
 
 const NotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
-	const toast = useToast();
 	/**
 	 * Map of jobID -> Notification key-value pair that represents the "active" notifications
 	 */

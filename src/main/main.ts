@@ -31,17 +31,26 @@ import {
 	IPC_DEV_COPY_UID,
 	IPC_DEV_TOGGLE_COLOR_MODE,
 } from '_/shared/ipcChannels';
-import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
+import {
+	LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
+	NOTIFICATIONS_STORE_FILENAME,
+	PERSISTENCE_TYPE,
+	STORE_ENCRYPTION_KEY,
+} from '_/shared/appConstants';
 import { startServer } from './server/server';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Server } from 'socket.io';
+import Store from 'electron-store';
+import { NotificationsStoreManager } from './store/notificationsStoreManager';
 
 const numCPUs = cpus().length;
 
 let firebaseApp: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
 let loginWindow: BrowserWindow | null;
+let notificationsStore: Store | null;
+let notificationsStoreManager: NotificationsStoreManager | null;
 
 let mainWindowIPCActions: WindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
@@ -217,6 +226,12 @@ const createWorker = () => {
 	return browserWindowWorker;
 };
 
+const setupStores = () => {
+	notificationsStore = new Store({ name: NOTIFICATIONS_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
+	notificationsStoreManager = new NotificationsStoreManager(notificationsStore);
+	notificationsStoreManager.initIPC();
+};
+
 /**
  * Starts HTTPS server controlled by **main** and registers its APIs.
  *
@@ -370,6 +385,7 @@ if (!isSingleInstance) {
 		}
 		firebaseApp = initializeApp(firebaseConfig);
 		await startWebServices();
+		await setupStores();
 		initRendererDev();
 		createWindow();
 		registerShortcuts(mainWindow!);

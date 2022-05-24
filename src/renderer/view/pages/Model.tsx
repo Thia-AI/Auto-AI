@@ -36,10 +36,11 @@ import { TestModel } from '../components/model-page/TestModel';
 import { ExportModel } from '../components/model-page/ExportModel';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { DeleteModel } from '../components/model-page/DeleteModel';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '../helpers/constants/pageConstants';
+import { toast } from '../helpers/functionHelpers';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -59,7 +60,6 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 		onOpen: openDeleteModelDialog,
 		onClose: closeDeleteModelDialog,
 	} = useDisclosure();
-	const toast = useToast();
 
 	const fetchModel = async () => {
 		const [error, resData] = await EngineRequestHandler.getInstance().getModel(modelID);

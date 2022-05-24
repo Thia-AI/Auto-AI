@@ -21,7 +21,7 @@ import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IAppState } from '_/renderer/state/reducers';
 import { IDatasetListReducer } from '_/renderer/state/dataset-list/model/reducerTypes';
-import { useHorizontalScrollbar } from '_/shared/theming/hooks';
+import { useHorizontalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	modelType: string;

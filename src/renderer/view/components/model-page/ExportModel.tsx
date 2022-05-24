@@ -19,7 +19,7 @@ import TensorFlowLogo from '_utils/images/TensorFlow Brand Assets/TensorFlow Log
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER } from '_/shared/ipcChannels';
-import { waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
 
 interface Props {
 	model: Model;
@@ -184,7 +184,6 @@ const ExtraModelTypeButton = React.memo(
 		setExporting,
 		setIsDisabled,
 	}: ExtraModelTypeButton) => {
-		const toast = useToast();
 		const buttonBG = mode('thia.gray.50', 'thia.gray.800');
 		const buttonShadow = mode('sm', 'lg-dark');
 		const borderColor = mode('thia.gray.200', 'thia.gray.600');

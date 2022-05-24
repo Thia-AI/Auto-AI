@@ -8,7 +8,7 @@ import { IAppState } from '_/renderer/state/reducers';
 import { DatasetMultiInputPreview } from './DatasetMultiInputPreview';
 import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { setActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';

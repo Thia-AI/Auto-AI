@@ -12,14 +12,12 @@ import {
 } from '@chakra-ui/react';
 import { AiFillDatabase } from 'react-icons/ai';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 
 /**
  * Dev panel deleting dataset inputs component.
  */
 export const DevDeleteDatasetInputs = React.memo(() => {
-	const toast = useToast();
-
 	const [value, setValue] = useState('');
 	const [inputsDeleting, setInputsDeleting] = useState(false);
 

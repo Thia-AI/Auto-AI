@@ -20,7 +20,7 @@ import { IoTrash } from 'react-icons/io5';
 import { IAppState } from '_/renderer/state/reducers';
 import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 
 interface Data {
 	rowCount: number;

@@ -12,7 +12,7 @@ import {
 	Switch,
 	useColorMode,
 } from '@chakra-ui/react';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 import { connect } from 'react-redux';
 import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';

@@ -18,7 +18,7 @@ import { IPC_DRAG_AND_DROP_SELECT_FOLDER, IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILE
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { MAX_INPUTS_PER_PAGE } from '_/shared/engineConstants';
-import { sleep } from '_/renderer/view/helpers/functionHelpers';
+import { sleep, toast } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
 	files: string[];
@@ -31,8 +31,6 @@ interface Props {
 
 const DragNDropC = React.memo(
 	({ files, updateFiles, pathname, getNextPageInputs, activeDatasetInputs, refreshDataset }: Props) => {
-		const toast = useToast();
-
 		const [fileDirectory, setFileDirectory] = useState('');
 		const [imagesUploading, setImagesUploading] = useState(false);
 		const inputColor = mode('thia.gray.700', 'thia.gray.300');

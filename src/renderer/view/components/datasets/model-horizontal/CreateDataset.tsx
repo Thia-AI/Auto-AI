@@ -11,13 +11,12 @@ import {
 	VStack,
 	Input,
 	Button,
-	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { IMAGE_CLASSIFICATION } from '_view_helpers/constants/modelConstants';
-import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 
 interface Props {
@@ -28,7 +27,6 @@ interface Props {
 
 const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) => {
 	// Toast
-	const toast = useToast();
 	// Dataset creation status
 	const [datasetCreating, setDatasetCreating] = useState(false);
 	const [datasetName, setDatasetName] = useState('');
@@ -63,13 +61,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 
 		// Complete! Send a notification to user
 		setDatasetCreating(false);
-		toast({
-			title: 'Success',
-			description: 'Dataset Created Successfully',
-			status: 'success',
-			duration: 1500,
-			isClosable: false,
-		});
+		// No success toast as this is an Engine job and is handled by Engine socket.io notifications
 		onClose();
 		refreshDataset();
 	};

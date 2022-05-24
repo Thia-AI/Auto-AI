@@ -1,6 +1,8 @@
+import { createStandaloneToast, UseToastOptions } from '@chakra-ui/react';
 import { AxiosRequestConfig } from 'axios';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
+import { theme } from '_/shared/theming/chakraTheme';
 
 // Random helper functions
 
@@ -200,4 +202,11 @@ export const argmax = (arr: number[] | undefined) => {
 	}
 
 	return [maxIndex, max];
+};
+
+const standaloneToast = createStandaloneToast({ theme });
+
+export const toast = (options?: UseToastOptions) => {
+	console.log('DONE SOME STUFF');
+	standaloneToast(options);
 };

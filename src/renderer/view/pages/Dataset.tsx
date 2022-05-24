@@ -23,7 +23,7 @@ import { IAppState } from '_/renderer/state/reducers';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;

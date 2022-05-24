@@ -11,6 +11,7 @@ import { changeActiveDataset } from '_/renderer/state/active-dataset-page/Active
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import randomColor from 'randomcolor';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
+import { toast } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -36,8 +37,6 @@ const AddLabelC = React.memo(
 		setIsInputFocused,
 		isInputFocused,
 	}: Props) => {
-		const toast = useToast();
-
 		const [labelUploading, setLabelUploading] = useState(false);
 
 		const addLabelInputFocusChange = (focusedIn: boolean) => {

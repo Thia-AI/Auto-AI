@@ -8,7 +8,6 @@ import {
 	Button,
 	HStack,
 	useRadioGroup,
-	useToast,
 	FormControl,
 	FormLabel,
 	FormErrorMessage,
@@ -23,7 +22,7 @@ import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/Cho
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import { ICModelRadioCard } from './ICModelRadio';
-import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
@@ -36,8 +35,6 @@ interface Props {
 }
 
 const ICModelContentC = React.memo((props: Props) => {
-	// Toast
-	const toast = useToast();
 	// Model Name
 	const [modelNameValue, setModelNameValue] = useState('');
 	const [modelNameValid, setModelNameValid] = useState(false);
@@ -160,13 +157,7 @@ const ICModelContentC = React.memo((props: Props) => {
 		await waitTillEngineJobComplete(createModelRes['ids'][0]);
 		// Complete! Send a notification to user
 		setModelCreating(false);
-		toast({
-			title: 'Success',
-			description: 'Model Created Successfully',
-			status: 'success',
-			duration: 1500,
-			isClosable: false,
-		});
+		// No success toast as this is an Engine job and is handled by Engine socket.io notifications
 		// Close model selection modal and navigate to models page
 		props.openCloseModelSelectionAction();
 		props.changeSelectedPage(MODELS_PAGE);

@@ -23,7 +23,7 @@ import { ModelSelectionBody } from './ModelSelectionBody';
 
 import ObjectDetectionPreview from '_utils/images/object_detection_card_bg_compressed.jpg';
 import ImageClassificationPreview from '_utils/images/image_classification_card_bg.jpg';
-import { useHorizontalScrollbar, useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useHorizontalScrollbar, useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	modalOpenedState: IOpenCloseModelSelectionReducer;

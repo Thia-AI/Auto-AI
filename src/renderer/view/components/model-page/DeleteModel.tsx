@@ -18,7 +18,7 @@ import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/acti
 import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
 import { Model } from '../../helpers/constants/engineDBTypes';
 import { MODELS_PAGE } from '../../helpers/constants/pageConstants';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 
 interface Props {
 	dialogOpen: boolean;
@@ -30,7 +30,6 @@ interface Props {
 const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSelectedPage }: Props) => {
 	const cancelDeleteRef = useRef(null);
 	const [modelDeleting, setModelDeleting] = useState(false);
-	const toast = useToast();
 
 	const deleteModel = async () => {
 		if (model.id.length > 0) {
@@ -51,13 +50,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 			await waitTillEngineJobComplete(deleteModelRes['ids'][0]);
 			// Complete! Send a notification to user
 			setModelDeleting(false);
-			toast({
-				title: 'Success',
-				description: 'Model Deleted Successfully',
-				status: 'success',
-				duration: 1500,
-				isClosable: false,
-			});
+			// No success toast as this is an Engine job and is handled by Engine socket.io notifications
 			changeSelectedPage(MODELS_PAGE);
 			replace('/models');
 		}

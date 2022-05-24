@@ -13,7 +13,7 @@ interface Props {
  * Component for displaying an image when testing a trained model.
  */
 export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, trainedLabel, testRunning }: Props) => {
-	const previewBG = mode('thia.gray.150', 'thia.gray.800');
+	const previewBG = mode('thia.gray.100', 'thia.gray.800');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 
 	const renderLabel = () => {

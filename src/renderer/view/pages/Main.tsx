@@ -9,7 +9,8 @@ import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/acti
 import { HOME_PAGE } from '../helpers/constants/pageConstants';
 import { IGetQuickStatsERResponse } from '_/renderer/engine-requests/actions/get/getQuickStats';
 import { QuickStats } from '../components/dashboard/QuickStats';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
+import { RecentNotifications } from '../components/notifications/RecentNotifications';
 
 interface Props {
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
@@ -38,7 +39,9 @@ const Main = ({ changeSelectedPage }: Props) => {
 				px='4'
 				sx={verticalScrollBarSX}>
 				<HStack w='full' h='full' justify='space-evenly' pt='2'>
-					<Box w='47%' bg='red.300' h='full'></Box>
+					<Box w='47%' h='full'>
+						<RecentNotifications />
+					</Box>
 					<VStack w='47%' justify='space-evenly' h='full'>
 						<QuickStats />
 						<Box w='full' bg='blue.300' h='full'></Box>

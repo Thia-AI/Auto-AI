@@ -17,7 +17,7 @@ import { useDropzone, FileRejection, ErrorCode } from 'react-dropzone';
 import { Model, TestJob } from '../../helpers/constants/engineDBTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { RouterPrompt } from '../routing/RouterPrompt';
 
 interface Props {
@@ -40,7 +40,6 @@ export const TestModel = React.memo(({ model }: Props) => {
 	const [testJobID, setTestJobID] = useState<string | null>(null);
 	const [testRunning, setTestRunning] = useState(false);
 
-	const toast = useToast();
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const inputColor = mode('thia.gray.700', 'thia.gray.500');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');

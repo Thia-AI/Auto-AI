@@ -19,7 +19,7 @@ import { IUpdateDatasetInputLabelAction } from '_/renderer/state/active-dataset-
 import { updateDatasetLabelAction } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IUpdateDatasetLabelAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
