@@ -13,7 +13,7 @@ interface Props {
  *
  * @react
  */
-const Logs = ({ changeSelectedPage }: Props) => {
+const Logs = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(LOGS_PAGE);
 	}, []);
@@ -23,7 +23,9 @@ const Logs = ({ changeSelectedPage }: Props) => {
 			Logs
 		</Center>
 	);
-};
+});
+
+Logs.displayName = 'Logs';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

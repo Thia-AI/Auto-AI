@@ -13,7 +13,7 @@ interface Props {
  *
  * @react
  */
-const Notifications = ({ changeSelectedPage }: Props) => {
+const Notifications = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(NOTIFICATIONS_PAGE);
 	}, []);
@@ -22,7 +22,9 @@ const Notifications = ({ changeSelectedPage }: Props) => {
 			Notifications
 		</Center>
 	);
-};
+});
+
+Notifications.displayName = 'Notifications';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

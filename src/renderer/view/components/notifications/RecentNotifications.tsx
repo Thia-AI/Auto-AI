@@ -1,6 +1,9 @@
 import { Box } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 
+/**
+ * Component that renders the recent notificatiopns on the dashboard.
+ */
 export const RecentNotifications = React.memo(() => {
 	useEffect(() => {});
 	return (
@@ -9,3 +12,5 @@ export const RecentNotifications = React.memo(() => {
 		</Box>
 	);
 });
+
+RecentNotifications.displayName = 'RecentNotifications';

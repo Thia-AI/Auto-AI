@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import {
 	Box,
-	Center,
 	useMediaQuery,
 	useColorModeValue as mode,
 	HStack,
@@ -27,7 +26,7 @@ interface Props {
  *
  * @react
  */
-const Settings = ({ changeSelectedPage }: Props) => {
+const Settings = React.memo(({ changeSelectedPage }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
@@ -88,7 +87,9 @@ const Settings = ({ changeSelectedPage }: Props) => {
 			</VStack>
 		</VStack>
 	);
-};
+});
+
+Settings.displayName = 'Settings';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

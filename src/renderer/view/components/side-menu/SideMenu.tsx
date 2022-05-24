@@ -11,8 +11,6 @@ import { IAppState } from '_state/reducers';
 import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
 import { IMenuOpenReducer, ISelectedPageReducer } from '_state/side-menu/model/reducerTypes';
 import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
-import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
-import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 
 import { SideMenuProfile } from './profile/SideMenuProfile';
 import { NavItem } from './NavItem';

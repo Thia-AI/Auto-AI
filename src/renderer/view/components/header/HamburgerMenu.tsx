@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, useColorModeValue as mode } from '@chakra-ui/react';
+import { Icon } from '@chakra-ui/react';
 import { IoMenuOutline } from 'react-icons/io5';
 import { connect } from 'react-redux';
 

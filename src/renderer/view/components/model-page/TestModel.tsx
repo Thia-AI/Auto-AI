@@ -6,7 +6,6 @@ import {
 	chakra,
 	Text,
 	Center,
-	useToast,
 	HStack,
 	VStack,
 	Button,

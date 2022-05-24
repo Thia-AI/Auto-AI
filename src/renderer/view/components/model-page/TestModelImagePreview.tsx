@@ -1,4 +1,4 @@
-import { Box, Button, Center, chakra, Flex, Spinner, Text, useColorModeValue as mode } from '@chakra-ui/react';
+import { Button, Center, chakra, Flex, Spinner, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import React from 'react';
 import { Label } from '../../helpers/constants/engineDBTypes';
 

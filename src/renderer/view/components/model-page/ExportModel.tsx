@@ -11,7 +11,6 @@ import {
 	Spacer,
 	Spinner,
 	useColorModeValue as mode,
-	useToast,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineDBTypes';
@@ -30,7 +29,6 @@ const CharkaTensorFlowLogo = chakra(TensorFlowLogo);
 /**
  * Section in model page for exporting the model.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ExportModel = React.memo(({ model }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 

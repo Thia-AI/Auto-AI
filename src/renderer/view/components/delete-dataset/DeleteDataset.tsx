@@ -10,7 +10,6 @@ import {
 	AlertDialogBody,
 	AlertDialogFooter,
 	Button,
-	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { IOpenCloseDeleteDatasetReducer } from '_/renderer/state/delete-modals/model/reducerTypes';

@@ -14,7 +14,7 @@ interface Props {
  *
  * @react
  */
-const Jobs = ({ changeSelectedPage }: Props) => {
+const Jobs = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(JOBS_PAGE);
 	}, []);
@@ -23,7 +23,9 @@ const Jobs = ({ changeSelectedPage }: Props) => {
 			Jobs
 		</Center>
 	);
-};
+});
+
+Jobs.displayName = 'Jobs';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { ipcRenderer } from 'electron';
-import { useToast } from '@chakra-ui/toast';
 import { connect } from 'react-redux';
 import { IJobNotification } from '_/renderer/state/notifications/model/actionTypes';
 import { notifSendAction } from '_/renderer/state/notifications/NotificationActions';
@@ -57,7 +56,7 @@ const NotificationsHandlerC = React.memo(({ notifications, sendNotification, eng
 		ipcRenderer.on(IPC_ENGINE_JOB_FINISHED, async (e, jobID: string) => {
 			// TODO: Do something when there's an error (maybe there needs to be a universal retry/error)
 			// system.
-			const [wasError, job] = await getJobIDStatus(jobID); // eslint-disable-line @typescript-eslint/no-unused-vars
+			const [_wasError, job] = await getJobIDStatus(jobID);
 			sendNotification({
 				job: job as Job,
 				dismissAfter: 1250,

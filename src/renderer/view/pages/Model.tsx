@@ -9,7 +9,6 @@ import {
 	Skeleton,
 	Spacer,
 	Button,
-	useToast,
 	Box,
 	Menu,
 	MenuButton,
@@ -82,7 +81,6 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const trainModel = async () => {
 		// Make sure a dataset is selected to be trained on
 		if (selectedDatasetID.value.length > 0) {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const [error, _] = await EngineRequestHandler.getInstance().trainModel(modelID, {
 				dataset_id: selectedDatasetID.value,
 			});

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Flex, VStack, useToast } from '@chakra-ui/react';
+import { Box, Flex, VStack } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
 

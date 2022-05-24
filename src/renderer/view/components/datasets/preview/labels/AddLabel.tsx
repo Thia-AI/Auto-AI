@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Input, InputGroup, InputRightElement, useToast } from '@chakra-ui/react';
+import { Button, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { IoAddOutline } from 'react-icons/io5';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';

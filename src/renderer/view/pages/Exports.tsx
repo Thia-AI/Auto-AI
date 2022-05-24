@@ -14,7 +14,7 @@ interface Props {
  *
  * @react
  */
-const Exports = ({ changeSelectedPage }: Props) => {
+const Exports = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(EXPORTS_PAGE);
 	}, []);
@@ -23,7 +23,9 @@ const Exports = ({ changeSelectedPage }: Props) => {
 			Exports
 		</Center>
 	);
-};
+});
+
+Exports.displayName = 'Exports';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

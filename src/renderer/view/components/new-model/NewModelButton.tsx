@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Center } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 
 import {
 	changeSelectedModelAction,

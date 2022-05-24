@@ -13,7 +13,7 @@ interface Props {
  *
  * @react
  */
-const Subscription = ({ changeSelectedPage }: Props) => {
+const Subscription = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(SUBSCRIPTION_PAGE);
 	}, []);
@@ -22,7 +22,9 @@ const Subscription = ({ changeSelectedPage }: Props) => {
 			Subscription
 		</Center>
 	);
-};
+});
+
+Subscription.displayName = 'Subscription';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

@@ -13,7 +13,7 @@ interface Props {
  *
  * @react
  */
-const Deployments = ({ changeSelectedPage }: Props) => {
+const Deployments = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(DEPLOYMENTS_PAGE);
 	}, []);
@@ -22,7 +22,9 @@ const Deployments = ({ changeSelectedPage }: Props) => {
 			Deployments
 		</Center>
 	);
-};
+});
+
+Deployments.displayName = 'Deployments';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

@@ -13,7 +13,7 @@ interface Props {
  *
  * @react
  */
-const Help = ({ changeSelectedPage }: Props) => {
+const Help = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(HELP_PAGE);
 	}, []);
@@ -22,7 +22,9 @@ const Help = ({ changeSelectedPage }: Props) => {
 			Help
 		</Center>
 	);
-};
+});
+
+Help.displayName = 'Help';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

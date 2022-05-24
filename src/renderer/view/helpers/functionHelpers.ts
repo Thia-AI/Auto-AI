@@ -206,6 +206,11 @@ export const argmax = (arr: number[] | undefined) => {
 
 const standaloneToast = createStandaloneToast({ theme });
 
+/**
+ * Custom toast that adds data to App's notifications store.
+ *
+ * @param options Chakra UI `UseToastOptions`.
+ */
 export const toast = (options?: UseToastOptions) => {
 	console.log('DONE SOME STUFF');
 	standaloneToast(options);

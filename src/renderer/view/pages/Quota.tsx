@@ -12,7 +12,7 @@ interface Props {
  *
  * @react
  */
-const Quota = ({ changeSelectedPage }: Props) => {
+const Quota = React.memo(({ changeSelectedPage }: Props) => {
 	useEffect(() => {
 		changeSelectedPage(QUOTA_PAGE);
 	}, []);
@@ -21,7 +21,9 @@ const Quota = ({ changeSelectedPage }: Props) => {
 			Quota
 		</Center>
 	);
-};
+});
+
+Quota.displayName = 'Quota';
 
 export default connect(null, {
 	changeSelectedPage: changeSelectedPageAction,

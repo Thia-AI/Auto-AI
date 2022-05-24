@@ -4,7 +4,7 @@ import { Center, Flex, Icon, Spacer, Text } from '@chakra-ui/react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import { IoTrash } from 'react-icons/io5';
 import { connect } from 'react-redux';
-import { LabelsList } from './LabelsList'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { LabelsList as _LabelsList } from './LabelsList';
 import { openCloseDeleteLabelAction } from '_/renderer/state/delete-modals/DeleteModalsActions';
 import { IOpenCloseDeleteLabelAction } from '_/renderer/state/delete-modals/model/actionTypes';
 
@@ -62,7 +62,7 @@ const LabelC = React.memo(({ label, index, openCloseDeleteLabel }: Props) => {
 LabelC.displayName = 'Label';
 
 /**
- * Individual label in {@link LabelsList `LabelsList`}.
+ * Individual label in {@link _LabelsList `LabelsList`}.
  */
 export const Label = connect(null, {
 	openCloseDeleteLabel: openCloseDeleteLabelAction,

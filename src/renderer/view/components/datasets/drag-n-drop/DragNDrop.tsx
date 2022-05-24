@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Center, HStack, Text, Button, VStack, useToast, Flex, useColorModeValue as mode } from '@chakra-ui/react';
+import { Center, HStack, Text, Button, VStack, Flex, useColorModeValue as mode } from '@chakra-ui/react';
 import { promises } from 'fs';
 import { extname, sep } from 'path';
 import { ipcRenderer, OpenDialogReturnValue } from 'electron';

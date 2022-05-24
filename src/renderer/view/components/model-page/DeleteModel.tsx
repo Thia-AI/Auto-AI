@@ -8,7 +8,6 @@ import {
 	Badge,
 	Button,
 	Text,
-	useToast,
 } from '@chakra-ui/react';
 import { Replace, replace } from 'connected-react-router';
 import React, { useRef, useState } from 'react';

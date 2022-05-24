@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 
-import {
-	Button,
-	FormControl,
-	FormLabel,
-	HStack,
-	Input,
-	InputGroup,
-	InputLeftElement,
-	useToast,
-} from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import { AiFillDatabase } from 'react-icons/ai';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';

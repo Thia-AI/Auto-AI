@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-	useToast,
-	useColorModeValue as mode,
-	Box,
-	VStack,
-	StackDivider,
-	Heading,
-	Skeleton,
-	HStack,
-	Spinner,
-	Divider,
-} from '@chakra-ui/react';
+import { useColorModeValue as mode, Box, VStack, Heading, Skeleton, HStack, Spinner, Divider } from '@chakra-ui/react';
 import { IGetQuickStatsERResponse } from '_/renderer/engine-requests/actions/get/getQuickStats';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { SimpleStat } from '../stats/SimpleStat';
+import { QuickStat } from '../stats/QuickStat';
 import { toast } from '../../helpers/functionHelpers';
 
+/**
+ * Component on the dashboard that displays quick stats.
+ */
 export const QuickStats = React.memo(() => {
 	const [quickStats, setQuickStats] = useState<null | IGetQuickStatsERResponse>(null);
 	const [statsLoaded, setStatsLoaded] = useState(false);
@@ -66,13 +58,15 @@ export const QuickStats = React.memo(() => {
 				</HStack>
 				<Divider />
 				<Skeleton w='full' isLoaded={statsLoaded}>
-					<SimpleStat label='Models' value={quickStats?.num_models} />
-					<SimpleStat label='Datasets' value={quickStats?.num_datasets} />
-					<SimpleStat label='Images' value={quickStats?.num_images} />
-					<SimpleStat label='Labels' value={quickStats?.num_labels} />
-					<SimpleStat label='Exports' value={quickStats?.num_exports} />
+					<QuickStat label='Models' value={quickStats?.num_models} />
+					<QuickStat label='Datasets' value={quickStats?.num_datasets} />
+					<QuickStat label='Images' value={quickStats?.num_images} />
+					<QuickStat label='Labels' value={quickStats?.num_labels} />
+					<QuickStat label='Exports' value={quickStats?.num_exports} />
 				</Skeleton>
 			</VStack>
 		</Box>
 	);
 });
+
+QuickStats.displayName = 'QuickStats';

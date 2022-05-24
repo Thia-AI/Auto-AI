@@ -5,10 +5,12 @@ import {
 	IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATION,
 	IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATIONS,
 	IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS,
-	IPC_NOTIFICATIONS_STORE_RECEIVING_NOTIFICATIONS,
 } from '_/shared/ipcChannels';
-import { chakra, ToastId, UseToastOptions } from '@chakra-ui/react';
+import { ToastId, UseToastOptions } from '@chakra-ui/react';
 
+/**
+ * Notification that is stored with `electron-store`.
+ */
 export interface ElectronStoreNotification {
 	title?: string;
 	description?: string;
@@ -17,6 +19,9 @@ export interface ElectronStoreNotification {
 	dateNow: number;
 }
 
+/**
+ * Manager for notifications stored with `electron-store`.
+ */
 export class NotificationsStoreManager {
 	private store: Store;
 	constructor(store: Store) {
@@ -24,16 +29,16 @@ export class NotificationsStoreManager {
 	}
 
 	initIPC = () => {
-		ipcMain.on(IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS, (e) => {
+		ipcMain.on(IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS, () => {
 			const notifications = this.store.get('notifications', []);
-			e.sender.send(IPC_NOTIFICATIONS_STORE_RECEIVING_NOTIFICATIONS, notifications);
+			return notifications;
 		});
 
-		ipcMain.on(IPC_NOTIFICATIONS_STORE_ADD_NOTIFICATION, (e, chakraNotification) => {
+		ipcMain.on(IPC_NOTIFICATIONS_STORE_ADD_NOTIFICATION, (_, chakraNotification) => {
 			this.addNotification(chakraNotification);
 		});
 
-		ipcMain.on(IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATION, (e, notificationID) => {
+		ipcMain.on(IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATION, (_, notificationID) => {
 			this.deleteNotification(notificationID);
 		});
 
