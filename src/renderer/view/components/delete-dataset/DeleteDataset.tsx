@@ -74,7 +74,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 									await EngineRequestHandler.getInstance().deleteDataset(datasetValue.id);
 								if (deleteDatasetErr) {
 									toast({
-										title: 'Error',
+										title: `Failed to delete dataset ${datasetValue.name}`,
 										description: `${deleteDatasetRes['Error']}`,
 										status: 'error',
 										duration: 1500,

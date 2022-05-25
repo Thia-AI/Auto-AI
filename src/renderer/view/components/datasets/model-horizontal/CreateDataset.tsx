@@ -46,7 +46,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 
 		if (createDatasetErr) {
 			toast({
-				title: 'Error',
+				title: `Error creating dataset '${datasetName}'`,
 				description: `${createDatasetRes['Error']}`,
 				status: 'error',
 				duration: 1500,

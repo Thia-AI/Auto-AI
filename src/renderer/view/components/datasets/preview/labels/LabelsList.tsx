@@ -90,7 +90,7 @@ const LabelsListC = React.memo(
 				});
 			if (updateLabelsOrderErr) {
 				toast({
-					title: 'Failed to update order',
+					title: 'Failed to update label order',
 					description: updateLabelsOrderRes['Error'],
 					status: 'error',
 					duration: 1250,
@@ -135,7 +135,7 @@ const LabelsListC = React.memo(
 
 			if (deleteLabelErr) {
 				toast({
-					title: `Failed to delete Label '${label}''`,
+					title: `Failed to delete label '${label}''`,
 					description: deleteLabelRes['Error'],
 					status: 'error',
 					duration: 1500,
@@ -152,7 +152,7 @@ const LabelsListC = React.memo(
 			getNextPageInputs(activeDataset.value.dataset.id, someOldDateBase64);
 			setIsLabelDeleting(false);
 			toast({
-				title: 'Success',
+				title: `Deleted label '${label}'`,
 				description: `Deleted Label '${label}' from Dataset '${activeDataset.value.dataset.name}'`,
 				status: 'success',
 				duration: 1500,

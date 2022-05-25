@@ -48,11 +48,12 @@ const AddLabelC = React.memo(
 
 			if (!isInputValid) {
 				toast({
-					title: 'Error',
+					title: 'Failed to add label',
 					description: inputError,
 					status: 'error',
 					duration: 1250,
 					isClosable: true,
+					saveToStore: false,
 				});
 				return;
 			}
@@ -67,7 +68,7 @@ const AddLabelC = React.memo(
 
 			if (addLabelErr) {
 				toast({
-					title: 'Failed to add Label',
+					title: `Failed to add label '${labelValue}'`,
 					description: addLabelRes['Error'],
 					status: 'error',
 					duration: 1500,
@@ -79,7 +80,7 @@ const AddLabelC = React.memo(
 			}
 			changeActiveDataset(addLabelRes['dataset'], addLabelRes['labels']);
 			toast({
-				title: 'Success',
+				title: `Added label '${labelValue}'`,
 				description: `Added Label '${labelValue}' to Dataset '${activeDataset.value.dataset.name}'`,
 				status: 'success',
 				duration: 1500,

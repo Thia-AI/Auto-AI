@@ -75,15 +75,17 @@ export const TestModel = React.memo(({ model }: Props) => {
 						status: 'info',
 						duration: 1500,
 						isClosable: false,
+						saveToStore: false,
 					});
 				} else {
 					// Job failed to cancel
 					toast({
-						title: 'Error',
-						description: 'Failed to cancel testing job.',
+						title: 'Test job cancellation failed',
+						description: 'Failed to cancel testing job',
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
+						saveToStore: false,
 					});
 				}
 			}
@@ -100,6 +102,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					saveToStore: false,
 				});
 			} else if (rejectedFiles[0].errors[0].code == ErrorCode.TooManyFiles) {
 				// Too many files selected
@@ -109,6 +112,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					saveToStore: false,
 				});
 			}
 			// Reset
@@ -152,7 +156,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			);
 			if (testModelError) {
 				toast({
-					title: 'Error',
+					title: 'Test model failed',
 					description: testModelResData['Error'],
 					status: 'error',
 					duration: 1500,
@@ -167,7 +171,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			const [jobError, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
 			if (jobError) {
 				toast({
-					title: 'Error',
+					title: 'Failed to get predictions',
 					description: jobResData['Error'],
 					status: 'error',
 					duration: 1500,
@@ -186,11 +190,12 @@ export const TestModel = React.memo(({ model }: Props) => {
 		} else {
 			// Need to have images to test
 			toast({
-				title: 'Error',
+				title: 'No images',
 				description: 'Need to have images to test',
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
+				saveToStore: false,
 			});
 		}
 	};

@@ -36,7 +36,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 			const [deleteModelErr, deleteModelRes] = await EngineRequestHandler.getInstance().deleteModel(model.id);
 			if (deleteModelErr) {
 				toast({
-					title: 'Error',
+					title: `Failed to delete model '${model.model_name}'`,
 					description: `${deleteModelRes['Error']}`,
 					status: 'error',
 					duration: 1500,

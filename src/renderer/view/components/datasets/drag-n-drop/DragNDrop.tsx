@@ -109,7 +109,7 @@ const DragNDropC = React.memo(
 				);
 				if (uploadImageErr) {
 					toast({
-						title: 'Error',
+						title: 'Upload failed',
 						description: 'Failed to upload images to dataset',
 						status: 'error',
 						duration: 1500,
@@ -127,7 +127,7 @@ const DragNDropC = React.memo(
 
 				setImagesUploading(false);
 				toast({
-					title: 'Success',
+					title: 'Upload started',
 					description: 'Started Image Upload Job',
 					status: 'info',
 					duration: 1500,

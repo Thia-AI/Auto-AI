@@ -82,8 +82,8 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 				}
 				// Show UI notification regardless
 				toast({
-					title: 'Success',
-					description: `Finished ${notif.job.job_name} job`,
+					title: `${notif.job.job_name} job completed`,
+					description: 'Job completed successfully',
 					status: 'success',
 					duration: notif.dismissAfter,
 					isClosable: false,

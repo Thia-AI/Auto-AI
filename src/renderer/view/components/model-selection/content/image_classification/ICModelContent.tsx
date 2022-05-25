@@ -124,11 +124,12 @@ const ICModelContentC = React.memo((props: Props) => {
 			if (!inputValid) {
 				wasError = true;
 				toast({
-					title: 'Error',
+					title: 'Error in form',
 					description: `${inputError}`,
 					status: 'error',
 					duration: 1500,
 					isClosable: true,
+					saveToStore: false,
 				});
 			}
 		});
@@ -144,7 +145,7 @@ const ICModelContentC = React.memo((props: Props) => {
 		// If error occurred when sending the Engine Action
 		if (createModelErr) {
 			toast({
-				title: 'Error',
+				title: `Failed to create model '${modelNameValue}'`,
 				description: `${createModelRes['Error']}`,
 				status: 'error',
 				duration: 1500,

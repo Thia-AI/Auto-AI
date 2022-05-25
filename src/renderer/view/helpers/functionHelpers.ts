@@ -208,20 +208,37 @@ export const argmax = (arr: number[] | undefined) => {
 
 const standaloneToast = createStandaloneToast({ theme });
 
+interface ToastOptions extends UseToastOptions {
+	saveToStore?: boolean;
+}
+
+const DefaultToastOptions: ToastOptions = {
+	saveToStore: true,
+};
+
 /**
  * Custom toast that adds data to App's notifications store.
  *
  * @param options Chakra UI `UseToastOptions`.
+ * @returns Chakra UI toast ID.
  */
-export const toast = (options?: UseToastOptions) => {
-	const toastID = standaloneToast(options);
-	const notificationID = uuidv4();
-	addNotificationToStore(notificationID, options)
-		.then(() => {
-			return toastID;
-		})
-		.catch((err) => {
-			console.error(err);
-			return toastID;
-		});
+export const toast = (options?: ToastOptions) => {
+	const extendedOptions: ToastOptions = {
+		...DefaultToastOptions,
+		...options,
+	};
+	const toastID = standaloneToast(extendedOptions);
+	if (extendedOptions.saveToStore) {
+		const notificationID = uuidv4();
+		addNotificationToStore(notificationID, options)
+			.then(() => {
+				return toastID;
+			})
+			.catch((err) => {
+				console.error(err);
+				return toastID;
+			});
+	} else {
+		return toastID;
+	}
 };

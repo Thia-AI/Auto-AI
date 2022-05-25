@@ -94,11 +94,12 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 		} else {
 			// Dataset isn't selected
 			toast({
-				title: 'Error',
+				title: 'No dataset selected',
 				description: 'Select a dataset to train on',
 				status: 'error',
 				duration: 1500,
 				isClosable: true,
+				saveToStore: false,
 			});
 		}
 	};

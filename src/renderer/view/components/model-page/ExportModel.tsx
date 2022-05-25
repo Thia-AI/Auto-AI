@@ -200,8 +200,9 @@ const ExtraModelTypeButton = React.memo(
 						save_dir: folder.filePaths[0],
 					});
 				if (exportModelErrorExists) {
+					// TODO: Pass model instead of modelID so we can display the name of the model for which export failed.
 					toast({
-						title: 'Error',
+						title: 'Failed to export model',
 						description: `${exportModelResData['Error']}`,
 						status: 'error',
 						duration: 1500,

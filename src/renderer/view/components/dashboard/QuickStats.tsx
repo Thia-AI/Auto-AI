@@ -23,7 +23,7 @@ const QuickStatsC = React.memo(({ engineStarted }: Props) => {
 		const [quickStatsErr, quickStatsRes] = await EngineRequestHandler.getInstance().getQuickStats();
 		if (quickStatsErr) {
 			toast({
-				title: 'Error',
+				title: 'Quick Stats failed to load',
 				description: 'Failed to get Quick Stats',
 				status: 'error',
 				duration: 1500,
