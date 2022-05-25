@@ -1,8 +1,10 @@
 import { createStandaloneToast, UseToastOptions } from '@chakra-ui/react';
 import { AxiosRequestConfig } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { theme } from '_/shared/theming/chakraTheme';
+import { addNotificationToStore } from './ipcHelpers';
 
 // Random helper functions
 
@@ -212,6 +214,14 @@ const standaloneToast = createStandaloneToast({ theme });
  * @param options Chakra UI `UseToastOptions`.
  */
 export const toast = (options?: UseToastOptions) => {
-	console.log('DONE SOME STUFF');
-	standaloneToast(options);
+	const toastID = standaloneToast(options);
+	const notificationID = uuidv4();
+	addNotificationToStore(notificationID, options)
+		.then(() => {
+			return toastID;
+		})
+		.catch((err) => {
+			console.error(err);
+			return toastID;
+		});
 };

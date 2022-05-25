@@ -4,37 +4,42 @@ import { IGetQuickStatsERResponse } from '_/renderer/engine-requests/actions/get
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { QuickStat } from '../stats/QuickStat';
 import { toast } from '../../helpers/functionHelpers';
+import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
+import { connect } from 'react-redux';
+import { IAppState } from '_/renderer/state/reducers';
 
-/**
- * Component on the dashboard that displays quick stats.
- */
-export const QuickStats = React.memo(() => {
+interface Props {
+	engineStarted: IEngineStatusReducer;
+}
+
+const QuickStatsC = React.memo(({ engineStarted }: Props) => {
 	const [quickStats, setQuickStats] = useState<null | IGetQuickStatsERResponse>(null);
 	const [statsLoaded, setStatsLoaded] = useState(false);
 
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
-
-	useEffect(() => {
-		const loadData = async () => {
-			const [quickStatsErr, quickStatsRes] = await EngineRequestHandler.getInstance().getQuickStats();
-			if (quickStatsErr) {
-				toast({
-					title: 'Error',
-					description: 'Failed to get Quick Stats',
-					status: 'error',
-					duration: 1500,
-					isClosable: true,
-				});
-				setStatsLoaded(true);
-				return;
-			}
-			setQuickStats(quickStatsRes);
+	const loadData = async () => {
+		setStatsLoaded(false);
+		const [quickStatsErr, quickStatsRes] = await EngineRequestHandler.getInstance().getQuickStats();
+		if (quickStatsErr) {
+			toast({
+				title: 'Error',
+				description: 'Failed to get Quick Stats',
+				status: 'error',
+				duration: 1500,
+				isClosable: true,
+			});
 			setStatsLoaded(true);
-		};
-
-		loadData();
-	}, []);
+			return;
+		}
+		setQuickStats(quickStatsRes);
+		setStatsLoaded(true);
+	};
+	useEffect(() => {
+		if (engineStarted.value) {
+			loadData();
+		}
+	}, [engineStarted]);
 
 	const renderSpinner = () => {
 		if (!statsLoaded) {
@@ -69,4 +74,13 @@ export const QuickStats = React.memo(() => {
 	);
 });
 
-QuickStats.displayName = 'QuickStats';
+QuickStatsC.displayName = 'QuickStats';
+
+const mapStateToProps = (state: IAppState) => ({
+	engineStarted: state.engineStarted,
+});
+
+/**
+ * Component on the dashboard that displays quick stats.
+ */
+export const QuickStats = connect(mapStateToProps)(QuickStatsC);

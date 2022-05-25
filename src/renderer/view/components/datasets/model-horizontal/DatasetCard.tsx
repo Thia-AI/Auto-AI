@@ -51,6 +51,7 @@ interface Props {
 const DatasetCardC = React.memo((props: Props) => {
 	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
 	const cardBG = mode('thia.gray.100', 'thia.gray.800');
+	const lastUpdatedColor = mode('thia.gray.300', 'thia.gray.600');
 
 	useEffect(() => {
 		return () => {
@@ -106,7 +107,7 @@ const DatasetCardC = React.memo((props: Props) => {
 						</Box>
 					</HStack>
 					<HStack w='full'>
-						<Text fontSize='xs' color='gray.600' as='p' maxW='65%'>
+						<Text fontSize='xs' color={lastUpdatedColor} as='p' maxW='65%'>
 							Updated {new Date(props.dataset.date_last_accessed).toDateString()}
 						</Text>
 						<Spacer />

@@ -18,7 +18,7 @@ interface Props {
 	sendNotification: (notification: IJobNotification) => void;
 }
 
-const NotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
+const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
 	/**
 	 * Map of jobID -> Notification key-value pair that represents the "active" notifications
 	 */
@@ -97,7 +97,7 @@ const NotificationsHandlerC = React.memo(({ notifications, sendNotification, eng
 	return <></>;
 });
 
-NotificationsHandlerC.displayName = 'NotificationsHandler';
+EngineNotificationsHandlerC.displayName = 'NotificationsHandler';
 
 const mapStateToProps = (state: IAppState) => ({
 	notifications: state.notifications.value,
@@ -107,6 +107,6 @@ const mapStateToProps = (state: IAppState) => ({
 /**
  * Component that manages sending notifications to UI & Native OS
  */
-export const NotificationsHandler = connect(mapStateToProps, {
+export const EngineNotificationsHandler = connect(mapStateToProps, {
 	sendNotification: notifSendAction,
-})(NotificationsHandlerC);
+})(EngineNotificationsHandlerC);

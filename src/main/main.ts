@@ -231,8 +231,7 @@ const createWorker = () => {
  */
 const setupStores = () => {
 	notificationsStore = new Store({ name: NOTIFICATIONS_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
-	notificationsStoreManager = new NotificationsStoreManager(notificationsStore);
-	notificationsStoreManager.initIPC();
+	notificationsStoreManager = new NotificationsStoreManager(notificationsStore); // eslint-disable-line @typescript-eslint/no-unused-vars
 };
 
 /**
