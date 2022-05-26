@@ -1,8 +1,5 @@
 import { mode, SystemStyleFunction, StyleFunctionProps, cssVar } from '@chakra-ui/theme-tools';
 
-const $width = cssVar('switch-track-width');
-const $height = cssVar('switch-track-height');
-
 export default {
 	baseStyle: (props: StyleFunctionProps) => {
 		const { colorScheme: c } = props;

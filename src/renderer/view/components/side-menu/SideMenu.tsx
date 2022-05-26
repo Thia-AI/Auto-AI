@@ -37,7 +37,7 @@ interface Props {
 	selectedPage: ISelectedPageReducer;
 }
 const SideMenuC = React.memo((props: Props) => {
-	const scrollBarSX = useVerticalScrollbar();
+	const scrollBarSX = useVerticalScrollbar('6px');
 	return (
 		<Drawer
 			isOpen={props.sideMenuOpen.value}

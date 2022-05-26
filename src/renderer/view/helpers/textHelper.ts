@@ -26,3 +26,11 @@ export const formatBytesToString = (bytes: number, decimals = 2, k = 1024) => {
 
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
+
+/**
+ * Capitalizes first letter of string.
+ *
+ * @param str String whose first letter gets capitalized.
+ * @returns Capitalized string.
+ */
+export const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);

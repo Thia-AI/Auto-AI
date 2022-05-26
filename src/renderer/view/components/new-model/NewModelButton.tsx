@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button } from '@chakra-ui/react';
+import { Button, Text, useBreakpointValue } from '@chakra-ui/react';
 
 import {
 	changeSelectedModelAction,
@@ -17,17 +17,19 @@ interface Props {
 }
 
 const NewModelButtonC = React.memo((props: Props) => {
+	const fontSize = useBreakpointValue({ base: 'xl', md: '4xl', lg: '6xl', '2xl': '8xl' });
 	return (
 		<Button
 			variant='outline'
 			w='full'
+			h='full'
 			colorScheme='thia.purple'
 			minH='35px'
 			onClick={() => {
 				props.changeSelectedModel(0);
 				props.openCloseModelSelectionAction();
 			}}>
-			Create Model
+			<Text fontSize={fontSize}>Create Model</Text>
 		</Button>
 	);
 });

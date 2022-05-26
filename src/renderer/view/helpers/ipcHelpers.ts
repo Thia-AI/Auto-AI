@@ -1,10 +1,11 @@
 import { UseToastOptions } from '@chakra-ui/react';
 import { ipcRenderer } from 'electron';
-import { ElectronStoreNotification, ElectronStoreNotificationMap } from '_/main/store/notificationsStoreManager';
+import { ElectronStoreActivity, ElectronStoreActivityMap } from '_/main/store/activityStoreManager';
 import {
-	IPC_NOTIFICATIONS_STORE_ADD_NOTIFICATION,
-	IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATIONS,
-	IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS,
+	IPC_ACTIVITIES_STORE_ADD_ACTIVITY,
+	IPC_NOTIFICATIONS_STORE_DELETE_ALL_ACTIVITIES,
+	IPC_ACTIVITIES_STORE_GET_ACTIVITIES,
+	IPC_ACTIVITIES_STORE_DELETE_ACTIVITY,
 } from '_/shared/ipcChannels';
 
 // Contains helper functions that invoke IPC methods from renderer->main
@@ -15,57 +16,64 @@ import {
 export type ReturnType = 'map' | 'arraySortedByDate' | 'array';
 
 /**
- * Gets all notifications.
+ * Gets all activities.
  *
- * @param returnType Return type for notifications, default is `array`.
- * @returns Notifications.
+ * @param returnType Return type for activities, default is `array`.
+ * @returns Activities.
  */
-export const getAllNotifications = async (
+export const getAllActivities = async (
 	returnType: ReturnType = 'array',
-): Promise<ElectronStoreNotificationMap | ElectronStoreNotification[]> => {
-	const notifications = (await ipcRenderer.invoke(
-		IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS,
-	)) as ElectronStoreNotificationMap;
+): Promise<ElectronStoreActivityMap | ElectronStoreActivity[]> => {
+	const activities = (await ipcRenderer.invoke(IPC_ACTIVITIES_STORE_GET_ACTIVITIES)) as ElectronStoreActivityMap;
 
 	switch (returnType) {
 		case 'map':
-			return notifications;
+			return activities;
 		case 'array': {
-			const notificationsArr: ElectronStoreNotification[] = [];
-			for (const key in notifications) {
-				const notification = notifications[key];
-				notificationsArr.push(notification);
+			const activitiesArr: ElectronStoreActivity[] = [];
+			for (const key in activities) {
+				const notification = activities[key];
+				activitiesArr.push(notification);
 			}
-			return notificationsArr;
+			return activitiesArr;
 		}
 
 		case 'arraySortedByDate': {
-			const notificationsArr: ElectronStoreNotification[] = [];
-			for (const key in notifications) {
-				const notification = notifications[key];
-				notificationsArr.push(notification);
+			const activitiesArr: ElectronStoreActivity[] = [];
+			for (const key in activities) {
+				const notification = activities[key];
+				activitiesArr.push(notification);
 			}
-			notificationsArr.sort((a, b) => {
+			activitiesArr.sort((a, b) => {
 				return a.dateNow - b.dateNow;
 			});
-			return notificationsArr;
+			return activitiesArr;
 		}
 	}
 };
 
 /**
- * Adds a notification to the notification `electron-store` by sending it to **main** via IPC to be added.
+ * Adds a activity to the activity `electron-store` by sending it to **main** via IPC to be added.
  *
- * @param notificationID Notification ID (UUIDv4).
- * @param notificationOptions Notification options (Chakra UI `ToastOptions`).
+ * @param activityID Activity ID (UUIDv4).
+ * @param activityOptions Activity options (Chakra UI `ToastOptions`).
  */
-export const addNotificationToStore = async (notificationID: string, notificationOptions?: UseToastOptions) => {
-	await ipcRenderer.invoke(IPC_NOTIFICATIONS_STORE_ADD_NOTIFICATION, notificationID, notificationOptions);
+export const addNotificationToStore = async (activityID: string, activityOptions?: UseToastOptions) => {
+	await ipcRenderer.invoke(IPC_ACTIVITIES_STORE_ADD_ACTIVITY, activityID, activityOptions);
 };
 
 /**
- * Clears all notifications in the notification `electron-store` by sending action ot **main** via IPC.
+ * Deletes all activities in the activity `electron-store` by sending action to **main** via IPC.
  */
-export const clearNotifications = async () => {
-	await ipcRenderer.invoke(IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATIONS);
+export const deleteAllActivities = async () => {
+	await ipcRenderer.invoke(IPC_NOTIFICATIONS_STORE_DELETE_ALL_ACTIVITIES);
+};
+
+/**
+ * Deletes activity in the activity `electron-store` by sending action to **main** via IPC.
+ *
+ * @param activityID Activity ID.
+ */
+export const deleteActivity = async (activityID: string) => {
+	await ipcRenderer.invoke(IPC_ACTIVITIES_STORE_DELETE_ACTIVITY, activityID);
 };

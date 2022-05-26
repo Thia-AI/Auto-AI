@@ -40,7 +40,7 @@ const ModelSelectionC = React.memo((props: Props) => {
 			blockScrollOnMount
 			onClose={props.openCloseModelSelectionAction}
 			motionPreset='slideInBottom'
-			size={isLargerThan1280 ? '6xl' : '4xl'}
+			size={isLargerThan1280 ? '6xl' : '3xl'}
 			isCentered
 			scrollBehavior='inside'>
 			<ModalOverlay />

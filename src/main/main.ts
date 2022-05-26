@@ -33,7 +33,7 @@ import {
 } from '_/shared/ipcChannels';
 import {
 	LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
-	NOTIFICATIONS_STORE_FILENAME,
+	NOTIFICATIONS_STORE_FILENAME as ACTIVITIES_STORE_FILENAME,
 	PERSISTENCE_TYPE,
 	STORE_ENCRYPTION_KEY,
 } from '_/shared/appConstants';
@@ -42,15 +42,15 @@ import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebas
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Server } from 'socket.io';
 import Store from 'electron-store';
-import { NotificationsStoreManager } from './store/notificationsStoreManager';
+import { ActivityStoreManager } from './store/activityStoreManager';
 
 const numCPUs = cpus().length;
 
 let firebaseApp: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
 let loginWindow: BrowserWindow | null;
-let notificationsStore: Store | null;
-let notificationsStoreManager: NotificationsStoreManager | null;
+let activitiesStore: Store | null;
+let activityStoreManager: ActivityStoreManager | null;
 
 let mainWindowIPCActions: WindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
@@ -230,8 +230,8 @@ const createWorker = () => {
  * Sets up stores from `electron-store`.
  */
 const setupStores = () => {
-	notificationsStore = new Store({ name: NOTIFICATIONS_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
-	notificationsStoreManager = new NotificationsStoreManager(notificationsStore); // eslint-disable-line @typescript-eslint/no-unused-vars
+	activitiesStore = new Store({ name: ACTIVITIES_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
+	activityStoreManager = new ActivityStoreManager(activitiesStore); // eslint-disable-line @typescript-eslint/no-unused-vars
 };
 
 /**

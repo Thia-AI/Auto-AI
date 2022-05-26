@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, HStack, Spacer, VStack } from '@chakra-ui/react';
+import { Box, HStack, VStack } from '@chakra-ui/react';
 
 import { NewModelButton } from '_/renderer/view/components/new-model/NewModelButton';
 import { ModelSelection } from '_/renderer/view/components/model-selection/ModelSelection';
@@ -9,7 +9,7 @@ import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/acti
 import { HOME_PAGE } from '../helpers/constants/pageConstants';
 import { QuickStats } from '../components/dashboard/QuickStats';
 import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
-import { RecentNotifications } from '../components/notifications/RecentNotifications';
+import { RecentActivities } from '../components/notifications/RecentActivities';
 
 interface Props {
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
@@ -29,26 +29,24 @@ const Main = React.memo(({ changeSelectedPage }: Props) => {
 	return (
 		<>
 			<ModelSelection />
-			<VStack
+			<Box
 				w='full'
 				h='full'
-				overflowY='auto'
 				marginTop='var(--header-height)'
 				py='2.5'
 				px='4'
+				overflowY='hidden'
 				sx={verticalScrollBarSX}>
 				<HStack w='full' h='full' justify='space-evenly' pt='2'>
 					<Box w='47%' h='full'>
-						<RecentNotifications />
+						<RecentActivities />
 					</Box>
 					<VStack w='47%' justify='space-evenly' h='full'>
 						<QuickStats />
-						<Box w='full' bg='blue.300' h='full' />
+						<NewModelButton />
 					</VStack>
 				</HStack>
-				<Spacer />
-				<NewModelButton />
-			</VStack>
+			</Box>
 		</>
 	);
 });
