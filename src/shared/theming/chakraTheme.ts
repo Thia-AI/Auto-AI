@@ -8,6 +8,7 @@ import Link from './components/link';
 import Drawer from './components/drawer';
 import Menu from './components/menu';
 import Switch from './components/switch';
+import Skeleton from './components/skeleton';
 
 export const theme = extendTheme({
 	styles: {
@@ -103,6 +104,7 @@ export const theme = extendTheme({
 		Drawer,
 		Menu,
 		Switch,
+		Skeleton,
 	},
 	shadows: {
 		outline: '#D3C2FF',

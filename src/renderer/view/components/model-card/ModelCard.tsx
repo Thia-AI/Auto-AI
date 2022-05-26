@@ -76,7 +76,15 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 				<Box bgImage={ImageClassificationPreview} bgSize='cover' bgPos='center' w='full' h='full' />
 			</Skeleton>
 
-			<Skeleton pt='2' pb='1' px='4' w='full' h='full' isLoaded={isLoaded}>
+			<Skeleton
+				pt='2'
+				pb='1'
+				px='4'
+				w='full'
+				h='full'
+				isLoaded={isLoaded}
+				borderRightRadius='lg'
+				borderLeftRadius='none'>
 				<VStack bgPos='center' bgSize='cover' borderRadius='lg' w='full' h='full'>
 					<HStack pb='4' w='full'>
 						<Badge ml='2' colorScheme='purple'>
