@@ -1,15 +1,10 @@
 import React from 'react';
 import {
-	SkeletonCircle,
-	SkeletonText,
-	Avatar,
 	HStack,
-	Center,
 	Text,
 	Badge,
 	Spacer,
 	VStack,
-	Divider,
 	Skeleton,
 	ThemingProps,
 	useColorModeValue as mode,
@@ -20,7 +15,6 @@ import {
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 
-import Preview from '_utils/images/placeholder-dark.jpg';
 import ImageClassificationPreview from '_utils/images/image_classification_card_bg.jpg';
 import './ModelCard.css';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';

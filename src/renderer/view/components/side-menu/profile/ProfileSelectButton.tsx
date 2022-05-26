@@ -1,9 +1,9 @@
-import { Box, Flex, HStack, Image, useColorModeValue, useMenuButton } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, Image, useColorModeValue, useMenuButton } from '@chakra-ui/react';
 import React from 'react';
 import { HiSelector } from 'react-icons/hi';
 
 type Props = {
-	displayName?: string | null;
+	displayName: string;
 	imageURL?: string;
 };
 /**
@@ -38,14 +38,19 @@ export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props)
 			_hover={{ bg: profileBGHover }}
 			_active={{ bg: profileBGClicking }}>
 			<HStack flex='1' spacing='3'>
-				<Image w='8' h='8' rounded='md' objectFit='cover' alt='Chakra UI' src={imageURL} />
-				<Box textAlign='start'>
-					<Box isTruncated fontWeight='semibold'>
+				<Image
+					w='8'
+					h='8'
+					rounded='md'
+					objectFit='cover'
+					alt='Profile picture'
+					title={displayName}
+					src={imageURL}
+				/>
+				<Box textAlign='start' maxW='180px'>
+					<Heading fontWeight='semibold' fontSize='sm' isTruncated>
 						{displayName}
-					</Box>
-					<Box isTruncated fontSize='xs' color={color}>
-						ID 233223
-					</Box>
+					</Heading>
 				</Box>
 			</HStack>
 			<Box fontSize='lg' color={color}>

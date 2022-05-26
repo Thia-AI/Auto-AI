@@ -1,12 +1,5 @@
 import React, { ChangeEvent, useRef, useState } from 'react';
 import {
-	Flex,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalHeader,
-	ModalOverlay,
 	Text,
 	VStack,
 	Input,

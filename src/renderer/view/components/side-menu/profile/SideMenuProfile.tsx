@@ -41,7 +41,7 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 		<>
 			<Menu>
 				<ProfileSelectButton
-					displayName={user?.displayName}
+					displayName={user?.displayName ?? ''}
 					imageURL={(user?.photoURL as potentiallyUndefinedString) ?? DefaultProfilePic}
 				/>
 				<MenuList py='4' px='3'>
