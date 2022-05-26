@@ -62,7 +62,7 @@ export const RecentActivities = React.memo(() => {
 			return (
 				<Center w='full' h='full'>
 					<Heading fontSize={noActivitiesHeadingSize} textAlign='center' lineHeight='tall'>
-						No Activities
+						No Recent Activity
 					</Heading>
 				</Center>
 			);

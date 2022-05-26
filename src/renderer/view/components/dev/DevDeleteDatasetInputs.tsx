@@ -49,14 +49,14 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 			<FormControl id='dev-delete-dataset-inputs'>
 				<InputGroup>
 					<FormLabel srOnly>Enter dataset ID of inputs to delete</FormLabel>
-					<InputLeftElement pointerEvents='none' fontSize='sm' color='gray.600'>
+					<InputLeftElement pointerEvents='none' fontSize='sm'>
 						<AiFillDatabase />
 					</InputLeftElement>
-					<Input bg='gray.800' placeholder="Enter input's dataset ID" value={value} onChange={handleChange} />
+					<Input placeholder="Enter input's dataset ID" value={value} onChange={handleChange} />
 				</InputGroup>
 			</FormControl>
 
-			<Button isLoading={inputsDeleting} type='submit' colorScheme='blue' minW='24' onClick={deleteInputs}>
+			<Button isLoading={inputsDeleting} type='submit' colorScheme='thia.purple' onClick={deleteInputs}>
 				Delete
 			</Button>
 		</HStack>
