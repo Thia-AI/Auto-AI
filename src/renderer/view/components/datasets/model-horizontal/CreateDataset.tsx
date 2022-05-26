@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import {
 	Flex,
 	Modal,
@@ -11,6 +11,12 @@ import {
 	VStack,
 	Input,
 	Button,
+	AlertDialog,
+	AlertDialogOverlay,
+	AlertDialogContent,
+	AlertDialogHeader,
+	AlertDialogBody,
+	AlertDialogFooter,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
@@ -30,6 +36,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 	// Dataset creation status
 	const [datasetCreating, setDatasetCreating] = useState(false);
 	const [datasetName, setDatasetName] = useState('');
+	const cancelCreateDatasetRef = useRef(null);
 
 	const handleDatasetNameChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const name = event.target.value;
@@ -66,7 +73,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 		refreshDataset();
 	};
 	return (
-		<Modal
+		<AlertDialog
 			isOpen={isOpen}
 			onClose={() => {
 				setDatasetName('');
@@ -74,33 +81,36 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 			}}
 			isCentered
 			blockScrollOnMount
+			leastDestructiveRef={cancelCreateDatasetRef}
 			motionPreset='slideInBottom'
 			scrollBehavior='inside'>
-			<ModalOverlay />
-			<ModalContent>
-				<ModalHeader>Create Dataset</ModalHeader>
-				<ModalCloseButton size='sm' />
-				<ModalBody pb='4'>
+			<AlertDialogOverlay />
+			<AlertDialogContent>
+				<AlertDialogHeader>Create Dataset</AlertDialogHeader>
+				<AlertDialogBody pb='4'>
 					<VStack spacing='2' alignItems='flex-start'>
-						<Text fontWeight='semibold' color='gray.300' as='h4' fontSize='sm' pl='1' mb='1'>
+						<Text fontWeight='semibold' as='h4' fontSize='sm' pl='1' mb='1'>
 							Name
 						</Text>
-						<Flex justifyContent='space-between' w='full'>
-							<Input
-								value={datasetName}
-								onChange={handleDatasetNameChange}
-								w='fit-content'
-								variant='filled'
-								placeholder="Enter the dataset's name"
-							/>
-							<Button isLoading={datasetCreating} onClick={createDataset} colorScheme='teal'>
-								Create
-							</Button>
-						</Flex>
+						<Input
+							value={datasetName}
+							onChange={handleDatasetNameChange}
+							w='fit-content'
+							variant='filled'
+							placeholder="Enter the dataset's name"
+						/>
 					</VStack>
-				</ModalBody>
-			</ModalContent>
-		</Modal>
+				</AlertDialogBody>
+				<AlertDialogFooter>
+					<Button ref={cancelCreateDatasetRef} variant='ghost' mr='2' colorScheme='thia.gray'>
+						Cancel
+					</Button>
+					<Button isLoading={datasetCreating} onClick={createDataset} colorScheme='thia.purple'>
+						Create
+					</Button>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 	);
 });
 
