@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 import {
 	Box,
 	VStack,
@@ -22,7 +22,7 @@ import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/Cho
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import { ICModelRadioCard } from './ICModelRadio';
-import { toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
+import { hasWhiteSpace, toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
@@ -46,7 +46,7 @@ const ICModelContentC = React.memo((props: Props) => {
 	const [modelNameInputFocusedOnce, setModelNameInputFocusedOnce] = useState(false);
 
 	// Errors
-	const validList = [[modelNameValid, modelNameError]];
+	const inputErrorList: [boolean, string][] = [[modelNameValid, modelNameError]];
 
 	// Radio Card - Model Type
 
@@ -95,30 +95,44 @@ const ICModelContentC = React.memo((props: Props) => {
 		return labellingTypeForEngine[labellingTypeRadioOptions.indexOf(labellingType)];
 	};
 
-	const handleModelNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-		const name = event.target.value;
-		setModelNameValue(name);
+	const handleModelNameChange = (event) => {
+		const modelName = event.target.value;
+		setModelNameValue(modelName);
 
 		// validate
-		if (name.length === 0) {
+		if (modelName.length === 0) {
 			setModelNameError(INITIAL_MODEL_NAME_ERROR);
 			setModelNameValid(false);
 			return;
 		}
-		const regex = /^[a-zA-Z0-9-_]+$/;
-		if (name.search(regex) === -1) {
+		if (modelName.length >= 20) {
+			setModelNameError('Must be less than 20 characters');
+			setModelNameValid(false);
+			return;
+		}
+		const alphaNumRegex = /^[a-zA-Z0-9]+$/;
+
+		if (!modelName.match(alphaNumRegex)) {
 			setModelNameError('Alphanumeric characters only');
 			setModelNameValid(false);
 			return;
 		}
+
+		if (hasWhiteSpace(modelName)) {
+			setModelNameError('No whitespace characters');
+			setModelNameValid(false);
+			return;
+		}
+
 		setModelNameValid(true);
 		setModelNameError('');
 	};
 
 	const createModel = async () => {
-		// check errors
+		// Check errors
+
 		let wasError = false;
-		validList.forEach((validPair) => {
+		inputErrorList.forEach((validPair) => {
 			const inputValid = validPair[0];
 			const inputError = validPair[1];
 			if (!inputValid) {
@@ -134,7 +148,8 @@ const ICModelContentC = React.memo((props: Props) => {
 			}
 		});
 		if (wasError) return;
-		// No error, send create model action
+
+		// No error, continue
 		setModelCreating(true);
 		const [createModelErr, createModelRes] = await EngineRequestHandler.getInstance().createModel({
 			model_name: modelNameValue,

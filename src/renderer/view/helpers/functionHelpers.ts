@@ -206,6 +206,17 @@ export const argmax = (arr: number[] | undefined) => {
 	return [maxIndex, max];
 };
 
+/**
+ * Returns true if a string contains whitespace or not.
+ *
+ * @param s String we are checking.
+ * @returns Whether there is whitespace.
+ */
+export const hasWhiteSpace = (s: string) => {
+	const whitespaceChars = [' ', '\t', '\n'];
+	return whitespaceChars.some((char) => s.includes(char));
+};
+
 const standaloneToast = createStandaloneToast({ theme });
 
 interface ToastOptions extends UseToastOptions {
