@@ -320,6 +320,7 @@ const Login = React.memo(
 							<Input
 								placeholder=' '
 								autoFocus
+								w='full'
 								type='email'
 								value={emailAddress}
 								onBlur={() => setEmailFocusedOnce(true)}
@@ -335,7 +336,7 @@ const Login = React.memo(
 									setEmailAddress(val);
 								}}
 							/>
-							<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Email Address</FormLabel>
+							<FormLabel>Email Address</FormLabel>
 							<FormErrorMessage>{emailErrorMessage}</FormErrorMessage>
 						</FormControl>
 						<FormControl
@@ -357,7 +358,7 @@ const Login = React.memo(
 								}}
 								type='password'
 							/>
-							<FormLabel bgColor='var(--chakra-colors-gray-800) !important'>Password</FormLabel>
+							<FormLabel>Password</FormLabel>
 							<FormErrorMessage>{passwordErrorMessage}</FormErrorMessage>
 						</FormControl>
 					</VStack>

@@ -1,14 +1,4 @@
 :root {
-	/* CSS HEX */
-	--flame: #f05d23;
-	--eerie-black: #191818;
-	--title-black: #333;
-	--alternate-black: #212529;
-	--mint-cream: #effff9;
-	--alternate-white: #ffffff;
-	--big-dip-oruby: #9f2042;
-	--space-cadet: #383248;
-
 	/* CSS div properties */
 
 	/* Header */
@@ -39,8 +29,6 @@
 	font-variant-numeric: proportional-nums;
 }
 body {
-	background: var(--alternate-white);
-	color: var(--eerie-black);
 	height: calc(100% - var(--header-height));
 	margin: 0;
 	padding: 0;
@@ -66,10 +54,17 @@ p {
 	margin-bottom: 0;
 }
 
-h1 {
-	font-family: Visby-Medium, sans-serif;
+.tooltip {
+	font-size: 12px;
+	transition: all 200ms;
+	border-radius: 5px !important;
+	padding-top: 2px !important;
+	padding-bottom: 3px !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
 }
 
-p {
-	font-family: Visby, sans-serif;
+.red-tooltip {
+	color: whitesmoke !important;
+	background-color: #f55858 !important;
 }

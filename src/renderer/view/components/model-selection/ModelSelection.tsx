@@ -21,7 +21,9 @@ import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/mo
 import { ModelPreviewCard } from '../model-preview-card/ModelPreviewCard';
 import { ModelSelectionBody } from './ModelSelectionBody';
 
-import Preview from '_utils/images/placeholder-image.jpg';
+import ObjectDetectionPreview from '_utils/images/object_detection_card_bg_compressed.jpg';
+import ImageClassificationPreview from '_utils/images/image_classification_card_bg.jpg';
+import { useHorizontalScrollbar, useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	modalOpenedState: IOpenCloseModelSelectionReducer;
@@ -30,50 +32,30 @@ interface Props {
 
 const ModelSelectionC = React.memo((props: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
+	const verticalScrollBarSX = useVerticalScrollbar();
+	const horizontalScrollBarSX = useHorizontalScrollbar();
 	return (
 		<Modal
 			isOpen={props.modalOpenedState.value}
 			blockScrollOnMount
 			onClose={props.openCloseModelSelectionAction}
 			motionPreset='slideInBottom'
-			size={isLargerThan1280 ? '6xl' : '4xl'}
+			size={isLargerThan1280 ? '6xl' : '3xl'}
 			isCentered
 			scrollBehavior='inside'>
 			<ModalOverlay />
-			<ModalContent transition='all 200ms' overflow='hidden'>
+			<ModalContent transition='all 200ms' overflow='hidden' h='full'>
 				<ModalHeader>Select Model</ModalHeader>
 				<ModalCloseButton size='sm' />
-				<ModalBody
-					mt='2'
-					sx={{
-						'&::-webkit-scrollbar': {
-							w: '8px',
-							bg: 'gray.600',
-						},
-						'&::-webkit-scrollbar-thumb': {
-							bg: 'gray.900',
-						},
-					}}>
-					<HStack
-						spacing='14px'
-						overflowX='auto'
-						pb='3'
-						sx={{
-							'&::-webkit-scrollbar': {
-								h: '8px',
-								bg: 'gray.600',
-							},
-							'&::-webkit-scrollbar-thumb': {
-								bg: 'gray.900',
-							},
-						}}>
+				<ModalBody mt='2' sx={verticalScrollBarSX}>
+					<HStack spacing='14px' overflowX='auto' pb='3' px='4' sx={horizontalScrollBarSX}>
 						<ModelPreviewCard
 							badge='new'
 							cardTitle='Image Classification'
 							updatedDate='06/06/2021'
 							badgeColorScheme='teal'
 							cardDescription='Image classifier trained on your dataset.'
-							imageSrc={Preview}
+							imageSrc={ImageClassificationPreview}
 							selectedModelNumber={0}
 						/>
 						<ModelPreviewCard
@@ -82,26 +64,8 @@ const ModelSelectionC = React.memo((props: Props) => {
 							cardTitle='Object Detection'
 							updatedDate='06/06/2021'
 							cardDescription='Detect objects from images or video.'
-							imageSrc={Preview}
+							imageSrc={ObjectDetectionPreview}
 							selectedModelNumber={1}
-						/>
-						<ModelPreviewCard
-							badge='tba'
-							cardTitle='Object Tracking'
-							badgeColorScheme='red'
-							updatedDate='05/23/2021'
-							cardDescription='Detect and track objects throughout their lifecycle in a video.'
-							imageSrc={Preview}
-							selectedModelNumber={2}
-						/>
-						<ModelPreviewCard
-							badge='tba'
-							cardTitle='Generative Model'
-							badgeColorScheme='red'
-							updatedDate='06/03/2021'
-							cardDescription='Generates images similar to those trained on.'
-							imageSrc={Preview}
-							selectedModelNumber={3}
 						/>
 					</HStack>
 					<ModelSelectionBody />

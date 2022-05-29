@@ -4,7 +4,7 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, protocol } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol, shell } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { FirebaseApp, initializeApp } from 'firebase/app';
@@ -29,18 +29,28 @@ import {
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 	IPC_DEV_COPY_ID_TOKEN,
 	IPC_DEV_COPY_UID,
+	IPC_DEV_TOGGLE_COLOR_MODE,
 } from '_/shared/ipcChannels';
-import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
+import {
+	LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
+	NOTIFICATIONS_STORE_FILENAME as ACTIVITIES_STORE_FILENAME,
+	PERSISTENCE_TYPE,
+	STORE_ENCRYPTION_KEY,
+} from '_/shared/appConstants';
 import { startServer } from './server/server';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Server } from 'socket.io';
+import Store from 'electron-store';
+import { ActivityStoreManager } from './store/activityStoreManager';
 
 const numCPUs = cpus().length;
 
 let firebaseApp: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
 let loginWindow: BrowserWindow | null;
+let activitiesStore: Store | null;
+let activityStoreManager: ActivityStoreManager | null;
 
 let mainWindowIPCActions: WindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
@@ -97,7 +107,7 @@ const createWindow = (): void => {
 		autoHideMenuBar: true,
 		show: false,
 		icon: path.join(__dirname, '..', 'build', 'icon.ico'),
-		backgroundColor: '#1A202C',
+		backgroundColor: '#1F1F1F',
 		webPreferences: {
 			webSecurity: true,
 			devTools: isEmulatedDev,
@@ -119,6 +129,24 @@ const createWindow = (): void => {
 
 	mainWindow.setMenu(menu);
 	loginWindow.setMenu(menu);
+
+	// Triggers when link is opened
+	mainWindow.webContents.on('will-navigate', (e, urlDestination) => {
+		const parsedUrl = new url.URL(urlDestination);
+		if (parsedUrl.protocol !== 'file:') {
+			e.preventDefault();
+			shell.openExternal(urlDestination);
+		}
+	});
+
+	// Triggers when loadUrl is fired and when react-router route is changed
+	mainWindow.webContents.on('did-navigate-in-page', (e, urlDestination) => {
+		const parsedUrl = new url.URL(urlDestination);
+		if (parsedUrl.protocol !== 'file:') {
+			e.preventDefault();
+			shell.openExternal(urlDestination);
+		}
+	});
 
 	// must initialize IPC handler and Engine loading renderer
 
@@ -196,6 +224,14 @@ const createWorker = () => {
 	});
 
 	return browserWindowWorker;
+};
+
+/**
+ * Sets up stores from `electron-store`.
+ */
+const setupStores = () => {
+	activitiesStore = new Store({ name: ACTIVITIES_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
+	activityStoreManager = new ActivityStoreManager(activitiesStore); // eslint-disable-line @typescript-eslint/no-unused-vars
 };
 
 /**
@@ -309,6 +345,10 @@ const registerShortcuts = (win: BrowserWindow) => {
 		register(win, 'Ctrl+Shift+U', () => {
 			win.webContents.send(IPC_DEV_COPY_UID);
 		});
+
+		register(win, 'Ctrl+Shift+D', () => {
+			win.webContents.send(IPC_DEV_TOGGLE_COLOR_MODE);
+		});
 	}
 };
 
@@ -335,14 +375,19 @@ if (!isSingleInstance) {
 	// Some APIs can only be used after this event occurs.
 	app.whenReady().then(async () => {
 		if (isDev) {
-			const extension = await installExtension([REACT_DEVELOPER_TOOLS], {
-				loadExtensionOptions: { allowFileAccess: true },
-				forceDownload: true,
-			});
-			console.log('Extension loaded:', extension);
+			try {
+				const extension = await installExtension([REACT_DEVELOPER_TOOLS], {
+					loadExtensionOptions: { allowFileAccess: true },
+					forceDownload: true,
+				});
+				console.log('Extension loaded:', extension);
+			} catch (err) {
+				console.log('Error loading extensions: ', err);
+			}
 		}
 		firebaseApp = initializeApp(firebaseConfig);
 		await startWebServices();
+		await setupStores();
 		initRendererDev();
 		createWindow();
 		registerShortcuts(mainWindow!);

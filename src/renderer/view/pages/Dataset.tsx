@@ -23,6 +23,7 @@ import { IAppState } from '_/renderer/state/reducers';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -34,6 +35,9 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 	// const [dataset, setDataset] = useState<Dataset | undefined>(undefined);
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
+	const verticalScrollbar = useVerticalScrollbar('10px');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	const refreshDataset = useCallback(async () => {
 		const [datasetError, datasetResData] = await EngineRequestHandler.getInstance().getDataset(datasetID);
@@ -66,15 +70,7 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 			h='full'
 			marginTop='var(--header-height)'
 			overflowY='auto'
-			sx={{
-				'&::-webkit-scrollbar': {
-					w: '10px',
-					bg: 'gray.600',
-				},
-				'&::-webkit-scrollbar-thumb': {
-					bg: 'gray.900',
-				},
-			}}>
+			sx={verticalScrollbar}>
 			<VStack alignItems='flex-start' ml='4'>
 				<Skeleton w='400px' isLoaded={activeDataset.value.dataset !== undefined}>
 					<HStack pt='1' alignItems='center'>
@@ -96,13 +92,15 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('white', 'gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<Box mb='8'>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Upload Images
 					</Text>
-					<Text color='gray.500' fontSize='sm'>
+					<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 						Select images to transfer to dataset
 					</Text>
 				</Box>

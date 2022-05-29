@@ -1,6 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Box, Button, Center, chakra, HStack, Image, LayoutProps, Spinner, useBreakpointValue } from '@chakra-ui/react';
+import {
+	Box,
+	Button,
+	Center,
+	chakra,
+	HStack,
+	Image,
+	LayoutProps,
+	Spinner,
+	useBreakpointValue,
+	useColorModeValue as mode,
+} from '@chakra-ui/react';
 import { IAppState } from '_/renderer/state/reducers';
 import { connect } from 'react-redux';
 import { debounce } from 'debounce';
@@ -14,8 +25,7 @@ import {
 import { setActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 import { nullInput } from '_/renderer/view/helpers/constants/engineDBTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
@@ -44,6 +54,8 @@ const DatasetSingleInputPreviewC = React.memo(
 				readyToLoad: datasetID!.length > 0 && activeInput.id.length > 0,
 			},
 		);
+		const previewBG = mode('thia.gray.150', 'thia.gray.850');
+		const borderColor = mode('thia.gray.200', 'thia.gray.700');
 
 		const imgRef = useRef<HTMLImageElement | null>(null);
 		const containerRef = useRef<HTMLDivElement | null>(null);
@@ -120,7 +132,15 @@ const DatasetSingleInputPreviewC = React.memo(
 
 		const renderPreview = () => {
 			return (
-				<Box w={w} h='full' bg='gray.800' borderLeftRadius='md' overflow='hidden' ref={containerRef}>
+				<Box
+					w={w}
+					h='full'
+					bg={previewBG}
+					borderLeftRadius='md'
+					overflow='hidden'
+					borderWidth='1px'
+					borderColor={borderColor}
+					ref={containerRef}>
 					<TransformWrapper
 						limitToBounds
 						maxScale={maxScale}
@@ -132,7 +152,7 @@ const DatasetSingleInputPreviewC = React.memo(
 								<Box position='relative' w='full' h='full'>
 									<HStack position='absolute' zIndex={2} right='2' top='2'>
 										<Button
-											colorScheme='blue'
+											colorScheme='thia.purple'
 											size={buttonSize}
 											onClick={() => {
 												zoomIn();
@@ -140,7 +160,7 @@ const DatasetSingleInputPreviewC = React.memo(
 											+
 										</Button>
 										<Button
-											colorScheme='blue'
+											colorScheme='thia.purple'
 											size={buttonSize}
 											onClick={() => {
 												zoomOut(0.5, ANIMATION_TIME, 'easeInOutCubic');
@@ -148,7 +168,7 @@ const DatasetSingleInputPreviewC = React.memo(
 											-
 										</Button>
 										<Button
-											colorScheme='blue'
+											colorScheme='thia.purple'
 											size={buttonSize}
 											onClick={async () => {
 												if (imgRef.current && containerRef.current) {
@@ -233,7 +253,7 @@ const mapStateToProps = (state: IAppState) => ({
 });
 
 /**
- * Previews a dataset input in a larger size on top of {@link PreviewDatasetPagination `PreviewDatasetPagination`}.
+ * Previews a dataset input in a larger size.
  */
 export const DatasetSingleInputPreview = connect(mapStateToProps, {
 	setInputPreviewID: setActiveDatasetInputsPreviewIDAction,

@@ -1,5 +1,6 @@
 import numpy as np
 
+from config.constants import NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 from db.row_accessors import input_from_row
@@ -87,3 +88,19 @@ def pagination_get_next_page_preview_inputs(dataset_id: str, cursor_date: str):
                     command='''SELECT * FROM input WHERE dataset_id = ? AND date_created > ? LIMIT 1''',
                     values=(dataset_id, cursor_date))
     return DBManager.get_instance().execute(cmd)
+
+
+def get_num_inputs():
+    cmd = DBCommand(name="Get Number of Inputs", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM input''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]
+
+
+def get_num_labels():
+    cmd = DBCommand(name="Get Number of Labels", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM labels''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]

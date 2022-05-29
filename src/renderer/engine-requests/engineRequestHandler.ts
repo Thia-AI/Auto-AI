@@ -14,7 +14,7 @@ import { GetPreviousPageEngineRequest, IGetPreviousPageData } from './actions/po
 import { UpdateLabelsOrderEngineRequest } from './actions/patch/updateLabelsOrder';
 import { AddLabelEngineRequest, IAddLabelData } from './actions/post/addLabel';
 import { CreateDatasetEngineRequest } from './actions/post/createDataset';
-import { CreateModelEngineRequest } from './actions/post/createModel';
+import { CreateModelData, CreateModelEngineRequest } from './actions/post/createModel';
 import { UploadImageToDatasetEngineRequest } from './actions/post/uploadImageToDataset';
 import { GetDatasetLabelsEngineRequest } from './actions/get/getDatasetLabels';
 import { GetDatasetLabelEngineRequest, IGetDatasetLabelData } from './actions/get/getDatasetLabel';
@@ -26,6 +26,8 @@ import { GetTelemetryGPUStateEngineRequest } from './actions/get/getTelemetryGPU
 import { CancelJobEngineRequest } from './actions/delete/cancelJob';
 import { ExportModelEngineRequest, IExportModelData } from './actions/post/exportModel';
 import { GetActiveModelExportsEngineRequest } from './actions/get/getActiveModelExports';
+import { DeleteModelEngineRequest } from './actions/delete/deleteModel';
+import { GetQuickStatsEngineRequest } from './actions/get/getQuickStats';
 
 /**
  * Class that manages all Engine Requests.
@@ -48,6 +50,7 @@ export class EngineRequestHandler {
 	private testModelER!: TestModelEngineRequest;
 	private exportModelER!: ExportModelEngineRequest;
 	private getActiveModelExportsER!: GetActiveModelExportsEngineRequest;
+	private deleteModelER!: DeleteModelEngineRequest;
 	// Datasets
 	private createDatasetER!: CreateDatasetEngineRequest;
 	private getDatasetsER!: GetDatasetsEngineRequest;
@@ -66,7 +69,8 @@ export class EngineRequestHandler {
 	private getDatasetLabelER!: GetDatasetLabelEngineRequest;
 	private updateInputLabelER!: UpdateInputLabelEngineRequest;
 	// Telemetry
-	private getTelemetryGPUStateER!: GetTelemetryGPUStateEngineRequest;
+	private getGPUStateER!: GetTelemetryGPUStateEngineRequest;
+	private getQuickStatsER!: GetQuickStatsEngineRequest;
 
 	/**
 	 * Private constructor.
@@ -108,6 +112,7 @@ export class EngineRequestHandler {
 		this.testModelER = new TestModelEngineRequest(this.engineRequest);
 		this.exportModelER = new ExportModelEngineRequest(this.engineRequest);
 		this.getActiveModelExportsER = new GetActiveModelExportsEngineRequest(this.engineRequest);
+		this.deleteModelER = new DeleteModelEngineRequest(this.engineRequest);
 		// Datasets
 		this.createDatasetER = new CreateDatasetEngineRequest(this.engineRequest);
 		this.getDatasetsER = new GetDatasetsEngineRequest(this.engineRequest);
@@ -126,7 +131,8 @@ export class EngineRequestHandler {
 		this.getDatasetLabelER = new GetDatasetLabelEngineRequest(this.engineRequest);
 		this.updateInputLabelER = new UpdateInputLabelEngineRequest(this.engineRequest);
 		// Telemetry
-		this.getTelemetryGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
+		this.getGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
+		this.getQuickStatsER = new GetQuickStatsEngineRequest(this.engineRequest);
 	};
 
 	/**
@@ -151,8 +157,12 @@ export class EngineRequestHandler {
 		return this.cancelJobER.run(config, jobID);
 	};
 
-	public createModel = async (data: object, config?: AxiosRequestConfig) => {
+	public createModel = async (data: CreateModelData, config?: AxiosRequestConfig) => {
 		return this.createModelER.run(config, data);
+	};
+
+	public deleteModel = async (modelID: string, config?: AxiosRequestConfig) => {
+		return this.deleteModelER.run(config, modelID);
 	};
 
 	public getModels = async (config?: AxiosRequestConfig) => {
@@ -250,7 +260,11 @@ export class EngineRequestHandler {
 	};
 
 	public getTelemeteryGPUState = async (config?: AxiosRequestConfig) => {
-		return this.getTelemetryGPUStateER.run(config);
+		return this.getGPUStateER.run(config);
+	};
+
+	public getQuickStats = async (config?: AxiosRequestConfig) => {
+		return this.getQuickStatsER.run(config);
 	};
 
 	public exportModel = async (modelID: string, data: IExportModelData, config?: AxiosRequestConfig) => {

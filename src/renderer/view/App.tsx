@@ -7,7 +7,7 @@ import { history } from '_state/store';
 
 import { Header } from './components/header/Header';
 import { SideMenu } from './components/side-menu/SideMenu';
-import { NotificationsHandler } from './components/notifications/NotificationsHandler';
+import { EngineNotificationsHandler } from './components/notifications/EngineNotificationsHandler';
 import { DevDashboard } from './components/dev/DevDashboard';
 import { AuthProvider, useFirebaseApp, useSigninCheck } from 'reactfire';
 import { getAuth } from 'firebase/auth';
@@ -41,7 +41,7 @@ export const App = React.memo(() => {
 			<AuthProvider sdk={auth}>
 				<React.StrictMode>
 					<SideMenu />
-					<NotificationsHandler />
+					<EngineNotificationsHandler />
 					<DevDashboard />
 					<Router history={history}>
 						<Header />

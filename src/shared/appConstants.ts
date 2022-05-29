@@ -5,6 +5,10 @@ import { browserLocalPersistence, browserSessionPersistence, Persistence } from 
  */
 export const LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE = 'loginWindow:loginWorkflowComplete';
 
+export const NOTIFICATIONS_STORE_FILENAME = 'activities';
+
+export const STORE_ENCRYPTION_KEY = 'hWmZq4t7w!z%C*F-JaNdRgUkXn2r5u8x';
+
 /**
  * Different type of login persistence.
  * 'local' = Saved even after app is terminated.

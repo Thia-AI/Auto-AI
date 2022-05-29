@@ -44,7 +44,7 @@ const StatusIndicatorC = React.memo((props: Props) => {
 					<HStack spacing='2'>
 						<Text fontSize='xs'>Engine Status: </Text>
 						<Badge
-							css={{ transition: 'all 300ms ease' }}
+							transition='all 300ms ease'
 							variant='outline'
 							colorScheme={props.engineStarted.value ? 'green' : 'red'}>
 							{props.engineStarted.value ? 'Online' : 'Offline'}

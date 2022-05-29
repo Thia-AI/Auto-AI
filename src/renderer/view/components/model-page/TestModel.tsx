@@ -6,7 +6,6 @@ import {
 	chakra,
 	Text,
 	Center,
-	useToast,
 	HStack,
 	VStack,
 	Button,
@@ -17,7 +16,7 @@ import { useDropzone, FileRejection, ErrorCode } from 'react-dropzone';
 import { Model, TestJob } from '../../helpers/constants/engineDBTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { RouterPrompt } from '../routing/RouterPrompt';
 
 interface Props {
@@ -40,8 +39,10 @@ export const TestModel = React.memo(({ model }: Props) => {
 	const [testJobID, setTestJobID] = useState<string | null>(null);
 	const [testRunning, setTestRunning] = useState(false);
 
-	const toast = useToast();
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
+	const inputColor = mode('thia.gray.700', 'thia.gray.500');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	const onDrop = useCallback((acceptedFiles: File[], rejected: FileRejection[]) => {
 		// Do something with the files
@@ -74,15 +75,17 @@ export const TestModel = React.memo(({ model }: Props) => {
 						status: 'info',
 						duration: 1500,
 						isClosable: false,
+						saveToStore: false,
 					});
 				} else {
 					// Job failed to cancel
 					toast({
-						title: 'Error',
-						description: 'Failed to cancel testing job.',
+						title: 'Test job cancellation failed',
+						description: 'Failed to cancel testing job',
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
+						saveToStore: false,
 					});
 				}
 			}
@@ -99,6 +102,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					saveToStore: false,
 				});
 			} else if (rejectedFiles[0].errors[0].code == ErrorCode.TooManyFiles) {
 				// Too many files selected
@@ -108,6 +112,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					saveToStore: false,
 				});
 			}
 			// Reset
@@ -151,7 +156,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			);
 			if (testModelError) {
 				toast({
-					title: 'Error',
+					title: 'Test model failed',
 					description: testModelResData['Error'],
 					status: 'error',
 					duration: 1500,
@@ -166,7 +171,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			const [jobError, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
 			if (jobError) {
 				toast({
-					title: 'Error',
+					title: 'Failed to get predictions',
 					description: jobResData['Error'],
 					status: 'error',
 					duration: 1500,
@@ -185,11 +190,12 @@ export const TestModel = React.memo(({ model }: Props) => {
 		} else {
 			// Need to have images to test
 			toast({
-				title: 'Error',
+				title: 'No images',
 				description: 'Need to have images to test',
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
+				saveToStore: false,
 			});
 		}
 	};
@@ -207,7 +213,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			}
 		}
 		return (
-			<Text color={error ? 'red.400' : 'gray.600'} opacity={error ? 0.8 : 1}>
+			<Text color={error ? 'red.400' : inputColor} opacity={error ? 0.8 : 1}>
 				{text}
 			</Text>
 		);
@@ -250,13 +256,15 @@ export const TestModel = React.memo(({ model }: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('white', 'gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<Box>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Predict
 					</Text>
-					<Text color='gray.500' fontSize='sm'>
+					<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
 						Test your model by predicting images on it.
 					</Text>
 				</Box>
@@ -266,16 +274,16 @@ export const TestModel = React.memo(({ model }: Props) => {
 						willChange='border-color'
 						py='8'
 						_hover={{
-							borderColor: 'green.500',
+							borderColor: 'thia.purple.400',
 						}}
 						cursor='pointer'
 						border='2px dashed'
 						borderRadius='md'
 						transition='all 250ms ease'
 						outline='none'
-						borderColor={isDragReject ? 'red.400' : 'gray.500'}
+						borderColor={isDragReject ? 'red.400' : inputColor}
 						overflow='hidden'
-						color='gray.600'
+						color={mode('thia.dark.700', 'thia.dark.500')}
 						{...getRootProps()}>
 						<chakra.input {...getInputProps()} disabled={testRunning} />
 						{renderDragText()}
@@ -284,7 +292,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 						<Button
 							w='full'
 							variant='ghost'
-							colorScheme='green'
+							colorScheme='thia.purple'
 							onClick={testModel}
 							isLoading={testRunning}
 							loadingText='Running Test'>
@@ -293,7 +301,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 						<Button
 							w='full'
 							variant='outline'
-							colorScheme='blue'
+							colorScheme='thia.gray'
 							onClick={() => {
 								setSelectedFiles([]);
 								setTestJobPredictions([]);

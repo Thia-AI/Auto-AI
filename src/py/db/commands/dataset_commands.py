@@ -1,5 +1,6 @@
 import uuid
 
+from config.constants import ModelStatus, NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -115,3 +116,11 @@ def delete_all_labels(dataset_id: str):
                     command="DELETE FROM labels WHERE dataset_id = ?",
                     values=(dataset_id,))
     DBManager.get_instance().execute(cmd)
+
+
+def get_num_datasets():
+    cmd = DBCommand(name="Get Number of Datasets", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM datasets''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]

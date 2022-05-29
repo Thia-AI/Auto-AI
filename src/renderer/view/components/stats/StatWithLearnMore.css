@@ -1,0 +1,10 @@
+.tooltip {
+	pointer-events: auto !important;
+	opacity: 0.925 !important;
+	transition: all 200ms;
+}
+
+.tooltip:hover {
+	visibility: visible !important;
+	opacity: 1 !important;
+}

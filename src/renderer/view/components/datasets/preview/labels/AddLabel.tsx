@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Input, InputGroup, InputRightElement, useToast } from '@chakra-ui/react';
+import { Button, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { IoAddOutline } from 'react-icons/io5';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -11,6 +11,7 @@ import { changeActiveDataset } from '_/renderer/state/active-dataset-page/Active
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import randomColor from 'randomcolor';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
+import { toast } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -36,8 +37,6 @@ const AddLabelC = React.memo(
 		setIsInputFocused,
 		isInputFocused,
 	}: Props) => {
-		const toast = useToast();
-
 		const [labelUploading, setLabelUploading] = useState(false);
 
 		const addLabelInputFocusChange = (focusedIn: boolean) => {
@@ -49,11 +48,12 @@ const AddLabelC = React.memo(
 
 			if (!isInputValid) {
 				toast({
-					title: 'Error',
+					title: 'Failed to add label',
 					description: inputError,
 					status: 'error',
 					duration: 1250,
 					isClosable: true,
+					saveToStore: false,
 				});
 				return;
 			}
@@ -68,7 +68,7 @@ const AddLabelC = React.memo(
 
 			if (addLabelErr) {
 				toast({
-					title: 'Failed to add Label',
+					title: `Failed to add label '${labelValue}'`,
 					description: addLabelRes['Error'],
 					status: 'error',
 					duration: 1500,
@@ -80,7 +80,7 @@ const AddLabelC = React.memo(
 			}
 			changeActiveDataset(addLabelRes['dataset'], addLabelRes['labels']);
 			toast({
-				title: 'Success',
+				title: `Added label '${labelValue}'`,
 				description: `Added Label '${labelValue}' to Dataset '${activeDataset.value.dataset.name}'`,
 				status: 'success',
 				duration: 1500,
@@ -134,7 +134,11 @@ interface ButtonProps {
 }
 const AddLabelInputButton = React.memo(({ isLoading }: ButtonProps) => {
 	return (
-		<Button borderTopLeftRadius='none' borderBottomLeftRadius='none' colorScheme='green' isLoading={isLoading}>
+		<Button
+			borderTopLeftRadius='none'
+			borderBottomLeftRadius='none'
+			colorScheme='thia.purple'
+			isLoading={isLoading}>
 			<IoAddOutline transform='scale(2)' />
 		</Button>
 	);

@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { Button, Center, Heading, useToast } from '@chakra-ui/react';
+import { Button, Center, Heading } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
 import { IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, IPC_SHOW_LOGIN_WINDOW } from '_/shared/ipcChannels';
 import { persistenceMap, PERSISTENCE_TYPE } from '_/shared/appConstants';
+import { toast } from '../helpers/functionHelpers';
 
 /**
  * Login page.
@@ -13,7 +14,6 @@ import { persistenceMap, PERSISTENCE_TYPE } from '_/shared/appConstants';
  */
 const LandingPage = () => {
 	const auth = useAuth();
-	const toast = useToast();
 
 	const showLoginWindow = async () => {
 		await ipcRenderer.invoke(IPC_SHOW_LOGIN_WINDOW);
@@ -35,6 +35,7 @@ const LandingPage = () => {
 									status: 'success',
 									duration: 1500,
 									isClosable: false,
+									saveToStore: false,
 								});
 							})
 							.catch((error) => {

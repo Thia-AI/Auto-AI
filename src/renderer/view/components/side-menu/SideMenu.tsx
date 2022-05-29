@@ -11,8 +11,6 @@ import { IAppState } from '_state/reducers';
 import { openCloseSideMenu } from '_state/side-menu/SideModelAction';
 import { IMenuOpenReducer, ISelectedPageReducer } from '_state/side-menu/model/reducerTypes';
 import { IMenuOpenCloseAction } from '_state/side-menu/model/actionTypes';
-import { changeSelectedPage } from '_state/side-menu/SideModelAction';
-import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 
 import { SideMenuProfile } from './profile/SideMenuProfile';
 import { NavItem } from './NavItem';
@@ -30,15 +28,16 @@ import {
 	SETTINGS_PAGE,
 	HELP_PAGE,
 } from '_/renderer/view/helpers/constants/pageConstants';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	sideMenuOpen: IMenuOpenReducer;
 	openCloseSideMenu: () => IMenuOpenCloseAction;
 	push: Push;
-	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 	selectedPage: ISelectedPageReducer;
 }
 const SideMenuC = React.memo((props: Props) => {
+	const scrollBarSX = useVerticalScrollbar('6px');
 	return (
 		<Drawer
 			isOpen={props.sideMenuOpen.value}
@@ -49,29 +48,14 @@ const SideMenuC = React.memo((props: Props) => {
 			size='xs'>
 			<DrawerOverlay />
 			<DrawerContent zIndex='2'>
-				<DrawerBody bg='gray.900'>
+				<DrawerBody>
 					<Flex h='full' w='full' direction='column' pt='6'>
 						<SideMenuProfile />
-						<Stack
-							spacing='8'
-							flex='1'
-							overflow='auto'
-							mt='4'
-							pt='4'
-							pr='6'
-							sx={{
-								'&::-webkit-scrollbar': {
-									w: '8px',
-									bg: 'gray.600',
-								},
-								'&::-webkit-scrollbar-thumb': {
-									bg: 'gray.900',
-								},
-							}}>
+						<Stack spacing='8' flex='1' overflow='auto' mt='4' pt='4' pr='6' sx={scrollBarSX}>
 							<Stack spacing='1'>
 								<NavItem
+									used
 									onClick={() => {
-										props.changeSelectedPage(HOME_PAGE);
 										props.push('/');
 										props.openCloseSideMenu();
 									}}
@@ -82,8 +66,8 @@ const SideMenuC = React.memo((props: Props) => {
 							</Stack>
 							<NavGroup label='Your Thia'>
 								<NavItem
+									used
 									onClick={() => {
-										props.changeSelectedPage(MODELS_PAGE);
 										props.push('/models');
 										props.openCloseSideMenu();
 									}}
@@ -93,7 +77,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(JOBS_PAGE);
 										props.push('/jobs');
 										props.openCloseSideMenu();
 									}}
@@ -103,7 +86,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(EXPORTS_PAGE);
 										props.push('/exports');
 										props.openCloseSideMenu();
 									}}
@@ -113,7 +95,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(DEPLOYMENTS_PAGE);
 										props.push('/deployments');
 										props.openCloseSideMenu();
 									}}
@@ -123,7 +104,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(NOTIFICATIONS_PAGE);
 										props.push('/notifications');
 										props.openCloseSideMenu();
 									}}
@@ -133,7 +113,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(LOGS_PAGE);
 										props.push('/logs');
 										props.openCloseSideMenu();
 									}}
@@ -146,7 +125,6 @@ const SideMenuC = React.memo((props: Props) => {
 							<NavGroup label='Your Account'>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(QUOTA_PAGE);
 										props.push('/quota');
 										props.openCloseSideMenu();
 									}}
@@ -156,7 +134,6 @@ const SideMenuC = React.memo((props: Props) => {
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(SUBSCRIPTION_PAGE);
 										props.push('/subscription');
 										props.openCloseSideMenu();
 									}}
@@ -169,23 +146,20 @@ const SideMenuC = React.memo((props: Props) => {
 						<Box>
 							<Stack spacing='1'>
 								<NavItem
+									used
 									onClick={() => {
-										props.changeSelectedPage(SETTINGS_PAGE);
 										props.push('/settings');
 										props.openCloseSideMenu();
 									}}
-									subtle
 									active={props.selectedPage.value == SETTINGS_PAGE}
 									icon={<BiCog />}
 									label='Settings'
 								/>
 								<NavItem
 									onClick={() => {
-										props.changeSelectedPage(HELP_PAGE);
 										props.push('/help');
 										props.openCloseSideMenu();
 									}}
-									subtle
 									active={props.selectedPage.value == HELP_PAGE}
 									icon={<MdHelpOutline />}
 									label='Help & Support'
@@ -213,5 +187,4 @@ const mapStateToProps = (state: IAppState) => ({
 export const SideMenu = connect(mapStateToProps, {
 	openCloseSideMenu,
 	push,
-	changeSelectedPage,
 })(SideMenuC);

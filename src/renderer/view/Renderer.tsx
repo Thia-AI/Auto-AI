@@ -9,13 +9,17 @@ import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import { FirebaseAppProvider } from 'reactfire';
 
 import '_public/style.css';
+// Fonts
+import '@fontsource/poppins';
+import '@fontsource/open-sans';
+import '@fontsource/jetbrains-mono';
 
 import { App } from './App';
 import { configureStore } from '../state/store';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { firebaseConfig } from '../firebase/firebase';
-import { theme } from '_/shared/chakraTheme';
+import { theme } from '_/shared/theming/chakraTheme';
 import { BackendRequestHandler } from '../backend-requests/backendRequestHandler';
 import BackendRequestConfig from '_/shared/backendRequestConfig';
 

@@ -1,6 +1,6 @@
 import json
 
-from config.constants import ModelStatus
+from config.constants import ModelStatus, NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -13,6 +13,13 @@ def create_model(uuid: str, model_name: str, model_type: str, model_type_extra: 
                     values=(
                         uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, ModelStatus.IDLE.value
                     ))
+    DBManager.get_instance().execute(cmd)
+
+
+def delete_model(model_id: str):
+    cmd = DBCommand(name=f"Delete Model {model_id}",
+                    command='''DELETE FROM models WHERE id = ?''',
+                    values=(model_id,))
     DBManager.get_instance().execute(cmd)
 
 
@@ -52,3 +59,11 @@ def get_models():
 def get_model(uuid: str):
     cmd = DBCommand(name=f"Get Model With ID: {uuid}", command=f"SELECT * FROM models WHERE id = '{uuid}'")
     return DBManager.get_instance().execute(cmd)
+
+
+def get_num_models():
+    cmd = DBCommand(name="Get Number of Models", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM models''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]

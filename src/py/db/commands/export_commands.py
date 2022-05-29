@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from config.constants import ModelExportStatus
+from config.constants import ModelExportStatus, NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -33,3 +33,11 @@ def get_active_model_exports(model_id: str):
                       AND e.export_status = ?''',
                     values=(model_id, ModelExportStatus.EXPORTING.value))
     return DBManager.get_instance().execute(cmd)
+
+
+def get_num_exports():
+    cmd = DBCommand(name="Get Number of Exports", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM exports''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]

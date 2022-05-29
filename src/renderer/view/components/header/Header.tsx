@@ -167,7 +167,6 @@ const HeaderC = React.memo(
 				left='0'
 				top='0'
 				w='full'
-				bg='gray.800'
 				className={maximizedClass.value}>
 				<Box
 					w='full'
@@ -184,8 +183,7 @@ const HeaderC = React.memo(
 						top='0'
 						right='0'
 						h='full'
-						css={{ '-webkit-app-region': 'no-drag' }}
-						bg='gray.900'>
+						css={{ '-webkit-app-region': 'no-drag' }}>
 						<Box className='title-button' gridColumn='1' onClick={minimizeWindow}>
 							<svg width='11' height='1' viewBox='0 0 11 1'>
 								<path d='m11 0v1h-11v-1z' strokeWidth='.26208' />

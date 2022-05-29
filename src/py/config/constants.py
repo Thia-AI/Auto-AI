@@ -36,6 +36,9 @@ IMAGE_CLASSIFICATION_TRAINING_JOB_NAME = 'Image Classification Training'
 
 GPU_JOBS = [IMAGE_CLASSIFICATION_TEST_JOB_NAME, IMAGE_CLASSIFICATION_TRAINING_JOB_NAME]
 
+# Database Constants
+NUM_INSTANCES = 'NUM_INSTANCES'
+
 
 # Model Statuses
 class AutoNameEnum(Enum):
@@ -47,6 +50,17 @@ class ModelExportType(AutoNameEnum):
     """Enum that contains different model export types"""
     SAVED_MODEL = auto()
     LITE = auto()
+
+
+POSSIBLE_MODEL_EXPORT_TYPES = [export_type.value for export_type in ModelExportType]
+
+
+class ModelLabellingType(AutoNameEnum):
+    """Enum that contains different model labelling types"""
+    SINGLE_LABEL = auto()
+
+
+POSSIBLE_MODEL_LABELLING_TYPES = [export_type.value for export_type in ModelLabellingType]
 
 
 class ModelExportStatus(AutoNameEnum):

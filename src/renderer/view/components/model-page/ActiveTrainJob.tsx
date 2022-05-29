@@ -15,6 +15,7 @@ import {
 	shouldForwardProp,
 	Wrap,
 	Flex,
+	useColorMode,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -26,7 +27,7 @@ import { ApexOptions } from 'apexcharts';
 import { nullTrainJob, TrainJob, TrainJobStatus } from '../../helpers/constants/engineDBTypes';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
 import { argmin } from '../../helpers/functionHelpers';
-import { SimpleStat } from '../stats/SimpleStat';
+import { StatWithLearnMore } from '../stats/StatWithLearnMore';
 
 interface Props {
 	trainJobID: string;
@@ -64,10 +65,14 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 	const [accuracySeries, setAccuracySeries] = useState<ApexChartSeriesItem[]>([]);
 	const [lossSeries, setLossSeries] = useState<ApexChartSeriesItem[]>([]);
 
-	const sectionBG = mode('white', 'gray.700');
-	// purple.600
-	const trainingGraphBestPointBGColor = mode('white', '#6B46C1');
-	const trainingGraphBestPointMarkerStrokeColor = mode('white', '#805AD5');
+	const { colorMode } = useColorMode();
+	const sectionTextColor = mode('thia.gray.700', 'thia.gray.300');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const evaluationCardBG = mode('thia.gray.50', 'thia.gray.800');
+	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
+	const trainingJobProgressTextColor = mode('thia.gray.700', 'thia.gray.300');
+	const graphBestPointBG = mode('var(--chakra-colors-thia-purple-450)', 'var(--chakra-colors-thia-purple-400)');
+	const graphBestPointColor = mode('var(--chakra-colors-thia-gray-100)', 'var(--chakra-colors-thia-gray-100)');
 
 	const roundPercentage = (element: number) => {
 		return Number((element * 100).toFixed(2));
@@ -79,7 +84,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 
 	const baseApexChartOptions: ApexOptions = {
 		theme: {
-			mode: 'dark',
+			mode: colorMode,
 		},
 		chart: {
 			redrawOnWindowResize: true,
@@ -166,8 +171,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					marker: {
 						size: 4,
 						strokeWidth: 1,
-						strokeColor: trainingGraphBestPointMarkerStrokeColor,
-						fillColor: trainingGraphBestPointBGColor,
+						fillColor: graphBestPointBG,
 					},
 					label: {
 						borderColor: '#FF4560',
@@ -176,7 +180,8 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						text: 'BEST',
 						offsetY: 5,
 						style: {
-							background: trainingGraphBestPointBGColor,
+							background: graphBestPointBG,
+							color: graphBestPointColor,
 							padding: {
 								left: 4,
 								right: 4,
@@ -195,8 +200,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					marker: {
 						size: 4,
 						strokeWidth: 1,
-						strokeColor: trainingGraphBestPointMarkerStrokeColor,
-						fillColor: trainingGraphBestPointBGColor,
+						fillColor: graphBestPointBG,
 					},
 					label: {
 						borderColor: '#FF4560',
@@ -205,7 +209,8 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						text: 'BEST',
 						offsetY: 5,
 						style: {
-							background: trainingGraphBestPointBGColor,
+							background: graphBestPointBG,
+							color: graphBestPointColor,
 							padding: {
 								left: 4,
 								right: 4,
@@ -222,7 +227,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 			switch (trainingJob.extra_data.status) {
 				case TrainJobStatus.TRAINED:
 				case TrainJobStatus.EVALUATED:
-					return 'purple';
+					return 'thia.purple';
 				case TrainJobStatus.TRAINING:
 				case TrainJobStatus.STARTING_TRAINING:
 					return 'green';
@@ -231,7 +236,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 				case TrainJobStatus.ERROR:
 					return 'red';
 				default:
-					return 'gray';
+					return 'thia.gray';
 			}
 		}
 		return 'gray';
@@ -311,7 +316,7 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 			switch (trainingJob.extra_data.status) {
 				case TrainJobStatus.TRAINED:
 				case TrainJobStatus.EVALUATED:
-					return <Progress value={100} size='xs' colorScheme='purple' />;
+					return <Progress value={100} size='xs' colorScheme='thia.purple' />;
 				case TrainJobStatus.TRAINING:
 				case TrainJobStatus.STARTING_TRAINING:
 					return <Progress size='xs' colorScheme='green' isIndeterminate />;
@@ -355,12 +360,14 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					px='8'
 					rounded='lg'
 					bg={sectionBG}
-					shadow='base'>
+					borderWidth='1px'
+					borderColor={borderColor}
+					shadow='lg'>
 					<Box>
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Evaluation
 						</Text>
-						<Text color='gray.500' fontSize='sm'>
+						<Text color={sectionTextColor} fontSize='sm'>
 							The results of evaluating your model.
 						</Text>
 					</Box>
@@ -370,25 +377,38 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 						shouldWrapChildren
 						justify='space-evenly'
 						direction={{ base: 'column', md: 'row' }}>
-						<SimpleStat label='AUC ROC' value={roundNumber(trainingJob.extra_data.evaluation_result.auc)} />
-						<SimpleStat
+						<StatWithLearnMore
+							label='AU PRC'
+							statTitle='Area Under Precision Recall Curve'
+							statDescription='Usually between 0.5-1.0, higher values inidicate a more accurate model.'
+							value={roundNumber(trainingJob.extra_data.evaluation_result.prc)}
+						/>
+						<StatWithLearnMore
 							label='Accuracy'
+							statTitle='Accuracy'
+							statDescription='Percentage of predictions that were correct.'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.accuracy)}
 						/>
 
-						<SimpleStat
+						<StatWithLearnMore
 							label='Precision'
+							statTitle='Precision'
+							statDescription='Percentage of positive predictions that were correct.'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.precision)}
 						/>
-						<SimpleStat
+						<StatWithLearnMore
 							label='Recall'
+							statTitle='Recall'
+							statDescription='Percentage of total relevant predictions. Also known as "true positive rate".'
 							percentage
 							value={roundPercentage(trainingJob.extra_data.evaluation_result.recall)}
 						/>
-						<SimpleStat
+						<StatWithLearnMore
 							label='Log Loss'
+							statTitle='Log Loss'
+							statDescription='Cross-entropy between predictions and true value. Log loss is between 0-infinity, lower values indicates a more accurate model.'
 							value={roundNumber(trainingJob.extra_data.evaluation_result.loss)}
 						/>
 					</Wrap>
@@ -408,13 +428,15 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 					px='8'
 					rounded='lg'
 					bg={sectionBG}
-					shadow='base'>
+					borderWidth='1px'
+					borderColor={borderColor}
+					shadow='lg'>
 					<HStack mb='8' w='full'>
 						<Box>
 							<Text as='h3' fontWeight='bold' fontSize='lg'>
 								Training Job
 							</Text>
-							<Text color='gray.500' fontSize='sm'>
+							<Text color={sectionTextColor} fontSize='sm'>
 								The latest training job.
 							</Text>
 						</Box>
@@ -425,7 +447,15 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 							hoverLabel='Copy Training Job ID'
 						/>
 					</HStack>
-					<Box bg='gray.750' px='2' py='3' borderRadius='sm' w='full'>
+					<Box
+						bg={evaluationCardBG}
+						px='2'
+						py='3'
+						borderRadius='sm'
+						shadow='md'
+						borderWidth='1px'
+						borderColor={borderColor}
+						w='full'>
 						<VStack spacing='1' w='full'>
 							<HStack w='full' alignItems='baseline'>
 								<Skeleton isLoaded={isInitialDataLoaded} maxW='60%' w='80px'>
@@ -436,7 +466,11 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 
 								<Spacer />
 								<Skeleton isLoaded={isInitialDataLoaded}>
-									<Text fontSize='0.9rem' pr='1.5' fontFamily='mono' color='gray.500'>
+									<Text
+										fontSize='0.9rem'
+										pr='1.5'
+										fontFamily='mono'
+										color={trainingJobProgressTextColor}>
 										{getEpochsText()}
 									</Text>
 								</Skeleton>
@@ -448,7 +482,12 @@ const ActiveTrainJobC = React.memo(({ trainJobID, fetchModel }: Props) => {
 								maxW='full'
 								w='full'
 								noOfLines={1}>
-								<Text fontFamily='mono' fontSize='0.8rem' pl='1.5' color='gray.600' isTruncated>
+								<Text
+									fontFamily='mono'
+									fontSize='0.8rem'
+									pl='1.5'
+									color={trainingJobProgressTextColor}
+									isTruncated>
 									{trainingJob.extra_data?.status_description}
 								</Text>
 							</SkeletonText>

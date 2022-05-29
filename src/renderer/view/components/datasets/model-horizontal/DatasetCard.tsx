@@ -1,6 +1,17 @@
 import React, { useEffect } from 'react';
 
-import { Box, Center, Spinner, Text, HStack, Spacer, VStack, Icon, chakra } from '@chakra-ui/react';
+import {
+	Box,
+	Center,
+	Spinner,
+	Text,
+	HStack,
+	Spacer,
+	VStack,
+	Icon,
+	chakra,
+	useColorModeValue as mode,
+} from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { FiEdit } from 'react-icons/fi';
@@ -25,9 +36,8 @@ import {
 	IResetSelectedDatasetAction,
 } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 
-import './DatasetCard.css';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 
 interface Props {
 	dataset: Dataset;
@@ -40,6 +50,8 @@ interface Props {
 
 const DatasetCardC = React.memo((props: Props) => {
 	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
+	const cardBG = mode('thia.gray.100', 'thia.gray.800');
+	const lastUpdatedColor = mode('thia.gray.300', 'thia.gray.600');
 
 	useEffect(() => {
 		return () => {
@@ -61,7 +73,7 @@ const DatasetCardC = React.memo((props: Props) => {
 					if (props.selectedDatasetID.value === props.dataset.id) props.resetSelectedDatasetAction();
 					else props.changeSelectedDatasetAction(props.dataset.id);
 				}}
-				borderTopRadius='lg'
+				borderTopRadius='md'
 				objectFit='cover'
 				h='200px'
 				w='full'
@@ -74,7 +86,7 @@ const DatasetCardC = React.memo((props: Props) => {
 			<Box
 				willChange='box-shadow'
 				transition='box-shadow 200ms ease'
-				bg='gray.750'
+				bg={cardBG}
 				borderRadius='md'
 				w='275px'
 				boxShadow={
@@ -95,7 +107,7 @@ const DatasetCardC = React.memo((props: Props) => {
 						</Box>
 					</HStack>
 					<HStack w='full'>
-						<Text fontSize='xs' color='gray.600' as='p' maxW='65%'>
+						<Text fontSize='xs' color={lastUpdatedColor} as='p' maxW='65%'>
 							Updated {new Date(props.dataset.date_last_accessed).toDateString()}
 						</Text>
 						<Spacer />
@@ -107,13 +119,12 @@ const DatasetCardC = React.memo((props: Props) => {
 							transition='all 200ms'
 							as={FiEdit}
 							outline='none'
-							color='gray.300'
+							color={mode('thia.gray.700', 'thia.gray.300')}
 							onClick={(e) => {
 								e.stopPropagation();
-
 								props.push(`/dataset/${props.dataset.id}`);
 							}}
-							_hover={{ color: 'teal.500', transform: 'scale(1.1)' }}
+							_hover={{ color: mode('thia.purple.400', 'thia.purple.300'), transform: 'scale(1.1)' }}
 						/>
 						<ReactTooltip
 							id='editTooltip'
@@ -188,7 +199,7 @@ export const FillerDatasetCard = () => {
 			bgImage={Preview}
 			bgSize='cover'
 			bgPos='center'
-			boxShadow='md'
+			shadow='md'
 			w='full'
 			h='275px'>
 			<Text

@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
-	Modal,
-	ModalBody,
-	ModalContent,
-	ModalHeader,
-	ModalOverlay,
 	Text,
 	VStack,
 	Box,
 	Divider,
 	useToast,
+	useColorMode,
+	AlertDialog,
+	AlertDialogOverlay,
+	AlertDialogContent,
+	AlertDialogHeader,
+	AlertDialogBody,
+	Heading,
+	AlertDialogCloseButton,
 } from '@chakra-ui/react';
 
 import { ipcRenderer } from 'electron';
@@ -18,6 +21,7 @@ import { DevDeleteDatasetInputs } from './DevDeleteDatasetInputs';
 import {
 	IPC_DEV_COPY_ID_TOKEN,
 	IPC_DEV_COPY_UID,
+	IPC_DEV_TOGGLE_COLOR_MODE,
 	IPC_DEV_TOGGLE_DEV_DASHBOARD,
 	IPC_RUNTIME_IS_DEV,
 } from '_/shared/ipcChannels';
@@ -30,7 +34,8 @@ export const DevDashboard = React.memo(() => {
 	const [isDashboardOpen, setIsDashboardOpen] = useState(false);
 	const auth = useAuth();
 	const toast = useToast();
-
+	const closeDashboardButtonRef = useRef(null);
+	const { toggleColorMode, colorMode } = useColorMode();
 	const [isDev, setIsDev] = useState(false);
 
 	useEffect(() => {
@@ -92,41 +97,49 @@ export const DevDashboard = React.memo(() => {
 			}
 		});
 
+		ipcRenderer.on(IPC_DEV_TOGGLE_COLOR_MODE, () => {
+			toggleColorMode();
+		});
+
 		return () => {
 			ipcRenderer.removeAllListeners(IPC_DEV_TOGGLE_DEV_DASHBOARD);
 			ipcRenderer.removeAllListeners(IPC_DEV_COPY_ID_TOKEN);
 			ipcRenderer.removeAllListeners(IPC_DEV_COPY_UID);
+			ipcRenderer.removeAllListeners(IPC_DEV_TOGGLE_COLOR_MODE);
 		};
-	}, [isDashboardOpen]);
+	}, [isDashboardOpen, colorMode]);
 	const render = () => {
 		return (
-			<Modal
+			<AlertDialog
 				isOpen={isDashboardOpen}
 				onClose={() => setIsDashboardOpen(false)}
 				isCentered
 				blockScrollOnMount
+				leastDestructiveRef={closeDashboardButtonRef}
 				motionPreset='slideInBottom'
 				scrollBehavior='inside'>
-				<ModalOverlay />
-				<ModalContent minW='80%'>
-					<ModalHeader>Dev Tools</ModalHeader>
-					<ModalBody pb='4' w='full'>
+				<AlertDialogOverlay />
+				<AlertDialogContent minW='80%'>
+					<AlertDialogHeader>
+						<Heading fontSize='2xl'>Dev Tools</Heading>
+						<AlertDialogCloseButton ref={closeDashboardButtonRef} />
+					</AlertDialogHeader>
+					<AlertDialogBody pb='4' w='full'>
 						<VStack w='full' alignItems='flex-start'>
 							<Box w='full'>
-								<Text as='h3' fontWeight='bold' fontSize='lg'>
+								<Heading as='h4' fontSize='lg'>
 									Delete Dataset Inputs
-								</Text>
-								<Text fontSize='sm' mt='1' color='gray.200'>
+								</Heading>
+								<Text fontSize='sm' mt='1'>
 									Given dataset ID, deletes the inputs of a dataset (not the dataset itself)
 								</Text>
 								<Divider mt='2' />
 							</Box>
-
 							<DevDeleteDatasetInputs />
 						</VStack>
-					</ModalBody>
-				</ModalContent>
-			</Modal>
+					</AlertDialogBody>
+				</AlertDialogContent>
+			</AlertDialog>
 		);
 	};
 
