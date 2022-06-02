@@ -274,6 +274,7 @@ export interface TrainJob extends Job {
 		model_name?: string;
 		status?: PossibleTrainJobStatuses;
 		status_description?: string;
+		error?: string;
 	} | null;
 }
 
