@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 
 from config import config
 from config import constants
-from config.constants import ModelStatus, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES
+from config.constants import ModelStatus, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES, POSSIBLE_MODEL_TYPES
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -159,7 +159,9 @@ def create_model_route():
     if error_obj is not None:
         return {'Error': error_obj}, 400
     if req_data['labelling_type'] not in POSSIBLE_MODEL_LABELLING_TYPES:
-        return {'Error': f"Labelling type: '{req_data['labelling_type']}' an is invalid labelling type"}, 400
+        return {'Error': f"Labelling type: '{req_data['labelling_type']}' is an invalid labelling type"}, 400
+    if req_data['model_type_extra'] not in POSSIBLE_MODEL_TYPES:
+        return {'Error': f"Model Type: '{req_data['model_type_extra']}' is an invalid image classification model type"}, 400
     # Check to see if model already exists
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400

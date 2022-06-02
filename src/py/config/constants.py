@@ -39,11 +39,38 @@ GPU_JOBS = [IMAGE_CLASSIFICATION_TEST_JOB_NAME, IMAGE_CLASSIFICATION_TRAINING_JO
 # Database Constants
 NUM_INSTANCES = 'NUM_INSTANCES'
 
+# Map for our image classification model names to a EfficientNetV2 model
+IC_MODEL_TYPE_TO_EFFICIENTNET_MAP = {
+    'extra_small': 'efficientnetv2-b0',
+    'small': 'efficientnetv2-b3',
+    'medium': 'efficientnetv2-s',
+    'large': 'efficientnetv2-m',
+    'extra-large': 'efficientnetv2-l'
+}
+
 
 # Model Statuses
+
 class AutoNameEnum(Enum):
     def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
         return name
+
+
+class AutoNameLowercaseHyphenatedSpace(Enum):
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
+        return name.lower().replace('_', '-')
+
+
+class ModelType(AutoNameLowercaseHyphenatedSpace):
+    """Enum that contains different image classification model types"""
+    EXTRA_SMALL = auto()
+    SMALL = auto()
+    MEDIUM = auto()
+    LARGE = auto()
+    EXTRA_LARGE = auto()
+
+
+POSSIBLE_MODEL_TYPES = set([model_type.value for model_type in ModelType])
 
 
 class ModelExportType(AutoNameEnum):
@@ -52,7 +79,7 @@ class ModelExportType(AutoNameEnum):
     LITE = auto()
 
 
-POSSIBLE_MODEL_EXPORT_TYPES = [export_type.value for export_type in ModelExportType]
+POSSIBLE_MODEL_EXPORT_TYPES = set([export_type.value for export_type in ModelExportType])
 
 
 class ModelLabellingType(AutoNameEnum):
@@ -60,7 +87,7 @@ class ModelLabellingType(AutoNameEnum):
     SINGLE_LABEL = auto()
 
 
-POSSIBLE_MODEL_LABELLING_TYPES = [export_type.value for export_type in ModelLabellingType]
+POSSIBLE_MODEL_LABELLING_TYPES = set([export_type.value for export_type in ModelLabellingType])
 
 
 class ModelExportStatus(AutoNameEnum):

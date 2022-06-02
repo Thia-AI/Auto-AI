@@ -82,6 +82,7 @@ class TrainImageClassifierJob(BaseJob):
             'model_cache_path': c.MODEL_CACHE,
             'model_dir': c.MODEL_DIR,
             'model_name': model['model_name'],
+            'model_type': model['model_type_extra'],
             'current_extra_data': self.extra_data()
         }
 
@@ -138,12 +139,13 @@ def update_local_extra_data(data_to_update: dict, extra_data: dict, file: tf.io.
 
 
 def train_in_separate_process(queue: Queue):
-    job_id, num_classes, inputs, model_cache_path, model_dir, model_name, current_extra_data = itemgetter('job_id',
-                                                                                                          'num_classes', 'inputs',
-                                                                                                          'model_cache_path',
-                                                                                                          'model_dir',
-                                                                                                          'model_name',
-                                                                                                          'current_extra_data')(
+    job_id, num_classes, inputs, model_cache_path, model_dir, model_name, model_type, current_extra_data = itemgetter('job_id',
+                                                                                                                      'num_classes', 'inputs',
+                                                                                                                      'model_cache_path',
+                                                                                                                      'model_dir',
+                                                                                                                      'model_name',
+                                                                                                                      'model_type',
+                                                                                                                      'current_extra_data')(
         queue.get())
 
     job_updater_json_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
@@ -155,7 +157,7 @@ def train_in_separate_process(queue: Queue):
     interpolation = tf.image.ResizeMethod.BILINEAR
     IMAGE_SIZE = (224, 224)
     BATCH_SIZE = 32
-    effnet_model_name = 'efficientnetv2-b0'
+    effnet_model_name = constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP[model_type]
     TRAIN_SPLIT = 0.8
     current_extra_data = dict(current_extra_data)
     extra_data_file = tf.io.gfile.GFile(job_updater_json_filepath.absolute(), 'w')

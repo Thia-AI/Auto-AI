@@ -50,13 +50,16 @@ const ICModelContentC = React.memo((props: Props) => {
 
 	// Radio Card - Model Type
 
-	const modelTypeRadioOptions = ['Fast', 'Balanced', 'Precise'];
+	const modelTypeRadioOptions = ['Extra Small', 'Small', 'Medium', 'Large', 'Extra Large'];
 	const modelTypeRadioDescriptions = [
-		'A model that is more focused on being smaller and faster at the cost of being less accurate.',
-		'A model that is both relatively fast and fairly accurate.',
-		"A model that is more focused on it's accuracy at the cost of being slower and larger",
+		'Extremely lightweight model, extremely fast more innacurate. Best suited for mobile and edge devices.',
+		'Lightweight model, fast but slightly innacurate. Best suited for low-latency real-time requirements.',
+		'Balanced model both relatively fast and accurate. Best suited for all requirements.',
+		'Large model, accurate but slow. Best suited for high-accuracy requirements.',
+		'Extremely large model, extremely accurate but very slow. Best suited for accuracy-critical requirements.',
 	];
-	const [modelTypeValue, setModelTypeValue] = useState(modelTypeRadioOptions[1]);
+
+	const [modelTypeValue, setModelTypeValue] = useState(modelTypeRadioOptions[2]);
 
 	const { getRootProps: getModelTypeRootProps, getRadioProps: getModelTypeRadioProps } = useRadioGroup({
 		name: 'modelType',
@@ -154,7 +157,7 @@ const ICModelContentC = React.memo((props: Props) => {
 		const [createModelErr, createModelRes] = await EngineRequestHandler.getInstance().createModel({
 			model_name: modelNameValue,
 			model_type: 'image_classification',
-			model_type_extra: modelTypeValue.toLowerCase(),
+			model_type_extra: modelTypeValue.toLowerCase().replace(/\s+/g, '-'),
 			labelling_type: getLabellingTypeForEngine(labellingType),
 		});
 		// If error occurred when sending the Engine Action
