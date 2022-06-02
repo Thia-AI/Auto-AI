@@ -2,7 +2,7 @@ const lodash = require('lodash');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-
+const webpack = require('webpack');
 const path = require('path');
 
 function srcPaths(...srcs) {
@@ -91,7 +91,7 @@ const commonConfig = {
 	experiments: {
 		topLevelAwait: true,
 	},
-	plugins: [new ForkTsCheckerWebpackPlugin()],
+	plugins: [new ForkTsCheckerWebpackPlugin(), new webpack.WatchIgnorePlugin({ paths: [srcPaths('src', 'py')] })],
 };
 // #endregion
 

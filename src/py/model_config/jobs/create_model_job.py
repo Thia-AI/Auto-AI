@@ -27,12 +27,5 @@ class ModelCreationJob(BaseJob):
         super().set_status('Initializing Model Settings')
         super().set_progress(1)
         update_job(self)
-        # Create settings.json with model_config
-        with open(config.MODEL_DIR / model_config["model_name"] / 'model_settings.json', 'w', encoding='utf-8') as f:
-            json.dump(model_config, f, ensure_ascii=False, indent=4, sort_keys=True)
-        # Windows only
-        # Mark file as hidden and read-only to 'help' prevent accidental overwrites
-        args = ['attrib', '+r', '+h', (config.MODEL_DIR / model_config['model_name'] / 'model_settings.json').absolute()]
-        subprocess.check_call(args)
         super().set_progress(2)
         super().clean_up_job()

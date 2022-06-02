@@ -23,7 +23,7 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 
 	return (
-		<Box as='label' position='relative' w='250px' rounded='sm'>
+		<Box as='label' position='relative' w='275px' rounded='sm'>
 			<input
 				{...input}
 				onClick={(e) => {
