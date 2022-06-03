@@ -46,12 +46,6 @@ export const RecentActivities = React.memo(() => {
 		fetchActivities();
 	}, []);
 
-	useEffect(() => {
-		if (activitiesLoaded) {
-			console.log(activities);
-		}
-	}, [activities, activitiesLoaded]);
-
 	const clearAllActivities = async () => {
 		await deleteAllActivities();
 		await fetchActivities();
