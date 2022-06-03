@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 
 from config import config
 from config import constants
-from config.constants import ModelStatus, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES, POSSIBLE_MODEL_TYPES
+from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, POSSIBLE_MODEL_TYPES
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -158,10 +158,12 @@ def create_model_route():
     error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
-    if req_data['labelling_type'] not in POSSIBLE_MODEL_LABELLING_TYPES:
+    if req_data['model_type'] not in POSSIBLE_MODEL_TYPES:
+        return {'Error': f"Model Type: '{req_data['model_type']}' is an invalid model type"}, 400
+    if req_data['labelling_type'] not in POSSIBLE_IC_MODEL_LABELLING_TYPES:
         return {'Error': f"Labelling type: '{req_data['labelling_type']}' is an invalid labelling type"}, 400
-    if req_data['model_type_extra'] not in POSSIBLE_MODEL_TYPES:
-        return {'Error': f"Model Type: '{req_data['model_type_extra']}' is an invalid image classification model type"}, 400
+    if req_data['model_type_extra'] not in POSSIBLE_IC_MODEL_TYPES:
+        return {'Error': f"Model Type Extra: '{req_data['model_type_extra']}' is an invalid image classification model type"}, 400
     # Check to see if model already exists
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400
@@ -211,7 +213,7 @@ def export_model_route(model_id: str):
     # Make sure folder is empty
     if save_dir.exists() and save_dir.is_dir():
         return {'Error': f"'save_dir' cannot contain folder with same name as model name: '{model['model_name']}'"}, 400
-    if req_data['export_type'] not in POSSIBLE_MODEL_EXPORT_TYPES:
+    if req_data['export_type'] not in POSSIBLE_IC_MODEL_EXPORT_TYPES:
         return {'Error': f"Export type: '{req_data['export_type']}' an is invalid export type"}, 400
     export_id = uuid.uuid4().hex
     ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir])).queue()
@@ -258,9 +260,9 @@ def train_model_route(model_id):
         model = model_from_row(row)
 
     status = model['model_status']
-    if status == ModelStatus.TRAINING.value or status == ModelStatus.RETRAINING.value or status == ModelStatus.STARTING_TRAINING:
+    if status == ICModelStatus.TRAINING.value or status == ICModelStatus.RETRAINING.value or status == ICModelStatus.STARTING_TRAINING:
         return {'Error': 'Model is currently being trained'}, 400
-    if status == ModelStatus.TRAINED.value:
+    if status == ICModelStatus.TRAINED.value:
         return {'Error': 'Model has already been trained'}, 400
 
     dataset_id = req_data['dataset_id']
@@ -279,7 +281,7 @@ def train_model_route(model_id):
     # Train
     ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
     update_model_train_job_id(model_id, ids[0])
-    update_model_status(model_id, ModelStatus.STARTING_TRAINING)
+    update_model_status(model_id, ICModelStatus.STARTING_TRAINING)
     return {'ids': ids}, 202
 
 
@@ -314,7 +316,7 @@ def test_model_route(model_id: str):
         model = model_from_row(row)
 
     status = model['model_status']
-    if status != ModelStatus.TRAINED.value:
+    if status != ICModelStatus.TRAINED.value:
         return {'Error': 'Model must be trained to test'}, 400
 
     files = request.files.getlist('files')

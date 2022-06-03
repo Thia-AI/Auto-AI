@@ -9,7 +9,7 @@ from log.logger import log
 from db.commands.model_commands import get_model
 from db.row_accessors import model_from_row
 import config.config as c
-from config.constants import ModelExportType, ModelExportStatus
+from config.constants import ICModelExportType, ICModelExportStatus
 from db.commands.export_commands import update_export_status
 
 
@@ -29,10 +29,10 @@ class ExportModelJob(BaseJob):
         for row in rows:
             model = model_from_row(row)
         saved_model_path: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
-        if export_type == ModelExportType.SAVED_MODEL.value:
+        if export_type == ICModelExportType.SAVED_MODEL.value:
             # Model is already in a saved model format, copy the directory
             shutil.copytree(saved_model_path, save_dir)
-        elif export_type == ModelExportType.LITE.value:
+        elif export_type == ICModelExportType.LITE.value:
             try:
                 converter = tf.lite.TFLiteConverter.from_saved_model(str(saved_model_path.absolute()))
                 # Float 16 quantization
@@ -46,5 +46,5 @@ class ExportModelJob(BaseJob):
                     f.write(tflite_model)
             except Exception as e:
                 log('Error:', e)
-        update_export_status(export_id, ModelExportStatus.EXPORTED.value)
+        update_export_status(export_id, ICModelExportStatus.EXPORTED.value)
         super().clean_up_job()

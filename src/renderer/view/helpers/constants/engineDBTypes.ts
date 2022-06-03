@@ -200,13 +200,18 @@ export interface Model {
 	date_last_accessed: string;
 	model_status: PossibleModelStatuses;
 	latest_train_job_id: string | null;
-	extra_data: {
+	extra_data?: {
 		trained_model: {
 			labels_to_class_map: {
 				[key: string]: number;
 			};
 			labels_trained_on: {
 				[key: string]: Label;
+			};
+			error?: {
+				message: string;
+				title: string;
+				verboseMessage: string;
 			};
 		};
 	} | null;
@@ -274,7 +279,11 @@ export interface TrainJob extends Job {
 		model_name?: string;
 		status?: PossibleTrainJobStatuses;
 		status_description?: string;
-		error?: string;
+		error?: {
+			message: string;
+			title: string;
+			verboseMessage: string;
+		};
 	} | null;
 }
 
