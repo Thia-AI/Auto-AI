@@ -7,7 +7,7 @@ import {
 } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
-import { nullInput } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 
 interface Props {
 	activeInputs: IActiveDatasetInputsReducer;

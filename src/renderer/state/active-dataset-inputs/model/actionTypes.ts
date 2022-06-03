@@ -1,4 +1,4 @@
-import { Input } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Input } from '_/renderer/view/helpers/constants/engineTypes';
 import {
 	GET_NEXT_PAGE_INPUTS,
 	GET_PREVIOUS_PAGE_INPUTS,

@@ -9,7 +9,7 @@ import {
 	Label,
 	nullInput,
 	UNLABBELED_INPUT_VALUE_LABEL,
-} from '_/renderer/view/helpers/constants/engineDBTypes';
+} from '_/renderer/view/helpers/constants/engineTypes';
 import {
 	IActiveDatasetInputsReducer,
 	IActiveDatasetInputsPreviewIDReducer,

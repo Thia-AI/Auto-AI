@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useDropzone, FileRejection, ErrorCode } from 'react-dropzone';
 
-import { Model, TestJob } from '../../helpers/constants/engineDBTypes';
+import { Model, TestJob } from '../../helpers/constants/engineTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';

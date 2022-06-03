@@ -4,7 +4,7 @@ import { Box, Flex, VStack } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
 
-import { Dataset, DATASET_LABELS_SPLITTER, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset, DATASET_LABELS_SPLITTER, Labels } from '_/renderer/view/helpers/constants/engineTypes';
 import { AddLabel } from './AddLabel';
 import { Label } from './Label';
 import { IAppState } from '_/renderer/state/reducers';

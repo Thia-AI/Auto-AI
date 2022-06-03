@@ -1,4 +1,4 @@
-import { Job } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Job } from '_/renderer/view/helpers/constants/engineTypes';
 import { NOTIFICATION_DISMISS, NOTIFICATION_SEND, NOTIFICATION_CLEAR } from '../../types';
 
 /**

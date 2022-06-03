@@ -1,9 +1,5 @@
-import { Dataset } from '_/renderer/view/helpers/constants/engineDBTypes';
-import {
-	DATASET_LOADING,
-	REFRESH_DATASET_LIST,
-	UPDATE_DATASET_PREVIEW_UPLOAD_FILES,
-} from '../../types';
+import { Dataset } from '_/renderer/view/helpers/constants/engineTypes';
+import { DATASET_LOADING, REFRESH_DATASET_LIST, UPDATE_DATASET_PREVIEW_UPLOAD_FILES } from '../../types';
 
 /**
  * When we want to refresh the datasets array.

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { IJobNotification } from '_/renderer/state/notifications/model/actionTypes';
 import { notifSendAction } from '_/renderer/state/notifications/NotificationActions';
 import { IAppState } from '_/renderer/state/reducers';
-import { IMAGE_CLASSIFICATION_JOB_NAME, Job, TrainJob } from '../../helpers/constants/engineDBTypes';
+import { IMAGE_CLASSIFICATION_JOB_NAME, Job, TrainJob } from '../../helpers/constants/engineTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';

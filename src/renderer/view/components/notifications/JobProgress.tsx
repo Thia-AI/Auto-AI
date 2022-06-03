@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Box, HStack, Progress, Spacer, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import { connect } from 'react-redux';
-import { Job, nullJob } from '../../helpers/constants/engineDBTypes';
+import { Job, nullJob } from '../../helpers/constants/engineTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 
 interface Props {

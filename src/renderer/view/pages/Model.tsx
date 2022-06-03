@@ -24,7 +24,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { HorizontalDatasetPreview } from '../components/datasets/model-horizontal/HorizontalDatasetPreview';
-import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineDBTypes';
+import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { ISelectedDatasetReducer } from '_/renderer/state/choose-dataset-train/model/reducerTypes';

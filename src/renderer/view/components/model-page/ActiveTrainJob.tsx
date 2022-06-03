@@ -31,7 +31,7 @@ import isValidHTMLProp from '@emotion/is-prop-valid';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { nullTrainJob, TrainJob, TrainJobStatus } from '../../helpers/constants/engineDBTypes';
+import { nullTrainJob, TrainJob, TrainJobStatus } from '../../helpers/constants/engineTypes';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
 import { argmin } from '../../helpers/functionHelpers';
 import { StatWithLearnMore } from '../stats/StatWithLearnMore';
