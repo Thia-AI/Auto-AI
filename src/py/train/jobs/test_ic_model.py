@@ -3,7 +3,7 @@ from abc import ABC
 from multiprocessing import Process, Queue
 from operator import itemgetter
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Tuple
 from engineio.async_drivers import threading
 import numpy as np
 import tensorflow as tf
@@ -13,13 +13,14 @@ from overrides import overrides
 from tensorflow.keras.models import load_model
 
 from config import config as c
+from config.constants import IC_MODEL_INPUT_SIZE
 from job.base_job import BaseJob
 from log.logger import log
 
 
 class TestImageClassificationModelJob(BaseJob, ABC):
-    def __init__(self, args: [Path, List[Path], str, dict]):
-        # args: [temporary directory where images are stored, filenames of images to test]
+    def __init__(self, args: [Path, List[Path], str, dict, str]):
+        # args: [temporary directory where images are stored, filenames of images to test, model name, model extra_data, model_type_extra]
         super().__init__(args, job_name='Image Classification Test', initial_status='Initialization',
                          progress_max=1)
         c.ENGINE_TEST_TASK_RUNNING = True
@@ -41,13 +42,15 @@ class TestImageClassificationModelJob(BaseJob, ABC):
         filenames: List[Path] = self.arg[1]
         model_name: str = self.arg[2]
         model_extra_data: dict = self.arg[3]
+        model_type_extra: str = self.arg[4]
+        image_size: Tuple[int, int] = IC_MODEL_INPUT_SIZE[model_type_extra]
         try:
             image_batch = []
             for filename in filenames:
                 with Image.open(filename) as img:
                     if img.format != 'JPEG':
                         img = img.convert('RGB')
-                    img = img.resize((224, 224), Image.NEAREST)
+                    img = img.resize(image_size, Image.NEAREST)
                     image_batch.append(np.asarray(img))
             image_batch: np.ndarray = np.array(image_batch)
             test_process_queue = Queue()

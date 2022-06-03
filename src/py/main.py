@@ -331,7 +331,8 @@ def test_model_route(model_id: str):
             filenames.append(filename)
         except Exception:
             log(f'Unable to save {filename}')
-    ids = JobCreator().create(TestImageClassificationModelJob([temp_dir, filenames, model['model_name'], model['extra_data']])).queue()
+    ids = JobCreator().create(TestImageClassificationModelJob([temp_dir, filenames, model['model_name'], model['extra_data'],
+                                                               model['model_type_extra']])).queue()
     return {'ids': ids}, 202
 
 

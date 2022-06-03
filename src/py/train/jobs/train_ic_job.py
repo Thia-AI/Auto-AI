@@ -4,6 +4,7 @@ from collections import defaultdict
 from multiprocessing import Process, Queue
 from operator import itemgetter
 from pathlib import Path
+from typing import Tuple
 
 import numpy as np
 import tensorflow as tf
@@ -169,7 +170,7 @@ def train_in_separate_process(queue: Queue):
     NUM_IMAGES = len(inputs)
     PERFORM_DATA_AUG = False
     interpolation = tf.image.ResizeMethod.BILINEAR
-    IMAGE_SIZE = (224, 224)
+    IMAGE_SIZE: Tuple[int, int] = constants.IC_MODEL_INPUT_SIZE[model_type]
     BATCH_SIZE = 32
     effnet_model_name = constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP[model_type]
     TRAIN_SPLIT = 0.8
