@@ -288,6 +288,11 @@ export interface TrainJob extends Job {
 }
 
 /**
+ * Job table `job_name` for an Image Classification training job.
+ */
+export const IMAGE_CLASSIFICATION_JOB_NAME = 'Image Classification Training';
+
+/**
  * Empty train related job.
  */
 export const nullTrainJob: TrainJob = {

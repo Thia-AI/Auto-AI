@@ -124,17 +124,22 @@ class TrainImageClassifierJob(BaseJob):
                 'labels_trained_on': labels_trained_on,
                 'error': self.extra_data()['error']
             }})
+            extra_data = {
+                'status_description': 'Error Encountered During Training, Try Again',
+                'status': ICTrainJobStatus.ERROR.value
+            }
         else:
             update_model_status(model_id, ICModelStatus.TRAINED)
             current_model_extra_data.update({'trained_model': {
                 'labels_to_class_map': label_to_class_map,
                 'labels_trained_on': labels_trained_on
             }})
+            extra_data = {
+                'status_description': 'Cleaned up',
+                'status': ICTrainJobStatus.EVALUATED.value
+            }
         update_model_extra_data(model_id, current_model_extra_data)
-        extra_data = {
-            'status_description': 'Cleaned up',
-            'status': ICTrainJobStatus.EVALUATED.value
-        }
+
         self.update_extra_data(extra_data)
         log('Training Job Finished')
         self.set_progress(super().progress_max())
@@ -177,6 +182,8 @@ def train_in_separate_process(queue: Queue):
     gpus = tf.config.experimental.list_physical_devices('GPU')
     for gpu in gpus:
         tf.config.experimental.set_memory_growth(gpu, True)
+
+    '''Uncomment below if you are testing the GPU running out of VRAM (ResourceExhausted Error)'''
     gpus = tf.config.experimental.list_physical_devices('GPU')
     try:
         tf.config.set_logical_device_configuration(gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=1024)])
@@ -325,7 +332,7 @@ def train_in_separate_process(queue: Queue):
         update_extra_data({
             'status_description': 'Error encountered during training',
             'error': {
-                'title': 'Error Encountered During Training',
+                'title': 'Op Error Encountered During Training',
                 'verboseMessage': 'Try training again',
                 'message': e.message
             }
