@@ -10,7 +10,7 @@ import tensorflow as tf
 from overrides import overrides
 
 from config import config
-from db.commands.dataset_commands import get_dataset, update_label_input_count
+from db.commands.dataset_commands import get_dataset, update_label_input_count, update_dataset_last_accessed
 from db.commands.input_commands import add_images_to_db_batch
 from db.commands.job_commands import update_job
 from db.row_accessors import dataset_from_row
@@ -96,6 +96,7 @@ class BulkFileTransferJob(BaseJob):
         self.set_status("Updating DB Records")
         update_job(self)
         add_images_to_db_batch(values_to_add_to_inputs_table)
+        update_dataset_last_accessed(dataset_id)
         self.set_progress(super().progress_max())
 
         super().clean_up_job()
