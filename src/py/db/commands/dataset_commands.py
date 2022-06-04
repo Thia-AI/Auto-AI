@@ -1,6 +1,6 @@
 import uuid
 
-from config.constants import ModelStatus, NUM_INSTANCES
+from config.constants import ICModelStatus, NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 

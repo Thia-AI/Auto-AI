@@ -12,7 +12,7 @@ import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/D
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { JobProgress } from '../../notifications/JobProgress';
-import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Job, nullJob } from '_/renderer/view/helpers/constants/engineTypes';
 import { DatasetLabelInputPreview } from '../preview/DatasetLabelInputPreview';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER, IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES } from '_/shared/ipcChannels';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';

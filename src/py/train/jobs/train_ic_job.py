@@ -4,6 +4,7 @@ from collections import defaultdict
 from multiprocessing import Process, Queue
 from operator import itemgetter
 from pathlib import Path
+from typing import Tuple
 
 import numpy as np
 import tensorflow as tf
@@ -12,7 +13,7 @@ from tensorflow.keras import preprocessing, layers, models, backend, optimizers,
 
 from config import config as c
 from config import constants
-from config.constants import ModelStatus, TrainJobStatus
+from config.constants import ICModelStatus, ICTrainJobStatus
 from db.commands.dataset_commands import get_dataset, get_labels
 from db.commands.input_commands import get_train_data_from_all_inputs
 from db.commands.model_commands import get_model, update_model_status, update_model_extra_data
@@ -32,7 +33,7 @@ class TrainImageClassifierJob(BaseJob):
         super().run()
         # Extra data update here for training initialization
         extra_data = {
-            'status': TrainJobStatus.STARTING_TRAINING.value
+            'status': ICTrainJobStatus.STARTING_TRAINING.value
         }
         self.update_extra_data(extra_data)
 
@@ -87,7 +88,7 @@ class TrainImageClassifierJob(BaseJob):
         }
 
         train_process_queue.put(train_data)
-        update_model_status(model_id, ModelStatus.TRAINING)
+        update_model_status(model_id, ICModelStatus.TRAINING)
         p = Process(target=train_in_separate_process, args=(train_process_queue,))
         p.start()
         p.join()
@@ -116,16 +117,30 @@ class TrainImageClassifierJob(BaseJob):
                 continue
             labels_trained_on[label['value']] = label
 
-        current_model_extra_data.update({'trained_model': {
-            'labels_to_class_map': label_to_class_map,
-            'labels_trained_on': labels_trained_on
-        }})
+        if self.extra_data()['error'] is not None:
+            # There was an error during training
+            update_model_status(model_id, ICModelStatus.ERROR)
+            current_model_extra_data.update({'trained_model': {
+                'labels_to_class_map': label_to_class_map,
+                'labels_trained_on': labels_trained_on,
+                'error': self.extra_data()['error']
+            }})
+            extra_data = {
+                'status_description': 'Error Encountered During Training, Try Again',
+                'status': ICTrainJobStatus.ERROR.value
+            }
+        else:
+            update_model_status(model_id, ICModelStatus.TRAINED)
+            current_model_extra_data.update({'trained_model': {
+                'labels_to_class_map': label_to_class_map,
+                'labels_trained_on': labels_trained_on
+            }})
+            extra_data = {
+                'status_description': 'Cleaned up',
+                'status': ICTrainJobStatus.EVALUATED.value
+            }
         update_model_extra_data(model_id, current_model_extra_data)
-        update_model_status(model_id, ModelStatus.TRAINED)
-        extra_data = {
-            'status_description': 'Cleaned up',
-            'status': TrainJobStatus.EVALUATED.value
-        }
+
         self.update_extra_data(extra_data)
         log('Training Job Finished')
         self.set_progress(super().progress_max())
@@ -155,7 +170,7 @@ def train_in_separate_process(queue: Queue):
     NUM_IMAGES = len(inputs)
     PERFORM_DATA_AUG = False
     interpolation = tf.image.ResizeMethod.BILINEAR
-    IMAGE_SIZE = (224, 224)
+    IMAGE_SIZE: Tuple[int, int] = constants.IC_MODEL_INPUT_SIZE[model_type]
     BATCH_SIZE = 32
     effnet_model_name = constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP[model_type]
     TRAIN_SPLIT = 0.8
@@ -168,6 +183,13 @@ def train_in_separate_process(queue: Queue):
     gpus = tf.config.experimental.list_physical_devices('GPU')
     for gpu in gpus:
         tf.config.experimental.set_memory_growth(gpu, True)
+
+    '''Uncomment below if you are testing the GPU running out of VRAM (ResourceExhausted Error)'''
+    # gpus = tf.config.experimental.list_physical_devices('GPU')
+    # try:
+    #     tf.config.set_logical_device_configuration(gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=1024)])
+    # except RuntimeError as e:
+    #     log(e)
 
     def load_image(path, image_size, num_channels, interpolation, crop_to_aspect_ratio=False):
         """Load an image from a path and resize it."""
@@ -261,7 +283,7 @@ def train_in_separate_process(queue: Queue):
 
         def on_train_begin(self, logs=None):
             self.json_file = tf.io.gfile.GFile(self.filepath.absolute(), 'w')
-            self.extra_data.update({'status': TrainJobStatus.TRAINING.value, 'status_description': 'Fitting model'})
+            self.extra_data.update({'status': ICTrainJobStatus.TRAINING.value, 'status_description': 'Fitting model'})
             # Save that training has started
             with self.json_file as f:
                 json.dump(self.extra_data, f)
@@ -290,17 +312,46 @@ def train_in_separate_process(queue: Queue):
         cp_callback,
         early_stopping
     ]
-    hist: callbacks.History = model.fit(train_ds, epochs=1000, steps_per_epoch=steps_per_epoch, validation_data=val_ds,
-                                        validation_steps=validation_steps,
-                                        callbacks=CALLBACKS, verbose=2)
-    update_extra_data({'status_description': 'Evaluating model', 'status': TrainJobStatus.EVALUATING.value, 'history': hist.history})
-    log('Evaluating model')
-    evaluation = model.evaluate(val_ds, verbose=1)
-    metric_names = model.metrics_names
-    evaluation_result = {}
-    for i, metric in enumerate(metric_names):
-        evaluation_result[metric] = evaluation[i]
-    update_extra_data({'status_description': 'Cleaning up', 'evaluation_result': evaluation_result})
+    error_encountered_during_training = False
+    try:
+        hist: callbacks.History = model.fit(train_ds, epochs=1000, steps_per_epoch=steps_per_epoch, validation_data=val_ds,
+                                            validation_steps=validation_steps,
+                                            callbacks=CALLBACKS, verbose=2)
+    except tf.errors.ResourceExhaustedError as e:
+        # Resource exhausted, usually an OOM error
+        update_extra_data({
+            'status_description': 'Error encountered during training',
+            'error': {
+                'title': f"Resource Exhausted Training '{model_name}'",
+                'verboseMessage': 'Model may be too large to train on your GPU',
+                'message': e.message
+            }
+        })
+        error_encountered_during_training = True
+    except tf.errors.OpError as e:
+        # Another tensorflow error
+        update_extra_data({
+            'status_description': 'Error encountered during training',
+            'error': {
+                'title': f"Op Error Encountered Training '{model_name}'",
+                'verboseMessage': 'Try training again',
+                'message': e.message
+            }
+        })
+        error_encountered_during_training = True
+    if not error_encountered_during_training:
+        # No error encountered, continue evaluating trained model
+        update_extra_data({'status_description': 'Evaluating model', 'status': ICTrainJobStatus.EVALUATING.value, 'history': hist.history})
+        log('Evaluating model')
+        evaluation = model.evaluate(val_ds, verbose=1)
+        metric_names = model.metrics_names
+        evaluation_result = {}
+        for i, metric in enumerate(metric_names):
+            evaluation_result[metric] = evaluation[i]
+        update_extra_data({'status_description': 'Cleaning up', 'evaluation_result': evaluation_result})
+    else:
+        # Error encountered during training, don't evaluate model
+        update_extra_data({'status_description': 'Cleaning up'})
     backend.clear_session()
     return_data = {'extra_data': current_extra_data}
     queue.put(return_data)

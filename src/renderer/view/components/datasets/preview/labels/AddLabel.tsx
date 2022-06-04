@@ -4,7 +4,7 @@ import { Button, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { IoAddOutline } from 'react-icons/io5';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { Dataset, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset, Labels } from '_/renderer/view/helpers/constants/engineTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';

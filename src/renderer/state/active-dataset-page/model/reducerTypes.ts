@@ -1,4 +1,4 @@
-import { Dataset, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset, Labels } from '_/renderer/view/helpers/constants/engineTypes';
 
 /**
  * State for the current active dataset (for Dataset page).

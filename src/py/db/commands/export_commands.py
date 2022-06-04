@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from config.constants import ModelExportStatus, NUM_INSTANCES
+from config.constants import ICModelExportStatus, NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -10,7 +10,7 @@ def add_export_to_db(model_id: str, export_job_id: str, save_path: str, export_t
                     command='''INSERT INTO exports (id, export_status, export_type, save_path, export_job_id, model_id, export_date)
                     values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        export_id, ModelExportStatus.EXPORTING.value, export_type, save_path, export_job_id, model_id, datetime.now()
+                        export_id, ICModelExportStatus.EXPORTING.value, export_type, save_path, export_job_id, model_id, datetime.now()
                     ))
     DBManager.get_instance().execute(cmd)
 
@@ -31,7 +31,7 @@ def get_active_model_exports(model_id: str):
                     WHERE e.model_id = m.id
                       AND e.model_id = ?
                       AND e.export_status = ?''',
-                    values=(model_id, ModelExportStatus.EXPORTING.value))
+                    values=(model_id, ICModelExportStatus.EXPORTING.value))
     return DBManager.get_instance().execute(cmd)
 
 

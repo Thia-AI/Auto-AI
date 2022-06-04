@@ -200,13 +200,18 @@ export interface Model {
 	date_last_accessed: string;
 	model_status: PossibleModelStatuses;
 	latest_train_job_id: string | null;
-	extra_data: {
+	extra_data?: {
 		trained_model: {
 			labels_to_class_map: {
 				[key: string]: number;
 			};
 			labels_trained_on: {
 				[key: string]: Label;
+			};
+			error?: {
+				message: string;
+				title: string;
+				verboseMessage: string;
 			};
 		};
 	} | null;
@@ -274,8 +279,23 @@ export interface TrainJob extends Job {
 		model_name?: string;
 		status?: PossibleTrainJobStatuses;
 		status_description?: string;
+		error?: {
+			message: string;
+			title: string;
+			verboseMessage: string;
+		};
 	} | null;
 }
+
+/**
+ * Job table `job_name` for an Image Classification training job.
+ */
+export const IMAGE_CLASSIFICATION_TRAIN_JOB_NAME = 'Image Classification Training';
+
+/**
+ * Job table `job_name` for an Image Classification testing job.
+ */
+export const IMAGE_CLASSIFICATION_TEST_JOB_NAME = 'Image Classification Test';
 
 /**
  * Empty train related job.
@@ -299,7 +319,12 @@ export const nullTrainJob: TrainJob = {
  */
 export interface TestJob extends Job {
 	extra_data: {
-		predictions: string[];
+		predictions?: string[];
+		error?: {
+			message: string;
+			title: string;
+			verboseMessage: string;
+		};
 	} | null;
 }
 

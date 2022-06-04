@@ -18,7 +18,7 @@ import { FiEdit } from 'react-icons/fi';
 import { IoTrash } from 'react-icons/io5';
 import { push, Push } from 'connected-react-router';
 
-import { Dataset } from '_view_helpers/constants/engineDBTypes';
+import { Dataset } from '_/renderer/view/helpers/constants/engineTypes';
 import Preview from '_utils/images/placeholder-dark2.jpg';
 import { InteractiveCopyBadge } from '../../interactive/InteractiveCopyBadge';
 

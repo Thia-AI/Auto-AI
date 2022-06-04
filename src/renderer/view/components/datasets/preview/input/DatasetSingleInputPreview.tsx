@@ -26,7 +26,7 @@ import { setActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-d
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
-import { nullInput } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { resolutionToMegapixels } from '_/renderer/view/helpers/functionHelpers';

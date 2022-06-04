@@ -45,7 +45,7 @@ export const getAllActivities = async (
 				activitiesArr.push(notification);
 			}
 			activitiesArr.sort((a, b) => {
-				return a.dateNow - b.dateNow;
+				return b.dateNow - a.dateNow;
 			});
 			return activitiesArr;
 		}

@@ -5,7 +5,13 @@ import { connect } from 'react-redux';
 import { IJobNotification } from '_/renderer/state/notifications/model/actionTypes';
 import { notifSendAction } from '_/renderer/state/notifications/NotificationActions';
 import { IAppState } from '_/renderer/state/reducers';
-import { Job } from '../../helpers/constants/engineDBTypes';
+import {
+	IMAGE_CLASSIFICATION_TEST_JOB_NAME,
+	IMAGE_CLASSIFICATION_TRAIN_JOB_NAME,
+	Job,
+	TestJob,
+	TrainJob,
+} from '../../helpers/constants/engineTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
@@ -18,6 +24,10 @@ interface Props {
 	sendNotification: (notification: IJobNotification) => void;
 }
 
+interface DoOSNotificationOptions {
+	title: string;
+	description: string;
+}
 const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
 	/**
 	 * Map of jobID -> Notification key-value pair that represents the "active" notifications
@@ -63,6 +73,15 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 			});
 		});
 	}, []);
+
+	const doOSNotification = ({ title, description }: DoOSNotificationOptions) => {
+		if (!document.hasFocus()) {
+			(async function () {
+				await ipcRenderer.invoke(IPC_NOTIFICATIONS_SHOW_NOTIFICATION, title, description);
+			})();
+		}
+	};
+
 	// For each time notifications change
 	useEffect(() => {
 		const newNotifMap: INotificationMap = {};
@@ -71,29 +90,64 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 			const notif = notifications[i];
 			if (!notificationMap.hasOwnProperty(notif.job.id)) {
 				// This is a new notification, send it!!
-				if (!document.hasFocus()) {
-					(async function () {
-						await ipcRenderer.invoke(
-							IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
-							'Job Update',
-							`Finished ${notif.job.job_name} job`,
-						);
-					})();
+
+				let trainingTestingJobError = false;
+				if (notif.job.job_name == IMAGE_CLASSIFICATION_TRAIN_JOB_NAME) {
+					const job = notif.job as TrainJob;
+					if (job.extra_data?.error) {
+						// There was an error during training
+						trainingTestingJobError = true;
+						doOSNotification({
+							title: `${job.job_name} Job Encountered an Error`,
+							description: job.extra_data.error.title,
+						});
+						toast({
+							title: job.extra_data.error.title,
+							description: job.extra_data.error.verboseMessage,
+							status: 'error',
+							duration: notif.dismissAfter,
+							isClosable: false,
+						});
+					}
 				}
-				// Show UI notification regardless
-				toast({
-					title: `${notif.job.job_name} Job completed`,
-					description: 'Job completed successfully',
-					status: 'success',
-					duration: notif.dismissAfter,
-					isClosable: false,
-				});
+				if (notif.job.job_name == IMAGE_CLASSIFICATION_TEST_JOB_NAME) {
+					const job = notif.job as TestJob;
+					if (job.extra_data?.error) {
+						trainingTestingJobError = true;
+						doOSNotification({
+							title: `${job.job_name} Job Encountered an Error`,
+							description: job.extra_data.error.title,
+						});
+						toast({
+							title: job.extra_data.error.title,
+							description: job.extra_data.error.verboseMessage,
+							status: 'error',
+							duration: notif.dismissAfter,
+							isClosable: false,
+						});
+					}
+				}
+				if (!trainingTestingJobError) {
+					// Job update was not due to a training or testing job encountering an error
+					doOSNotification({
+						title: 'Job Update',
+						description: `Finished ${notif.job.job_name} job`,
+					});
+					toast({
+						title: `${notif.job.job_name} Job completed`,
+						description: 'Job completed successfully',
+						status: 'success',
+						duration: notif.dismissAfter,
+						isClosable: false,
+					});
+				}
 			}
 			// Update notificationMap
 			newNotifMap[notif.job.id] = notif;
 		}
 		setNotificationMap(newNotifMap);
 	}, [notifications]);
+
 	return <></>;
 });
 

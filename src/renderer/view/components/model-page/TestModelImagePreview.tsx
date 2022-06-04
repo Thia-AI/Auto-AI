@@ -1,6 +1,6 @@
 import { Button, Center, chakra, Flex, Spinner, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import React from 'react';
-import { Label } from '../../helpers/constants/engineDBTypes';
+import { Label } from '../../helpers/constants/engineTypes';
 
 interface Props {
 	imageSRC: string;

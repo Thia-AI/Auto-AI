@@ -13,7 +13,7 @@ import {
 	useColorModeValue as mode,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineDBTypes';
+import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineTypes';
 import TensorFlowLogo from '_utils/images/TensorFlow Brand Assets/TensorFlow Logo/Primary/SVG/FullColorPrimary Icon.svg';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';

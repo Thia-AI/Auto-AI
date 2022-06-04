@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import {
 	Center,
@@ -24,11 +24,11 @@ import { useRouteMatch } from 'react-router-dom';
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { HorizontalDatasetPreview } from '../components/datasets/model-horizontal/HorizontalDatasetPreview';
-import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineDBTypes';
+import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { ISelectedDatasetReducer } from '_/renderer/state/choose-dataset-train/model/reducerTypes';
-import { ActiveTrainJob } from '../components/model-page/ActiveTrainJob';
+import { ActiveTrainJob, ActiveTrainJobHandle } from '../components/model-page/ActiveTrainJob';
 import { IResetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 import { resetSelectedDatasetAction } from '_/renderer/state/choose-dataset-train/ChooseDatasetActions';
 import { TestModel } from '../components/model-page/TestModel';
@@ -53,6 +53,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
 	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
 	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
+	const activeTrainJobRef = useRef<ActiveTrainJobHandle>(null);
 
 	const {
 		isOpen: deleteModelDialogOpen,
@@ -88,6 +89,9 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				// Add toast
 				resetSelectedDataset();
 				await fetchModel();
+				if (activeTrainJobRef.current) {
+					await activeTrainJobRef.current.refreshActiveTrainingJob();
+				}
 			} else {
 				console.log('damn');
 			}
@@ -106,7 +110,13 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	const renderActiveTrainingJob = () => {
 		if (model.latest_train_job_id) {
-			return <ActiveTrainJob trainJobID={model.latest_train_job_id} fetchModel={fetchModel} />;
+			return (
+				<ActiveTrainJob
+					trainJobID={model.latest_train_job_id}
+					fetchModel={fetchModel}
+					ref={activeTrainJobRef}
+				/>
+			);
 		}
 	};
 

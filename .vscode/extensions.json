@@ -1,9 +1,3 @@
 {
-	"recommendations": [
-		"msjsdiag.debugger-for-chrome",
-		"dsznajder.es7-react-js-snippets",
-		"doi.fileheadercomment",
-		"knisterpeter.vscode-github",
-		"esbenp.prettier-vscode"
-	]
+	"recommendations": ["doi.fileheadercomment", "knisterpeter.vscode-github", "esbenp.prettier-vscode"]
 }

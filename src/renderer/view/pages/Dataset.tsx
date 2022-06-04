@@ -15,7 +15,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { Dataset, Labels, nullDataset } from '_view_helpers/constants/engineDBTypes';
+import { Dataset, Labels, nullDataset } from '_/renderer/view/helpers/constants/engineTypes';
 import { getVerboseModelType } from '../helpers/modelHelper';
 import { InteractiveCopyBadge } from '../components/interactive/InteractiveCopyBadge';
 import { DragNDrop } from '../components/datasets/drag-n-drop/DragNDrop';

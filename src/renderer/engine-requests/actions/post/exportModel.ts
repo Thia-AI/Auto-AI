@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { PossibleModelExportTypes } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { PossibleModelExportTypes } from '_/renderer/view/helpers/constants/engineTypes';
 import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**

@@ -18,7 +18,7 @@ import { getVerboseModelType } from '_view_helpers/modelHelper';
 import ImageClassificationPreview from '_utils/images/image_classification_card_bg.jpg';
 import './ModelCard.css';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
-import { Model, ModelStatus } from '../../helpers/constants/engineDBTypes';
+import { Model, ModelStatus } from '../../helpers/constants/engineTypes';
 
 interface Props {
 	isLoaded: boolean;

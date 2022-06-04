@@ -1,4 +1,4 @@
-import { Input } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Input } from '_/renderer/view/helpers/constants/engineTypes';
 
 /**
  * State for the dataset inputs that are displayed using cursor pagination.

@@ -48,6 +48,14 @@ IC_MODEL_TYPE_TO_EFFICIENTNET_MAP = {
     'extra-large': 'efficientnetv2-l'
 }
 
+IC_MODEL_INPUT_SIZE = {
+    'extra-small': (224, 224),
+    'small': (300, 300),
+    'medium': (384, 384),
+    'large': (480, 480),
+    'extra-large': (480, 480)
+}
+
 
 # Model Statuses
 
@@ -56,12 +64,25 @@ class AutoNameEnum(Enum):
         return name
 
 
-class AutoNameLowercaseHyphenatedSpace(Enum):
+class AutoNameLowercaseUnderscoreToHyphenated(Enum):
     def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
         return name.lower().replace('_', '-')
 
 
-class ModelType(AutoNameLowercaseHyphenatedSpace):
+class AutoNameLowercase(Enum):
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
+        return name.lower()
+
+
+class AllModelType(AutoNameLowercase):
+    """Enum that contains different model types"""
+    IMAGE_CLASSIFICATION = auto()
+
+
+POSSIBLE_MODEL_TYPES = set([model_type.value for model_type in AllModelType])
+
+
+class ICModelType(AutoNameLowercaseUnderscoreToHyphenated):
     """Enum that contains different image classification model types"""
     EXTRA_SMALL = auto()
     SMALL = auto()
@@ -70,34 +91,34 @@ class ModelType(AutoNameLowercaseHyphenatedSpace):
     EXTRA_LARGE = auto()
 
 
-POSSIBLE_MODEL_TYPES = set([model_type.value for model_type in ModelType])
+POSSIBLE_IC_MODEL_TYPES = set([model_type.value for model_type in ICModelType])
 
 
-class ModelExportType(AutoNameEnum):
+class ICModelExportType(AutoNameEnum):
     """Enum that contains different model export types"""
     SAVED_MODEL = auto()
     LITE = auto()
 
 
-POSSIBLE_MODEL_EXPORT_TYPES = set([export_type.value for export_type in ModelExportType])
+POSSIBLE_IC_MODEL_EXPORT_TYPES = set([export_type.value for export_type in ICModelExportType])
 
 
-class ModelLabellingType(AutoNameEnum):
+class ICModelLabellingType(AutoNameEnum):
     """Enum that contains different model labelling types"""
     SINGLE_LABEL = auto()
 
 
-POSSIBLE_MODEL_LABELLING_TYPES = set([export_type.value for export_type in ModelLabellingType])
+POSSIBLE_IC_MODEL_LABELLING_TYPES = set([export_type.value for export_type in ICModelLabellingType])
 
 
-class ModelExportStatus(AutoNameEnum):
+class ICModelExportStatus(AutoNameEnum):
     """Enum that contains the different status of model exports"""
     EXPORTING = auto()
     EXPORTED = auto()
     ERROR = auto()
 
 
-class ModelStatus(AutoNameEnum):
+class ICModelStatus(AutoNameEnum):
     """Enum that contains different statuses (or states) a model can be in at any given time."""
     IDLE = auto()
     TRAINING = auto()
@@ -107,7 +128,7 @@ class ModelStatus(AutoNameEnum):
     ERROR = auto()
 
 
-class TrainJobStatus(AutoNameEnum):
+class ICTrainJobStatus(AutoNameEnum):
     """Enum that contains different statuses (or states) a training job can be in at any given time."""
     TRAINING = auto()
     STARTING_TRAINING = auto()

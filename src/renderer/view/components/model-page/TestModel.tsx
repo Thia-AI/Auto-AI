@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useDropzone, FileRejection, ErrorCode } from 'react-dropzone';
 
-import { Model, TestJob } from '../../helpers/constants/engineDBTypes';
+import { Model, TestJob } from '../../helpers/constants/engineTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
@@ -168,8 +168,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 			const testJobIDTemp: string = testModelResData['ids'][0];
 			setTestJobID(testJobIDTemp);
 			await waitTillEngineJobComplete(testJobIDTemp);
-			const [jobError, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
-			if (jobError) {
+			const [requestErrorExists, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
+			if (requestErrorExists) {
 				toast({
 					title: 'Failed to get predictions',
 					description: jobResData['Error'],
@@ -178,11 +178,18 @@ export const TestModel = React.memo(({ model }: Props) => {
 					isClosable: false,
 				});
 				setTestRunning(false);
+				setTestJobID(null);
 				return;
 			}
 			const jobResDataTestJob = jobResData as TestJob;
-			// We can assume predictions are there since the job was completed but this is a bad assumption
-			// TODO: Add a check to see if test job was completed and then if so show predictions else show an error toast
+
+			if (jobResDataTestJob.extra_data?.error) {
+				setTestRunning(false);
+				setTestJobID(null);
+				return;
+			}
+			// Since no error, predictions will be there.
+
 			// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
 			setTestJobPredictions(jobResDataTestJob.extra_data?.predictions!);
 			setTestRunning(false);

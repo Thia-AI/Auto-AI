@@ -4,7 +4,7 @@ import { Box, Center, chakra, Spinner, useColorModeValue as mode } from '@chakra
 import { connect } from 'react-redux';
 
 import { IAppState } from '_/renderer/state/reducers';
-import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';

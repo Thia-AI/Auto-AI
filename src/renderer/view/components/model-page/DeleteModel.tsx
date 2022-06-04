@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
-import { Model } from '../../helpers/constants/engineDBTypes';
+import { Model } from '../../helpers/constants/engineTypes';
 import { MODELS_PAGE } from '../../helpers/constants/pageConstants';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 
