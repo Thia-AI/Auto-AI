@@ -49,7 +49,7 @@ IC_MODEL_TYPE_TO_EFFICIENTNET_MAP = {
 }
 
 IC_MODEL_INPUT_SIZE = {
-    'extra_small': (224, 224),
+    'extra-small': (224, 224),
     'small': (300, 300),
     'medium': (384, 384),
     'large': (480, 480),

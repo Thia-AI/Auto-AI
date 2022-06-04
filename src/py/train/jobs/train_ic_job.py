@@ -322,7 +322,7 @@ def train_in_separate_process(queue: Queue):
         update_extra_data({
             'status_description': 'Error encountered during training',
             'error': {
-                'title': f"Resource Exhausted During Training '{model_name}'",
+                'title': f"Resource Exhausted Training '{model_name}'",
                 'verboseMessage': 'Model may be too large to train on your GPU',
                 'message': e.message
             }
@@ -333,7 +333,7 @@ def train_in_separate_process(queue: Queue):
         update_extra_data({
             'status_description': 'Error encountered during training',
             'error': {
-                'title': f"Op Error Encountered During Training '{model_name}'",
+                'title': f"Op Error Encountered Training '{model_name}'",
                 'verboseMessage': 'Try training again',
                 'message': e.message
             }

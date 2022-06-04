@@ -5,7 +5,13 @@ import { connect } from 'react-redux';
 import { IJobNotification } from '_/renderer/state/notifications/model/actionTypes';
 import { notifSendAction } from '_/renderer/state/notifications/NotificationActions';
 import { IAppState } from '_/renderer/state/reducers';
-import { IMAGE_CLASSIFICATION_JOB_NAME, Job, TrainJob } from '../../helpers/constants/engineTypes';
+import {
+	IMAGE_CLASSIFICATION_TEST_JOB_NAME,
+	IMAGE_CLASSIFICATION_TRAIN_JOB_NAME,
+	Job,
+	TestJob,
+	TrainJob,
+} from '../../helpers/constants/engineTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
@@ -86,10 +92,27 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 				// This is a new notification, send it!!
 
 				let trainingTestingJobError = false;
-				if (notif.job.job_name == IMAGE_CLASSIFICATION_JOB_NAME) {
+				if (notif.job.job_name == IMAGE_CLASSIFICATION_TRAIN_JOB_NAME) {
 					const job = notif.job as TrainJob;
 					if (job.extra_data?.error) {
 						// There was an error during training
+						trainingTestingJobError = true;
+						doOSNotification({
+							title: `${job.job_name} Job Encountered an Error`,
+							description: job.extra_data.error.title,
+						});
+						toast({
+							title: job.extra_data.error.title,
+							description: job.extra_data.error.verboseMessage,
+							status: 'error',
+							duration: notif.dismissAfter,
+							isClosable: false,
+						});
+					}
+				}
+				if (notif.job.job_name == IMAGE_CLASSIFICATION_TEST_JOB_NAME) {
+					const job = notif.job as TestJob;
+					if (job.extra_data?.error) {
 						trainingTestingJobError = true;
 						doOSNotification({
 							title: `${job.job_name} Job Encountered an Error`,

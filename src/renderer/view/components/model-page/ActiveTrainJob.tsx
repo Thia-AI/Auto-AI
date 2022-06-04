@@ -17,15 +17,7 @@ import {
 	Flex,
 	useColorMode,
 } from '@chakra-ui/react';
-import React, {
-	forwardRef,
-	ForwardRefRenderFunction,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useState,
-} from 'react';
-import { connect } from 'react-redux';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import isValidHTMLProp from '@emotion/is-prop-valid';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -36,6 +28,9 @@ import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
 import { argmin } from '../../helpers/functionHelpers';
 import { StatWithLearnMore } from '../stats/StatWithLearnMore';
 
+/**
+ * useImperativeHandle data.
+ */
 export interface ActiveTrainJobHandle {
 	refreshActiveTrainingJob: () => Promise<void>;
 }
