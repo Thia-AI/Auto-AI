@@ -1,6 +1,7 @@
 import uuid
+from datetime import datetime
 
-from config.constants import ICModelStatus, NUM_INSTANCES
+from config.constants import NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -88,6 +89,15 @@ def update_labels_of_dataset(uuid: str, labels: str):
                     command='''UPDATE datasets SET labels = ? WHERE id = ?''',
                     values=(labels, uuid))
     DBManager.get_instance().execute(cmd)
+
+
+def update_dataset_last_accessed(dataset_id: str, last_accessed_datetime: str = None):
+    if last_accessed_datetime is None:
+        last_accessed_datetime = str(datetime.now())
+    cmd = DBCommand(f"Update Dataset {dataset_id}'s last accessed datetime",
+                    command='''UPDATE datasets SET date_last_accessed = ? WHERE id = ?''',
+                    values=(last_accessed_datetime, dataset_id))
+    return DBManager.get_instance().execute(cmd)
 
 
 def increment_label_input_count(dataset_id: str, label: str):

@@ -18,7 +18,7 @@ from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
-    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets
+    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets, update_dataset_last_accessed
 # Export commands
 from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
@@ -645,6 +645,7 @@ def update_input_label_route(input_id: str):
     increment_label_input_count(dataset_id, req_data['new_label'])
     # Decrement old label input count
     decrement_label_input_count(dataset_id, req_data['previous_label'])
+    update_dataset_last_accessed(dataset_id)
     return {}, 200
 
 
@@ -684,6 +685,7 @@ def add_label_to_dataset(uuid: str):
     labels.append(req_data['label'])
     labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
     update_labels_of_dataset(uuid, labels_string)
+    update_dataset_last_accessed(uuid)
     # Return back dataset that was updated
     rows = get_dataset(uuid)
     dataset = {}
@@ -739,6 +741,7 @@ def remove_label_from_dataset(uuid: str):
     update_labels_of_dataset(uuid, labels_string)
     # Reset input labels
     reset_labels_of_inputs(uuid, req_data['label'])
+    update_dataset_last_accessed(uuid)
     # Return back dataset that was updated
     rows = get_dataset(uuid)
     dataset = {}
