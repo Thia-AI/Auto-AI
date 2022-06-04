@@ -70,12 +70,11 @@ export const TestModel = React.memo(({ model }: Props) => {
 				if (cancelJobResData['job_cancelled_successfully']) {
 					// Job cancelled successfully
 					toast({
-						title: 'Info',
-						description: 'Test job cancelled successfully',
+						title: 'Test Job Cancelled',
+						description: 'Test job cancelled due to page exit',
 						status: 'info',
 						duration: 1500,
 						isClosable: false,
-						saveToStore: false,
 					});
 				} else {
 					// Job failed to cancel
@@ -85,7 +84,6 @@ export const TestModel = React.memo(({ model }: Props) => {
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
-						saveToStore: false,
 					});
 				}
 			}
@@ -327,6 +325,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 				title='Leave this page'
 				okText='Confirm'
 				cancelText='Cancel'
+				bodyText='Test job is currently running. Are you sure you want to leave?'
 			/>
 		</>
 	);

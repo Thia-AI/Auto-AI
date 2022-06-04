@@ -56,6 +56,10 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 		}
 	};
 
+	const modelTypeExtraToVerbose = (modelTypeExtra: string) => {
+		return modelTypeExtra.replace('-', ' ');
+	};
+
 	return (
 		<HStack
 			willChange='transform'
@@ -87,9 +91,13 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 				borderLeftRadius='none'>
 				<VStack bgPos='center' bgSize='cover' borderRadius='lg' w='full' h='full'>
 					<HStack pb='4' w='full'>
-						<Badge ml='2' colorScheme='purple'>
-							<Heading fontSize='lg'>{getVerboseModelType(model.model_type)}</Heading>
+						<Badge ml='2' colorScheme='thia.gray'>
+							<Heading fontSize='md'>{modelTypeExtraToVerbose(model.model_type_extra)}</Heading>
 						</Badge>
+						<Badge ml='2' colorScheme='purple'>
+							<Heading fontSize='md'>{getVerboseModelType(model.model_type)}</Heading>
+						</Badge>
+
 						<Spacer />
 						<InteractiveCopyBadge badgeID={model.id} fontSize='0.725rem' />
 					</HStack>
