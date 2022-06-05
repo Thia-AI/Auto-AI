@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { ConnectedRouter as Router } from 'connected-react-router';
 import { Center, Spinner } from '@chakra-ui/react';
@@ -9,10 +9,10 @@ import { Header } from './components/header/Header';
 import { SideMenu } from './components/side-menu/SideMenu';
 import { EngineNotificationsHandler } from './components/notifications/EngineNotificationsHandler';
 import { DevDashboard } from './components/dev/DevDashboard';
-import { AuthProvider, useFirebaseApp, useSigninCheck } from 'reactfire';
+import { AuthProvider, useFirebaseApp } from 'reactfire';
 import { getAuth } from 'firebase/auth';
-import { ipcRenderer } from 'electron';
-import { IPC_ENGINE_START, IPC_ENGINE_STOP } from '_/shared/ipcChannels';
+import { EngineAvailableRoute } from './customRoutes/EngineAvailableRoute';
+import { UnauthenticatedRoute, AuthWrapper } from './customRoutes/AuthRoutes';
 
 /**
  * Main portion of the **renderer**.
@@ -51,21 +51,23 @@ export const App = React.memo(() => {
 									<Spinner color='gray.600' size='lg' />
 								</Center>
 							}>
-							<AuthWrapper fallback={<AuthRoute />}>
+							<AuthWrapper unauthenticatedFallback={<UnauthenticatedRoute />}>
 								<Switch>
 									<Route exact path='/' component={Main} />
-									<Route exact path='/models' component={Models} />
-									<Route exact path='/models/:id' component={Model} />
-									<Route exact path='/dataset/:id' component={Dataset} />
-									<Route exact path='/jobs' component={Jobs} />
-									<Route exact path='/exports' component={Exports} />
-									<Route exact path='/deployments' component={Deployments} />
-									<Route exact path='/notifications' component={Notifications} />
-									<Route exact path='/logs' component={Logs} />
-									<Route exact path='/quota' component={Quota} />
-									<Route exact path='/subscription' component={Subscription} />
+
+									<EngineAvailableRoute exact path='/models' component={Models} />
+									<EngineAvailableRoute exact path='/models/:id' component={Model} />
+									<EngineAvailableRoute exact path='/dataset/:id' component={Dataset} />
+									<EngineAvailableRoute exact path='/jobs' component={Jobs} />
+									<EngineAvailableRoute exact path='/exports' component={Exports} />
+									<EngineAvailableRoute exact path='/deployments' component={Deployments} />
+									<EngineAvailableRoute exact path='/notifications' component={Notifications} />
+									<EngineAvailableRoute exact path='/logs' component={Logs} />
+									<EngineAvailableRoute exact path='/quota' component={Quota} />
+									<EngineAvailableRoute exact path='/subscription' component={Subscription} />
+									<EngineAvailableRoute exact path='/help' component={Help} />
+
 									<Route exact path='/settings' component={Settings} />
-									<Route exact path='/help' component={Help} />
 									<Route exact path='*'>
 										<Redirect to='/' />
 									</Route>
@@ -80,60 +82,3 @@ export const App = React.memo(() => {
 });
 
 App.displayName = 'App';
-
-// eslint-disable-next-line jsdoc/require-param
-/**
- * AuthWrapper that renders children if signed into firebase.
- *
- * @react
- */
-export const AuthWrapper = ({
-	children,
-	fallback,
-}: React.PropsWithChildren<{ fallback: JSX.Element }>): JSX.Element => {
-	const { status, data: signInCheckResult } = useSigninCheck();
-
-	const startStopEngineOnAuthChange = async () => {
-		if (status !== 'loading') {
-			if (signInCheckResult.signedIn) {
-				// Logged in
-				await ipcRenderer.invoke(IPC_ENGINE_START);
-			} else {
-				// Logged out
-				await ipcRenderer.invoke(IPC_ENGINE_STOP);
-			}
-		}
-	};
-	useEffect(() => {
-		startStopEngineOnAuthChange();
-	}, [status, signInCheckResult]);
-	if (!children) {
-		throw new Error('Children must be provided');
-	}
-	if (status === 'loading') {
-		return (
-			<Center w='full' h='full' marginTop='var(--header-height)'>
-				<Spinner color='gray.600' size='lg' />
-			</Center>
-		);
-	} else if (signInCheckResult.signedIn) {
-		return children as JSX.Element;
-	}
-
-	return fallback;
-};
-
-const AuthRoute = () => {
-	const Landing = lazy(() => import('./pages/LandingPage'));
-
-	return (
-		<Switch>
-			<Route exact path='/landing'>
-				<Landing />
-			</Route>
-			<Route exact path='*'>
-				<Redirect to='/landing' />
-			</Route>
-		</Switch>
-	);
-};
