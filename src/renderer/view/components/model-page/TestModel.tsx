@@ -71,7 +71,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					// Job cancelled successfully
 					toast({
 						title: 'Test Job Cancelled',
-						description: 'Test job cancelled due to page exit',
+						description: `Test job for '${model.model_name}' model cancelled due to page exit`,
 						status: 'info',
 						duration: 1500,
 						isClosable: false,
@@ -79,8 +79,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 				} else {
 					// Job failed to cancel
 					toast({
-						title: 'Test job cancellation failed',
-						description: 'Failed to cancel testing job',
+						title: 'Test Job Cancellation Failed',
+						description: `Failed to cancel test job for '${model.model_name}' model`,
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
