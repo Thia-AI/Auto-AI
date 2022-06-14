@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 import {
 	Box,
 	VStack,
@@ -8,7 +8,6 @@ import {
 	Button,
 	HStack,
 	useRadioGroup,
-	useToast,
 	FormControl,
 	FormLabel,
 	FormErrorMessage,
@@ -23,8 +22,8 @@ import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/Cho
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
 import { ICModelRadioCard } from './ICModelRadio';
-import { waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
-import { changeSelectedPage } from '_state/side-menu/SideModelAction';
+import { hasWhiteSpace, toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
+import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -36,8 +35,6 @@ interface Props {
 }
 
 const ICModelContentC = React.memo((props: Props) => {
-	// Toast
-	const toast = useToast();
 	// Model Name
 	const [modelNameValue, setModelNameValue] = useState('');
 	const [modelNameValid, setModelNameValid] = useState(false);
@@ -49,17 +46,20 @@ const ICModelContentC = React.memo((props: Props) => {
 	const [modelNameInputFocusedOnce, setModelNameInputFocusedOnce] = useState(false);
 
 	// Errors
-	const validList = [[modelNameValid, modelNameError]];
+	const inputErrorList: [boolean, string][] = [[modelNameValid, modelNameError]];
 
 	// Radio Card - Model Type
 
-	const modelTypeRadioOptions = ['Fast', 'Balanced', 'Precise'];
+	const modelTypeRadioOptions = ['Extra Small', 'Small', 'Medium', 'Large', 'Extra Large'];
 	const modelTypeRadioDescriptions = [
-		'A model that is more focused on being smaller and faster at the cost of being less accurate.',
-		'A model that is both relatively fast and fairly accurate.',
-		"A model that is more focused on it's accuracy at the cost of being slower and larger",
+		'Extremely lightweight model, extremely fast more innacurate. Best suited for mobile and edge devices.',
+		'Lightweight model, fast but slightly innacurate. Best suited for low-latency real-time requirements.',
+		'Balanced model both relatively fast and accurate. Best suited for all requirements.',
+		'Large model, accurate but slow. Best suited for high-accuracy requirements.',
+		'Extremely large model, extremely accurate but very slow. Best suited for accuracy-critical requirements.',
 	];
-	const [modelTypeValue, setModelTypeValue] = useState(modelTypeRadioOptions[1]);
+
+	const [modelTypeValue, setModelTypeValue] = useState(modelTypeRadioOptions[2]);
 
 	const { getRootProps: getModelTypeRootProps, getRadioProps: getModelTypeRadioProps } = useRadioGroup({
 		name: 'modelType',
@@ -98,56 +98,72 @@ const ICModelContentC = React.memo((props: Props) => {
 		return labellingTypeForEngine[labellingTypeRadioOptions.indexOf(labellingType)];
 	};
 
-	const handleModelNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-		const name = event.target.value;
-		setModelNameValue(name);
+	const handleModelNameChange = (event) => {
+		const modelName = event.target.value;
+		setModelNameValue(modelName);
 
 		// validate
-		if (name.length === 0) {
+		if (modelName.length === 0) {
 			setModelNameError(INITIAL_MODEL_NAME_ERROR);
 			setModelNameValid(false);
 			return;
 		}
-		const regex = /^[a-zA-Z0-9-_]+$/;
-		if (name.search(regex) === -1) {
+		if (modelName.length >= 20) {
+			setModelNameError('Must be less than 20 characters');
+			setModelNameValid(false);
+			return;
+		}
+		const alphaNumRegex = /^[a-zA-Z0-9]+$/;
+
+		if (!modelName.match(alphaNumRegex)) {
 			setModelNameError('Alphanumeric characters only');
 			setModelNameValid(false);
 			return;
 		}
+
+		if (hasWhiteSpace(modelName)) {
+			setModelNameError('No whitespace characters');
+			setModelNameValid(false);
+			return;
+		}
+
 		setModelNameValid(true);
 		setModelNameError('');
 	};
 
 	const createModel = async () => {
-		// check errors
+		// Check errors
+
 		let wasError = false;
-		validList.forEach((validPair) => {
+		inputErrorList.forEach((validPair) => {
 			const inputValid = validPair[0];
 			const inputError = validPair[1];
 			if (!inputValid) {
 				wasError = true;
 				toast({
-					title: 'Error',
+					title: 'Error in form',
 					description: `${inputError}`,
 					status: 'error',
 					duration: 1500,
 					isClosable: true,
+					saveToStore: false,
 				});
 			}
 		});
 		if (wasError) return;
-		// No error, send create model action
+
+		// No error, continue
 		setModelCreating(true);
 		const [createModelErr, createModelRes] = await EngineRequestHandler.getInstance().createModel({
 			model_name: modelNameValue,
 			model_type: 'image_classification',
-			model_type_extra: modelTypeValue.toLowerCase(),
+			model_type_extra: modelTypeValue.toLowerCase().replace(/\s+/g, '-'),
 			labelling_type: getLabellingTypeForEngine(labellingType),
 		});
 		// If error occurred when sending the Engine Action
 		if (createModelErr) {
 			toast({
-				title: 'Error',
+				title: `Failed to create model '${modelNameValue}'`,
 				description: `${createModelRes['Error']}`,
 				status: 'error',
 				duration: 1500,
@@ -160,13 +176,7 @@ const ICModelContentC = React.memo((props: Props) => {
 		await waitTillEngineJobComplete(createModelRes['ids'][0]);
 		// Complete! Send a notification to user
 		setModelCreating(false);
-		toast({
-			title: 'Success',
-			description: 'Model Created Successfully',
-			status: 'success',
-			duration: 1500,
-			isClosable: false,
-		});
+		// No success toast as this is an Engine job and is handled by Engine socket.io notifications
 		// Close model selection modal and navigate to models page
 		props.openCloseModelSelectionAction();
 		props.changeSelectedPage(MODELS_PAGE);
@@ -213,7 +223,7 @@ const ICModelContentC = React.memo((props: Props) => {
 				</FormControl>
 			</Box>
 			<Heading as='h4' size='md' alignSelf='flex-start' pt='3'>
-				Model Type
+				Model Size
 			</Heading>
 			<Box w='full' px='2' pt='1'>
 				<Wrap
@@ -264,10 +274,14 @@ const ICModelContentC = React.memo((props: Props) => {
 			</Box>
 			<Center pt='8'>
 				<HStack spacing='3'>
-					<Button isLoading={modelCreating} loadingText='Creating' colorScheme='teal' onClick={createModel}>
+					<Button
+						isLoading={modelCreating}
+						loadingText='Creating'
+						colorScheme='thia.purple'
+						onClick={createModel}>
 						Create
 					</Button>
-					<Button colorScheme='red' variant='ghost' onClick={props.openCloseModelSelectionAction}>
+					<Button colorScheme='thia.gray' variant='ghost' onClick={props.openCloseModelSelectionAction}>
 						Cancel
 					</Button>
 				</HStack>
@@ -284,5 +298,5 @@ ICModelContentC.displayName = 'ICModelContent';
 export const ICModelContent = connect(null, {
 	openCloseModelSelectionAction,
 	push,
-	changeSelectedPage,
+	changeSelectedPage: changeSelectedPageAction,
 })(ICModelContentC);

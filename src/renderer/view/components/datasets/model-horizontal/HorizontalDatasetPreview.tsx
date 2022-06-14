@@ -10,6 +10,7 @@ import {
 	useDisclosure,
 	Spinner,
 	Center,
+	Skeleton,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
@@ -21,7 +22,7 @@ import { DeleteDataset } from '../../delete-dataset/DeleteDataset';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IAppState } from '_/renderer/state/reducers';
 import { IDatasetListReducer } from '_/renderer/state/dataset-list/model/reducerTypes';
-import { useHorizontalScrollbar } from '_/shared/theming/hooks';
+import { useHorizontalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	modelType: string;
@@ -29,30 +30,43 @@ interface Props {
 	datasetList: IDatasetListReducer;
 	datasetLoading: boolean;
 }
-const HorizontalDatasetPreviewC = React.memo((props: Props) => {
+const HorizontalDatasetPreviewC = React.memo(({ modelType, refreshDataset, datasetList, datasetLoading }: Props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const verboseModelType = getVerboseModelType(props.modelType);
+	const verboseModelType = getVerboseModelType(modelType);
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
-	const horizontalScrollBarSX = useHorizontalScrollbar();
-
+	const horizontalScrollBarSX = useHorizontalScrollbar('6px');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
+	const color = mode('thia.gray.700', 'thia.gray.300');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const text = `${isFirstLetterVowel(verboseModelType) ? 'an' : 'a'} ${verboseModelType}`;
 	useEffect(() => {
-		props.refreshDataset();
+		refreshDataset();
 	}, []);
 
 	const renderCards = () => {
-		if (props.datasetLoading) {
+		if (datasetLoading) {
 			return (
 				<Center w='full' h='full'>
 					<Spinner size='xl' color='gray.600' />
 				</Center>
 			);
 		}
-		if (props.datasetList.value.length < 1) {
+		if (datasetList.value.length < 1) {
 			return <FillerDatasetCard />;
 		}
-		return props.datasetList.value.map((dataset, i) => {
+		return datasetList.value.map((dataset, i) => {
 			return <DatasetCard dataset={dataset} key={i} />;
 		});
+	};
+
+	const renderCardDescription = () => {
+		return (
+			<Skeleton isLoaded={!datasetLoading}>
+				<Text color={color} fontSize='sm'>
+					Select {text} dataset to train on
+				</Text>
+			</Skeleton>
+		);
 	};
 
 	return (
@@ -65,17 +79,16 @@ const HorizontalDatasetPreviewC = React.memo((props: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('thia.gray.200', 'thia.gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<HStack mb='8' w='full'>
 					<Box>
 						<Text as='h3' fontWeight='bold' fontSize='lg'>
 							Datasets
 						</Text>
-						<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
-							Select {isFirstLetterVowel(verboseModelType) ? 'an' : 'a'} {verboseModelType} dataset to
-							train on
-						</Text>
+						{renderCardDescription()}
 					</Box>
 					<Spacer />
 					<Button onClick={onOpen} variant='ghost' colorScheme='thia.purple'>

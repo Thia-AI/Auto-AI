@@ -36,6 +36,8 @@ export const IPC_DEV_COPY_ID_TOKEN = 'dev:copyIdToken';
 
 export const IPC_DEV_COPY_UID = 'dev:copyUid';
 
+export const IPC_DEV_TOGGLE_COLOR_MODE = 'dev:toggleColorMode';
+
 // DRAG AND DROP
 
 /**
@@ -148,3 +150,13 @@ export const IPC_WINDOW_MAXIMIZED = 'window:maximized';
  * Used when window is unmaximized, **main** sends to **renderer**.
  */
 export const IPC_WINDOW_UNMAXIMIZED = 'window:unmaximized';
+
+// Electron Store
+
+export const IPC_ACTIVITIES_STORE_GET_ACTIVITIES = 'IPC_NOTIFICATIONS_STORE_GET_NOTIFICATIONS';
+
+export const IPC_ACTIVITIES_STORE_ADD_ACTIVITY = 'IPC_NOTIFICATIONS_STORE_ADD_NOTIFICATION';
+
+export const IPC_ACTIVITIES_STORE_DELETE_ACTIVITY = 'IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATION';
+
+export const IPC_NOTIFICATIONS_STORE_DELETE_ALL_ACTIVITIES = 'IPC_NOTIFICATIONS_STORE_DELETE_NOTIFICATIONS';

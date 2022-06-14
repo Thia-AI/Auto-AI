@@ -1,7 +1,7 @@
 import { OPEN_CLOSE_DELETE_DATASET, OPEN_CLOSE_DELETE_LABEL } from '../types';
 import { IOpenCloseDeleteDatasetReducer, IOpenCloseDeleteLabelReducer } from './model/reducerTypes';
 import { IOpenCloseDeleteDatasetAction, IOpenCloseDeleteLabelAction } from './model/actionTypes';
-import { nullDataset } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { nullDataset } from '_/renderer/view/helpers/constants/engineTypes';
 
 const initialOpenCloseDeleteDatasetSelectionState: IOpenCloseDeleteDatasetReducer = {
 	openCloseValue: false,

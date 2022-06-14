@@ -1,4 +1,4 @@
-import { Dataset, Label, Labels } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset, Label, Labels } from '_/renderer/view/helpers/constants/engineTypes';
 import { CHANGE_ACTIVE_DATASET, UPDATE_ACTIVE_DATASET_LABEL } from '_state/types';
 import { IChangeActiveDatasetAction, IUpdateDatasetLabelAction } from './model/actionTypes';
 

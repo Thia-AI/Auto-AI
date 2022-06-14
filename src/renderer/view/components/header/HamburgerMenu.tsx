@@ -15,8 +15,8 @@ const HamburgerC = React.memo((props: Props) => {
 		<Icon
 			css={{ '-webkit-app-region': 'no-drag' }}
 			transition='all 200ms'
-			color='gray.300'
-			_hover={{ color: 'teal.500', transform: 'scale(1.1)' }}
+			color='thia.gray.300'
+			_hover={{ color: 'thia.purple.400', transform: 'scale(1.1)' }}
 			w={6}
 			h={6}
 			as={IoMenuOutline}

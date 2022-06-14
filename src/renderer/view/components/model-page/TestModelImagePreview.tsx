@@ -1,6 +1,6 @@
-import { Button, chakra, Flex, Text } from '@chakra-ui/react';
+import { Button, Center, chakra, Flex, Spinner, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import React from 'react';
-import { Label } from '../../helpers/constants/engineDBTypes';
+import { Label } from '../../helpers/constants/engineTypes';
 
 interface Props {
 	imageSRC: string;
@@ -13,6 +13,9 @@ interface Props {
  * Component for displaying an image when testing a trained model.
  */
 export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, trainedLabel, testRunning }: Props) => {
+	const previewBG = mode('thia.gray.100', 'thia.gray.800');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+
 	const renderLabel = () => {
 		if (testedLabel && trainedLabel) {
 			const splitColor = trainedLabel.color.split(/(?:,|\)|\(| )+/);
@@ -40,22 +43,27 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 			);
 		} else if (testRunning) {
 			return (
-				<Button
+				<Center
 					pl='1.5'
+					bg={previewBG}
 					position='relative'
 					borderTopRadius='none'
 					cursor='default'
 					w='full'
-					h='35px'
-					variant='outline'
-					colorScheme='gray'
-					isLoading
-				/>
+					h='35px'>
+					<Spinner color='gray.600' size='md' />
+				</Center>
 			);
 		}
 	};
 	return (
-		<Flex borderRadius='md' overflow='hidden' flexDir='column' bg='gray.800'>
+		<Flex
+			borderRadius='md'
+			overflow='hidden'
+			flexDir='column'
+			bg={previewBG}
+			borderWidth='1px'
+			borderColor={borderColor}>
 			<chakra.img width={200} height={200} objectFit='cover' src={imageSRC} />
 			{renderLabel()}
 		</Flex>

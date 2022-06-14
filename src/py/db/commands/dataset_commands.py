@@ -1,5 +1,7 @@
 import uuid
+from datetime import datetime
 
+from config.constants import NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -89,6 +91,15 @@ def update_labels_of_dataset(uuid: str, labels: str):
     DBManager.get_instance().execute(cmd)
 
 
+def update_dataset_last_accessed(dataset_id: str, last_accessed_datetime: str = None):
+    if last_accessed_datetime is None:
+        last_accessed_datetime = str(datetime.now())
+    cmd = DBCommand(f"Update Dataset {dataset_id}'s last accessed datetime",
+                    command='''UPDATE datasets SET date_last_accessed = ? WHERE id = ?''',
+                    values=(last_accessed_datetime, dataset_id))
+    return DBManager.get_instance().execute(cmd)
+
+
 def increment_label_input_count(dataset_id: str, label: str):
     cmd = DBCommand(name=f"Increment Label: {label}'s input_count by 1 for Dataset: {dataset_id}",
                     command='''UPDATE labels SET input_count = input_count + 1 WHERE dataset_id = ? AND value = ?''',
@@ -115,3 +126,11 @@ def delete_all_labels(dataset_id: str):
                     command="DELETE FROM labels WHERE dataset_id = ?",
                     values=(dataset_id,))
     DBManager.get_instance().execute(cmd)
+
+
+def get_num_datasets():
+    cmd = DBCommand(name="Get Number of Datasets", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM datasets''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]

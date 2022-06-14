@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Center, HStack, Text, Button, VStack, useToast, Flex, useColorModeValue as mode } from '@chakra-ui/react';
+import { Center, HStack, Text, Button, VStack, Flex, useColorModeValue as mode } from '@chakra-ui/react';
 import { promises } from 'fs';
 import { extname, sep } from 'path';
 import { ipcRenderer, OpenDialogReturnValue } from 'electron';
@@ -12,13 +12,13 @@ import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/D
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { JobProgress } from '../../notifications/JobProgress';
-import { Job, nullJob } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Job, nullJob } from '_/renderer/view/helpers/constants/engineTypes';
 import { DatasetLabelInputPreview } from '../preview/DatasetLabelInputPreview';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER, IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES } from '_/shared/ipcChannels';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { MAX_INPUTS_PER_PAGE } from '_/shared/engineConstants';
-import { sleep } from '_/renderer/view/helpers/functionHelpers';
+import { sleep, toast } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
 	files: string[];
@@ -31,8 +31,6 @@ interface Props {
 
 const DragNDropC = React.memo(
 	({ files, updateFiles, pathname, getNextPageInputs, activeDatasetInputs, refreshDataset }: Props) => {
-		const toast = useToast();
-
 		const [fileDirectory, setFileDirectory] = useState('');
 		const [imagesUploading, setImagesUploading] = useState(false);
 		const inputColor = mode('thia.gray.700', 'thia.gray.300');
@@ -111,7 +109,7 @@ const DragNDropC = React.memo(
 				);
 				if (uploadImageErr) {
 					toast({
-						title: 'Error',
+						title: 'Upload failed',
 						description: 'Failed to upload images to dataset',
 						status: 'error',
 						duration: 1500,
@@ -129,7 +127,7 @@ const DragNDropC = React.memo(
 
 				setImagesUploading(false);
 				toast({
-					title: 'Success',
+					title: 'Upload started',
 					description: 'Started Image Upload Job',
 					status: 'info',
 					duration: 1500,

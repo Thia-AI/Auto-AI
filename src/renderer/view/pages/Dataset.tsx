@@ -15,7 +15,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { Dataset, Labels, nullDataset } from '_view_helpers/constants/engineDBTypes';
+import { Dataset, Labels, nullDataset } from '_/renderer/view/helpers/constants/engineTypes';
 import { getVerboseModelType } from '../helpers/modelHelper';
 import { InteractiveCopyBadge } from '../components/interactive/InteractiveCopyBadge';
 import { DragNDrop } from '../components/datasets/drag-n-drop/DragNDrop';
@@ -23,7 +23,7 @@ import { IAppState } from '_/renderer/state/reducers';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
-import { useVerticalScrollbar } from '_/shared/theming/hooks';
+import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -36,6 +36,8 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const verticalScrollbar = useVerticalScrollbar('10px');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	const refreshDataset = useCallback(async () => {
 		const [datasetError, datasetResData] = await EngineRequestHandler.getInstance().getDataset(datasetID);
@@ -90,8 +92,10 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('thia.gray.200', 'thia.gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<Box mb='8'>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Upload Images

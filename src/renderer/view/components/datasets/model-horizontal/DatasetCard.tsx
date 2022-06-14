@@ -18,7 +18,7 @@ import { FiEdit } from 'react-icons/fi';
 import { IoTrash } from 'react-icons/io5';
 import { push, Push } from 'connected-react-router';
 
-import { Dataset } from '_view_helpers/constants/engineDBTypes';
+import { Dataset } from '_/renderer/view/helpers/constants/engineTypes';
 import Preview from '_utils/images/placeholder-dark2.jpg';
 import { InteractiveCopyBadge } from '../../interactive/InteractiveCopyBadge';
 
@@ -37,7 +37,7 @@ import {
 } from '_/renderer/state/choose-dataset-train/model/actionTypes';
 
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 
 interface Props {
 	dataset: Dataset;
@@ -50,6 +50,9 @@ interface Props {
 
 const DatasetCardC = React.memo((props: Props) => {
 	const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${props.dataset.id}/first-image`);
+	const cardBG = mode('thia.gray.100', 'thia.gray.800');
+	const lastUpdatedColor = mode('thia.gray.300', 'thia.gray.600');
+
 	useEffect(() => {
 		return () => {
 			props.resetSelectedDatasetAction();
@@ -70,7 +73,7 @@ const DatasetCardC = React.memo((props: Props) => {
 					if (props.selectedDatasetID.value === props.dataset.id) props.resetSelectedDatasetAction();
 					else props.changeSelectedDatasetAction(props.dataset.id);
 				}}
-				borderTopRadius='lg'
+				borderTopRadius='md'
 				objectFit='cover'
 				h='200px'
 				w='full'
@@ -83,7 +86,7 @@ const DatasetCardC = React.memo((props: Props) => {
 			<Box
 				willChange='box-shadow'
 				transition='box-shadow 200ms ease'
-				bg={mode('thia.gray.300', 'thia.gray.800')}
+				bg={cardBG}
 				borderRadius='md'
 				w='275px'
 				boxShadow={
@@ -104,7 +107,7 @@ const DatasetCardC = React.memo((props: Props) => {
 						</Box>
 					</HStack>
 					<HStack w='full'>
-						<Text fontSize='xs' color='gray.600' as='p' maxW='65%'>
+						<Text fontSize='xs' color={lastUpdatedColor} as='p' maxW='65%'>
 							Updated {new Date(props.dataset.date_last_accessed).toDateString()}
 						</Text>
 						<Spacer />
@@ -196,7 +199,7 @@ export const FillerDatasetCard = () => {
 			bgImage={Preview}
 			bgSize='cover'
 			bgPos='center'
-			boxShadow='md'
+			shadow='md'
 			w='full'
 			h='275px'>
 			<Text

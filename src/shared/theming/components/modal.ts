@@ -14,11 +14,11 @@ export default {
 				lg: '2xl',
 				'2xl': '3xl',
 			},
-			bg: mode('thia.gray.100', 'thia.gray.800')(props),
+			bg: mode('thia.gray.50', 'thia.gray.800')(props),
 		},
 
 		dialog: {
-			bg: mode('thia.gray.100', 'thia.gray.800')(props),
+			bg: mode('thia.gray.50', 'thia.gray.800')(props),
 		},
 
 		closeButton: {

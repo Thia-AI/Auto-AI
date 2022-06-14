@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 
 import { ipcRenderer } from 'electron';
-import { useToast } from '@chakra-ui/toast';
 import { connect } from 'react-redux';
 import { IJobNotification } from '_/renderer/state/notifications/model/actionTypes';
 import { notifSendAction } from '_/renderer/state/notifications/NotificationActions';
 import { IAppState } from '_/renderer/state/reducers';
-import { Job } from '../../helpers/constants/engineDBTypes';
+import {
+	IMAGE_CLASSIFICATION_TEST_JOB_NAME,
+	IMAGE_CLASSIFICATION_TRAIN_JOB_NAME,
+	Job,
+	TestJob,
+	TrainJob,
+} from '../../helpers/constants/engineTypes';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
 import { IPC_CONNECT_SOCKET, IPC_ENGINE_JOB_FINISHED, IPC_NOTIFICATIONS_SHOW_NOTIFICATION } from '_/shared/ipcChannels';
+import { toast } from '../../helpers/functionHelpers';
 
 interface Props {
 	notifications: IJobNotification[];
@@ -18,8 +24,11 @@ interface Props {
 	sendNotification: (notification: IJobNotification) => void;
 }
 
-const NotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
-	const toast = useToast();
+interface DoOSNotificationOptions {
+	title: string;
+	description: string;
+}
+const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotification, engineStarted }: Props) => {
 	/**
 	 * Map of jobID -> Notification key-value pair that represents the "active" notifications
 	 */
@@ -57,13 +66,22 @@ const NotificationsHandlerC = React.memo(({ notifications, sendNotification, eng
 		ipcRenderer.on(IPC_ENGINE_JOB_FINISHED, async (e, jobID: string) => {
 			// TODO: Do something when there's an error (maybe there needs to be a universal retry/error)
 			// system.
-			const [wasError, job] = await getJobIDStatus(jobID); // eslint-disable-line @typescript-eslint/no-unused-vars
+			const [_wasError, job] = await getJobIDStatus(jobID);
 			sendNotification({
 				job: job as Job,
 				dismissAfter: 1250,
 			});
 		});
 	}, []);
+
+	const doOSNotification = ({ title, description }: DoOSNotificationOptions) => {
+		if (!document.hasFocus()) {
+			(async function () {
+				await ipcRenderer.invoke(IPC_NOTIFICATIONS_SHOW_NOTIFICATION, title, description);
+			})();
+		}
+	};
+
 	// For each time notifications change
 	useEffect(() => {
 		const newNotifMap: INotificationMap = {};
@@ -72,33 +90,68 @@ const NotificationsHandlerC = React.memo(({ notifications, sendNotification, eng
 			const notif = notifications[i];
 			if (!notificationMap.hasOwnProperty(notif.job.id)) {
 				// This is a new notification, send it!!
-				if (!document.hasFocus()) {
-					(async function () {
-						await ipcRenderer.invoke(
-							IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
-							'Job Update',
-							`Finished ${notif.job.job_name} job`,
-						);
-					})();
+
+				let trainingTestingJobError = false;
+				if (notif.job.job_name == IMAGE_CLASSIFICATION_TRAIN_JOB_NAME) {
+					const job = notif.job as TrainJob;
+					if (job.extra_data?.error) {
+						// There was an error during training
+						trainingTestingJobError = true;
+						doOSNotification({
+							title: `${job.job_name} Job Encountered an Error`,
+							description: job.extra_data.error.title,
+						});
+						toast({
+							title: job.extra_data.error.title,
+							description: job.extra_data.error.verboseMessage,
+							status: 'error',
+							duration: notif.dismissAfter,
+							isClosable: false,
+						});
+					}
 				}
-				// Show UI notification regardless
-				toast({
-					title: 'Success',
-					description: `Finished ${notif.job.job_name} job`,
-					status: 'success',
-					duration: notif.dismissAfter,
-					isClosable: false,
-				});
+				if (notif.job.job_name == IMAGE_CLASSIFICATION_TEST_JOB_NAME) {
+					const job = notif.job as TestJob;
+					if (job.extra_data?.error) {
+						trainingTestingJobError = true;
+						doOSNotification({
+							title: `${job.job_name} Job Encountered an Error`,
+							description: job.extra_data.error.title,
+						});
+						toast({
+							title: job.extra_data.error.title,
+							description: job.extra_data.error.verboseMessage,
+							status: 'error',
+							duration: notif.dismissAfter,
+							isClosable: false,
+						});
+					}
+				}
+				if (!trainingTestingJobError) {
+					// Job update was not due to a training or testing job encountering an error
+					doOSNotification({
+						title: 'Job Update',
+						description: `Finished ${notif.job.job_name} job`,
+					});
+					toast({
+						title: `${notif.job.job_name} Job completed`,
+						description: 'Job completed successfully',
+						status: 'success',
+						duration: notif.dismissAfter,
+						isClosable: false,
+					});
+				}
 			}
 			// Update notificationMap
 			newNotifMap[notif.job.id] = notif;
 		}
 		setNotificationMap(newNotifMap);
 	}, [notifications]);
+
 	return <></>;
 });
 
-NotificationsHandlerC.displayName = 'NotificationsHandler';
+EngineNotificationsHandlerC.displayName = 'NotificationsHandler';
 
 const mapStateToProps = (state: IAppState) => ({
 	notifications: state.notifications.value,
@@ -108,6 +161,6 @@ const mapStateToProps = (state: IAppState) => ({
 /**
  * Component that manages sending notifications to UI & Native OS
  */
-export const NotificationsHandler = connect(mapStateToProps, {
+export const EngineNotificationsHandler = connect(mapStateToProps, {
 	sendNotification: notifSendAction,
-})(NotificationsHandlerC);
+})(EngineNotificationsHandlerC);

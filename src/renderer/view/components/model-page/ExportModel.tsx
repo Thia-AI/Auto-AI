@@ -11,15 +11,14 @@ import {
 	Spacer,
 	Spinner,
 	useColorModeValue as mode,
-	useToast,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineDBTypes';
+import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineTypes';
 import TensorFlowLogo from '_utils/images/TensorFlow Brand Assets/TensorFlow Logo/Primary/SVG/FullColorPrimary Icon.svg';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER } from '_/shared/ipcChannels';
-import { waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
 
 interface Props {
 	model: Model;
@@ -30,18 +29,18 @@ const CharkaTensorFlowLogo = chakra(TensorFlowLogo);
 /**
  * Section in model page for exporting the model.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ExportModel = React.memo(({ model }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 
 	const [modelExportDisabled, setModelExportDisabled] = useState(true);
-
 	const [savedModelExporting, setSavedModelExporting] = useState(false);
 	const [liteExporting, setLiteExporting] = useState(false);
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [exportModelEngineResponse, setExportModelEngineResponse] = useState<[boolean, any] | null>(null);
 	const [exportModelJobWatchIntervalID, setExportModelJobWatchIntervalID] = useState<number | null>(null);
+
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	useEffect(() => {
 		// Once export job has finished.
@@ -102,8 +101,10 @@ export const ExportModel = React.memo(({ model }: Props) => {
 			alignSelf='center'
 			px='8'
 			rounded='lg'
-			bg={mode('thia.gray.200', 'thia.gray.700')}
-			shadow='base'>
+			borderWidth='1px'
+			borderColor={borderColor}
+			bg={cardBG}
+			shadow='lg'>
 			<Box mb='8' w='full'>
 				<Text as='h3' fontWeight='bold' fontSize='lg'>
 					Export
@@ -181,8 +182,9 @@ const ExtraModelTypeButton = React.memo(
 		setExporting,
 		setIsDisabled,
 	}: ExtraModelTypeButton) => {
-		const toast = useToast();
-
+		const buttonBG = mode('thia.gray.50', 'thia.gray.800');
+		const buttonShadow = mode('sm', 'lg-dark');
+		const borderColor = mode('thia.gray.200', 'thia.gray.600');
 		const exportModel = async () => {
 			if (!isDisabled) {
 				const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
@@ -198,8 +200,9 @@ const ExtraModelTypeButton = React.memo(
 						save_dir: folder.filePaths[0],
 					});
 				if (exportModelErrorExists) {
+					// TODO: Pass model instead of modelID so we can display the name of the model for which export failed.
 					toast({
-						title: 'Error',
+						title: 'Failed to export model',
 						description: `${exportModelResData['Error']}`,
 						status: 'error',
 						duration: 1500,
@@ -221,13 +224,16 @@ const ExtraModelTypeButton = React.memo(
 				py='4'
 				pt='1'
 				opacity={isDisabled ? '0.4' : '1'}
-				bg={mode('thia.gray.300', 'thia.gray.800')}
+				bg={buttonBG}
 				rounded='sm'
 				onClick={exportModel}
 				cursor={isDisabled ? 'not-allowed' : 'pointer'}
 				willChange='transform'
 				transition='all 200ms ease'
-				_hover={!isDisabled ? { transform: 'scale(1.03)' } : {}}>
+				_hover={!isDisabled ? { transform: 'scale(1.03)' } : {}}
+				borderWidth='1px'
+				borderColor={borderColor}
+				shadow={buttonShadow}>
 				<HStack>
 					<Icon as={iconSrc} w={12} h={12} />
 					<Spacer />

@@ -1,6 +1,6 @@
 import json
 
-from config.constants import ModelStatus
+from config.constants import ICModelStatus, NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
@@ -11,7 +11,7 @@ def create_model(uuid: str, model_name: str, model_type: str, model_type_extra: 
                     command='''INSERT INTO models (id, model_name, model_type, model_type_extra, date_created, date_last_accessed, model_status)
                     values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, ModelStatus.IDLE.value
+                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, ICModelStatus.IDLE.value
                     ))
     DBManager.get_instance().execute(cmd)
 
@@ -23,7 +23,7 @@ def delete_model(model_id: str):
     DBManager.get_instance().execute(cmd)
 
 
-def update_model_status(model_id: str, status: ModelStatus):
+def update_model_status(model_id: str, status: ICModelStatus):
     cmd = DBCommand(name=f"Update Model: {model_id}'s status to {status.value}",
                     command=f'''UPDATE models SET model_status = ? WHERE id = ?''',
                     values=(status.value, model_id))
@@ -59,3 +59,11 @@ def get_models():
 def get_model(uuid: str):
     cmd = DBCommand(name=f"Get Model With ID: {uuid}", command=f"SELECT * FROM models WHERE id = '{uuid}'")
     return DBManager.get_instance().execute(cmd)
+
+
+def get_num_models():
+    cmd = DBCommand(name="Get Number of Models", command=f'''SELECT COUNT( DISTINCT id) AS '{NUM_INSTANCES}' FROM models''',
+                    )
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row[NUM_INSTANCES]

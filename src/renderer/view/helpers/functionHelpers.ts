@@ -1,6 +1,10 @@
+import { createStandaloneToast, UseToastOptions } from '@chakra-ui/react';
 import { AxiosRequestConfig } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
+import { theme } from '_/shared/theming/chakraTheme';
+import { addNotificationToStore } from './ipcHelpers';
 
 // Random helper functions
 
@@ -200,4 +204,52 @@ export const argmax = (arr: number[] | undefined) => {
 	}
 
 	return [maxIndex, max];
+};
+
+/**
+ * Returns true if a string contains whitespace or not.
+ *
+ * @param s String we are checking.
+ * @returns Whether there is whitespace.
+ */
+export const hasWhiteSpace = (s: string) => {
+	const whitespaceChars = [' ', '\t', '\n'];
+	return whitespaceChars.some((char) => s.includes(char));
+};
+
+const standaloneToast = createStandaloneToast({ theme });
+
+interface ToastOptions extends UseToastOptions {
+	saveToStore?: boolean;
+}
+
+const DefaultToastOptions: ToastOptions = {
+	saveToStore: true,
+};
+
+/**
+ * Custom toast that adds data to App's notifications store.
+ *
+ * @param options Chakra UI `UseToastOptions`.
+ * @returns Chakra UI toast ID.
+ */
+export const toast = (options?: ToastOptions) => {
+	const extendedOptions: ToastOptions = {
+		...DefaultToastOptions,
+		...options,
+	};
+	const toastID = standaloneToast(extendedOptions);
+	if (extendedOptions.saveToStore) {
+		const notificationID = uuidv4();
+		addNotificationToStore(notificationID, options)
+			.then(() => {
+				return toastID;
+			})
+			.catch((err) => {
+				console.error(err);
+				return toastID;
+			});
+	} else {
+		return toastID;
+	}
 };

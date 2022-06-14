@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Box, Center, chakra, Spinner } from '@chakra-ui/react';
+import { Box, Center, chakra, Spinner, useColorModeValue as mode } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 
 import { IAppState } from '_/renderer/state/reducers';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { DatasetMultiInputPreview } from './DatasetMultiInputPreview';
-import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Input, Label, nullLabel } from '_/renderer/view/helpers/constants/engineTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { setActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
@@ -32,6 +30,7 @@ const PaginationCellC = React.memo(
 		const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${datasetID}/input/${input.id}`, {
 			readyToLoad: datasetID!.length > 0 && input.id.length > 0,
 		});
+		const brightness = mode('15%', '10%');
 
 		useEffect(() => {
 			if (datasetID) {
@@ -74,7 +73,7 @@ const PaginationCellC = React.memo(
 					h='full'
 					borderRadius='md'
 					cursor='pointer'
-					outline='3px solid'
+					outline='2px solid'
 					outlineColor={label.value.length > 0 ? label.color : 'transparent'}
 					ref={ref}
 					onClick={() => {
@@ -86,7 +85,7 @@ const PaginationCellC = React.memo(
 					<chakra.img
 						objectFit='cover'
 						objectPosition='center'
-						filter={isSelectedCell ? `drop-shadow(0px 0px 10px ${label.color}) brightness(35%)` : 'none'}
+						filter={isSelectedCell ? `brightness(${brightness})` : 'none'}
 						borderRadius='md'
 						h='full'
 						w='full'

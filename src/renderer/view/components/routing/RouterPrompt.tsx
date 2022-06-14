@@ -8,6 +8,7 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogOverlay,
+	useColorModeValue as mode,
 	HStack,
 } from '@chakra-ui/react';
 
@@ -38,6 +39,7 @@ export const RouterPrompt = React.memo(
 	}: Props) => {
 		const [showPrompt, setShowPrompt] = useState(false);
 		const [currentPath, setCurrentPath] = useState('');
+		const textColor = mode('thia.gray.700', 'thia.gray.300');
 		const cancelRef = useRef(null);
 
 		useEffect(() => {
@@ -61,7 +63,7 @@ export const RouterPrompt = React.memo(
 				const canRoute = await Promise.resolve(onOK());
 				if (canRoute) {
 					history.block(() => {});
-					history.push(currentPath);
+					history.replace(currentPath);
 				}
 			}
 		}, [currentPath, history, onOK]);
@@ -71,7 +73,7 @@ export const RouterPrompt = React.memo(
 				const canRoute = await Promise.resolve(onCancel());
 				if (canRoute) {
 					history.block(() => {});
-					history.push(currentPath);
+					history.replace(currentPath);
 				}
 			}
 			setShowPrompt(false);
@@ -88,7 +90,7 @@ export const RouterPrompt = React.memo(
 				<AlertDialogContent>
 					<AlertDialogHeader>{title}</AlertDialogHeader>
 					<AlertDialogBody>
-						<Text fontWeight='light' color='gray.300' mb='1rem'>
+						<Text fontWeight='light' color={textColor} mb='1rem'>
 							{bodyText}
 						</Text>
 					</AlertDialogBody>
@@ -97,7 +99,7 @@ export const RouterPrompt = React.memo(
 							<Button variant='ghost' ref={cancelRef} onClick={handleCancel}>
 								{cancelText}
 							</Button>
-							<Button colorScheme='blue' mr={3} onClick={handleOK}>
+							<Button colorScheme='thia.purple' mr={3} onClick={handleOK}>
 								{okText}
 							</Button>
 						</HStack>

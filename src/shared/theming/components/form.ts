@@ -1,10 +1,12 @@
+import { mode } from '@chakra-ui/theme-tools';
+
 const activeLabelStyles = {
 	transform: 'scale(0.85) translateY(-24px)',
 };
 
 export default {
 	variants: {
-		floating: {
+		floating: (props) => ({
 			container: {
 				_focusWithin: {
 					label: {
@@ -25,9 +27,9 @@ export default {
 					px: 1,
 					my: 2,
 					transformOrigin: 'left top',
-					bg: 'thia.gray.800',
+					bg: mode('thia.gray.50', 'thia.gray.800')(props),
 				},
 			},
-		},
+		}),
 	},
 };

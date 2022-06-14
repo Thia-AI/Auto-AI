@@ -8,17 +8,16 @@ import {
 	Badge,
 	Button,
 	Text,
-	useToast,
 } from '@chakra-ui/react';
 import { Replace, replace } from 'connected-react-router';
 import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
-import { changeSelectedPage } from '_/renderer/state/side-menu/SideModelAction';
-import { Model } from '../../helpers/constants/engineDBTypes';
+import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
+import { Model } from '../../helpers/constants/engineTypes';
 import { MODELS_PAGE } from '../../helpers/constants/pageConstants';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 
 interface Props {
 	dialogOpen: boolean;
@@ -30,7 +29,6 @@ interface Props {
 const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSelectedPage }: Props) => {
 	const cancelDeleteRef = useRef(null);
 	const [modelDeleting, setModelDeleting] = useState(false);
-	const toast = useToast();
 
 	const deleteModel = async () => {
 		if (model.id.length > 0) {
@@ -38,7 +36,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 			const [deleteModelErr, deleteModelRes] = await EngineRequestHandler.getInstance().deleteModel(model.id);
 			if (deleteModelErr) {
 				toast({
-					title: 'Error',
+					title: `Failed to delete model '${model.model_name}'`,
 					description: `${deleteModelRes['Error']}`,
 					status: 'error',
 					duration: 1500,
@@ -51,13 +49,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 			await waitTillEngineJobComplete(deleteModelRes['ids'][0]);
 			// Complete! Send a notification to user
 			setModelDeleting(false);
-			toast({
-				title: 'Success',
-				description: 'Model Created Successfully',
-				status: 'success',
-				duration: 1500,
-				isClosable: false,
-			});
+			// No success toast as this is an Engine job and is handled by Engine socket.io notifications
 			changeSelectedPage(MODELS_PAGE);
 			replace('/models');
 		}
@@ -103,5 +95,5 @@ DeleteModelC.displayName = 'DeleteModel';
  */
 export const DeleteModel = connect(null, {
 	replace,
-	changeSelectedPage,
+	changeSelectedPage: changeSelectedPageAction,
 })(DeleteModelC);

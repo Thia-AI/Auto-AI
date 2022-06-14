@@ -10,16 +10,15 @@ import {
 	AlertDialogBody,
 	AlertDialogFooter,
 	Button,
-	useToast,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
 import { IOpenCloseDeleteDatasetReducer } from '_/renderer/state/delete-modals/model/reducerTypes';
 import { openCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/DeleteModalsActions';
 import { IAppState } from '_/renderer/state/reducers';
-import { Dataset, nullDataset } from '../../helpers/constants/engineDBTypes';
+import { Dataset, nullDataset } from '../../helpers/constants/engineTypes';
 import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/model/actionTypes';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
 
 interface Props {
@@ -29,7 +28,6 @@ interface Props {
 }
 
 const DeleteDatasetC = React.memo((props: Props) => {
-	const toast = useToast();
 	const [datasetDeleting, setDatasetDeleting] = useState(false);
 
 	const { datasetValue, openCloseValue } = props.deleteDatasetData;
@@ -76,7 +74,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 									await EngineRequestHandler.getInstance().deleteDataset(datasetValue.id);
 								if (deleteDatasetErr) {
 									toast({
-										title: 'Error',
+										title: `Failed to delete dataset ${datasetValue.name}`,
 										description: `${deleteDatasetRes['Error']}`,
 										status: 'error',
 										duration: 1500,
@@ -89,13 +87,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 								// Wait until deletion job has completed
 								await waitTillEngineJobComplete(deleteDatasetRes['ids'][0]);
 								setDatasetDeleting(false);
-								toast({
-									title: 'Success',
-									description: 'Dataset Deleted Successfully',
-									status: 'success',
-									duration: 1500,
-									isClosable: false,
-								});
+								// No success toast as this is an Engine job and is handled by Engine socket.io notifications
 								props.openCloseDeleteDataset(nullDataset);
 								// Refresh list of datasets
 								// TODO: Refresh

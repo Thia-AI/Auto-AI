@@ -6,7 +6,6 @@ import {
 	chakra,
 	Text,
 	Center,
-	useToast,
 	HStack,
 	VStack,
 	Button,
@@ -14,10 +13,10 @@ import {
 } from '@chakra-ui/react';
 import { useDropzone, FileRejection, ErrorCode } from 'react-dropzone';
 
-import { Model, TestJob } from '../../helpers/constants/engineDBTypes';
+import { Model, TestJob } from '../../helpers/constants/engineTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
-import { waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { RouterPrompt } from '../routing/RouterPrompt';
 
 interface Props {
@@ -40,9 +39,10 @@ export const TestModel = React.memo(({ model }: Props) => {
 	const [testJobID, setTestJobID] = useState<string | null>(null);
 	const [testRunning, setTestRunning] = useState(false);
 
-	const toast = useToast();
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const inputColor = mode('thia.gray.700', 'thia.gray.500');
+	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
 	const onDrop = useCallback((acceptedFiles: File[], rejected: FileRejection[]) => {
 		// Do something with the files
@@ -70,8 +70,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 				if (cancelJobResData['job_cancelled_successfully']) {
 					// Job cancelled successfully
 					toast({
-						title: 'Info',
-						description: 'Test job cancelled successfully',
+						title: 'Test Job Cancelled',
+						description: `Test job for '${model.model_name}' model cancelled due to page exit`,
 						status: 'info',
 						duration: 1500,
 						isClosable: false,
@@ -79,8 +79,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 				} else {
 					// Job failed to cancel
 					toast({
-						title: 'Error',
-						description: 'Failed to cancel testing job.',
+						title: 'Test Job Cancellation Failed',
+						description: `Failed to cancel test job for '${model.model_name}' model`,
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
@@ -100,6 +100,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					saveToStore: false,
 				});
 			} else if (rejectedFiles[0].errors[0].code == ErrorCode.TooManyFiles) {
 				// Too many files selected
@@ -109,6 +110,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					saveToStore: false,
 				});
 			}
 			// Reset
@@ -152,7 +154,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 			);
 			if (testModelError) {
 				toast({
-					title: 'Error',
+					title: 'Test model failed',
 					description: testModelResData['Error'],
 					status: 'error',
 					duration: 1500,
@@ -164,21 +166,28 @@ export const TestModel = React.memo(({ model }: Props) => {
 			const testJobIDTemp: string = testModelResData['ids'][0];
 			setTestJobID(testJobIDTemp);
 			await waitTillEngineJobComplete(testJobIDTemp);
-			const [jobError, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
-			if (jobError) {
+			const [requestErrorExists, jobResData] = await EngineRequestHandler.getInstance().getJob(testJobIDTemp);
+			if (requestErrorExists) {
 				toast({
-					title: 'Error',
+					title: 'Failed to get predictions',
 					description: jobResData['Error'],
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
 				});
 				setTestRunning(false);
+				setTestJobID(null);
 				return;
 			}
 			const jobResDataTestJob = jobResData as TestJob;
-			// We can assume predictions are there since the job was completed but this is a bad assumption
-			// TODO: Add a check to see if test job was completed and then if so show predictions else show an error toast
+
+			if (jobResDataTestJob.extra_data?.error) {
+				setTestRunning(false);
+				setTestJobID(null);
+				return;
+			}
+			// Since no error, predictions will be there.
+
 			// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
 			setTestJobPredictions(jobResDataTestJob.extra_data?.predictions!);
 			setTestRunning(false);
@@ -186,11 +195,12 @@ export const TestModel = React.memo(({ model }: Props) => {
 		} else {
 			// Need to have images to test
 			toast({
-				title: 'Error',
+				title: 'No images',
 				description: 'Need to have images to test',
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
+				saveToStore: false,
 			});
 		}
 	};
@@ -223,7 +233,6 @@ export const TestModel = React.memo(({ model }: Props) => {
 				justify='space-evenly'
 				direction={{ base: 'column', md: 'row' }}>
 				{selectedFiles.map((file, i) => {
-					console.log();
 					return (
 						<TestModelImagePreview
 							imageSRC={file.preview!}
@@ -251,8 +260,10 @@ export const TestModel = React.memo(({ model }: Props) => {
 				alignSelf='center'
 				px='8'
 				rounded='lg'
-				bg={mode('thia.gray.200', 'thia.gray.700')}
-				shadow='base'>
+				borderWidth='1px'
+				borderColor={borderColor}
+				bg={cardBG}
+				shadow='lg'>
 				<Box>
 					<Text as='h3' fontWeight='bold' fontSize='lg'>
 						Predict
@@ -313,6 +324,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 				title='Leave this page'
 				okText='Confirm'
 				cancelText='Cancel'
+				bodyText='Test job is currently running. Are you sure you want to leave?'
 			/>
 		</>
 	);

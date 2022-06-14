@@ -7,7 +7,7 @@ import {
 } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
-import { nullInput } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 
 interface Props {
 	activeInputs: IActiveDatasetInputsReducer;
@@ -16,7 +16,8 @@ interface Props {
 }
 const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, activeInputs, activeDataset }: Props) => {
 	const activeInput = activeInputs.value[activeInputPreviewID.value] ?? nullInput;
-	const detailsBG = mode('thia.gray.400', 'thia.gray.850');
+	const detailsBG = mode('thia.gray.150', 'thia.gray.850');
+	const borderColor = mode('thia.gray.200', 'thia.gray.700');
 
 	const render = () => {
 		if (activeInput.id.length > 0 && activeDataset.value.labels[activeInput.label]) {
@@ -32,6 +33,8 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 						px='2'
 						py='3'
 						bg={detailsBG}
+						borderWidth='1px'
+						borderColor={borderColor}
 						justifyContent='flex-start'
 						alignItems='flex-start'>
 						{/* Label */}

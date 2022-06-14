@@ -27,6 +27,7 @@ import { CancelJobEngineRequest } from './actions/delete/cancelJob';
 import { ExportModelEngineRequest, IExportModelData } from './actions/post/exportModel';
 import { GetActiveModelExportsEngineRequest } from './actions/get/getActiveModelExports';
 import { DeleteModelEngineRequest } from './actions/delete/deleteModel';
+import { GetQuickStatsEngineRequest } from './actions/get/getQuickStats';
 
 /**
  * Class that manages all Engine Requests.
@@ -68,7 +69,8 @@ export class EngineRequestHandler {
 	private getDatasetLabelER!: GetDatasetLabelEngineRequest;
 	private updateInputLabelER!: UpdateInputLabelEngineRequest;
 	// Telemetry
-	private getTelemetryGPUStateER!: GetTelemetryGPUStateEngineRequest;
+	private getGPUStateER!: GetTelemetryGPUStateEngineRequest;
+	private getQuickStatsER!: GetQuickStatsEngineRequest;
 
 	/**
 	 * Private constructor.
@@ -129,7 +131,8 @@ export class EngineRequestHandler {
 		this.getDatasetLabelER = new GetDatasetLabelEngineRequest(this.engineRequest);
 		this.updateInputLabelER = new UpdateInputLabelEngineRequest(this.engineRequest);
 		// Telemetry
-		this.getTelemetryGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
+		this.getGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
+		this.getQuickStatsER = new GetQuickStatsEngineRequest(this.engineRequest);
 	};
 
 	/**
@@ -257,7 +260,11 @@ export class EngineRequestHandler {
 	};
 
 	public getTelemeteryGPUState = async (config?: AxiosRequestConfig) => {
-		return this.getTelemetryGPUStateER.run(config);
+		return this.getGPUStateER.run(config);
+	};
+
+	public getQuickStats = async (config?: AxiosRequestConfig) => {
+		return this.getQuickStatsER.run(config);
 	};
 
 	public exportModel = async (modelID: string, data: IExportModelData, config?: AxiosRequestConfig) => {

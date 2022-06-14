@@ -1,4 +1,4 @@
-import { Dataset } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { Dataset } from '_/renderer/view/helpers/constants/engineTypes';
 import { OPEN_CLOSE_DELETE_DATASET, OPEN_CLOSE_DELETE_LABEL } from '../../types';
 
 /**

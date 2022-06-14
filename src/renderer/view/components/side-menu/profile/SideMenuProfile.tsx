@@ -1,7 +1,7 @@
 import {
 	Menu,
 	MenuList,
-	useColorModeValue,
+	useColorModeValue as mode,
 	Text,
 	MenuDivider,
 	MenuItem,
@@ -33,6 +33,7 @@ type potentiallyUndefinedString = string | undefined;
 const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 	const auth = useAuth();
 	const { data: user } = useUser();
+	const displayNameColor = mode('thia.gray.700', 'thia.gray.100');
 
 	const { isOpen: isSignoutDialogOpen, onOpen: signoutDialogOpen, onClose: onSignoutDialogClose } = useDisclosure();
 	const cancelSignoutRef = React.useRef(null);
@@ -40,25 +41,19 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 		<>
 			<Menu>
 				<ProfileSelectButton
-					displayName={user?.displayName}
+					displayName={user?.displayName ?? ''}
 					imageURL={(user?.photoURL as potentiallyUndefinedString) ?? DefaultProfilePic}
 				/>
-				<MenuList shadow='lg' py='4' color={useColorModeValue('gray.600', 'gray.200')} px='3'>
-					<Text fontSize='sm' fontWeight='medium' mb='2'>
+				<MenuList py='4' px='3'>
+					<Text fontSize='sm' color={displayNameColor} fontWeight='medium' mb='2'>
 						{user?.email}
 					</Text>
 					<MenuDivider />
-					<MenuItem fontWeight='light' fontSize='sm' rounded='md'>
-						Edit Profile
-					</MenuItem>
-					<MenuItem fontWeight='light' fontSize='sm' rounded='md'>
-						Notification Settings
-					</MenuItem>
-					<MenuDivider />
 					<MenuItem
 						bg='red.400'
-						_active={{ bg: 'red.500' }}
-						_focus={{ bg: 'red.450' }}
+						_active={{ bg: 'red.450' }}
+						_hover={{ bg: 'red.500' }}
+						_focus={{ bg: 'red.500' }}
 						rounded='md'
 						onClick={signoutDialogOpen}>
 						Logout
@@ -76,7 +71,6 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 							<Badge ml='0.5' fontSize='sm' colorScheme='red' mb='2'>
 								ALERT
 							</Badge>
-
 							<Text isTruncated fontWeight='normal'>
 								Signout
 							</Text>

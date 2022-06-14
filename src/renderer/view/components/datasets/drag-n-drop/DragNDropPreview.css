@@ -1,6 +1,3 @@
-.drag-drop-preview {
-	overflow-y: hidden !important;
-}
 .drag-drop-preview::-webkit-scrollbar {
 	height: 8px;
 	width: 8px;

@@ -13,22 +13,22 @@ from werkzeug.utils import secure_filename
 
 from config import config
 from config import constants
-from config.constants import ModelStatus, POSSIBLE_MODEL_EXPORT_TYPES, POSSIBLE_MODEL_LABELLING_TYPES
+from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, POSSIBLE_MODEL_TYPES
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
-    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count
+    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets, update_dataset_last_accessed
 # Export commands
-from db.commands.export_commands import add_export_to_db, get_active_model_exports
+from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    reset_labels_of_inputs, get_input, update_input_label
+    reset_labels_of_inputs, get_input, update_input_label, get_num_inputs, get_num_labels
 # Input commands
 from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from env import environment
 from exports.export_model_job import ExportModelJob
@@ -158,8 +158,12 @@ def create_model_route():
     error_obj = validate_req_json(req_data, req_data_format)
     if error_obj is not None:
         return {'Error': error_obj}, 400
-    if req_data['labelling_type'] not in POSSIBLE_MODEL_LABELLING_TYPES:
-        return {'Error': f"Labelling type: '{req_data['labelling_type']}' an is invalid labelling type"}, 400
+    if req_data['model_type'] not in POSSIBLE_MODEL_TYPES:
+        return {'Error': f"Model Type: '{req_data['model_type']}' is an invalid model type"}, 400
+    if req_data['labelling_type'] not in POSSIBLE_IC_MODEL_LABELLING_TYPES:
+        return {'Error': f"Labelling type: '{req_data['labelling_type']}' is an invalid labelling type"}, 400
+    if req_data['model_type_extra'] not in POSSIBLE_IC_MODEL_TYPES:
+        return {'Error': f"Model Type Extra: '{req_data['model_type_extra']}' is an invalid image classification model type"}, 400
     # Check to see if model already exists
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400
@@ -209,7 +213,7 @@ def export_model_route(model_id: str):
     # Make sure folder is empty
     if save_dir.exists() and save_dir.is_dir():
         return {'Error': f"'save_dir' cannot contain folder with same name as model name: '{model['model_name']}'"}, 400
-    if req_data['export_type'] not in POSSIBLE_MODEL_EXPORT_TYPES:
+    if req_data['export_type'] not in POSSIBLE_IC_MODEL_EXPORT_TYPES:
         return {'Error': f"Export type: '{req_data['export_type']}' an is invalid export type"}, 400
     export_id = uuid.uuid4().hex
     ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir])).queue()
@@ -256,9 +260,9 @@ def train_model_route(model_id):
         model = model_from_row(row)
 
     status = model['model_status']
-    if status == ModelStatus.TRAINING.value or status == ModelStatus.RETRAINING.value or status == ModelStatus.STARTING_TRAINING:
+    if status == ICModelStatus.TRAINING.value or status == ICModelStatus.RETRAINING.value or status == ICModelStatus.STARTING_TRAINING:
         return {'Error': 'Model is currently being trained'}, 400
-    if status == ModelStatus.TRAINED.value:
+    if status == ICModelStatus.TRAINED.value:
         return {'Error': 'Model has already been trained'}, 400
 
     dataset_id = req_data['dataset_id']
@@ -274,10 +278,17 @@ def train_model_route(model_id):
     input_labels = inputs[:, 1]
     if constants.DATASET_UNLABELLED_LABEL in input_labels:
         return {'Error': 'Dataset contains unlabelled inputs'}, 400
+    # Delete extra_data.json file from model directory if it contains it before training
+    extra_data_file_path = config.MODEL_DIR / model['model_name'] / config.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+    try:
+        if extra_data_file_path.is_file():
+            extra_data_file_path.unlink()
+    except Exception as e:
+        log(e)
     # Train
     ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
     update_model_train_job_id(model_id, ids[0])
-    update_model_status(model_id, ModelStatus.STARTING_TRAINING)
+    update_model_status(model_id, ICModelStatus.STARTING_TRAINING)
     return {'ids': ids}, 202
 
 
@@ -312,7 +323,7 @@ def test_model_route(model_id: str):
         model = model_from_row(row)
 
     status = model['model_status']
-    if status != ModelStatus.TRAINED.value:
+    if status != ICModelStatus.TRAINED.value:
         return {'Error': 'Model must be trained to test'}, 400
 
     files = request.files.getlist('files')
@@ -327,7 +338,8 @@ def test_model_route(model_id: str):
             filenames.append(filename)
         except Exception:
             log(f'Unable to save {filename}')
-    ids = JobCreator().create(TestImageClassificationModelJob([temp_dir, filenames, model['model_name'], model['extra_data']])).queue()
+    ids = JobCreator().create(TestImageClassificationModelJob([temp_dir, filenames, model['model_name'], model['extra_data'],
+                                                               model['model_type_extra']])).queue()
     return {'ids': ids}, 202
 
 
@@ -640,6 +652,7 @@ def update_input_label_route(input_id: str):
     increment_label_input_count(dataset_id, req_data['new_label'])
     # Decrement old label input count
     decrement_label_input_count(dataset_id, req_data['previous_label'])
+    update_dataset_last_accessed(dataset_id)
     return {}, 200
 
 
@@ -679,6 +692,7 @@ def add_label_to_dataset(uuid: str):
     labels.append(req_data['label'])
     labels_string = constants.DATASET_LABELS_SPLITTER.join(labels)
     update_labels_of_dataset(uuid, labels_string)
+    update_dataset_last_accessed(uuid)
     # Return back dataset that was updated
     rows = get_dataset(uuid)
     dataset = {}
@@ -734,6 +748,7 @@ def remove_label_from_dataset(uuid: str):
     update_labels_of_dataset(uuid, labels_string)
     # Reset input labels
     reset_labels_of_inputs(uuid, req_data['label'])
+    update_dataset_last_accessed(uuid)
     # Return back dataset that was updated
     rows = get_dataset(uuid)
     dataset = {}
@@ -850,10 +865,28 @@ def get_gpu_memory_info_route():
 
 @app.route('/telemetry/gpu_state', methods=['GET'])
 def get_gpu_state_route():
+    log(f"ACCEPTED [{request.method}] {request.path}")
     return {
                'gpu_task_running': config.ENGINE_GPU_TASK_RUNNING,
                'test_task_running': config.ENGINE_TEST_TASK_RUNNING
            }, 200
+
+
+@app.route('/telemetry/quick_stats', methods=['GET'])
+def quick_stats_route():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    num_models = get_num_models()
+    num_exports = get_num_exports()
+    num_datasets = get_num_datasets()
+    num_images = get_num_inputs()
+    num_labels = get_num_labels()
+    return {
+        'num_models': num_models,
+        'num_exports': num_exports,
+        'num_datasets': num_datasets,
+        'num_images': num_images,
+        'num_labels': num_labels
+    }, 200
 
 
 if __name__ == '__main__':

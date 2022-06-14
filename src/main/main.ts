@@ -29,18 +29,28 @@ import {
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 	IPC_DEV_COPY_ID_TOKEN,
 	IPC_DEV_COPY_UID,
+	IPC_DEV_TOGGLE_COLOR_MODE,
 } from '_/shared/ipcChannels';
-import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
+import {
+	LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE,
+	NOTIFICATIONS_STORE_FILENAME as ACTIVITIES_STORE_FILENAME,
+	PERSISTENCE_TYPE,
+	STORE_ENCRYPTION_KEY,
+} from '_/shared/appConstants';
 import { startServer } from './server/server';
 import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Server } from 'socket.io';
+import Store from 'electron-store';
+import { ActivityStoreManager } from './store/activityStoreManager';
 
 const numCPUs = cpus().length;
 
 let firebaseApp: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
 let loginWindow: BrowserWindow | null;
+let activitiesStore: Store | null;
+let activityStoreManager: ActivityStoreManager | null;
 
 let mainWindowIPCActions: WindowIPCActions;
 let engineIPCActionHandler: EngineIPCActionHandler;
@@ -217,6 +227,14 @@ const createWorker = () => {
 };
 
 /**
+ * Sets up stores from `electron-store`.
+ */
+const setupStores = () => {
+	activitiesStore = new Store({ name: ACTIVITIES_STORE_FILENAME, encryptionKey: STORE_ENCRYPTION_KEY });
+	activityStoreManager = new ActivityStoreManager(activitiesStore); // eslint-disable-line @typescript-eslint/no-unused-vars
+};
+
+/**
  * Starts HTTPS server controlled by **main** and registers its APIs.
  *
  * @returns Promise that resolves when server is started and APIs are registered.
@@ -327,6 +345,10 @@ const registerShortcuts = (win: BrowserWindow) => {
 		register(win, 'Ctrl+Shift+U', () => {
 			win.webContents.send(IPC_DEV_COPY_UID);
 		});
+
+		register(win, 'Ctrl+Shift+D', () => {
+			win.webContents.send(IPC_DEV_TOGGLE_COLOR_MODE);
+		});
 	}
 };
 
@@ -365,6 +387,7 @@ if (!isSingleInstance) {
 		}
 		firebaseApp = initializeApp(firebaseConfig);
 		await startWebServices();
+		await setupStores();
 		initRendererDev();
 		createWindow();
 		registerShortcuts(mainWindow!);

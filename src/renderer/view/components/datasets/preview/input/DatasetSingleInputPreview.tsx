@@ -25,9 +25,8 @@ import {
 import { setActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { ISetActiveDatasetInputsPreviewIDAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
 import { ENGINE_URL } from '_/renderer/engine-requests/constants';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useProgressiveImage } from '_/renderer/view/helpers/hooks/useProgressiveImage';
-import { nullInput } from '_/renderer/view/helpers/constants/engineDBTypes';
+import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
+import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { resolutionToMegapixels } from '_/renderer/view/helpers/functionHelpers';
@@ -55,7 +54,8 @@ const DatasetSingleInputPreviewC = React.memo(
 				readyToLoad: datasetID!.length > 0 && activeInput.id.length > 0,
 			},
 		);
-		const previewBG = mode('thia.gray.400', 'thia.gray.850');
+		const previewBG = mode('thia.gray.150', 'thia.gray.850');
+		const borderColor = mode('thia.gray.200', 'thia.gray.700');
 
 		const imgRef = useRef<HTMLImageElement | null>(null);
 		const containerRef = useRef<HTMLDivElement | null>(null);
@@ -132,7 +132,15 @@ const DatasetSingleInputPreviewC = React.memo(
 
 		const renderPreview = () => {
 			return (
-				<Box w={w} h='full' bg={previewBG} borderLeftRadius='md' overflow='hidden' ref={containerRef}>
+				<Box
+					w={w}
+					h='full'
+					bg={previewBG}
+					borderLeftRadius='md'
+					overflow='hidden'
+					borderWidth='1px'
+					borderColor={borderColor}
+					ref={containerRef}>
 					<TransformWrapper
 						limitToBounds
 						maxScale={maxScale}

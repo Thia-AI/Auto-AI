@@ -1,10 +1,11 @@
+import { mode } from '@chakra-ui/theme-tools';
 export default {
-	baseStyle: {
+	baseStyle: (props) => ({
 		fontFamily: 'JetBrains Mono, sans-serif',
-		color: 'gray.300',
+		color: mode('thia.gray.700', 'thia.gray.200')(props),
 		fontWeight: 500,
 		_focus: {
 			boxShadow: 'none',
 		},
-	},
+	}),
 };

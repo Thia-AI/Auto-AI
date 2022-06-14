@@ -7,6 +7,8 @@ import Form from './components/form';
 import Link from './components/link';
 import Drawer from './components/drawer';
 import Menu from './components/menu';
+import Switch from './components/switch';
+import Skeleton from './components/skeleton';
 
 export const theme = extendTheme({
 	styles: {
@@ -15,11 +17,22 @@ export const theme = extendTheme({
 				bg: mode('thia.gray.50', 'thia.gray.800')(props),
 				fontFamily: 'Open Sans, sans-serif',
 			},
-			h4: {
-				fontSize: '12px',
-			},
 			header: {
 				bg: 'thia.gray.950',
+			},
+			'.chakra-stack__divider': {
+				borderColor: mode(
+					'var(--chakra-colors-thia-gray-300) !important',
+					'var(--chakra-colors-thia-gray-600) !important',
+				)(props),
+				opacity: mode('0.4 !important', '1 !important')(props),
+			},
+			'.chakra-divider': {
+				borderColor: mode(
+					'var(--chakra-colors-thia-gray-300) !important',
+					'var(--chakra-colors-thia-gray-600) !important',
+				)(props),
+				opacity: mode('0.4 !important', '1 !important')(props),
 			},
 		}),
 	},
@@ -45,7 +58,8 @@ export const theme = extendTheme({
 		thia: {
 			gray: {
 				'50': '#EBEBEB',
-				'100': '#D6D6D6',
+				'100': '#E3E3E3',
+				'150': '#D6D6D6',
 				'200': '#B8B8B8',
 				'300': '#999999',
 				'350': '#7A7A7A',
@@ -60,12 +74,14 @@ export const theme = extendTheme({
 				'950': '#0A0A0A',
 			},
 			purple: {
-				'50': '#D3C2FF',
-				'100': '#BEA5FF',
-				'200': '#A785FF',
+				'50': '#E2D6FF',
+				'100': '#D3C2FF',
+				'200': '#BEA5FF',
+				'250': '#A785FF',
 				'300': '#8A5CFF',
-				'350': '#7B47FF',
-				'400': '#5E1FFF',
+				'350': '#9970FF',
+				'400': '#7B47FF',
+				'450': '#5E1FFF',
 				'500': '#4700FF',
 				'600': '#3500C1',
 				'700': '#26008F',
@@ -87,5 +103,10 @@ export const theme = extendTheme({
 		Form,
 		Drawer,
 		Menu,
+		Switch,
+		Skeleton,
+	},
+	shadows: {
+		outline: '#D3C2FF',
 	},
 });

@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
+
 import { Box, VStack, Button, Center, Heading, useToast, chakra } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
 import { IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, IPC_SHOW_LOGIN_WINDOW } from '_/shared/ipcChannels';
 import { persistenceMap, PERSISTENCE_TYPE } from '_/shared/appConstants';
+
 import { motion } from 'framer-motion';
 
 const variants = {
@@ -17,6 +19,9 @@ const variants = {
 	},
 };
 
+import { toast } from '../helpers/functionHelpers';
+
+
 /**
  * Login page.
  *
@@ -24,7 +29,6 @@ const variants = {
  */
 const LandingPage = () => {
 	const auth = useAuth();
-	const toast = useToast();
 
 	const showLoginWindow = async () => {
 		await ipcRenderer.invoke(IPC_SHOW_LOGIN_WINDOW);
@@ -46,6 +50,7 @@ const LandingPage = () => {
 									status: 'success',
 									duration: 1500,
 									isClosable: false,
+									saveToStore: false,
 								});
 							})
 							.catch((error) => {
