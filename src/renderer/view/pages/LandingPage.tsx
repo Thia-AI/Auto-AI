@@ -83,13 +83,11 @@ const LandingPage = () => {
 				animate={{ opacity: 1, scale: 1, y: '0%' }}
 				transition={{ transition: 'ease', duration: 1 }}>
 				<Box>
-					<VStack spacing={6} pt={12} px={{ base: 0, xl: 20 }}>
+					<VStack spacing={4} pt={12} px={{ base: 0, xl: 20 }}>
 						<Heading px={10} fontSize={{ base: '3xl', md: '5xl' }} lineHeight='shorter' textAlign='center'>
 							AutoML ran within your ecosystem
 						</Heading>
-						<Button mt='3' colorScheme='thia.purple' onClick={showLoginWindow}>
-							Get Started
-						</Button>
+
 						<Box display='block' rounded='xl'>
 							<Center w='full' h='full' pb='20px'>
 								<chakra.img
@@ -99,6 +97,9 @@ const LandingPage = () => {
 								/>
 							</Center>
 						</Box>
+						<Button mt='3' colorScheme='thia.purple' onClick={showLoginWindow}>
+							Get Started
+						</Button>
 					</VStack>
 				</Box>
 			</motion.div>
