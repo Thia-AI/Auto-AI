@@ -209,7 +209,6 @@ export interface Model {
 				[key: string]: Label;
 			};
 			error?: {
-				message: string;
 				title: string;
 				verboseMessage: string;
 			};
@@ -280,7 +279,6 @@ export interface TrainJob extends Job {
 		status?: PossibleTrainJobStatuses;
 		status_description?: string;
 		error?: {
-			message: string;
 			title: string;
 			verboseMessage: string;
 		};
@@ -321,7 +319,6 @@ export interface TestJob extends Job {
 	extra_data: {
 		predictions?: string[];
 		error?: {
-			message: string;
 			title: string;
 			verboseMessage: string;
 		};

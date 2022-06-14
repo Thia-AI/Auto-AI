@@ -278,6 +278,13 @@ def train_model_route(model_id):
     input_labels = inputs[:, 1]
     if constants.DATASET_UNLABELLED_LABEL in input_labels:
         return {'Error': 'Dataset contains unlabelled inputs'}, 400
+    # Delete extra_data.json file from model directory if it contains it before training
+    extra_data_file_path = config.MODEL_DIR / model['model_name'] / config.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+    try:
+        if extra_data_file_path.is_file():
+            extra_data_file_path.unlink()
+    except Exception as e:
+        log(e)
     # Train
     ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
     update_model_train_job_id(model_id, ids[0])

@@ -233,7 +233,6 @@ export const TestModel = React.memo(({ model }: Props) => {
 				justify='space-evenly'
 				direction={{ base: 'column', md: 'row' }}>
 				{selectedFiles.map((file, i) => {
-					console.log();
 					return (
 						<TestModelImagePreview
 							imageSRC={file.preview!}

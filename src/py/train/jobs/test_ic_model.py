@@ -113,28 +113,24 @@ def test_in_separate_process(queue: Queue):
         error = {
             'title': f"Resource Exhausted Testing '{model_name}'",
             'verboseMessage': 'Stop other GPU processes and/or reduce number of images being tested',
-            'message': e.message
         }
     except tf.errors.InternalError as e:
         error_encountered = True
         error = {
             'title': f"Internal Error Encountered Testing '{model_name}'",
             'verboseMessage': 'Likely due to not enough VRAM. Stop other GPU processes and/or reduce number of images being tested',
-            'message': e.message
         }
     except tf.errors.OpError as e:
         error_encountered = True
         error = {
             'title': f"Op Error Encountered Testing '{model_name}'",
             'verboseMessage': 'Try running test again',
-            'message': e.message
         }
     except Exception as e:
         error_encountered = True
         error = {
             'title': f"Unknown Error Occurred Testing '{model_name}'",
             'verboseMessage': 'Some unknown error occurred during testing, try again',
-            'message': str(e)
         }
 
     if error_encountered:

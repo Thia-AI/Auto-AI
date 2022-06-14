@@ -86,19 +86,24 @@ class TrainImageClassifierJob(BaseJob):
             'model_type': model['model_type_extra'],
             'current_extra_data': self.extra_data()
         }
-
         train_process_queue.put(train_data)
         update_model_status(model_id, ICModelStatus.TRAINING)
         p = Process(target=train_in_separate_process, args=(train_process_queue,))
         p.start()
         p.join()
 
-        # Transfer extra_data and remove local file
-        extra_data = itemgetter('extra_data')(train_process_queue.get())
-        self.update_extra_data(extra_data)
         job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+
         if job_updater_json_filepath.is_file():
-            job_updater_json_filepath.unlink()
+            # Get extra_data from the file itself
+            job_updater_json_file = open(job_updater_json_filepath.absolute())
+            try:
+                extra_data = json.load(job_updater_json_file)
+                self.update_extra_data(extra_data)
+                job_updater_json_file.close()
+                job_updater_json_filepath.unlink()
+            except Exception as e:
+                log(str(e))
 
         # Get latest model data and update it's extra_data with a trained labels map
         rows = get_model(model_id)
@@ -178,142 +183,150 @@ def train_in_separate_process(queue: Queue):
     extra_data_file = tf.io.gfile.GFile(job_updater_json_filepath.absolute(), 'w')
     update_extra_data = functools.partial(update_local_extra_data, extra_data=current_extra_data, file=extra_data_file)
     update_extra_data({'status_description': 'Initializing devices'})
+    error_encountered_during_training = False
 
     # Enable memory growth to prevent allocating all of the GPU's memory
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    for gpu in gpus:
-        tf.config.experimental.set_memory_growth(gpu, True)
 
-    '''Uncomment below if you are testing the GPU running out of VRAM (ResourceExhausted Error)'''
-    # gpus = tf.config.experimental.list_physical_devices('GPU')
-    # try:
-    #     tf.config.set_logical_device_configuration(gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=1024)])
-    # except RuntimeError as e:
-    #     log(e)
-
-    def load_image(path, image_size, num_channels, interpolation, crop_to_aspect_ratio=False):
-        """Load an image from a path and resize it."""
-        img = tf.io.read_file(path)
-        img = tf.io.decode_image(img, channels=num_channels, expand_animations=False)
-        if crop_to_aspect_ratio:
-            preprocessing.image.smart_resize(img, image_size, interpolation=interpolation)
-        else:
-            img = tf.image.resize(img, image_size, method=interpolation)
-        return img
-
-    def set_image_shape(image, image_size, num_channels):
-        image.set_shape((image_size[0], image_size[1], num_channels))
-        return image
-
-    update_extra_data({'status_description': 'Creating dataset'})
-    train_x_paths = inputs[:int(TRAIN_SPLIT * NUM_IMAGES), 0]
-    train_y = inputs[:int(TRAIN_SPLIT * NUM_IMAGES), 1].astype(np.int)
-
-    val_x_paths = inputs[int(TRAIN_SPLIT * NUM_IMAGES):, 0]
-    val_y = inputs[int(TRAIN_SPLIT * NUM_IMAGES):, 1].astype(np.int)
-
-    train_ds_x = tf.data.Dataset.from_tensor_slices(train_x_paths)
-    TRAIN_SIZE = train_ds_x.cardinality().numpy()
-    train_ds_x = train_ds_x.map(lambda x: tf.py_function(func=load_image, inp=[x, IMAGE_SIZE, 3, interpolation], Tout=tf.float32))
-    # tf.py_function has issues with setting shape, so we need to do it outside of one
-    train_ds_x = train_ds_x.map(lambda x: set_image_shape(x, IMAGE_SIZE, 3))
-
-    train_ds_y = tf.data.Dataset.from_tensor_slices(train_y)
-    train_ds_y = train_ds_y.map(lambda x: tf.one_hot(x, num_classes))
-
-    val_ds_x = tf.data.Dataset.from_tensor_slices(val_x_paths)
-    VALIDATION_SIZE = val_ds_x.cardinality().numpy()
-    val_ds_x = val_ds_x.map(lambda x: tf.py_function(func=load_image, inp=[x, IMAGE_SIZE, 3, interpolation], Tout=tf.float32))
-    # tf.py_function has issues with setting shape, so we need to do it outside of one
-    val_ds_x = val_ds_x.map(lambda x: set_image_shape(x, IMAGE_SIZE, 3))
-
-    val_ds_y = tf.data.Dataset.from_tensor_slices(val_y)
-    val_ds_y = val_ds_y.map(lambda x: tf.one_hot(x, num_classes))
-
-    train_ds = tf.data.Dataset.zip((train_ds_x, train_ds_y)).batch(BATCH_SIZE)
-    # Repeat training dataset since we will be doing data augmentation to it only
-    train_ds = train_ds.repeat()
-    val_ds = tf.data.Dataset.zip((val_ds_x, val_ds_y)).batch(BATCH_SIZE)
-
-    # Perform normalization & data augmentation
-    normalization_layer = layers.experimental.preprocessing.Rescaling(1. / 255)
-    preprocessing_model = models.Sequential([normalization_layer])
-
-    if PERFORM_DATA_AUG:
-        preprocessing_model.add(layers.experimental.preprocessing.RandomRotation(70))
-        preprocessing_model.add(layers.experimental.preprocessing.RandomFlip('horizontal_and_vertical'))
-
-    train_ds = train_ds.map(lambda temp_images, temp_labels: (preprocessing_model(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
-    val_ds = val_ds.map(lambda temp_images, temp_labels: (normalization_layer(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
-
-    update_extra_data({'status_description': 'Building model'})
-    model = models.Sequential([
-        layers.InputLayer(input_shape=IMAGE_SIZE + (3,)),
-        effnetv2_model.get_model(effnet_model_name, save_path=model_cache_path, include_top=False),
-        layers.Dropout(rate=0.2),
-        layers.Dense(2, activation='softmax')
-    ])
-
-    model.build((None,) + IMAGE_SIZE + (3,))
-    model.summary()
-
-    METRICS = [
-        metrics.BinaryAccuracy(name='accuracy'),
-        metrics.Precision(name='precision'),
-        metrics.Recall(name='recall'),
-        metrics.AUC(name='auc'),
-        metrics.AUC(name='prc', curve='PR'),
-    ]
-
-    model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(label_smoothing=0.1), metrics=METRICS)
-
-    steps_per_epoch = TRAIN_SIZE // BATCH_SIZE
-    validation_steps = VALIDATION_SIZE // BATCH_SIZE
-
-    class JobUpdater(callbacks.Callback):
-        """Callback that updates the `extra_data` column for the training job."""
-
-        def __init__(self, extra_data, filepath: Path):
-            self.json_file = tf.io.gfile.GFile('')
-            self.metrics = None
-            self.history = defaultdict(list)
-            self.extra_data = dict(extra_data)
-            self.filepath = filepath
-            super(JobUpdater, self).__init__()
-
-        def on_train_begin(self, logs=None):
-            self.json_file = tf.io.gfile.GFile(self.filepath.absolute(), 'w')
-            self.extra_data.update({'status': ICTrainJobStatus.TRAINING.value, 'status_description': 'Fitting model'})
-            # Save that training has started
-            with self.json_file as f:
-                json.dump(self.extra_data, f)
-
-        def on_epoch_end(self, epoch, logs=None):
-            logs = logs or {}
-
-            if self.metrics is None:
-                self.metrics = sorted(logs.keys())
-
-            for key in self.metrics:
-                self.history[key].append(logs[key])
-            self.extra_data.update({'history': self.history})
-            # Save to file
-            with self.json_file as f:
-                json.dump(self.extra_data, f)
-
-    cp_callback_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
-    cp_callback = callbacks.ModelCheckpoint(filepath=cp_callback_filepath.absolute(), monitor='val_loss', mode='min', save_best_only=True)
-    early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-
-    job_updater = JobUpdater(current_extra_data, job_updater_json_filepath)
-
-    CALLBACKS = [
-        job_updater,
-        cp_callback,
-        early_stopping
-    ]
-    error_encountered_during_training = False
     try:
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+
+        '''Uncomment below if you are testing the GPU running out of VRAM (ResourceExhausted Error)'''
+
+        # gpus = tf.config.experimental.list_physical_devices('GPU')
+        # try:
+        #     tf.config.set_logical_device_configuration(gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=1024)])
+        # except RuntimeError as e:
+        #     log(e)
+
+        def load_image(path, image_size, num_channels, interpolation, crop_to_aspect_ratio=False):
+            """Load an image from a path and resize it."""
+            try:
+                img = tf.io.read_file(path)
+                img = tf.io.decode_image(img, channels=num_channels, expand_animations=False)
+                if crop_to_aspect_ratio:
+                    preprocessing.image.smart_resize(img, image_size, interpolation=interpolation)
+                else:
+                    img = tf.image.resize(img, image_size, method=interpolation)
+                return img
+            except Exception:
+                pass
+
+        def set_image_shape(image, image_size, num_channels):
+            image.set_shape((image_size[0], image_size[1], num_channels))
+            return image
+
+        update_extra_data({'status_description': 'Creating dataset'})
+        train_x_paths = inputs[:int(TRAIN_SPLIT * NUM_IMAGES), 0]
+        train_y = inputs[:int(TRAIN_SPLIT * NUM_IMAGES), 1].astype(np.int)
+
+        val_x_paths = inputs[int(TRAIN_SPLIT * NUM_IMAGES):, 0]
+        val_y = inputs[int(TRAIN_SPLIT * NUM_IMAGES):, 1].astype(np.int)
+
+        train_ds_x = tf.data.Dataset.from_tensor_slices(train_x_paths)
+        TRAIN_SIZE = train_ds_x.cardinality().numpy()
+        train_ds_x = train_ds_x.map(
+            lambda x: tf.py_function(func=load_image, inp=[x, IMAGE_SIZE, 3, interpolation, error_encountered_during_training],
+                                     Tout=tf.float32))
+        # tf.py_function has issues with setting shape, so we need to do it outside of one
+        train_ds_x = train_ds_x.map(lambda x: set_image_shape(x, IMAGE_SIZE, 3))
+
+        train_ds_y = tf.data.Dataset.from_tensor_slices(train_y)
+        train_ds_y = train_ds_y.map(lambda x: tf.one_hot(x, num_classes))
+
+        val_ds_x = tf.data.Dataset.from_tensor_slices(val_x_paths)
+        VALIDATION_SIZE = val_ds_x.cardinality().numpy()
+        val_ds_x = val_ds_x.map(
+            lambda x: tf.py_function(func=load_image, inp=[x, IMAGE_SIZE, 3, interpolation, error_encountered_during_training], Tout=tf.float32))
+        # tf.py_function has issues with setting shape, so we need to do it outside of one
+        val_ds_x = val_ds_x.map(lambda x: set_image_shape(x, IMAGE_SIZE, 3))
+
+        val_ds_y = tf.data.Dataset.from_tensor_slices(val_y)
+        val_ds_y = val_ds_y.map(lambda x: tf.one_hot(x, num_classes))
+
+        train_ds = tf.data.Dataset.zip((train_ds_x, train_ds_y)).batch(BATCH_SIZE)
+        # Repeat training dataset since we will be doing data augmentation to it only
+        train_ds = train_ds.repeat()
+        val_ds = tf.data.Dataset.zip((val_ds_x, val_ds_y)).batch(BATCH_SIZE)
+
+        # Perform normalization & data augmentation
+        normalization_layer = layers.experimental.preprocessing.Rescaling(1. / 255)
+        preprocessing_model = models.Sequential([normalization_layer])
+
+        if PERFORM_DATA_AUG:
+            preprocessing_model.add(layers.experimental.preprocessing.RandomRotation(70))
+            preprocessing_model.add(layers.experimental.preprocessing.RandomFlip('horizontal_and_vertical'))
+
+        train_ds = train_ds.map(lambda temp_images, temp_labels: (preprocessing_model(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
+        val_ds = val_ds.map(lambda temp_images, temp_labels: (normalization_layer(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
+
+        update_extra_data({'status_description': 'Building model'})
+        model = models.Sequential([
+            layers.InputLayer(input_shape=IMAGE_SIZE + (3,)),
+            effnetv2_model.get_model(effnet_model_name, save_path=model_cache_path, include_top=False),
+            layers.Dropout(rate=0.2),
+            layers.Dense(2, activation='softmax')
+        ])
+
+        model.build((None,) + IMAGE_SIZE + (3,))
+        model.summary()
+
+        METRICS = [
+            metrics.BinaryAccuracy(name='accuracy'),
+            metrics.Precision(name='precision'),
+            metrics.Recall(name='recall'),
+            metrics.AUC(name='auc'),
+            metrics.AUC(name='prc', curve='PR'),
+        ]
+
+        model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(label_smoothing=0.1), metrics=METRICS)
+
+        steps_per_epoch = TRAIN_SIZE // BATCH_SIZE
+        validation_steps = VALIDATION_SIZE // BATCH_SIZE
+
+        class JobUpdater(callbacks.Callback):
+            """Callback that updates the `extra_data` column for the training job."""
+
+            def __init__(self, extra_data, filepath: Path):
+                self.json_file = tf.io.gfile.GFile('')
+                self.metrics = None
+                self.history = defaultdict(list)
+                self.extra_data = dict(extra_data)
+                self.filepath = filepath
+                super(JobUpdater, self).__init__()
+
+            def on_train_begin(self, logs=None):
+                self.json_file = tf.io.gfile.GFile(self.filepath.absolute(), 'w')
+                self.extra_data.update({'status': ICTrainJobStatus.TRAINING.value, 'status_description': 'Fitting model'})
+                # Save that training has started
+                with self.json_file as f:
+                    json.dump(self.extra_data, f)
+
+            def on_epoch_end(self, epoch, logs=None):
+                logs = logs or {}
+
+                if self.metrics is None:
+                    self.metrics = sorted(logs.keys())
+
+                for key in self.metrics:
+                    self.history[key].append(logs[key])
+                self.extra_data.update({'history': self.history})
+                # Save to file
+                with self.json_file as f:
+                    json.dump(self.extra_data, f)
+
+        cp_callback_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
+        cp_callback = callbacks.ModelCheckpoint(filepath=cp_callback_filepath.absolute(), monitor='val_loss', mode='min', save_best_only=True)
+        early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+
+        job_updater = JobUpdater(current_extra_data, job_updater_json_filepath)
+
+        CALLBACKS = [
+            job_updater,
+            cp_callback,
+            early_stopping
+        ]
         hist: callbacks.History = model.fit(train_ds, epochs=1000, steps_per_epoch=steps_per_epoch, validation_data=val_ds,
                                             validation_steps=validation_steps,
                                             callbacks=CALLBACKS, verbose=2)
@@ -323,8 +336,7 @@ def train_in_separate_process(queue: Queue):
             'status_description': 'Error encountered during training',
             'error': {
                 'title': f"Resource Exhausted Training '{model_name}'",
-                'verboseMessage': 'Model may be too large to train on your GPU',
-                'message': e.message
+                'verboseMessage': 'Model may be too largess to train on your GPU',
             }
         })
         error_encountered_during_training = True
@@ -335,10 +347,19 @@ def train_in_separate_process(queue: Queue):
             'error': {
                 'title': f"Op Error Encountered Training '{model_name}'",
                 'verboseMessage': 'Try training again',
-                'message': e.message
             }
         })
         error_encountered_during_training = True
+    except Exception as e:
+        update_extra_data({
+            'status_description': 'Error encountered during training',
+            'error': {
+                'title': f"Error Encountered Training '{model_name}'",
+                'verboseMessage': 'Try training again',
+            }
+        })
+        error_encountered_during_training = True
+
     if not error_encountered_during_training:
         # No error encountered, continue evaluating trained model
         update_extra_data({'status_description': 'Evaluating model', 'status': ICTrainJobStatus.EVALUATING.value, 'history': hist.history})
@@ -351,7 +372,5 @@ def train_in_separate_process(queue: Queue):
         update_extra_data({'status_description': 'Cleaning up', 'evaluation_result': evaluation_result})
     else:
         # Error encountered during training, don't evaluate model
-        update_extra_data({'status_description': 'Cleaning up'})
+        update_extra_data({'status_description': 'Cleaning up', 'status': ICTrainJobStatus.ERROR.value})
     backend.clear_session()
-    return_data = {'extra_data': current_extra_data}
-    queue.put(return_data)

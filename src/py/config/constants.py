@@ -41,7 +41,7 @@ NUM_INSTANCES = 'NUM_INSTANCES'
 
 # Map for our image classification model names to a EfficientNetV2 model
 IC_MODEL_TYPE_TO_EFFICIENTNET_MAP = {
-    'extra_small': 'efficientnetv2-b0',
+    'extra-small': 'efficientnetv2-b0',
     'small': 'efficientnetv2-b3',
     'medium': 'efficientnetv2-s',
     'large': 'efficientnetv2-m',

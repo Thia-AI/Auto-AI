@@ -223,7 +223,7 @@ const ICModelContentC = React.memo((props: Props) => {
 				</FormControl>
 			</Box>
 			<Heading as='h4' size='md' alignSelf='flex-start' pt='3'>
-				Model Type
+				Model Size
 			</Heading>
 			<Box w='full' px='2' pt='1'>
 				<Wrap
