@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, VStack, Button, Center, Heading, useToast } from '@chakra-ui/react';
+import { Box, VStack, Button, Center, Heading, useToast, chakra } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
@@ -60,49 +60,45 @@ const LandingPage = () => {
 		);
 	}, []);
 	return (
-		<>
-			<Box w='100%' m='auto' pos='relative'>
-				<Box
-					as={motion.div}
-					top='50%'
-					left='50%'
-					bg='white'
-					pos='absolute'
-					filter='blur(120px)'
-					initial='initial'
-					animate='animate'
-					variants={variants}
-					transform='translate(-50%, -50%)'
-					backgroundImage='linear-gradient(90deg, rgba(71,0,255,1) 0%, rgba(119,66,255,1) 100%)'
-				/>
-				<motion.div
-					initial={{ opacity: 0, scale: 0.95, y: '2%' }}
-					animate={{ opacity: 1, scale: 1, y: '0%' }}
-					transition={{ transition: 'ease', duration: 1 }}>
-					<Box>
-						<VStack spacing={12} pt={12} pb={20} px={{ base: 0, xl: 20 }}>
-							<Heading
-								px={10}
-								fontSize={{ base: '3xl', md: '5xl' }}
-								lineHeight='shorter'
-								textAlign='center'>
-								AutoML ran within your ecosystem
-							</Heading>
-							<Center w='full' h='full' marginTop='var(--header-height)' flexDir='column'>
-								<Button mt='3' colorScheme='thia.purple' onClick={showLoginWindow}>
-									Get Started
-								</Button>
+		<Box w='100%' m='auto' pos='relative'>
+			<Box
+				as={motion.div}
+				top='50%'
+				left='50%'
+				bg='white'
+				pos='absolute'
+				filter='blur(120px)'
+				initial='initial'
+				animate='animate'
+				variants={variants}
+				transform='translate(-50%, -50%)'
+				backgroundImage='linear-gradient(90deg, rgba(71,0,255,1) 0%, rgba(119,66,255,1) 100%)'
+			/>
+			<motion.div
+				initial={{ opacity: 0, scale: 0.95, y: '2%' }}
+				animate={{ opacity: 1, scale: 1, y: '0%' }}
+				transition={{ transition: 'ease', duration: 1 }}>
+				<Box>
+					<VStack spacing={6} pt={12} px={{ base: 0, xl: 20 }}>
+						<Heading px={10} fontSize={{ base: '3xl', md: '5xl' }} lineHeight='shorter' textAlign='center'>
+							AutoML ran within your ecosystem
+						</Heading>
+						<Button mt='3' colorScheme='thia.purple' onClick={showLoginWindow}>
+							Get Started
+						</Button>
+						<Box display='block' rounded='xl'>
+							<Center w='full' h='full' pb='20px'>
+								<chakra.img
+									src='../public/thia.svg'
+									alt='App Screenshot'
+									width={{ base: '80%', lg: '65%', xl: '60%', '2xl': '55%' }}
+								/>
 							</Center>
-							<Box display='block' rounded='xl' overflow='hidden'>
-								<Center w='full' h='full' marginTop='var(--header-height)' flexDir='column'>
-									<img src='../public/thia.svg' alt='figure-1' height='962' width='556' />
-								</Center>
-							</Box>
-						</VStack>
-					</Box>
-				</motion.div>
-			</Box>
-		</>
+						</Box>
+					</VStack>
+				</Box>
+			</motion.div>
+		</Box>
 	);
 };
 
