@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Box, VStack, Button, Center, Heading, useToast, chakra } from '@chakra-ui/react';
+import { Box, VStack, Button, Center, Heading, chakra } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
@@ -20,7 +20,6 @@ const variants = {
 };
 
 import { toast } from '../helpers/functionHelpers';
-
 
 /**
  * Login page.
