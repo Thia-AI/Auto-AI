@@ -24,15 +24,15 @@ export const theme = extendTheme({
 				borderColor: mode(
 					'var(--chakra-colors-thia-gray-300) !important',
 					'var(--chakra-colors-thia-gray-600) !important',
-				),
-				opacity: '0.175 !important',
+				)(props),
+				opacity: mode('0.4 !important', '1 !important')(props),
 			},
 			'.chakra-divider': {
 				borderColor: mode(
 					'var(--chakra-colors-thia-gray-300) !important',
 					'var(--chakra-colors-thia-gray-600) !important',
-				),
-				opacity: '0.175 !important',
+				)(props),
+				opacity: mode('0.4 !important', '1 !important')(props),
 			},
 		}),
 	},
