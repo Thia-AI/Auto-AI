@@ -28,7 +28,7 @@ const PaginationCellC = React.memo(
 		const [isSelectedCell, setIsSelectedCell] = useState(false);
 		const [label, setLabel] = useState<Label>(nullLabel);
 		const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${datasetID}/input/${input.id}`, {
-			readyToLoad: datasetID!.length > 0 && input !== undefined && input.id !== undefined && input.id.length > 0,
+			readyToLoad: datasetID!.length > 0 && input.id.length > 0,
 		});
 		const brightness = mode('15%', '10%');
 
