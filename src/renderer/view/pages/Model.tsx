@@ -40,13 +40,15 @@ import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAc
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 import { toast } from '../helpers/functionHelpers';
+import { Replace, replace } from 'connected-react-router';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
 	resetSelectedDataset: () => IResetSelectedDatasetAction;
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
+	replace: Replace;
 }
-const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeSelectedPage }: Props) => {
+const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeSelectedPage, replace }: Props) => {
 	const modelID = useRouteMatch().params['id'];
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
@@ -65,8 +67,11 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 		const [error, resData] = await EngineRequestHandler.getInstance().getModel(modelID);
 		if (!error) {
 			setModel(resData);
+			setDataLoaded(true);
+		} else {
+			// Failed to get model, route back to models page
+			replace('/models');
 		}
-		setDataLoaded(true);
 	};
 
 	useEffect(() => {
@@ -217,4 +222,5 @@ const mapStateToProps = (state: IAppState) => ({
 export default connect(mapStateToProps, {
 	resetSelectedDataset: resetSelectedDatasetAction,
 	changeSelectedPage: changeSelectedPageAction,
+	replace,
 })(ModelPage);
