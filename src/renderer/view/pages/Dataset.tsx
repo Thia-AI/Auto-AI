@@ -24,13 +24,18 @@ import { changeActiveDataset } from '_/renderer/state/active-dataset-page/Active
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
+import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
+import { MODELS_PAGE } from '../helpers/constants/pageConstants';
+import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
+import ErrorBoundaryReplace from '../components/error-boundaries/ErrorBoundaryReplace';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
 	changeActiveDataset: (activeDataset: Dataset, labels: Labels) => IChangeActiveDatasetAction;
+	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 
-const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) => {
+const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSelectedPage }: Props) => {
 	const datasetID = useRouteMatch().params['id'];
 	// const [dataset, setDataset] = useState<Dataset | undefined>(undefined);
 
@@ -50,6 +55,7 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 	}, [datasetID]);
 
 	useEffect(() => {
+		changeSelectedPage(MODELS_PAGE);
 		refreshDataset();
 	}, []);
 
@@ -104,7 +110,9 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset }: Props) =
 						Select images to transfer to dataset
 					</Text>
 				</Box>
-				<DragNDrop refreshDataset={refreshDataset} />
+				<ErrorBoundaryReplace replacePath='/models'>
+					<DragNDrop refreshDataset={refreshDataset} />
+				</ErrorBoundaryReplace>
 			</Box>
 			<Spacer />
 		</VStack>
@@ -119,4 +127,5 @@ const mapStateToProps = (state: IAppState) => ({
 
 export default connect(mapStateToProps, {
 	changeActiveDataset,
+	changeSelectedPage: changeSelectedPageAction,
 })(DatasetPage);
