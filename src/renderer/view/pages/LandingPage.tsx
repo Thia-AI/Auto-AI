@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Box, VStack, Button, Center, Heading, chakra } from '@chakra-ui/react';
+import { Box, VStack, Button, Center, Heading, chakra, Wrap, Flex } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
@@ -82,8 +82,8 @@ const LandingPage = () => {
 				initial={{ opacity: 0, scale: 0.95, y: '2%' }}
 				animate={{ opacity: 1, scale: 1, y: '0%' }}
 				transition={{ transition: 'ease', duration: 1 }}>
-				<Box>
-					<VStack spacing={4} pt={12} px={{ base: 0, xl: 20 }}>
+				<Box overflowX='hidden' overflowY='hidden'>
+					<Flex pt={12} px={{ base: 0, xl: 20 }} flexDir='column' justify='space-evenly' align='center'>
 						<Heading px={10} fontSize={{ base: '3xl', md: '5xl' }} lineHeight='shorter' textAlign='center'>
 							AutoML ran within your ecosystem
 						</Heading>
@@ -91,16 +91,17 @@ const LandingPage = () => {
 						<Box display='block' rounded='xl'>
 							<Center w='full' h='full' pb='20px'>
 								<chakra.img
-									src='../public/thia.svg'
+									src='../public/app_screenshot.jpg'
+									borderRadius='md'
 									alt='App Screenshot'
-									width={{ base: '80%', lg: '65%', xl: '60%', '2xl': '55%' }}
+									width={{ base: '80%', xl: '75%' }}
 								/>
 							</Center>
 						</Box>
 						<Button mt='3' colorScheme='thia.purple' onClick={showLoginWindow}>
 							Get Started
 						</Button>
-					</VStack>
+					</Flex>
 				</Box>
 			</motion.div>
 		</Box>
