@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import List
 
 import tensorflow as tf
+from PIL import Image
 from overrides import overrides
 
 from config import config
@@ -57,18 +58,26 @@ class BulkFileTransferJob(BaseJob):
                     # If file_name already exists, we want to find the next numbered copy we can use
                     # For example, if cat.jpg already exists, we want to use cat (1).jpg, cat(2).jpg
                     # and so on
-                    # TODO: In copy image make sure they are all jpegs and if not, convert them to be
-                    file_name = file_p.name
+                    file_stem = file_p.stem
+                    file_name = f"{file_stem}.jpg"
                     file_folder: Path = config.DATASET_DIR / dataset['name'] / config.DATASET_INPUT_DIR_NAME
                     file_path: Path = file_folder / file_name
-                    j = 2
+                    j = 1
                     while tf.io.gfile.exists(file_path):
-                        file_name = f"{file_p.stem} ({j}){file_p.suffix}"
+                        file_name = f"{file_stem} ({j}).jpg"
                         file_path = file_folder / file_name
                         j += 1
 
-                    # Copy the file fast with shutil
-                    shutil.copyfile(file, file_path.absolute())
+                    # If original image was already a JPG file, just copy it
+                    if file_p.suffix == '.jpg' or file_p.suffix == '.jpeg':
+                        # Copy the file fast with shutil
+                        shutil.copyfile(file, file_path.absolute())
+                    else:
+                        # Convert image to JPG, then save it
+                        with Image.open(file) as img:
+                            img = img.convert('RGB')
+                            img.save(file_path)
+
                     num_files_transferred += 1
                     self.set_progress(i + 1)
 
