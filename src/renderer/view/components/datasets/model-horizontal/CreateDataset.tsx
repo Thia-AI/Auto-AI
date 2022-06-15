@@ -64,7 +64,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 			setDatasetNameValid(false);
 			return;
 		}
-		const alphaNumRegex = /^[a-zA-Z0-9]+$/;
+		const alphaNumRegex = /^[a-zA-Z0-9-_]+$/;
 
 		if (!datasetName.match(alphaNumRegex)) {
 			setDatasetNameError('Alphanumeric characters only');

@@ -113,7 +113,7 @@ const ICModelContentC = React.memo((props: Props) => {
 			setModelNameValid(false);
 			return;
 		}
-		const alphaNumRegex = /^[a-zA-Z0-9]+$/;
+		const alphaNumRegex = /^[a-zA-Z0-9-_]+$/;
 
 		if (!modelName.match(alphaNumRegex)) {
 			setModelNameError('Alphanumeric characters only');
