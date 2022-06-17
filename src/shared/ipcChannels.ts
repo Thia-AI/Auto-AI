@@ -109,6 +109,11 @@ export const IPC_ENGINE_STOP = 'engine:stop';
  */
 export const IPC_ENGINE_JOB_FINISHED = 'engine:jobFinished';
 
+/**
+ * Used for opening save dialog for saving **Engine** labels_to_class.csv file.
+ */
+export const IPC_ENGINE_SAVE_LABELS_CSV = 'engine:save_labels_csv';
+
 // MAIN WINDOW
 
 /**

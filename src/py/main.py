@@ -1,4 +1,6 @@
+import csv
 import glob
+import io as py_io
 import json
 import os
 import tempfile
@@ -7,18 +9,20 @@ from pathlib import Path
 
 import numpy as np
 from dateutil import parser
-from flask import Flask, jsonify, request, send_from_directory, abort
+from flask import Flask, jsonify, request, send_from_directory, abort, make_response
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
 
 from config import config
 from config import constants
-from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, POSSIBLE_MODEL_TYPES
+from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
+    POSSIBLE_MODEL_TYPES
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
-    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets, update_dataset_last_accessed
+    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets, \
+    update_dataset_last_accessed
 # Export commands
 from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
@@ -353,6 +357,47 @@ def get_models_route():
         models.append(model)
 
     return {'models': models}, 200
+
+
+@app.route('/model/<string:model_id>/labels-csv', methods=['GET'])
+def get_model_labels_csv_route(model_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(model_id) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(model_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of model does not exist"}, 400
+    model = {}
+    for row in rows:
+        model = model_from_row(row)
+    if model['model_status'] == ICModelStatus.TRAINED.value:
+        try:
+            labels_to_class_map: dict = model['extra_data']['trained_model']['labels_to_class_map']
+            labels_to_class_array = []
+            for label, model_class in labels_to_class_map.items():
+                label_to_model_class_map = {
+                    'label': label,
+                    'class': model_class
+                }
+                labels_to_class_array.append(label_to_model_class_map)
+            csv_headers = ['label', 'class']
+            io_string = py_io.StringIO()
+            writer = csv.DictWriter(io_string, fieldnames=csv_headers)
+            writer.writeheader()
+            writer.writerows(labels_to_class_array)
+            labels_class_csv_string = io_string.getvalue()
+            output = make_response(labels_class_csv_string)
+            output.headers["Content-Disposition"] = "attachment; filename=labels_to_class.csv"
+            output.headers["Content-type"] = "text/csv"
+            output.headers["X-Suggested-Filename"] = 'labels_to_class.csv'
+            return output
+
+        except Exception as e:
+            log(e)
+            return {'Error': 'Labels cannot be access for model'}, 400
+
+    else:
+        return {'Error': 'Model has not been trained'}, 400
 
 
 @app.route('/model/<string:uuid>', methods=['GET'])
@@ -881,12 +926,12 @@ def quick_stats_route():
     num_images = get_num_inputs()
     num_labels = get_num_labels()
     return {
-        'num_models': num_models,
-        'num_exports': num_exports,
-        'num_datasets': num_datasets,
-        'num_images': num_images,
-        'num_labels': num_labels
-    }, 200
+               'num_models': num_models,
+               'num_exports': num_exports,
+               'num_datasets': num_datasets,
+               'num_images': num_images,
+               'num_labels': num_labels
+           }, 200
 
 
 if __name__ == '__main__':

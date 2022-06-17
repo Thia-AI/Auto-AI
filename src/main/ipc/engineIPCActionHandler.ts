@@ -1,9 +1,12 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain, BrowserWindow, dialog } from 'electron';
 import { Socket } from 'socket.io-client';
+import { writeFile } from 'fs';
 const isDev = require('electron-is-dev');
+
 import {
 	IPC_CONNECT_SOCKET,
 	IPC_ENGINE_JOB_FINISHED,
+	IPC_ENGINE_SAVE_LABELS_CSV,
 	IPC_ENGINE_START,
 	IPC_ENGINE_STOP,
 	IPC_RUNTIME_IS_DEV,
@@ -80,6 +83,25 @@ class EngineIPCActionHandler {
 			if (!this.engineShell) {
 				this.launchEngine();
 			}
+		});
+
+		ipcMain.handle(IPC_ENGINE_SAVE_LABELS_CSV, async (e, fileName: string, csvData: string) => {
+			dialog
+				.showSaveDialog(this.window, {
+					filters: [{ name: 'csv', extensions: ['csv'] }],
+					title: 'Save Labels To Class File',
+					defaultPath: fileName,
+					buttonLabel: 'Save',
+				})
+				.then(async ({ filePath }) => {
+					if (filePath) {
+						try {
+							await writeFile(filePath, csvData, { encoding: 'utf-8' }, () => {});
+						} catch (err) {
+							console.log(err);
+						}
+					}
+				});
 		});
 	};
 

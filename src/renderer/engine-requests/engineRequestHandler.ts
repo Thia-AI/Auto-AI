@@ -28,6 +28,7 @@ import { ExportModelEngineRequest, IExportModelData } from './actions/post/expor
 import { GetActiveModelExportsEngineRequest } from './actions/get/getActiveModelExports';
 import { DeleteModelEngineRequest } from './actions/delete/deleteModel';
 import { GetQuickStatsEngineRequest } from './actions/get/getQuickStats';
+import { DownloadLabelsCSVEngineRequest } from './actions/get/downloadLabelsCsv';
 
 /**
  * Class that manages all Engine Requests.
@@ -68,6 +69,7 @@ export class EngineRequestHandler {
 	private getDatasetLabelsER!: GetDatasetLabelsEngineRequest;
 	private getDatasetLabelER!: GetDatasetLabelEngineRequest;
 	private updateInputLabelER!: UpdateInputLabelEngineRequest;
+	private downloadLabelsER!: DownloadLabelsCSVEngineRequest;
 	// Telemetry
 	private getGPUStateER!: GetTelemetryGPUStateEngineRequest;
 	private getQuickStatsER!: GetQuickStatsEngineRequest;
@@ -130,6 +132,7 @@ export class EngineRequestHandler {
 		this.getDatasetLabelsER = new GetDatasetLabelsEngineRequest(this.engineRequest);
 		this.getDatasetLabelER = new GetDatasetLabelEngineRequest(this.engineRequest);
 		this.updateInputLabelER = new UpdateInputLabelEngineRequest(this.engineRequest);
+		this.downloadLabelsER = new DownloadLabelsCSVEngineRequest(this.engineRequest);
 		// Telemetry
 		this.getGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
 		this.getQuickStatsER = new GetQuickStatsEngineRequest(this.engineRequest);
@@ -273,5 +276,9 @@ export class EngineRequestHandler {
 
 	public getActiveModelExports = async (modelID: string, config?: AxiosRequestConfig) => {
 		return this.getActiveModelExportsER.run(config, modelID);
+	};
+
+	public downloadLabelsCSV = async (modelID: string, config?: AxiosRequestConfig) => {
+		return this.downloadLabelsER.run(config, modelID);
 	};
 }
