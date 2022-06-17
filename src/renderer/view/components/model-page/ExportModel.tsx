@@ -11,6 +11,11 @@ import {
 	Spacer,
 	Spinner,
 	useColorModeValue as mode,
+	MenuButton,
+	Menu,
+	IconButton,
+	MenuList,
+	MenuItem,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Export, Model, ModelExportType, PossibleModelExportTypes } from '../../helpers/constants/engineTypes';
@@ -19,6 +24,7 @@ import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHa
 import { OpenDialogReturnValue, ipcRenderer } from 'electron';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER } from '_/shared/ipcChannels';
 import { toast, waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 
 interface Props {
 	model: Model;
@@ -41,6 +47,8 @@ export const ExportModel = React.memo(({ model }: Props) => {
 
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const cardBG = mode('thia.gray.50', 'thia.gray.700');
+	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
+	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
 
 	useEffect(() => {
 		// Once export job has finished.
@@ -105,14 +113,45 @@ export const ExportModel = React.memo(({ model }: Props) => {
 			borderColor={borderColor}
 			bg={cardBG}
 			shadow='lg'>
-			<Box mb='8' w='full'>
-				<Text as='h3' fontWeight='bold' fontSize='lg'>
-					Export
-				</Text>
-				<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
-					Export your model in the format you need.
-				</Text>
-			</Box>
+			<HStack mb='8' w='full'>
+				<Box>
+					<Text as='h3' fontWeight='bold' fontSize='lg'>
+						Export
+					</Text>
+					<Text color={mode('thia.gray.700', 'thia.gray.300')} fontSize='sm'>
+						Export your model in the format you need.
+					</Text>
+				</Box>
+				<Spacer />
+				<Box>
+					<Menu autoSelect isLazy lazyBehavior='keepMounted' closeOnSelect={false}>
+						<MenuButton
+							as={IconButton}
+							aria-label='Model Options'
+							icon={<BsThreeDotsVertical />}
+							_hover={{
+								bg: menuButtonBGHover,
+							}}
+							_active={{
+								bg: menuButtonBGClicking,
+							}}
+							_focus={{
+								bg: menuButtonBGHover,
+							}}
+							variant='ghost'
+						/>
+						<MenuList px='3'>
+							<MenuItem
+								rounded='md'
+								onClick={async () => {
+									EngineRequestHandler.getInstance().downloadLabelsCSV(model.id);
+								}}>
+								Download Labels
+							</MenuItem>
+						</MenuList>
+					</Menu>
+				</Box>
+			</HStack>
 			<Wrap
 				mt='4'
 				spacing='4'
