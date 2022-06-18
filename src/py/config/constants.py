@@ -36,8 +36,12 @@ IMAGE_CLASSIFICATION_TRAINING_JOB_NAME = 'Image Classification Training'
 
 GPU_JOBS = [IMAGE_CLASSIFICATION_TEST_JOB_NAME, IMAGE_CLASSIFICATION_TRAINING_JOB_NAME]
 
-# Database Constants
+# Database
 NUM_INSTANCES = 'NUM_INSTANCES'
+
+# Backend
+BACKEND_PROD_BASE_URL = 'https://api.thia.tech'
+BACKEND_DEV_BASE_URL = 'http://127.0.0.1:3987'
 
 # Map for our image classification model names to a EfficientNetV2 model
 IC_MODEL_TYPE_TO_EFFICIENTNET_MAP = {

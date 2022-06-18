@@ -17,6 +17,7 @@ from config import config
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
     POSSIBLE_MODEL_TYPES
+from decorators.verify_action import verify_action
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -401,6 +402,7 @@ def get_model_labels_csv_route(model_id: str):
 
 
 @app.route('/model/<string:uuid>', methods=['GET'])
+@verify_action
 def get_model_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
