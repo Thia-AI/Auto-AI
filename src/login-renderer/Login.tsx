@@ -255,16 +255,27 @@ const Login = React.memo(
 						setEmailSignInLoading(false);
 					} else {
 						const idToken = await userCredential.user.getIdToken();
-						await BackendRequestHandler.getInstance().setNewUserRoles(idToken, {
-							uid: userCredential.user.uid,
-						});
-						setPassword('');
-						setEmailAddress('');
-						let persistence: PERSISTENCE_TYPE = 'local';
-						if (!rememberMe) {
-							persistence = 'session';
+						const [setNewUserRolesError, setNewUserRolesResData] =
+							await BackendRequestHandler.getInstance().setNewUserRoles(idToken, {
+								uid: userCredential.user.uid,
+							});
+						if (!setNewUserRolesError) {
+							setPassword('');
+							setEmailAddress('');
+							let persistence: PERSISTENCE_TYPE = 'local';
+							if (!rememberMe) {
+								persistence = 'session';
+							}
+							await postLoginToken(userCredential.user.uid, persistence);
+						} else {
+							toast({
+								title: 'Error',
+								description: 'Failed setting up new user',
+								status: 'error',
+								duration: 1500,
+								isClosable: false,
+							});
 						}
-						await postLoginToken(userCredential.user.uid, persistence);
 					}
 				})
 				.catch((error: FirebaseError) => {
