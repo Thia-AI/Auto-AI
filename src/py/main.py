@@ -418,6 +418,7 @@ def get_model_route(uuid: str):
 
 
 @app.route('/dataset/create', methods=['POST'])
+@verify_action()
 def create_dataset_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -431,7 +432,7 @@ def create_dataset_route():
     # Check to see if dataset already exists
     if os.path.isdir(config.DATASET_DIR / req_data['name']):
         return {'Error': 'Dataset already exists'}, 400
-    ids = JobCreator().create(CreateDatasetJob(req_data)).queue()
+    ids = JobCreator().create(CreateDatasetJob([req_data, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
@@ -493,6 +494,7 @@ def get_dataset_first_image_route(uuid: str):
 
 
 @app.route('/dataset/<string:uuid>', methods=['DELETE'])
+@verify_action()
 def delete_dataset_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -500,7 +502,7 @@ def delete_dataset_route(uuid: str):
     rows = get_dataset(uuid)
     if rows is None or len(rows) == 0:
         return {'Error': "ID of dataset does not exist"}, 400
-    ids = JobCreator().create(DeleteDatasetJob(uuid)).queue()
+    ids = JobCreator().create(DeleteDatasetJob([uuid, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
