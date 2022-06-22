@@ -17,7 +17,6 @@ from config import config
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
     POSSIBLE_MODEL_TYPES
-from decorators.verify_action import verify_action
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -35,6 +34,7 @@ from db.commands.input_commands import get_train_data_from_all_inputs
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
+from decorators.verify_action import verify_action
 from env import environment
 from exports.export_model_job import ExportModelJob
 # Jobs
@@ -151,6 +151,7 @@ def get_train_job_route(uuid: str):
 
 
 @app.route('/model/create', methods=['POST'])
+@verify_action()
 def create_model_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -172,11 +173,12 @@ def create_model_route():
     # Check to see if model already exists
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400
-    ids = JobCreator().create(ModelCreationJob(req_data)).queue()
+    ids = JobCreator().create(ModelCreationJob([req_data, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
 @app.route('/model/<string:model_id>', methods=['DELETE'])
+@verify_action()
 def delete_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(model_id) != 32:
@@ -187,7 +189,7 @@ def delete_model_route(model_id: str):
     model = {}
     for row in rows:
         model = model_from_row(row)
-    ids = JobCreator().create(ModelDeletionJob(model)).queue()
+    ids = JobCreator().create(ModelDeletionJob([model, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
@@ -402,9 +404,10 @@ def get_model_labels_csv_route(model_id: str):
 
 
 @app.route('/model/<string:uuid>', methods=['GET'])
-@verify_action
+@verify_action()
 def get_model_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
+    print(get_model_route.action_verification_id)
     if len(uuid) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(uuid)
