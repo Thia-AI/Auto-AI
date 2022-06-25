@@ -12,6 +12,7 @@ import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page
 import randomColor from 'randomcolor';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { toast } from '_/renderer/view/helpers/functionHelpers';
+import { useUser } from 'reactfire';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -38,6 +39,7 @@ const AddLabelC = React.memo(
 		isInputFocused,
 	}: Props) => {
 		const [labelUploading, setLabelUploading] = useState(false);
+		const { data: user } = useUser();
 
 		const addLabelInputFocusChange = (focusedIn: boolean) => {
 			setIsInputFocused(focusedIn);
@@ -45,7 +47,7 @@ const AddLabelC = React.memo(
 
 		const addLabel = async () => {
 			if (!activeDataset.value.dataset) return;
-
+			if (!user) return;
 			if (!isInputValid) {
 				toast({
 					title: 'Failed to add label',
@@ -58,8 +60,10 @@ const AddLabelC = React.memo(
 				return;
 			}
 			setLabelUploading(true);
+			const idToken = await user.getIdToken();
 			const [addLabelErr, addLabelRes] = await EngineRequestHandler.getInstance().addLabelToDataset(
 				activeDataset.value.dataset.id,
+				idToken,
 				{
 					label: labelValue,
 					color: randomColor({ format: 'rgb' }),

@@ -709,6 +709,7 @@ def update_input_label_route(input_id: str):
 
 
 @app.route('/dataset/<string:uuid>/labels/add', methods=['POST'])
+@verify_action()
 def add_label_to_dataset(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -716,7 +717,6 @@ def add_label_to_dataset(uuid: str):
     rows = get_dataset(uuid)
     if rows is None or len(rows) == 0:
         return {'Error': "ID of dataset does not exist"}, 400
-
     req_data = request.get_json()
     req_data_format = {
         'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,

@@ -172,8 +172,8 @@ export class EngineRequestHandler {
 		return this.getModelsER.run(config);
 	};
 
-	public getModel = async (uuid: string, config?: AxiosRequestConfig) => {
-		return this.getModelER.run(config, uuid);
+	public getModel = async (uuid: string, idToken: string, config?: AxiosRequestConfig) => {
+		return this.getModelER.run(config, [idToken, uuid]);
 	};
 
 	public createDataset = async (data: object, config?: AxiosRequestConfig) => {
@@ -226,8 +226,13 @@ export class EngineRequestHandler {
 		return this.uploadImagetoDatasetER.run(config, [uuid, jsonData]);
 	};
 
-	public addLabelToDataset = async (uuid: string, jsonData: IAddLabelData, config?: AxiosRequestConfig) => {
-		return this.addLabelToDatasetER.run(config, [uuid, jsonData]);
+	public addLabelToDataset = async (
+		uuid: string,
+		idToken: string,
+		jsonData: IAddLabelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.addLabelToDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
 	public deleteLabelFromDataset = async (uuid: string, jsonData: IDeleteLabelData, config?: AxiosRequestConfig) => {
