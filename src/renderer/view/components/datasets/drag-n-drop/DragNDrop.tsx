@@ -19,6 +19,7 @@ import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/
 import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { MAX_INPUTS_PER_PAGE } from '_/shared/engineConstants';
 import { sleep, toast } from '_/renderer/view/helpers/functionHelpers';
+import { useUser } from 'reactfire';
 
 interface Props {
 	files: string[];
@@ -34,6 +35,8 @@ const DragNDropC = React.memo(
 		const [fileDirectory, setFileDirectory] = useState('');
 		const [imagesUploading, setImagesUploading] = useState(false);
 		const inputColor = mode('thia.gray.700', 'thia.gray.300');
+
+		const { data: user } = useUser();
 
 		const [uploadJobID, setUploadJobID] = useState<string | undefined>(undefined);
 
@@ -92,7 +95,7 @@ const DragNDropC = React.memo(
 		const uploadFiles = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 			e.preventDefault();
 			e.stopPropagation();
-			if (files.length !== 0) {
+			if (files.length !== 0 && user) {
 				setImagesUploading(true);
 				// Create copy of files with directory path appended
 				const filesCpy: string[] = [];
@@ -101,8 +104,11 @@ const DragNDropC = React.memo(
 				}
 				// Get dataset ID from the path (recall that dataset page has route of /dataset/<dataset-id>)
 				const datasetID = pathname.split('/').pop() ?? '';
+				const idToken = await user.getIdToken();
+
 				const [uploadImageErr, uploadImageRes] = await EngineRequestHandler.getInstance().uploadImagesToDataset(
 					datasetID,
+					idToken,
 					{
 						files: filesCpy,
 					},

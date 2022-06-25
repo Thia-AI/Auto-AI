@@ -222,8 +222,13 @@ export class EngineRequestHandler {
 		return this.deleteAllInputsFromDatasetER.run(config, uuid);
 	};
 
-	public uploadImagesToDataset = async (uuid: string, jsonData: object, config?: AxiosRequestConfig) => {
-		return this.uploadImagetoDatasetER.run(config, [uuid, jsonData]);
+	public uploadImagesToDataset = async (
+		uuid: string,
+		idToken: string,
+		jsonData: object,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.uploadImagetoDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
 	public addLabelToDataset = async (

@@ -11,11 +11,21 @@ class UploadImageToDatasetEngineRequest implements IEngineRequest {
 		this.apiName = '/dataset/';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, object]) => {
-		try {
-			if (!data) return [false, { Error: 'Data cannot be undefined' }];
+	run = async (config?: AxiosRequestConfig, data?: [string, string, object]) => {
+		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
-			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/inputs/upload`, data[1], config);
+		try {
+			const extendedAxiosConfig: AxiosRequestConfig = {
+				...config,
+				headers: {
+					Authorization: `Bearer ${data[1]}`,
+				},
+			};
+			const res = await this.engineRequest.post(
+				`${this.apiName}/${data[0]}/inputs/upload`,
+				data[2],
+				extendedAxiosConfig,
+			);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;

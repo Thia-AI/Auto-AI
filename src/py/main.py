@@ -71,6 +71,7 @@ def get_devices_route():
 
 
 @app.route('/dataset/<string:uuid>/inputs/upload', methods=['POST'])
+@verify_action()
 def upload_inputs_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -94,7 +95,7 @@ def upload_inputs_route(uuid: str):
         return {'Error': "Didn't receive any input, try again with input"}, 400
 
     from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
-    ids = JobCreator().create(BulkFileTransferJob((uuid, files))).queue()
+    ids = JobCreator().create(BulkFileTransferJob((uuid, files, request.path, request.method, request.headers.get('Authorization', '')))).queue()
     return {'ids': ids}, 202
 
 
