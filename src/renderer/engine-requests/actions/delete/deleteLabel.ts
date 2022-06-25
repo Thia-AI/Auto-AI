@@ -17,13 +17,19 @@ class DeleteLabelEngineRequest implements IEngineRequest {
 		this.apiName = '/dataset/';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, IDeleteLabelData]) => {
+	run = async (config?: AxiosRequestConfig, data?: [string, string, IDeleteLabelData]) => {
 		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.delete(`${this.apiName}/${data[0]}/labels/remove`, {
+			const extendedAxiosConfig: AxiosRequestConfig = {
 				...config,
-				data: data[1],
+				headers: {
+					Authorization: `Bearer ${data[1]}`,
+				},
+			};
+			const res = await this.engineRequest.delete(`${this.apiName}/${data[0]}/labels/remove`, {
+				...extendedAxiosConfig,
+				data: data[2],
 			});
 			return [false, res.data];
 		} catch (_err) {

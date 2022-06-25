@@ -760,6 +760,7 @@ def add_label_to_dataset(uuid: str):
 
 
 @app.route('/dataset/<string:uuid>/labels/remove', methods=['DELETE'])
+@verify_action()
 def remove_label_from_dataset(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:

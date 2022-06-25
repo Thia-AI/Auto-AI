@@ -235,8 +235,13 @@ export class EngineRequestHandler {
 		return this.addLabelToDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
-	public deleteLabelFromDataset = async (uuid: string, jsonData: IDeleteLabelData, config?: AxiosRequestConfig) => {
-		return this.deleteLabelFromDatasetER.run(config, [uuid, jsonData]);
+	public deleteLabelFromDataset = async (
+		uuid: string,
+		idToken: string,
+		jsonData: IDeleteLabelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.deleteLabelFromDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
 	public getDatasetLabels = async (uuid: string, config?: AxiosRequestConfig) => {
