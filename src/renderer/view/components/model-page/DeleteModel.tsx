@@ -12,6 +12,7 @@ import {
 import { Replace, replace } from 'connected-react-router';
 import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
+import { useUser } from 'reactfire';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAction';
@@ -29,11 +30,16 @@ interface Props {
 const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSelectedPage }: Props) => {
 	const cancelDeleteRef = useRef(null);
 	const [modelDeleting, setModelDeleting] = useState(false);
+	const { data: user } = useUser();
 
 	const deleteModel = async () => {
-		if (model.id.length > 0) {
+		if (model.id.length > 0 && user) {
 			setModelDeleting(true);
-			const [deleteModelErr, deleteModelRes] = await EngineRequestHandler.getInstance().deleteModel(model.id);
+			const idToken = await user.getIdToken();
+			const [deleteModelErr, deleteModelRes] = await EngineRequestHandler.getInstance().deleteModel(
+				model.id,
+				idToken,
+			);
 			if (deleteModelErr) {
 				toast({
 					title: `Failed to delete model '${model.model_name}'`,

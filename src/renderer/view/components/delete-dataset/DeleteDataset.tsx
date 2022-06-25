@@ -20,6 +20,7 @@ import { IOpenCloseDeleteDatasetAction } from '_/renderer/state/delete-modals/mo
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
+import { useUser } from 'reactfire';
 
 interface Props {
 	deleteDatasetData: IOpenCloseDeleteDatasetReducer;
@@ -31,7 +32,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 	const [datasetDeleting, setDatasetDeleting] = useState(false);
 
 	const { datasetValue, openCloseValue } = props.deleteDatasetData;
-
+	const { data: user } = useUser();
 	const cancelDeleteRef = React.useRef(null);
 
 	return (
@@ -69,9 +70,11 @@ const DeleteDatasetC = React.memo((props: Props) => {
 							isLoading={datasetDeleting}
 							colorScheme='red'
 							onClick={async () => {
+								if (!user) return;
 								setDatasetDeleting(true);
+								const idToken = await user.getIdToken();
 								const [deleteDatasetErr, deleteDatasetRes] =
-									await EngineRequestHandler.getInstance().deleteDataset(datasetValue.id);
+									await EngineRequestHandler.getInstance().deleteDataset(datasetValue.id, idToken);
 								if (deleteDatasetErr) {
 									toast({
 										title: `Failed to delete dataset ${datasetValue.name}`,

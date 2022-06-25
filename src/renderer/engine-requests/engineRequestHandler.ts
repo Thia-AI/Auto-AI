@@ -160,12 +160,12 @@ export class EngineRequestHandler {
 		return this.cancelJobER.run(config, jobID);
 	};
 
-	public createModel = async (data: CreateModelData, config?: AxiosRequestConfig) => {
-		return this.createModelER.run(config, data);
+	public createModel = async (data: CreateModelData, idToken: string, config?: AxiosRequestConfig) => {
+		return this.createModelER.run(config, [idToken, data]);
 	};
 
-	public deleteModel = async (modelID: string, config?: AxiosRequestConfig) => {
-		return this.deleteModelER.run(config, modelID);
+	public deleteModel = async (modelID: string, idToken: string, config?: AxiosRequestConfig) => {
+		return this.deleteModelER.run(config, [modelID, idToken]);
 	};
 
 	public getModels = async (config?: AxiosRequestConfig) => {
@@ -176,8 +176,8 @@ export class EngineRequestHandler {
 		return this.getModelER.run(config, [idToken, uuid]);
 	};
 
-	public createDataset = async (data: object, config?: AxiosRequestConfig) => {
-		return this.createDatasetER.run(config, data);
+	public createDataset = async (data: object, idToken: string, config?: AxiosRequestConfig) => {
+		return this.createDatasetER.run(config, [idToken, data]);
 	};
 
 	public getDatasets = async (config?: AxiosRequestConfig) => {
@@ -214,8 +214,8 @@ export class EngineRequestHandler {
 		return this.getNextPageER.run(config, data);
 	};
 
-	public deleteDataset = async (uuid: string, config?: AxiosRequestConfig) => {
-		return this.deleteDatasetER.run(config, uuid);
+	public deleteDataset = async (uuid: string, idToken: string, config?: AxiosRequestConfig) => {
+		return this.deleteDatasetER.run(config, [uuid, idToken]);
 	};
 
 	public deleteAllInputsFromDataset = (uuid: string, config?: AxiosRequestConfig) => {
