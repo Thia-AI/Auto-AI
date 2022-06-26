@@ -319,6 +319,7 @@ def cancel_job(job_id: str):
 
 
 @app.route('/model/<string:model_id>/test', methods=['POST'])
+@verify_action()
 def test_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(model_id) != 32:
