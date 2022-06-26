@@ -248,6 +248,7 @@ def get_active_model_exports_route(model_id: str):
 
 
 @app.route('/model/<string:model_id>/train', methods=['POST'])
+@verify_action()
 def train_model_route(model_id):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()

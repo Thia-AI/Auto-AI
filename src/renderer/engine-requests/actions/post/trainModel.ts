@@ -18,11 +18,17 @@ class TrainModelEngineRequest implements IEngineRequest {
 		this.apiName = '/model';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, ITrainModelData]) => {
+	run = async (config?: AxiosRequestConfig, data?: [string, string, ITrainModelData]) => {
 		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/train`, data[1], config);
+			const extendedAxiosConfig: AxiosRequestConfig = {
+				...config,
+				headers: {
+					Authorization: `Bearer ${data[1]}`,
+				},
+			};
+			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/train`, data[2], extendedAxiosConfig);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;

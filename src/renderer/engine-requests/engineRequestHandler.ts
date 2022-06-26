@@ -269,12 +269,17 @@ export class EngineRequestHandler {
 		return this.updateInputLabelER.run(config, [inputID, data]);
 	};
 
-	public trainModel = async (modelID: string, data: ITrainModelData, config?: AxiosRequestConfig) => {
-		return this.trainModelER.run(config, [modelID, data]);
+	public trainModel = async (
+		modelID: string,
+		idToken: string,
+		data: ITrainModelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.trainModelER.run(config, [modelID, idToken, data]);
 	};
 
-	public testModel = async (modelID: string, data: FormData, config?: AxiosRequestConfig) => {
-		return this.testModelER.run(config, [modelID, data]);
+	public testModel = async (modelID: string, idToken: string, data: FormData, config?: AxiosRequestConfig) => {
+		return this.testModelER.run(config, [modelID, idToken, data]);
 	};
 
 	public getTelemeteryGPUState = async (config?: AxiosRequestConfig) => {

@@ -93,8 +93,9 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	const trainModel = async () => {
 		// Make sure a dataset is selected to be trained on
-		if (selectedDatasetID.value.length > 0) {
-			const [error, _] = await EngineRequestHandler.getInstance().trainModel(modelID, {
+		if (selectedDatasetID.value.length > 0 && user) {
+			const idToken = await user.getIdToken();
+			const [error, trainModelResData] = await EngineRequestHandler.getInstance().trainModel(modelID, idToken, {
 				dataset_id: selectedDatasetID.value,
 			});
 			if (!error) {
@@ -105,7 +106,14 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 					await activeTrainJobRef.current.refreshActiveTrainingJob();
 				}
 			} else {
-				console.log('damn');
+				toast({
+					title: 'Cannot train model',
+					description: trainModelResData['Error'],
+					status: 'error',
+					duration: 1500,
+					isClosable: true,
+					saveToStore: false,
+				});
 			}
 		} else {
 			// Dataset isn't selected
