@@ -90,11 +90,11 @@ def test_in_separate_process(queue: Queue):
         tf.config.experimental.set_memory_growth(gpu, True)
 
     '''Uncomment below if you are testing the GPU running out of VRAM (ResourceExhausted Error)'''
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    try:
-        tf.config.set_logical_device_configuration(gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=48)])
-    except RuntimeError as e:
-        log(e)
+    # gpus = tf.config.experimental.list_physical_devices('GPU')
+    # try:
+    #     tf.config.set_logical_device_configuration(gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=48)])
+    # except RuntimeError as e:
+    #     log(e)
 
     image_batch_tensor = tf.convert_to_tensor(image_batch)
     normalization_layer = tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255)
