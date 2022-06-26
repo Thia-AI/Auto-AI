@@ -290,8 +290,13 @@ export class EngineRequestHandler {
 		return this.getQuickStatsER.run(config);
 	};
 
-	public exportModel = async (modelID: string, data: IExportModelData, config?: AxiosRequestConfig) => {
-		return this.exportModelER.run(config, [modelID, data]);
+	public exportModel = async (
+		modelID: string,
+		idToken: string,
+		data: IExportModelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.exportModelER.run(config, [modelID, idToken, data]);
 	};
 
 	public getActiveModelExports = async (modelID: string, config?: AxiosRequestConfig) => {

@@ -12,6 +12,7 @@ from dateutil import parser
 from flask import Flask, jsonify, request, send_from_directory, abort, make_response
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 from config import config
 from config import constants
@@ -195,6 +196,7 @@ def delete_model_route(model_id: str):
 
 
 @app.route('/model/<string:model_id>/export', methods=['POST'])
+@verify_action()
 def export_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -224,8 +226,10 @@ def export_model_route(model_id: str):
     if req_data['export_type'] not in POSSIBLE_IC_MODEL_EXPORT_TYPES:
         return {'Error': f"Export type: '{req_data['export_type']}' an is invalid export type"}, 400
     export_id = uuid.uuid4().hex
-    ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir])).queue()
-    add_export_to_db(model_id, ids[0], str(save_dir.absolute()), req_data['export_type'], export_id)
+    export_date = datetime.now()
+    ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir, export_date, request.path, request.method,
+                                              request.headers.get('Authorization', '')])).queue()
+    add_export_to_db(model_id, ids[0], str(save_dir.absolute()), req_data['export_type'], export_id, export_date)
     return {'ids': ids}, 202
 
 

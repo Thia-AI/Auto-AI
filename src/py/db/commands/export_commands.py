@@ -5,12 +5,12 @@ from db.commands.base_commands import DBCommand
 from db.database import DBManager
 
 
-def add_export_to_db(model_id: str, export_job_id: str, save_path: str, export_type: str, export_id: str):
+def add_export_to_db(model_id: str, export_job_id: str, save_path: str, export_type: str, export_id: str, export_date: datetime):
     cmd = DBCommand(name=f"Add Export",
                     command='''INSERT INTO exports (id, export_status, export_type, save_path, export_job_id, model_id, export_date)
                     values (?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        export_id, ICModelExportStatus.EXPORTING.value, export_type, save_path, export_job_id, model_id, datetime.now()
+                        export_id, ICModelExportStatus.EXPORTING.value, export_type, save_path, export_job_id, model_id, export_date
                     ))
     DBManager.get_instance().execute(cmd)
 

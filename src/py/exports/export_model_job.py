@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 import time
 import os
+from datetime import datetime
 
 from job.base_job import BaseJob
 from log.logger import log
@@ -10,19 +11,20 @@ from db.commands.model_commands import get_model
 from db.row_accessors import model_from_row
 import config.config as c
 from config.constants import ICModelExportType, ICModelExportStatus
+from decorators.verify_action import update_backend_action_completed
 from db.commands.export_commands import update_export_status
 
 
 class ExportModelJob(BaseJob):
-    def __init__(self, args: [str, str, str, Path]):
-        # args: [model_id, export_type, export_id, save_dir]
+    def __init__(self, args: [str, str, str, Path, datetime, str, str, str]):
+        # args: [model_id, export_type, export_id, save_dir, export_date, request_path, request_method, authorization_header]
         super().__init__(args, job_name='Export Model Job', initial_status='Loading model', progress_max=1)
 
     @overrides
     def run(self):
         import tensorflow as tf
         super().run()
-        model_id, export_type, export_id, save_dir = self.arg
+        model_id, export_type, export_id, save_dir, export_date, request_path, request_method, authorization_header = self.arg
         save_dir: Path = save_dir
         rows = get_model(model_id)
         model = {}
@@ -47,4 +49,12 @@ class ExportModelJob(BaseJob):
             except Exception as e:
                 log('Error:', e)
         update_export_status(export_id, ICModelExportStatus.EXPORTED.value)
+        update_backend_action_completed({
+            'path': request_path,
+            'method': request_method,
+            'save_dir': save_dir,
+            'export_type': export_type,
+            'export_id': export_id,
+            'date_exported': export_date.astimezone().isoformat()
+        }, auth_header=authorization_header)
         super().clean_up_job()
