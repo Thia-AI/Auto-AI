@@ -160,24 +160,24 @@ export class EngineRequestHandler {
 		return this.cancelJobER.run(config, jobID);
 	};
 
-	public createModel = async (data: CreateModelData, config?: AxiosRequestConfig) => {
-		return this.createModelER.run(config, data);
+	public createModel = async (data: CreateModelData, idToken: string, config?: AxiosRequestConfig) => {
+		return this.createModelER.run(config, [idToken, data]);
 	};
 
-	public deleteModel = async (modelID: string, config?: AxiosRequestConfig) => {
-		return this.deleteModelER.run(config, modelID);
+	public deleteModel = async (modelID: string, idToken: string, config?: AxiosRequestConfig) => {
+		return this.deleteModelER.run(config, [modelID, idToken]);
 	};
 
 	public getModels = async (config?: AxiosRequestConfig) => {
 		return this.getModelsER.run(config);
 	};
 
-	public getModel = async (uuid: string, config?: AxiosRequestConfig) => {
-		return this.getModelER.run(config, uuid);
+	public getModel = async (uuid: string, idToken: string, config?: AxiosRequestConfig) => {
+		return this.getModelER.run(config, [idToken, uuid]);
 	};
 
-	public createDataset = async (data: object, config?: AxiosRequestConfig) => {
-		return this.createDatasetER.run(config, data);
+	public createDataset = async (data: object, idToken: string, config?: AxiosRequestConfig) => {
+		return this.createDatasetER.run(config, [idToken, data]);
 	};
 
 	public getDatasets = async (config?: AxiosRequestConfig) => {
@@ -214,24 +214,39 @@ export class EngineRequestHandler {
 		return this.getNextPageER.run(config, data);
 	};
 
-	public deleteDataset = async (uuid: string, config?: AxiosRequestConfig) => {
-		return this.deleteDatasetER.run(config, uuid);
+	public deleteDataset = async (uuid: string, idToken: string, config?: AxiosRequestConfig) => {
+		return this.deleteDatasetER.run(config, [uuid, idToken]);
 	};
 
 	public deleteAllInputsFromDataset = (uuid: string, config?: AxiosRequestConfig) => {
 		return this.deleteAllInputsFromDatasetER.run(config, uuid);
 	};
 
-	public uploadImagesToDataset = async (uuid: string, jsonData: object, config?: AxiosRequestConfig) => {
-		return this.uploadImagetoDatasetER.run(config, [uuid, jsonData]);
+	public uploadImagesToDataset = async (
+		uuid: string,
+		idToken: string,
+		jsonData: object,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.uploadImagetoDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
-	public addLabelToDataset = async (uuid: string, jsonData: IAddLabelData, config?: AxiosRequestConfig) => {
-		return this.addLabelToDatasetER.run(config, [uuid, jsonData]);
+	public addLabelToDataset = async (
+		uuid: string,
+		idToken: string,
+		jsonData: IAddLabelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.addLabelToDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
-	public deleteLabelFromDataset = async (uuid: string, jsonData: IDeleteLabelData, config?: AxiosRequestConfig) => {
-		return this.deleteLabelFromDatasetER.run(config, [uuid, jsonData]);
+	public deleteLabelFromDataset = async (
+		uuid: string,
+		idToken: string,
+		jsonData: IDeleteLabelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.deleteLabelFromDatasetER.run(config, [uuid, idToken, jsonData]);
 	};
 
 	public getDatasetLabels = async (uuid: string, config?: AxiosRequestConfig) => {
@@ -254,12 +269,17 @@ export class EngineRequestHandler {
 		return this.updateInputLabelER.run(config, [inputID, data]);
 	};
 
-	public trainModel = async (modelID: string, data: ITrainModelData, config?: AxiosRequestConfig) => {
-		return this.trainModelER.run(config, [modelID, data]);
+	public trainModel = async (
+		modelID: string,
+		idToken: string,
+		data: ITrainModelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.trainModelER.run(config, [modelID, idToken, data]);
 	};
 
-	public testModel = async (modelID: string, data: FormData, config?: AxiosRequestConfig) => {
-		return this.testModelER.run(config, [modelID, data]);
+	public testModel = async (modelID: string, idToken: string, data: FormData, config?: AxiosRequestConfig) => {
+		return this.testModelER.run(config, [modelID, idToken, data]);
 	};
 
 	public getTelemeteryGPUState = async (config?: AxiosRequestConfig) => {
@@ -270,8 +290,13 @@ export class EngineRequestHandler {
 		return this.getQuickStatsER.run(config);
 	};
 
-	public exportModel = async (modelID: string, data: IExportModelData, config?: AxiosRequestConfig) => {
-		return this.exportModelER.run(config, [modelID, data]);
+	public exportModel = async (
+		modelID: string,
+		idToken: string,
+		data: IExportModelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.exportModelER.run(config, [modelID, idToken, data]);
 	};
 
 	public getActiveModelExports = async (modelID: string, config?: AxiosRequestConfig) => {

@@ -41,6 +41,7 @@ import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/acti
 import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 import { toast } from '../helpers/functionHelpers';
 import { Replace, replace } from 'connected-react-router';
+import { useUser } from 'reactfire';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -56,7 +57,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
 	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
 	const activeTrainJobRef = useRef<ActiveTrainJobHandle>(null);
-
+	const { data: user } = useUser();
 	const {
 		isOpen: deleteModelDialogOpen,
 		onOpen: openDeleteModelDialog,
@@ -64,20 +65,26 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	} = useDisclosure();
 
 	const fetchModel = async () => {
-		const [error, resData] = await EngineRequestHandler.getInstance().getModel(modelID);
-		if (!error) {
-			setModel(resData);
-			setDataLoaded(true);
-		} else {
-			// Failed to get model, route back to models page
-			replace('/models');
+		if (user) {
+			const idToken = await user.getIdToken();
+			const [error, resData] = await EngineRequestHandler.getInstance().getModel(modelID, idToken);
+			if (!error) {
+				setModel(resData);
+				setDataLoaded(true);
+			} else {
+				// Failed to get model, route back to models page
+				replace('/models');
+			}
 		}
 	};
 
 	useEffect(() => {
 		changeSelectedPage(MODELS_PAGE);
-		fetchModel();
 	}, []);
+
+	useEffect(() => {
+		fetchModel();
+	}, [user]);
 
 	const canTrainModel = () => {
 		const status = model.model_status;
@@ -86,8 +93,9 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	const trainModel = async () => {
 		// Make sure a dataset is selected to be trained on
-		if (selectedDatasetID.value.length > 0) {
-			const [error, _] = await EngineRequestHandler.getInstance().trainModel(modelID, {
+		if (selectedDatasetID.value.length > 0 && user) {
+			const idToken = await user.getIdToken();
+			const [error, trainModelResData] = await EngineRequestHandler.getInstance().trainModel(modelID, idToken, {
 				dataset_id: selectedDatasetID.value,
 			});
 			if (!error) {
@@ -98,7 +106,14 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 					await activeTrainJobRef.current.refreshActiveTrainingJob();
 				}
 			} else {
-				console.log('damn');
+				toast({
+					title: 'Cannot train model',
+					description: trainModelResData['Error'],
+					status: 'error',
+					duration: 1500,
+					isClosable: true,
+					saveToStore: false,
+				});
 			}
 		} else {
 			// Dataset isn't selected

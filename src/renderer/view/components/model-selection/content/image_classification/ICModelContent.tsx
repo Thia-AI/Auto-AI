@@ -27,6 +27,7 @@ import { changeSelectedPageAction } from '_state/side-menu/SideModelAction';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
+import { useUser } from 'reactfire';
 
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
@@ -45,6 +46,7 @@ const ICModelContentC = React.memo((props: Props) => {
 	const [modelCreating, setModelCreating] = useState(false);
 	const [modelNameInputFocusedOnce, setModelNameInputFocusedOnce] = useState(false);
 
+	const { data: user } = useUser();
 	// Errors
 	const inputErrorList: [boolean, string][] = [[modelNameValid, modelNameError]];
 
@@ -132,6 +134,7 @@ const ICModelContentC = React.memo((props: Props) => {
 	};
 
 	const createModel = async () => {
+		if (!user) return;
 		// Check errors
 
 		let wasError = false;
@@ -154,12 +157,16 @@ const ICModelContentC = React.memo((props: Props) => {
 
 		// No error, continue
 		setModelCreating(true);
-		const [createModelErr, createModelRes] = await EngineRequestHandler.getInstance().createModel({
-			model_name: modelNameValue,
-			model_type: 'image_classification',
-			model_type_extra: modelTypeValue.toLowerCase().replace(/\s+/g, '-'),
-			labelling_type: getLabellingTypeForEngine(labellingType),
-		});
+		const idToken = await user.getIdToken();
+		const [createModelErr, createModelRes] = await EngineRequestHandler.getInstance().createModel(
+			{
+				model_name: modelNameValue,
+				model_type: 'image_classification',
+				model_type_extra: modelTypeValue.toLowerCase().replace(/\s+/g, '-'),
+				labelling_type: getLabellingTypeForEngine(labellingType),
+			},
+			idToken,
+		);
 		// If error occurred when sending the Engine Action
 		if (createModelErr) {
 			toast({

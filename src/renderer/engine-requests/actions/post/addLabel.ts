@@ -18,11 +18,21 @@ class AddLabelEngineRequest implements IEngineRequest {
 		this.apiName = '/dataset';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, IAddLabelData]) => {
+	run = async (config?: AxiosRequestConfig, data?: [string, string, IAddLabelData]) => {
 		if (!data) return [false, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.post(`${this.apiName}/${data[0]}/labels/add`, data[1], config);
+			const extendedAxiosConfig: AxiosRequestConfig = {
+				...config,
+				headers: {
+					Authorization: `Bearer ${data[1]}`,
+				},
+			};
+			const res = await this.engineRequest.post(
+				`${this.apiName}/${data[0]}/labels/add`,
+				data[2],
+				extendedAxiosConfig,
+			);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;

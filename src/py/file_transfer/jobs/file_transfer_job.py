@@ -14,6 +14,7 @@ from config import config
 from db.commands.dataset_commands import get_dataset, update_label_input_count, update_dataset_last_accessed
 from db.commands.input_commands import add_images_to_db_batch
 from db.commands.job_commands import update_job
+from decorators.verify_action import update_backend_action_completed
 from db.row_accessors import dataset_from_row
 from job.base_job import BaseJob
 from log.logger import log
@@ -24,7 +25,7 @@ def add_input_to_values_list(values_list: List, input_id, dataset_id, file_name,
 
 
 class BulkFileTransferJob(BaseJob):
-    def __init__(self, files: (int, List[str])):
+    def __init__(self, files: (int, List[str], str, str, str)):
         # progress_max is 1 more than the length of files since we have 1 step for adding to DB
         super().__init__(files, job_name="Bulk File Transfer", initial_status="Starting Bulk File Transfer",
                          progress_max=len(files[1]) + 1)
@@ -35,7 +36,7 @@ class BulkFileTransferJob(BaseJob):
         # update progress every 1s
         amount_of_time_to_update_after = 1
         start_time = time.time()
-        (dataset_id, file_paths) = self.arg
+        (dataset_id, file_paths, request_path, request_method, authorization_header) = self.arg
         num_files_transferred = 0
 
         rows = get_dataset(dataset_id)
@@ -107,5 +108,9 @@ class BulkFileTransferJob(BaseJob):
         add_images_to_db_batch(values_to_add_to_inputs_table)
         update_dataset_last_accessed(dataset_id)
         self.set_progress(super().progress_max())
-
+        update_backend_action_completed({
+            'path': request_path,
+            'method': request_method,
+            'num_inputs_added': num_files_transferred
+        }, auth_header=authorization_header)
         super().clean_up_job()

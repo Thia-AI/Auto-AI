@@ -18,6 +18,7 @@ import { IOpenCloseDeleteLabelAction } from '_/renderer/state/delete-modals/mode
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { toast } from '_/renderer/view/helpers/functionHelpers';
+import { useUser } from 'reactfire';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -35,9 +36,8 @@ const LabelsListC = React.memo(
 		const [isInputValid, setIsInputValid] = useState(false);
 		const [clickedOnInputOnce, setClickedOnInputOnce] = useState(false);
 		const [isInputFocused, setIsInputFocused] = useState(false);
-
 		const [inputError, setInputError] = useState('Enter A Label');
-
+		const { data: user } = useUser();
 		useEffect(() => {
 			// Set labels only once dataset has been received
 			if (activeDataset.value.dataset) {
@@ -124,10 +124,12 @@ const LabelsListC = React.memo(
 
 		const deleteLabel = async (label: string) => {
 			if (activeDataset.value.dataset.id.length == 0) return;
-
+			if (!user) return;
 			setIsLabelDeleting(true);
+			const idToken = await user.getIdToken();
 			const [deleteLabelErr, deleteLabelRes] = await EngineRequestHandler.getInstance().deleteLabelFromDataset(
 				activeDataset.value.dataset.id,
+				idToken,
 				{
 					label: label,
 				},

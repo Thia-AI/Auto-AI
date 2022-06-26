@@ -18,6 +18,7 @@ import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
 import { RouterPrompt } from '../routing/RouterPrompt';
+import { useUser } from 'reactfire';
 
 interface Props {
 	model: Model;
@@ -43,6 +44,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 	const inputColor = mode('thia.gray.700', 'thia.gray.500');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const cardBG = mode('thia.gray.50', 'thia.gray.700');
+
+	const { data: user } = useUser();
 
 	const onDrop = useCallback((acceptedFiles: File[], rejected: FileRejection[]) => {
 		// Do something with the files
@@ -137,14 +140,16 @@ export const TestModel = React.memo(({ model }: Props) => {
 	}, [selectedFiles]);
 
 	const testModel = async () => {
-		if (selectedFiles.length > 0) {
+		if (selectedFiles.length > 0 && user) {
 			setTestRunning(true);
 			const formData = new FormData();
 			for (let i = 0; i < selectedFiles.length; i++) {
 				formData.append('files', selectedFiles[i]);
 			}
+			const idToken = await user.getIdToken();
 			const [testModelError, testModelResData] = await EngineRequestHandler.getInstance().testModel(
 				model.id,
+				idToken,
 				formData,
 				{
 					headers: {

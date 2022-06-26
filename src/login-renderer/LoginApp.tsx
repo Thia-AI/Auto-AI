@@ -3,7 +3,7 @@ import { getAuth, getRedirectResult, GoogleAuthProvider } from 'firebase/auth';
 import { getFunctions } from 'firebase/functions';
 import { AuthProvider, FunctionsProvider, useAuth, useFirebaseApp } from 'reactfire';
 import { BrowserRouter, HashRouter, Redirect, Route, Switch, useHistory } from 'react-router-dom';
-import { Center, Spinner } from '@chakra-ui/react';
+import { Center, Spinner, useToast } from '@chakra-ui/react';
 import { io } from 'socket.io-client';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
 import axios from 'axios';
@@ -20,6 +20,7 @@ export const LoginApp = React.memo(() => {
 	const auth = getAuth(app);
 	const functions = getFunctions(app);
 	const history = useHistory();
+	const toast = useToast();
 
 	const Login = lazy(() => import('./Login'));
 	const Register = lazy(() => import('./Register'));
@@ -51,14 +52,25 @@ export const LoginApp = React.memo(() => {
 		const result = await getRedirectResult(auth);
 		if (result) {
 			const idToken = await result.user.getIdToken();
-			await BackendRequestHandler.getInstance().setNewUserRoles(idToken, {
-				uid: result.user.uid,
-			});
-			setGoogleSignInLoading(true);
-			setGoogleRegisteringLoading(true);
-			const credential = GoogleAuthProvider.credentialFromResult(result);
-			// Send that result to backend to create custom token
-			await postLoginToken(result.user.uid, 'local');
+			const [setNewUserRolesError, setNewUserRolesResData] =
+				await BackendRequestHandler.getInstance().setNewUserRoles(idToken, {
+					uid: result.user.uid,
+				});
+			if (!setNewUserRolesError) {
+				setGoogleSignInLoading(true);
+				setGoogleRegisteringLoading(true);
+				const credential = GoogleAuthProvider.credentialFromResult(result);
+				// Send that result to backend to create custom token
+				await postLoginToken(result.user.uid, 'local');
+			} else {
+				toast({
+					title: 'Error',
+					description: 'Failed setting up new user',
+					status: 'error',
+					duration: 1500,
+					isClosable: false,
+				});
+			}
 		}
 	};
 

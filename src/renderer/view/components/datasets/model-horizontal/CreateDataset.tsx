@@ -19,6 +19,7 @@ import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHa
 import { IMAGE_CLASSIFICATION } from '_view_helpers/constants/modelConstants';
 import { hasWhiteSpace, toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
 import { refreshDatasetListAction } from '_/renderer/state/dataset-list/DatasetListActions';
+import { useUser } from 'reactfire';
 
 interface Props {
 	onClose: () => void;
@@ -37,6 +38,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 	const [datasetNameError, setDatasetNameError] = useState(INITIAL_MODEL_NAME_ERROR);
 	const [datasetNameValid, setDatasetNameValid] = useState(false);
 
+	const { data: user } = useUser();
 	const inputErrorList: [boolean, string][] = [[datasetNameValid, datasetNameError]];
 
 	const cancelCreateDatasetRef = useRef(null);
@@ -83,6 +85,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 	};
 
 	const createDataset = async () => {
+		if (!user) return;
 		// Check for errors
 		let wasError = false;
 		inputErrorList.forEach((validPair) => {
@@ -103,11 +106,15 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 		if (wasError) return;
 
 		// No error, continue
+		const idToken = await user.getIdToken();
 		setDatasetCreating(true);
-		const [createDatasetErr, createDatasetRes] = await EngineRequestHandler.getInstance().createDataset({
-			name: datasetName,
-			type: IMAGE_CLASSIFICATION[0],
-		});
+		const [createDatasetErr, createDatasetRes] = await EngineRequestHandler.getInstance().createDataset(
+			{
+				name: datasetName,
+				type: IMAGE_CLASSIFICATION[0],
+			},
+			idToken,
+		);
 
 		if (createDatasetErr) {
 			toast({

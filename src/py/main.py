@@ -12,12 +12,12 @@ from dateutil import parser
 from flask import Flask, jsonify, request, send_from_directory, abort, make_response
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 from config import config
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
     POSSIBLE_MODEL_TYPES
-from decorators.verify_action import verify_action
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -35,6 +35,7 @@ from db.commands.input_commands import get_train_data_from_all_inputs
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
+from decorators.verify_action import verify_action
 from env import environment
 from exports.export_model_job import ExportModelJob
 # Jobs
@@ -71,6 +72,7 @@ def get_devices_route():
 
 
 @app.route('/dataset/<string:uuid>/inputs/upload', methods=['POST'])
+@verify_action()
 def upload_inputs_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -94,7 +96,7 @@ def upload_inputs_route(uuid: str):
         return {'Error': "Didn't receive any input, try again with input"}, 400
 
     from file_transfer.jobs.file_transfer_job import BulkFileTransferJob
-    ids = JobCreator().create(BulkFileTransferJob((uuid, files))).queue()
+    ids = JobCreator().create(BulkFileTransferJob((uuid, files, request.path, request.method, request.headers.get('Authorization', '')))).queue()
     return {'ids': ids}, 202
 
 
@@ -151,6 +153,7 @@ def get_train_job_route(uuid: str):
 
 
 @app.route('/model/create', methods=['POST'])
+@verify_action()
 def create_model_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -172,11 +175,12 @@ def create_model_route():
     # Check to see if model already exists
     if os.path.isdir(config.MODEL_DIR / req_data['model_name']):
         return {'Error': 'Model already exists'}, 400
-    ids = JobCreator().create(ModelCreationJob(req_data)).queue()
+    ids = JobCreator().create(ModelCreationJob([req_data, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
 @app.route('/model/<string:model_id>', methods=['DELETE'])
+@verify_action()
 def delete_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(model_id) != 32:
@@ -187,11 +191,12 @@ def delete_model_route(model_id: str):
     model = {}
     for row in rows:
         model = model_from_row(row)
-    ids = JobCreator().create(ModelDeletionJob(model)).queue()
+    ids = JobCreator().create(ModelDeletionJob([model, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
 @app.route('/model/<string:model_id>/export', methods=['POST'])
+@verify_action()
 def export_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -221,8 +226,10 @@ def export_model_route(model_id: str):
     if req_data['export_type'] not in POSSIBLE_IC_MODEL_EXPORT_TYPES:
         return {'Error': f"Export type: '{req_data['export_type']}' an is invalid export type"}, 400
     export_id = uuid.uuid4().hex
-    ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir])).queue()
-    add_export_to_db(model_id, ids[0], str(save_dir.absolute()), req_data['export_type'], export_id)
+    export_date = datetime.now()
+    ids = JobCreator().create(ExportModelJob([model_id, req_data['export_type'], export_id, save_dir, export_date, request.path, request.method,
+                                              request.headers.get('Authorization', '')])).queue()
+    add_export_to_db(model_id, ids[0], str(save_dir.absolute()), req_data['export_type'], export_id, export_date)
     return {'ids': ids}, 202
 
 
@@ -245,6 +252,7 @@ def get_active_model_exports_route(model_id: str):
 
 
 @app.route('/model/<string:model_id>/train', methods=['POST'])
+@verify_action()
 def train_model_route(model_id):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -316,6 +324,7 @@ def cancel_job(job_id: str):
 
 
 @app.route('/model/<string:model_id>/test', methods=['POST'])
+@verify_action()
 def test_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(model_id) != 32:
@@ -402,9 +411,10 @@ def get_model_labels_csv_route(model_id: str):
 
 
 @app.route('/model/<string:uuid>', methods=['GET'])
-@verify_action
+@verify_action()
 def get_model_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
+    print(get_model_route.action_verification_id)
     if len(uuid) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(uuid)
@@ -415,6 +425,7 @@ def get_model_route(uuid: str):
 
 
 @app.route('/dataset/create', methods=['POST'])
+@verify_action()
 def create_dataset_route():
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
@@ -428,7 +439,7 @@ def create_dataset_route():
     # Check to see if dataset already exists
     if os.path.isdir(config.DATASET_DIR / req_data['name']):
         return {'Error': 'Dataset already exists'}, 400
-    ids = JobCreator().create(CreateDatasetJob(req_data)).queue()
+    ids = JobCreator().create(CreateDatasetJob([req_data, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
@@ -490,6 +501,7 @@ def get_dataset_first_image_route(uuid: str):
 
 
 @app.route('/dataset/<string:uuid>', methods=['DELETE'])
+@verify_action()
 def delete_dataset_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -497,7 +509,7 @@ def delete_dataset_route(uuid: str):
     rows = get_dataset(uuid)
     if rows is None or len(rows) == 0:
         return {'Error': "ID of dataset does not exist"}, 400
-    ids = JobCreator().create(DeleteDatasetJob(uuid)).queue()
+    ids = JobCreator().create(DeleteDatasetJob([uuid, request.path, request.method, request.headers.get('Authorization', '')])).queue()
     return {'ids': ids}, 202
 
 
@@ -704,6 +716,7 @@ def update_input_label_route(input_id: str):
 
 
 @app.route('/dataset/<string:uuid>/labels/add', methods=['POST'])
+@verify_action()
 def add_label_to_dataset(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
@@ -711,7 +724,6 @@ def add_label_to_dataset(uuid: str):
     rows = get_dataset(uuid)
     if rows is None or len(rows) == 0:
         return {'Error': "ID of dataset does not exist"}, 400
-
     req_data = request.get_json()
     req_data_format = {
         'label': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
@@ -755,6 +767,7 @@ def add_label_to_dataset(uuid: str):
 
 
 @app.route('/dataset/<string:uuid>/labels/remove', methods=['DELETE'])
+@verify_action()
 def remove_label_from_dataset(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:

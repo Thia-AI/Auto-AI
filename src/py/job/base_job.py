@@ -40,7 +40,7 @@ class BaseJob(ABC, Thread, EnforceOverrides):
     def exit(self):
         raise SystemExit()
 
-    def get_date_started(self):
+    def get_date_started(self) -> datetime:
         return self.__date_started
 
     def run_async(self):
@@ -94,7 +94,7 @@ class BaseJob(ABC, Thread, EnforceOverrides):
         from db.commands.job_commands import update_job
         update_job(self)
 
-    def date_started(self):
+    def date_started(self) -> datetime:
         return self.__date_started
 
     def date_finished(self):

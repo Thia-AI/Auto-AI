@@ -25,6 +25,7 @@ import { OpenDialogReturnValue, ipcRenderer } from 'electron';
 import { IPC_DRAG_AND_DROP_SELECT_FOLDER } from '_/shared/ipcChannels';
 import { toast, waitTillEngineJobCompleteInterval } from '../../helpers/functionHelpers';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import { useUser } from 'reactfire';
 
 interface Props {
 	model: Model;
@@ -224,8 +225,10 @@ const ExtraModelTypeButton = React.memo(
 		const buttonBG = mode('thia.gray.50', 'thia.gray.800');
 		const buttonShadow = mode('sm', 'lg-dark');
 		const borderColor = mode('thia.gray.200', 'thia.gray.600');
+		const { data: user } = useUser();
+
 		const exportModel = async () => {
-			if (!isDisabled) {
+			if (!isDisabled && user) {
 				const folder: OpenDialogReturnValue = await ipcRenderer.invoke(
 					IPC_DRAG_AND_DROP_SELECT_FOLDER,
 					'Select Folder to Export Model to',
@@ -233,8 +236,9 @@ const ExtraModelTypeButton = React.memo(
 				if (folder.canceled) return;
 				setExporting(true);
 				setIsDisabled(true);
+				const idToken = await user.getIdToken();
 				const [exportModelErrorExists, exportModelResData] =
-					await EngineRequestHandler.getInstance().exportModel(modelID, {
+					await EngineRequestHandler.getInstance().exportModel(modelID, idToken, {
 						export_type: exportType,
 						save_dir: folder.filePaths[0],
 					});

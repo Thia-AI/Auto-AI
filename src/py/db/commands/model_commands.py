@@ -6,12 +6,13 @@ from db.database import DBManager
 
 
 def create_model(uuid: str, model_name: str, model_type: str, model_type_extra: str, date_created: str,
-                 date_last_accessed: str) -> None:
+                 date_last_accessed: str, labelling_type: str, model_status=ICModelStatus.IDLE.value) -> None:
     cmd = DBCommand(name=f"Create Model {model_name}",
-                    command='''INSERT INTO models (id, model_name, model_type, model_type_extra, date_created, date_last_accessed, model_status)
-                    values (?, ?, ?, ?, ?, ?, ?)''',
+                    command='''INSERT INTO models (id, model_name, model_type, model_type_extra, date_created, date_last_accessed, labelling_type, 
+                    model_status)
+                    values (?, ?, ?, ?, ?, ?, ?, ?)''',
                     values=(
-                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, ICModelStatus.IDLE.value
+                        uuid, model_name, model_type, model_type_extra, date_created, date_last_accessed, labelling_type, model_status
                     ))
     DBManager.get_instance().execute(cmd)
 
