@@ -2,7 +2,7 @@ import React, { lazy, useEffect } from 'react';
 
 import { Center, Spinner } from '@chakra-ui/react';
 import { ipcRenderer } from 'electron';
-import { Switch, Route, Redirect } from 'react-router';
+import { Routes, Route, Navigate } from 'react-router';
 import { useSigninCheck } from 'reactfire';
 import { IPC_ENGINE_START, IPC_ENGINE_STOP } from '_/shared/ipcChannels';
 
@@ -57,13 +57,9 @@ export const UnauthenticatedRoute = () => {
 	const Landing = lazy(() => import('.././pages/LandingPage'));
 
 	return (
-		<Switch>
-			<Route exact path='/landing'>
-				<Landing />
-			</Route>
-			<Route exact path='*'>
-				<Redirect to='/landing' />
-			</Route>
-		</Switch>
+		<Routes>
+			<Route path='/landing' element={<Landing />} />
+			<Route path='*' element={<Navigate replace to='/landing' />} />
+		</Routes>
 	);
 };

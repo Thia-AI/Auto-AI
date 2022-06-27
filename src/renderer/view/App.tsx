@@ -1,8 +1,7 @@
 import React, { Suspense, lazy } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { ConnectedRouter as Router } from 'connected-react-router';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
-
+import { ReduxRouter } from '@lagunovsky/redux-react-router';
 import { history } from '_state/store';
 
 import { Header } from './components/header/Header';
@@ -43,7 +42,7 @@ export const App = React.memo(() => {
 					<SideMenu />
 					<EngineNotificationsHandler />
 					<DevDashboard />
-					<Router history={history}>
+					<ReduxRouter history={history}>
 						<Header />
 						<Suspense
 							fallback={
@@ -52,29 +51,103 @@ export const App = React.memo(() => {
 								</Center>
 							}>
 							<AuthWrapper unauthenticatedFallback={<UnauthenticatedRoute />}>
-								<Switch>
-									<Route exact path='/' component={Main} />
+								<Routes>
+									<Route path='/' element={<Main />} />
+									<Route
+										path='/models'
+										element={
+											<EngineAvailableRoute>
+												<Models />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/models/:id'
+										element={
+											<EngineAvailableRoute>
+												<Model />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/dataset/:id'
+										element={
+											<EngineAvailableRoute>
+												<Dataset />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/jobs'
+										element={
+											<EngineAvailableRoute>
+												<Jobs />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/exports'
+										element={
+											<EngineAvailableRoute>
+												<Exports />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/deployments'
+										element={
+											<EngineAvailableRoute>
+												<Deployments />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/notifications'
+										element={
+											<EngineAvailableRoute>
+												<Notifications />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/logs'
+										element={
+											<EngineAvailableRoute>
+												<Logs />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/quota'
+										element={
+											<EngineAvailableRoute>
+												<Quota />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/subscription'
+										element={
+											<EngineAvailableRoute>
+												<Subscription />
+											</EngineAvailableRoute>
+										}
+									/>
+									<Route
+										path='/help'
+										element={
+											<EngineAvailableRoute>
+												<Help />
+											</EngineAvailableRoute>
+										}
+									/>
 
-									<EngineAvailableRoute exact path='/models' component={Models} />
-									<EngineAvailableRoute exact path='/models/:id' component={Model} />
-									<EngineAvailableRoute exact path='/dataset/:id' component={Dataset} />
-									<EngineAvailableRoute exact path='/jobs' component={Jobs} />
-									<EngineAvailableRoute exact path='/exports' component={Exports} />
-									<EngineAvailableRoute exact path='/deployments' component={Deployments} />
-									<EngineAvailableRoute exact path='/notifications' component={Notifications} />
-									<EngineAvailableRoute exact path='/logs' component={Logs} />
-									<EngineAvailableRoute exact path='/quota' component={Quota} />
-									<EngineAvailableRoute exact path='/subscription' component={Subscription} />
-									<EngineAvailableRoute exact path='/help' component={Help} />
-
-									<Route exact path='/settings' component={Settings} />
-									<Route exact path='*'>
-										<Redirect to='/' />
-									</Route>
-								</Switch>
+									<Route path='/settings' element={<Settings />} />
+									<Route path='*' element={<Navigate replace to='/' />} />
+								</Routes>
 							</AuthWrapper>
 						</Suspense>
-					</Router>
+					</ReduxRouter>
 				</React.StrictMode>
 			</AuthProvider>
 		</>

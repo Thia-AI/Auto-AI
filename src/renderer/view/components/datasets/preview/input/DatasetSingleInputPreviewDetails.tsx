@@ -47,7 +47,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 								maxW='70%'
 								bgColor={`rgba(${r}, ${g}, ${b}, 0.25)`}
 								color={`rgba(${r}, ${g}, ${b}, 1)`}>
-								<Text isTruncated fontWeight='normal'>
+								<Text noOfLines={1} fontWeight='normal'>
 									{activeInput.label}
 								</Text>
 							</Badge>
@@ -63,7 +63,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 								variant='subtle'
 								colorScheme='thia.gray'
 								textTransform='none'>
-								<Text isTruncated fontWeight='normal'>
+								<Text noOfLines={1} fontWeight='normal'>
 									{activeInput.file_name}
 								</Text>
 							</Badge>
@@ -79,7 +79,7 @@ const DatasetSingleInputPreviewDetailsC = React.memo(({ activeInputPreviewID, ac
 								variant='subtle'
 								colorScheme='thia.gray'
 								textTransform='none'>
-								<Text isTruncated fontWeight='normal'>
+								<Text noOfLines={1} fontWeight='normal'>
 									{new Date(activeInput.date_created).toLocaleDateString('en-US', {
 										day: 'numeric',
 										month: 'long',

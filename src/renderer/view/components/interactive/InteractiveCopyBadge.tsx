@@ -52,7 +52,7 @@ export const InteractiveCopyBadge = React.memo((props: Props) => {
 					}
 				}, 150);
 			}}>
-			<Text w='full' h='full' color={color} isTruncated>
+			<Text w='full' h='full' color={color} noOfLines={1}>
 				{renderBadgeID()}
 			</Text>
 		</Badge>

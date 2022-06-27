@@ -17,7 +17,6 @@ import { Model, TestJob } from '../../helpers/constants/engineTypes';
 import { TestModelImagePreview } from './TestModelImagePreview';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
-import { RouterPrompt } from '../routing/RouterPrompt';
 import { useUser } from 'reactfire';
 
 interface Props {
@@ -322,15 +321,14 @@ export const TestModel = React.memo(({ model }: Props) => {
 				</HStack>
 				{renderImagePreviews()}
 			</Box>
-			<RouterPrompt
+			{/* TODO: Fix router prompt not working. */}
+			{/* <RouterPrompt
 				when={testJobID !== null}
-				onOK={() => true}
-				onCancel={() => false}
 				title='Leave this page'
 				okText='Confirm'
 				cancelText='Cancel'
 				bodyText='Test job is currently running. Are you sure you want to leave?'
-			/>
+			/> */}
 		</>
 	);
 });

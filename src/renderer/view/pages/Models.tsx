@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { useRouteMatch } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Box, VStack } from '@chakra-ui/react';
-import { push, Push } from 'connected-react-router';
+import { push, UpdateLocationAction } from '@lagunovsky/redux-react-router';
+import { To } from 'history';
 import { connect } from 'react-redux';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -14,12 +15,12 @@ import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/acti
 import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 
 interface Props {
-	push: Push;
+	push: (to: To, state?) => UpdateLocationAction<'push'>;
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 
 const ModelsC = ({ push, changeSelectedPage }: Props) => {
-	const match = useRouteMatch();
+	const { pathname } = useLocation();
 	const [models, setModels] = useState<Model[]>([]);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
@@ -54,7 +55,7 @@ const ModelsC = ({ push, changeSelectedPage }: Props) => {
 					key={model.id}
 					isLoaded={isLoaded}
 					model={model}
-					onClick={() => push(`${match.path}/${model['id']}`)}
+					onClick={() => push(`${pathname}/${model['id']}`)}
 				/>
 			);
 		});

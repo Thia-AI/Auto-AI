@@ -109,7 +109,7 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 							fontSize={modelDetailsTextFontSize}
 							transition='font-size 150ms ease'
 							color={modelDetailsTextColor}
-							isTruncated>
+							noOfLines={1}>
 							{model.model_name}
 						</Text>
 					</HStack>
@@ -122,7 +122,7 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 							fontSize={modelDetailsTextFontSize}
 							transition='font-size 150ms ease'
 							maxW='60%'>
-							<Text isTruncated>{model.model_status}</Text>
+							<Text noOfLines={1}>{model.model_status}</Text>
 						</Badge>
 					</HStack>
 

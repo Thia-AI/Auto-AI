@@ -9,7 +9,8 @@ import {
 	Button,
 	Text,
 } from '@chakra-ui/react';
-import { Replace, replace } from 'connected-react-router';
+import { To } from 'history';
+import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useUser } from 'reactfire';
@@ -24,7 +25,7 @@ interface Props {
 	dialogOpen: boolean;
 	onClose: () => void;
 	model: Model;
-	replace: Replace;
+	replace: (to: To, state?) => UpdateLocationAction<'replace'>;
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSelectedPage }: Props) => {
@@ -69,7 +70,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 							DANGER ZONE
 						</Badge>
 
-						<Text isTruncated fontWeight='normal'>
+						<Text noOfLines={1} fontWeight='normal'>
 							Delete Model: {model.model_name}
 						</Text>
 					</AlertDialogHeader>

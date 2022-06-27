@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { connectRouter, RouterState } from 'connected-react-router';
+import { createRouterReducer, ReduxRouterState } from '@lagunovsky/redux-react-router';
 
 import { selectedModelReducer, openCloseModelSelectionReducer } from './choose-model/ChooseModelReducers';
 import { ISelectedModelReducer, IOpenCloseModelSelectionReducer } from './choose-model/model/reducerTypes';
@@ -50,7 +50,7 @@ import {
  */
 const createRootReducer = (history) =>
 	combineReducers({
-		router: connectRouter(history),
+		router: createRouterReducer(history),
 		engineStarted: engineStatusReducer,
 		headerMaximizedClass: headerMaximizedChangedReducer,
 		openCloseModelSelection: openCloseModelSelectionReducer,
@@ -75,7 +75,7 @@ const createRootReducer = (history) =>
  * All state types for **renderer**.
  */
 export interface IAppState {
-	router: RouterState;
+	router: ReduxRouterState;
 	engineStarted: IEngineStatusReducer;
 	headerMaximizedClass: IHeaderMaximizedChangedReducer;
 	openCloseModelSelection: IOpenCloseModelSelectionReducer;

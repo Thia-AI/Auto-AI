@@ -483,7 +483,7 @@ export const ActiveTrainJob = React.memo(
 								<HStack w='full' alignItems='baseline'>
 									<Skeleton isLoaded={isInitialDataLoaded} maxW='60%' w='80px'>
 										<Badge variant='outline' fontSize='md' colorScheme={statusColor()}>
-											<Text isTruncated>{trainingJob.extra_data?.status}</Text>
+											<Text noOfLines={1}>{trainingJob.extra_data?.status}</Text>
 										</Badge>
 									</Skeleton>
 
@@ -510,7 +510,7 @@ export const ActiveTrainJob = React.memo(
 										fontSize='0.8rem'
 										pl='1.5'
 										color={trainingJobProgressTextColor}
-										isTruncated>
+										noOfLines={1}>
 										{trainingJob.extra_data?.status_description}
 									</Text>
 								</SkeletonText>

@@ -163,7 +163,7 @@ const DatasetInputLabelsC = React.memo(
 											/>
 										}
 										onClick={() => assignLabelToCurrentInput(label)}>
-										<Text isTruncated>{label}</Text>
+										<Text noOfLines={1}>{label}</Text>
 									</Button>
 								</WrapItem>
 							);

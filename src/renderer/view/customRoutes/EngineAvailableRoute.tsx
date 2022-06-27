@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { IAppState } from '_/renderer/state/reducers';
 import { toast } from '../helpers/functionHelpers';
 
-interface EngineAvailableProps extends RouteProps {
-	component: React.ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+interface EngineAvailableProps {
 	isEngineAvailable: boolean;
+	children: React.ReactElement;
 }
 
-const EngineAvailableRouteC = ({ component: C, isEngineAvailable, ...rest }: EngineAvailableProps) => {
+const EngineAvailableRouteC = ({ children: C, isEngineAvailable }: EngineAvailableProps) => {
 	useEffect(() => {
 		if (!isEngineAvailable) {
 			toast({
@@ -23,10 +23,7 @@ const EngineAvailableRouteC = ({ component: C, isEngineAvailable, ...rest }: Eng
 		}
 	}, [isEngineAvailable]);
 
-	if (isEngineAvailable) {
-		return <Route {...rest} render={(props) => <C {...props} />} />;
-	}
-	return <Redirect to='/' />;
+	return isEngineAvailable ? C : <Navigate replace to='/' />;
 };
 
 const mapStateToProps = (state: IAppState) => ({

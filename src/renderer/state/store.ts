@@ -2,7 +2,7 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import { createHashHistory } from 'history';
-import { routerMiddleware } from 'connected-react-router';
+import { createRouterMiddleware } from '@lagunovsky/redux-react-router';
 
 import createRootReducer from './reducers';
 
@@ -11,7 +11,7 @@ import createRootReducer from './reducers';
  */
 export const history = createHashHistory({
 	// Set getUserConfirmation to empty function so that we can use a custom prompt instead of relying on the browser
-	getUserConfirmation: () => {},
+	// getUserConfirmation: () => {},
 });
 
 /**
@@ -25,7 +25,7 @@ const logger = createLogger({
 	collapsed: true,
 });
 
-let middleWare = [thunk as ThunkMiddleware, routerMiddleware(history)];
+let middleWare = [thunk as ThunkMiddleware, createRouterMiddleware(history)];
 if (process.env.NODE_ENV === 'development') {
 	middleWare = [...middleWare, logger];
 }

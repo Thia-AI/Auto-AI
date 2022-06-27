@@ -87,7 +87,7 @@ export const RecentActivity = React.memo(({ activity, refreshActivitiesList }: P
 					title={capitalizeFirstLetter(activity.status ?? '')}
 				/>
 				<Box flex='1' textAlign='left' maxW={activityTitleMaxWidth}>
-					<Text fontSize='sm' fontWeight='700' isTruncated>
+					<Text fontSize='sm' fontWeight='700' noOfLines={1}>
 						{activity.title}
 					</Text>
 				</Box>

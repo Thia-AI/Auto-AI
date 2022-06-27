@@ -1,6 +1,6 @@
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { FirebaseAppProvider } from 'reactfire';
 import { firebaseConfig } from '_/renderer/firebase/firebase';
 import { HashRouter } from 'react-router-dom';
@@ -19,7 +19,9 @@ import BackendRequestConfig from '_/shared/backendRequestConfig';
 const backendRequestHandler = BackendRequestHandler.getInstance();
 backendRequestHandler.initInstances(BackendRequestConfig);
 
-ReactDOM.render(
+const container = document.getElementById('app');
+const root = createRoot(container!);
+root.render(
 	<>
 		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
 		<ChakraProvider theme={theme}>
@@ -30,5 +32,4 @@ ReactDOM.render(
 			</FirebaseAppProvider>
 		</ChakraProvider>
 	</>,
-	document.getElementById('app'),
 );

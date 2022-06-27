@@ -48,7 +48,7 @@ export const ProfileSelectButton = React.memo(({ displayName, imageURL }: Props)
 					src={imageURL}
 				/>
 				<Box textAlign='start' maxW='180px'>
-					<Heading fontWeight='semibold' fontSize='sm' isTruncated>
+					<Heading fontWeight='semibold' fontSize='sm' noOfLines={1}>
 						{displayName}
 					</Heading>
 				</Box>

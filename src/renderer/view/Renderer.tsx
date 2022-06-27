@@ -3,7 +3,7 @@
  */
 // Import the styles here to process them with webpack
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import { FirebaseAppProvider } from 'reactfire';
@@ -22,6 +22,7 @@ import { firebaseConfig } from '../firebase/firebase';
 import { theme } from '_/shared/theming/chakraTheme';
 import { BackendRequestHandler } from '../backend-requests/backendRequestHandler';
 import BackendRequestConfig from '_/shared/backendRequestConfig';
+import { ToastContainer } from './helpers/functionHelpers';
 
 /**
  * Redux store.
@@ -33,16 +34,18 @@ const backendRequestHandler = BackendRequestHandler.getInstance();
 engineRequestHandler.initInstances(EngineRequestConfig);
 backendRequestHandler.initInstances(BackendRequestConfig);
 
-ReactDOM.render(
+const container = document.getElementById('app');
+const root = createRoot(container!);
+root.render(
 	<>
 		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
 		<ReduxProvider store={store}>
 			<ChakraProvider theme={theme}>
 				<FirebaseAppProvider firebaseConfig={firebaseConfig}>
 					<App />
+					<ToastContainer />
 				</FirebaseAppProvider>
 			</ChakraProvider>
 		</ReduxProvider>
 	</>,
-	document.getElementById('app'),
 );

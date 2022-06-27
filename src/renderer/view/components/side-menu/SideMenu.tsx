@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Drawer, DrawerOverlay, DrawerBody, DrawerContent, Box, Flex, Stack, Circle } from '@chakra-ui/react';
 import { BiAddToQueue, BiBox, BiCog, BiHome, BiPackage, BiRecycle, BiServer } from 'react-icons/bi';
-import { push, Push } from 'connected-react-router';
-
+import { To } from 'history';
+import { push, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { MdHelpOutline, MdHistory, MdNotificationsNone } from 'react-icons/md';
 import { FiPercent } from 'react-icons/fi';
 
@@ -33,16 +33,16 @@ import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
 interface Props {
 	sideMenuOpen: IMenuOpenReducer;
 	openCloseSideMenu: () => IMenuOpenCloseAction;
-	push: Push;
+	push: (to: To, state?) => UpdateLocationAction<'push'>;
 	selectedPage: ISelectedPageReducer;
 }
-const SideMenuC = React.memo((props: Props) => {
+const SideMenuC = React.memo(({ sideMenuOpen, push, openCloseSideMenu, selectedPage }: Props) => {
 	const scrollBarSX = useVerticalScrollbar('6px');
 	return (
 		<Drawer
-			isOpen={props.sideMenuOpen.value}
+			isOpen={sideMenuOpen.value}
 			onClose={() => {
-				props.openCloseSideMenu();
+				openCloseSideMenu();
 			}}
 			placement='left'
 			size='xs'>
@@ -56,10 +56,10 @@ const SideMenuC = React.memo((props: Props) => {
 								<NavItem
 									used
 									onClick={() => {
-										props.push('/');
-										props.openCloseSideMenu();
+										push('/');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == HOME_PAGE}
+									active={selectedPage.value == HOME_PAGE}
 									icon={<BiHome />}
 									label='Home'
 								/>
@@ -68,55 +68,55 @@ const SideMenuC = React.memo((props: Props) => {
 								<NavItem
 									used
 									onClick={() => {
-										props.push('/models');
-										props.openCloseSideMenu();
+										push('/models');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == MODELS_PAGE}
+									active={selectedPage.value == MODELS_PAGE}
 									icon={<BiAddToQueue />}
 									label='Models'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/jobs');
-										props.openCloseSideMenu();
+										push('/jobs');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == JOBS_PAGE}
+									active={selectedPage.value == JOBS_PAGE}
 									icon={<BiBox />}
 									label='Jobs'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/exports');
-										props.openCloseSideMenu();
+										push('/exports');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == EXPORTS_PAGE}
+									active={selectedPage.value == EXPORTS_PAGE}
 									icon={<BiPackage />}
 									label='Exports'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/deployments');
-										props.openCloseSideMenu();
+										push('/deployments');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == DEPLOYMENTS_PAGE}
+									active={selectedPage.value == DEPLOYMENTS_PAGE}
 									icon={<BiServer />}
 									label='Deployments'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/notifications');
-										props.openCloseSideMenu();
+										push('/notifications');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == NOTIFICATIONS_PAGE}
+									active={selectedPage.value == NOTIFICATIONS_PAGE}
 									icon={<MdNotificationsNone />}
 									label='Notifications'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/logs');
-										props.openCloseSideMenu();
+										push('/logs');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == LOGS_PAGE}
+									active={selectedPage.value == LOGS_PAGE}
 									icon={<MdHistory />}
 									label='Logs'
 								/>
@@ -125,19 +125,19 @@ const SideMenuC = React.memo((props: Props) => {
 							<NavGroup label='Your Account'>
 								<NavItem
 									onClick={() => {
-										props.push('/quota');
-										props.openCloseSideMenu();
+										push('/quota');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == QUOTA_PAGE}
+									active={selectedPage.value == QUOTA_PAGE}
 									icon={<FiPercent />}
 									label='Quota'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/subscription');
-										props.openCloseSideMenu();
+										push('/subscription');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == SUBSCRIPTION_PAGE}
+									active={selectedPage.value == SUBSCRIPTION_PAGE}
 									icon={<BiRecycle />}
 									label='Subsription'
 								/>
@@ -148,19 +148,19 @@ const SideMenuC = React.memo((props: Props) => {
 								<NavItem
 									used
 									onClick={() => {
-										props.push('/settings');
-										props.openCloseSideMenu();
+										push('/settings');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == SETTINGS_PAGE}
+									active={selectedPage.value == SETTINGS_PAGE}
 									icon={<BiCog />}
 									label='Settings'
 								/>
 								<NavItem
 									onClick={() => {
-										props.push('/help');
-										props.openCloseSideMenu();
+										push('/help');
+										openCloseSideMenu();
 									}}
-									active={props.selectedPage.value == HELP_PAGE}
+									active={selectedPage.value == HELP_PAGE}
 									icon={<MdHelpOutline />}
 									label='Help & Support'
 									endElement={<Circle size='2' bg='blue.400' />}

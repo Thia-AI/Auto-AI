@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { getAuth, getRedirectResult, GoogleAuthProvider } from 'firebase/auth';
 import { getFunctions } from 'firebase/functions';
 import { AuthProvider, FunctionsProvider, useAuth, useFirebaseApp } from 'reactfire';
-import { BrowserRouter, HashRouter, Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { Center, Spinner, useToast } from '@chakra-ui/react';
 import { io } from 'socket.io-client';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
@@ -19,7 +19,7 @@ export const LoginApp = React.memo(() => {
 	const app = useFirebaseApp();
 	const auth = getAuth(app);
 	const functions = getFunctions(app);
-	const history = useHistory();
+	const navigate = useNavigate();
 	const toast = useToast();
 
 	const Login = lazy(() => import('./Login'));
@@ -79,7 +79,7 @@ export const LoginApp = React.memo(() => {
 			uid,
 			persistence,
 		});
-		history.push('/');
+		navigate('/');
 	};
 	return (
 		<AuthProvider sdk={auth}>
@@ -90,35 +90,31 @@ export const LoginApp = React.memo(() => {
 							<Spinner color='gray.600' size='lg' />
 						</Center>
 					}>
-					<Switch>
+					<Routes>
 						<Route
-							exact
 							path='/'
-							component={() => (
+							element={
 								<Login
 									googleSignInLoading={googleSignInLoading}
 									emailSignInLoading={emailSignInLoading}
 									setEmailSignInLoading={setEmailSignInLoading}
 									postLoginToken={postLoginToken}
 								/>
-							)}
+							}
 						/>
 						<Route
-							exact
 							path='/register'
-							component={() => (
+							element={
 								<Register
 									googleRegisteringLoading={googleRegisteringLoading}
 									emailRegisteringLoading={emailRegisteringLoading}
 									setEmailRegisteringLoading={setEmailRegisteringLoading}
 									postLoginToken={postLoginToken}
 								/>
-							)}
+							}
 						/>
-						<Route exact path='*'>
-							<Redirect to='/' />
-						</Route>
-					</Switch>
+						<Route path='*' element={<Navigate to='/' />} />
+					</Routes>
 				</Suspense>
 			</FunctionsProvider>
 		</AuthProvider>

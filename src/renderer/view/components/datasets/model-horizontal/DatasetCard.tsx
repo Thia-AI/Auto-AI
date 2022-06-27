@@ -16,7 +16,8 @@ import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { FiEdit } from 'react-icons/fi';
 import { IoTrash } from 'react-icons/io5';
-import { push, Push } from 'connected-react-router';
+import { To } from 'history';
+import { push, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 
 import { Dataset } from '_/renderer/view/helpers/constants/engineTypes';
 import Preview from '_utils/images/placeholder-dark2.jpg';
@@ -44,7 +45,7 @@ interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
 	changeSelectedDatasetAction: (selectedDatasetID: string) => IChangeSelectedDatasetAction;
 	resetSelectedDatasetAction: () => IResetSelectedDatasetAction;
-	push: Push;
+	push: (to: To, state?) => UpdateLocationAction<'push'>;
 	openCloseDeleteDataset: (dataset: Dataset) => IOpenCloseDeleteDatasetAction;
 }
 
@@ -98,7 +99,7 @@ const DatasetCardC = React.memo((props: Props) => {
 				{renderImage()}
 				<VStack spacing='3' px='3' py='2'>
 					<HStack w='full'>
-						<Text fontWeight='semibold' maxW='40%' isTruncated>
+						<Text fontWeight='semibold' maxW='40%' noOfLines={1}>
 							{props.dataset.name}
 						</Text>
 						<Spacer />
