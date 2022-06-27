@@ -116,10 +116,14 @@ mainConfig.plugins.push(
 
 					jsonContent.main = './main.bundle.js';
 					jsonContent.scripts = { start: 'electron ./main.bundle.js' };
-					jsonContent.postinstall = 'npm install --legacy-peer-deps';
+					jsonContent.postinstall = 'npm install --force';
 
 					return JSON.stringify(jsonContent, undefined, 2);
 				},
+			},
+			{
+				from: 'package-lock.json',
+				to: 'package-lock.json',
 			},
 		],
 	}),
