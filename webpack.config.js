@@ -36,6 +36,7 @@ const commonConfig = {
 			_state: srcPaths(path.join('src', 'renderer', 'state')),
 			_view_helpers: srcPaths(path.join('src', 'renderer', 'view', 'helpers')),
 			_engine_requests: srcPaths(path.join('src', 'renderer', 'engine-requests')),
+			'react-dom$': 'react-dom/profiling',
 		},
 		extensions: ['.js', '.json', '.ts', '.tsx'],
 		// modules: [srcPaths('node_modules')],
