@@ -42,7 +42,7 @@ const DeleteLabelC = React.memo(({ deleteLabelValue, openCloseDeleteLabel, delet
 							DANGER ZONE
 						</Badge>
 
-						<Text isTruncated fontWeight='normal'>
+						<Text noOfLines={1} fontWeight='normal'>
 							Delete Label: {labelValue}
 						</Text>
 					</AlertDialogHeader>

@@ -94,7 +94,7 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 						px='1'
 						fontSize='10px'
 						color={cellColor}>
-						<Text isTruncated>{file_name}</Text>
+						<Text noOfLines={1}>{file_name}</Text>
 						<Spacer />
 						<Icon
 							fontSize='sm'

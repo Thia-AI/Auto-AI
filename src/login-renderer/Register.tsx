@@ -28,7 +28,7 @@ import {
 	sendEmailVerification,
 } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAuth } from 'reactfire';
 import { PERSISTENCE_TYPE } from '_/shared/appConstants';
 import { useVerticalScrollbar } from '_/renderer/view/helpers/hooks/scrollbar';
@@ -52,7 +52,7 @@ const Register = React.memo(
 			prompt: 'select_account consent',
 		});
 
-		const history = useHistory();
+		const navigate = useNavigate();
 		const toast = useToast();
 		const verticalScrollBarSX = useVerticalScrollbar();
 
@@ -232,7 +232,7 @@ const Register = React.memo(
 							isClosable: false,
 						});
 						setEmailRegisteringLoading(false);
-						history.push('/');
+						navigate('/');
 					} else {
 						// Email already verified (don't know when this will happen but it's here in case it does)
 						await postLoginToken(userCredential.user.uid, 'local');
@@ -350,7 +350,13 @@ const Register = React.memo(
 					</Button>
 					<HStack justify='space-around'>
 						<Text fontSize='sm'>Already have an account?</Text>
-						<Button variant='link' colorScheme='teal' size='sm' onClick={() => history.push('/')}>
+						<Button
+							variant='link'
+							colorScheme='teal'
+							size='sm'
+							onClick={() => {
+								navigate('/');
+							}}>
 							<Text fontSize='sm'>Sign In</Text>
 						</Button>
 					</HStack>

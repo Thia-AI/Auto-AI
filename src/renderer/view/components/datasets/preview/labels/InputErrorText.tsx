@@ -27,7 +27,7 @@ export const InputErrorText = React.memo(({ isInputValid, inputError, clickedOnI
 					<Box mr='1'>
 						<IoIosInformationCircle />
 					</Box>
-					<Text isTruncated>{inputError}</Text>
+					<Text noOfLines={1}>{inputError}</Text>
 				</Badge>
 			</SlideFade>
 		</Box>

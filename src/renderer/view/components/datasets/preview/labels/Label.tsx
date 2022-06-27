@@ -30,7 +30,7 @@ const LabelC = React.memo(({ label, index, openCloseDeleteLabel }: Props) => {
 				</Text>
 			</Center>
 			<Center w='80%' pr='15px'>
-				<Text fontWeight='light' fontSize='md' isTruncated>
+				<Text fontWeight='light' fontSize='md' noOfLines={1}>
 					{label}
 				</Text>
 			</Center>

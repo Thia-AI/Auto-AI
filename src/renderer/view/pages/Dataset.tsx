@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import {
 	Box,
@@ -11,7 +11,7 @@ import {
 	useMediaQuery,
 	useColorModeValue as mode,
 } from '@chakra-ui/react';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -35,8 +35,12 @@ interface Props {
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 
+type DatasetPageParams = {
+	id: string;
+};
+
 const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSelectedPage }: Props) => {
-	const datasetID = useRouteMatch().params['id'];
+	const { id: datasetID } = useParams<DatasetPageParams>();
 	// const [dataset, setDataset] = useState<Dataset | undefined>(undefined);
 
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
@@ -44,7 +48,9 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const cardBG = mode('thia.gray.50', 'thia.gray.700');
 
-	const refreshDataset = useCallback(async () => {
+	const refreshDataset = async () => {
+		if (!datasetID) return;
+
 		const [datasetError, datasetResData] = await EngineRequestHandler.getInstance().getDataset(datasetID);
 		const [datasetLabelsError, datasetLabelsResData] = await EngineRequestHandler.getInstance().getDatasetLabels(
 			datasetID,
@@ -52,12 +58,15 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 		if (!datasetError && !datasetLabelsError) {
 			changeActiveDataset(datasetResData, datasetLabelsResData);
 		}
-	}, [datasetID]);
+	};
 
 	useEffect(() => {
 		changeSelectedPage(MODELS_PAGE);
-		refreshDataset();
 	}, []);
+
+	useEffect(() => {
+		refreshDataset();
+	}, [datasetID]);
 
 	useEffect(() => {
 		// cleanup when dataset page is unmounted
@@ -80,7 +89,7 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 			<VStack alignItems='flex-start' ml='4'>
 				<Skeleton w='400px' isLoaded={activeDataset.value.dataset !== undefined}>
 					<HStack pt='1' alignItems='center'>
-						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated>
+						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1}>
 							{activeDataset.value.dataset?.name}:
 						</Text>
 						<Badge fontSize='sm' colorScheme='purple' ml='1'>

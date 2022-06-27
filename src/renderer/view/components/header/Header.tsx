@@ -177,7 +177,7 @@ const HeaderC = React.memo(
 					{displayLoggedInHeaderComponents()}
 					<Box
 						id='window-controls'
-						d='grid'
+						display='grid'
 						gridTemplateColumns='repeat(3, var(--header-icon-width))'
 						position='absolute'
 						top='0'

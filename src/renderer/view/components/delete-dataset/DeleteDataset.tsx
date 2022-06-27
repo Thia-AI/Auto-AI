@@ -48,7 +48,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 							DANGER ZONE
 						</Badge>
 
-						<Text isTruncated fontWeight='normal'>
+						<Text noOfLines={1} fontWeight='normal'>
 							Delete Dataset: {datasetValue.name}
 						</Text>
 					</AlertDialogHeader>

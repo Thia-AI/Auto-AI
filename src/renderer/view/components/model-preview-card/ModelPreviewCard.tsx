@@ -61,7 +61,7 @@ const ModelPreviewCardC = React.memo((props: Props) => {
 						{props.cardTitle}
 					</Text>
 				</Flex>
-				<Box mt='1' fontWeight='medium' as='h5' lineHeight='tight' isTruncated fontSize='md'>
+				<Box mt='1' fontWeight='medium' as='h5' lineHeight='tight' noOfLines={1} fontSize='md'>
 					{props.cardDescription}
 				</Box>
 				<Box as='p' mt='2' color={mode('thia.gray.700', 'thia.gray.400')} fontSize='xs'>

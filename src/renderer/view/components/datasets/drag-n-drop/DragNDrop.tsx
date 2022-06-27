@@ -178,7 +178,7 @@ const DragNDropC = React.memo(
 						overflow='hidden'
 						color={inputColor}
 						onClick={selectMultipleFiles}>
-						<Text fontSize='md' isTruncated>
+						<Text fontSize='md' noOfLines={1}>
 							Select *.png or *.jpg images
 						</Text>
 					</Center>

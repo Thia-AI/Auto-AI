@@ -16,8 +16,8 @@ import {
 	Link,
 } from '@chakra-ui/react';
 import { connect } from 'react-redux';
-import { push, Push } from 'connected-react-router';
-
+import { To } from 'history';
+import { push, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { openCloseModelSelectionAction } from '_/renderer/state/choose-model/ChooseModelActions';
 import { IOpenCloseModelSelectionAction } from '_/renderer/state/choose-model/model/actionTypes';
 
@@ -31,7 +31,7 @@ import { useUser } from 'reactfire';
 
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
-	push: Push;
+	push: (to: To, state?) => UpdateLocationAction<'push'>;
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
 

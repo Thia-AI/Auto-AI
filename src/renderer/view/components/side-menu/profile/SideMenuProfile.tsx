@@ -71,7 +71,7 @@ const SideMenuProfileC = ({ openCloseSideMenu }: Props) => {
 							<Badge ml='0.5' fontSize='sm' colorScheme='red' mb='2'>
 								ALERT
 							</Badge>
-							<Text isTruncated fontWeight='normal'>
+							<Text noOfLines={1} fontWeight='normal'>
 								Signout
 							</Text>
 						</AlertDialogHeader>

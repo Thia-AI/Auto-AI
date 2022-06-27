@@ -60,7 +60,7 @@ def verify_action(expires_in=None):
             except requests.exceptions.Timeout:
                 return {'Error': 'Action verification timed out'}, 504
             except requests.exceptions.ConnectionError:
-                return {'Error': 'Failed to request action verification'}, 502
+                return {'Error': 'Failed to connect to API'}, 502
             except Exception as e:
                 log(e)
                 return {'Error': 'Error occurred when verifying action'}, 500

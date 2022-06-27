@@ -217,7 +217,7 @@ export const hasWhiteSpace = (s: string) => {
 	return whitespaceChars.some((char) => s.includes(char));
 };
 
-const standaloneToast = createStandaloneToast({ theme });
+const { ToastContainer, toast: standaloneToast } = createStandaloneToast({ theme });
 
 interface ToastOptions extends UseToastOptions {
 	saveToStore?: boolean;
@@ -253,3 +253,5 @@ export const toast = (options?: ToastOptions) => {
 		return toastID;
 	}
 };
+
+export { ToastContainer };

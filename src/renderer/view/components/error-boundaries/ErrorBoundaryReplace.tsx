@@ -1,11 +1,13 @@
 import { chakra } from '@chakra-ui/react';
-import { Replace, replace } from 'connected-react-router';
+import { To } from 'history';
+import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import React from 'react';
 import { connect } from 'react-redux';
 
 interface Props {
-	replace: Replace;
+	replace: (to: To, state?) => UpdateLocationAction<'replace'>;
 	replacePath: string;
+	children: React.ReactNode;
 }
 
 interface State {

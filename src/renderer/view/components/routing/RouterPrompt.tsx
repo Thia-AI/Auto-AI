@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	Text,
 	Button,
@@ -14,8 +14,7 @@ import {
 
 interface Props {
 	when: boolean;
-	onOK?: () => boolean;
-	onCancel: () => boolean;
+
 	title: string;
 	okText: string;
 	cancelText: string;
@@ -23,6 +22,7 @@ interface Props {
 }
 
 import { history } from '_state/store';
+import { useNavigate } from 'react-router';
 
 /**
  * Custom Prompt component when you don't want the user to leave the current page
@@ -30,54 +30,57 @@ import { history } from '_state/store';
 export const RouterPrompt = React.memo(
 	({
 		when,
-		onOK,
-		onCancel,
 		title,
 		okText,
 		cancelText,
 		bodyText = 'There are unsaved changes. Are you sure want to leave this page ?',
 	}: Props) => {
 		const [showPrompt, setShowPrompt] = useState(false);
-		const [currentPath, setCurrentPath] = useState('');
+		const [unblock, setUnblock] = useState<(() => void) | null>(null);
+		const [transitionPath, setTransitionPath] = useState('');
+		const navigate = useNavigate();
 		const textColor = mode('thia.gray.700', 'thia.gray.300');
 		const cancelRef = useRef(null);
 
 		useEffect(() => {
+			console.log(when);
 			if (when) {
-				history.block((prompt) => {
-					setCurrentPath(prompt.pathname);
+				const unblock = history.block((transition) => {
+					setTransitionPath(transition.location.pathname);
 					setShowPrompt(true);
-					return 'true';
+					console.log(transition.action);
+					if (window.confirm(bodyText)) {
+						// Unblock the navigation.
+						unblock();
+
+						// Retry the transition.
+						transition.retry();
+					}
 				});
+				setUnblock(unblock);
 			} else {
-				history.block(() => {});
+				if (unblock) {
+					unblock();
+				}
 			}
 
 			return () => {
-				history.block(() => {});
+				if (unblock) {
+					unblock();
+					setUnblock(null);
+				}
 			};
 		}, [history, when]);
 
-		const handleOK = useCallback(async () => {
-			if (onOK) {
-				const canRoute = await Promise.resolve(onOK());
-				if (canRoute) {
-					history.block(() => {});
-					history.replace(currentPath);
-				}
-			}
-		}, [currentPath, history, onOK]);
+		const handleOK = () => {
+			if (unblock) unblock();
+			navigate(transitionPath, { replace: true });
+			// history.replace(transitionPath);
+		};
 
-		const handleCancel = useCallback(async () => {
-			if (onCancel) {
-				const canRoute = await Promise.resolve(onCancel());
-				if (canRoute) {
-					history.block(() => {});
-					history.replace(currentPath);
-				}
-			}
+		const handleCancel = () => {
 			setShowPrompt(false);
-		}, [currentPath, history, onCancel]);
+		};
 
 		return showPrompt ? (
 			<AlertDialog

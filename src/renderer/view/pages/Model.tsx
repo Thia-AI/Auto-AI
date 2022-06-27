@@ -19,7 +19,7 @@ import {
 	useDisclosure,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -40,17 +40,22 @@ import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAc
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 import { toast } from '../helpers/functionHelpers';
-import { Replace, replace } from 'connected-react-router';
+import { To } from 'history';
+import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { useUser } from 'reactfire';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
 	resetSelectedDataset: () => IResetSelectedDatasetAction;
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
-	replace: Replace;
+	replace: (to: To, state?) => UpdateLocationAction<'replace'>;
 }
+
+type ModelPageParams = {
+	id: string;
+};
 const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeSelectedPage, replace }: Props) => {
-	const modelID = useRouteMatch().params['id'];
+	const { id: modelID } = useParams<ModelPageParams>();
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
@@ -65,7 +70,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	} = useDisclosure();
 
 	const fetchModel = async () => {
-		if (user) {
+		if (user && modelID) {
 			const idToken = await user.getIdToken();
 			const [error, resData] = await EngineRequestHandler.getInstance().getModel(modelID, idToken);
 			if (!error) {
@@ -73,6 +78,14 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				setDataLoaded(true);
 			} else {
 				// Failed to get model, route back to models page
+				toast({
+					title: 'Could not load model',
+					description: resData['Error'],
+					status: 'error',
+					duration: 1500,
+					isClosable: true,
+					saveToStore: false,
+				});
 				replace('/models');
 			}
 		}
@@ -84,7 +97,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	useEffect(() => {
 		fetchModel();
-	}, [user]);
+	}, [user, modelID]);
 
 	const canTrainModel = () => {
 		const status = model.model_status;
@@ -93,7 +106,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	const trainModel = async () => {
 		// Make sure a dataset is selected to be trained on
-		if (selectedDatasetID.value.length > 0 && user) {
+		if (selectedDatasetID.value.length > 0 && user && modelID) {
 			const idToken = await user.getIdToken();
 			const [error, trainModelResData] = await EngineRequestHandler.getInstance().trainModel(modelID, idToken, {
 				dataset_id: selectedDatasetID.value,
@@ -166,7 +179,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				sx={verticalScrollBarSX}>
 				<Skeleton w='full' mb='6' isLoaded={model.id.length != 0}>
 					<HStack pt='1' alignItems='center'>
-						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' isTruncated ml='4'>
+						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1} ml='4'>
 							{model.model_name}:
 						</Text>
 						<Badge fontSize='sm' colorScheme='purple' ml='1'>

@@ -29,12 +29,12 @@ import {
 	Checkbox,
 	useToast,
 } from '@chakra-ui/react';
-import { useHistory } from 'react-router-dom';
 import GoogleDarkButton from '_utils/svgs/google-button-svgs/btn_google_dark_normal_ios.svg';
 import thiaIcon from '_public/icon.png';
 import { FirebaseError } from 'firebase/app';
 import { PERSISTENCE_TYPE } from '_/shared/appConstants';
 import { BackendRequestHandler } from '_/renderer/backend-requests/backendRequestHandler';
+import { useNavigate } from 'react-router';
 
 const ChakraGoogleDarkButton = chakra(GoogleDarkButton);
 
@@ -53,7 +53,7 @@ const Login = React.memo(
 			prompt: 'select_account consent',
 		});
 
-		const history = useHistory();
+		const navigate = useNavigate();
 		const toast = useToast();
 
 		const [rememberMe, setRememberMe] = useState(true);
@@ -399,7 +399,13 @@ const Login = React.memo(
 					</Button>
 					<HStack justify='space-around'>
 						<Text fontSize='sm'>New to Thia?</Text>
-						<Button variant='link' colorScheme='teal' size='sm' onClick={() => history.push('/register')}>
+						<Button
+							variant='link'
+							colorScheme='teal'
+							size='sm'
+							onClick={() => {
+								navigate('/register');
+							}}>
 							<Text fontSize='sm'>Sign up</Text>
 						</Button>
 					</HStack>

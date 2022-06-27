@@ -38,7 +38,7 @@ export const TestModelImagePreview = React.memo(({ imageSRC, testedLabel, traine
 						backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`,
 					}}
 					borderColor={trainedLabel.color}>
-					<Text isTruncated>{testedLabel}</Text>
+					<Text noOfLines={1}>{testedLabel}</Text>
 				</Button>
 			);
 		} else if (testRunning) {
