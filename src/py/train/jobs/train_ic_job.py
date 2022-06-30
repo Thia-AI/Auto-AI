@@ -1,19 +1,22 @@
 import functools
 import json
+import os
+import shutil
 from collections import defaultdict
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 from operator import itemgetter
 from pathlib import Path
+from time import sleep
 from typing import Tuple
 
 import numpy as np
 import tensorflow as tf
 from overrides import overrides
-from tensorflow.keras import preprocessing, layers, models, backend, optimizers, losses, callbacks, metrics
+from tensorflow.keras import preprocessing, layers, models, optimizers, losses, callbacks, metrics
 
 from config import config as c
 from config import constants
-from config.constants import ICModelStatus, ICTrainJobStatus
+from config.constants import ICModelStatus, ICTrainJobStatus, IMAGE_TRAINING_BATCH_SIZES
 from db.commands.dataset_commands import get_dataset, get_labels
 from db.commands.input_commands import get_train_data_from_all_inputs
 from db.commands.model_commands import get_model, update_model_status, update_model_extra_data
@@ -21,6 +24,12 @@ from db.row_accessors import dataset_from_row, model_from_row, label_from_row
 from job.base_job import BaseJob
 from log.logger import log
 from train import effnetv2_model
+
+
+def delete_directory_backup(action, name, exc):
+    """shutil.rmtree backup onerror function that removes a directory the slower way"""
+    os.chmod(name, stat.S_IWRITE)
+    os.remove(name)
 
 
 class TrainImageClassifierJob(BaseJob):
@@ -74,43 +83,52 @@ class TrainImageClassifierJob(BaseJob):
             return label_to_class_map[label_value]
 
         inputs = np.array([[make_input_path(i[0]), make_input_label(i[1])] for i in inputs])
-
-        train_process_queue = Queue()
-        train_data = {
-            'job_id': self.id(),
-            'num_classes': num_classes,
-            'inputs': inputs,
-            'model_cache_path': c.MODEL_CACHE,
-            'model_dir': c.MODEL_DIR,
-            'model_name': model['model_name'],
-            'model_type': model['model_type_extra'],
-            'current_extra_data': self.extra_data()
-        }
-        train_process_queue.put(train_data)
         update_model_status(model_id, ICModelStatus.TRAINING)
-        p = Process(target=train_in_separate_process, args=(train_process_queue,))
-        p.start()
-        p.join()
+        initial_extra_data = self.extra_data()
+        for batch_size in reversed(IMAGE_TRAINING_BATCH_SIZES):
+            log(f'Using batch_size: {batch_size}')
+            train_data = {
+                'job_id': self.id(),
+                'num_classes': num_classes,
+                'inputs': inputs,
+                'model_cache_path': c.MODEL_CACHE,
+                'model_dir': c.MODEL_DIR,
+                'model_name': model['model_name'],
+                'model_type': model['model_type_extra'],
+                'current_extra_data': initial_extra_data,
+                'batch_size': batch_size
+            }
+            p = Process(target=train_in_separate_process, args=(train_data,))
+            p.start()
+            p.join()
 
-        job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+            job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
 
-        if job_updater_json_filepath.is_file():
-            # Get extra_data from the file itself
-            job_updater_json_file = open(job_updater_json_filepath.absolute())
-            try:
-                extra_data = json.load(job_updater_json_file)
-                self.update_extra_data(extra_data)
-                job_updater_json_file.close()
-                job_updater_json_filepath.unlink()
-            except Exception as e:
-                log(str(e))
+            if job_updater_json_filepath.is_file():
+                # Get extra_data from the file itself
+                job_updater_json_file = open(job_updater_json_filepath.absolute())
+                try:
+                    extra_data = json.load(job_updater_json_file)
+                    job_updater_json_file.close()
+                    job_updater_json_filepath.unlink()
+                    if extra_data.get('error', None) is not None:
+                        # Error encountered, delete model_checkpoints directory if it exists
+                        model_checkpoint_dir: Pth = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME
+                        if model_checkpoint_dir.is_dir():
+                            shutil.rmtree(str(model_checkpoint_dir.absolute()), ignore_errors=False, onerror=delete_directory_backup)
+                    else:
+                        # Update extra_data and break out of loop
+                        self.update_extra_data(extra_data)
+                        break
+                except Exception as e:
+                    log(str(e))
 
         # Get latest model data and update it's extra_data with a trained labels map
         rows = get_model(model_id)
         model = {}
         for row in rows:
             model = model_from_row(row)
-        if model['extra_data'] is not None:
+        if model.get('extra_data', None) is not None:
             current_model_extra_data = dict(model['extra_data'])
         else:
             current_model_extra_data = dict()
@@ -122,7 +140,7 @@ class TrainImageClassifierJob(BaseJob):
                 continue
             labels_trained_on[label['value']] = label
 
-        if self.extra_data()['error'] is not None:
+        if self.extra_data().get('error', None) is not None:
             # There was an error during training
             update_model_status(model_id, ICModelStatus.ERROR)
             current_model_extra_data.update({'trained_model': {
@@ -158,15 +176,17 @@ def update_local_extra_data(data_to_update: dict, extra_data: dict, file: tf.io.
         json.dump(extra_data, f)
 
 
-def train_in_separate_process(queue: Queue):
-    job_id, num_classes, inputs, model_cache_path, model_dir, model_name, model_type, current_extra_data = itemgetter('job_id',
-                                                                                                                      'num_classes', 'inputs',
-                                                                                                                      'model_cache_path',
-                                                                                                                      'model_dir',
-                                                                                                                      'model_name',
-                                                                                                                      'model_type',
-                                                                                                                      'current_extra_data')(
-        queue.get())
+def train_in_separate_process(train_data):
+    job_id, num_classes, inputs, model_cache_path, model_dir, model_name, model_type, current_extra_data, batch_size = itemgetter('job_id',
+                                                                                                                                  'num_classes',
+                                                                                                                                  'inputs',
+                                                                                                                                  'model_cache_path',
+                                                                                                                                  'model_dir',
+                                                                                                                                  'model_name',
+                                                                                                                                  'model_type',
+                                                                                                                                  'current_extra_data',
+                                                                                                                                  'batch_size')(
+        train_data)
 
     job_updater_json_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
     seed = np.random.randint(1e6)
@@ -176,7 +196,6 @@ def train_in_separate_process(queue: Queue):
     PERFORM_DATA_AUG = False
     interpolation = tf.image.ResizeMethod.BILINEAR
     IMAGE_SIZE: Tuple[int, int] = constants.IC_MODEL_INPUT_SIZE[model_type]
-    BATCH_SIZE = 32
     effnet_model_name = constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP[model_type]
     TRAIN_SPLIT = 0.8
     current_extra_data = dict(current_extra_data)
@@ -210,8 +229,8 @@ def train_in_separate_process(queue: Queue):
                 else:
                     img = tf.image.resize(img, image_size, method=interpolation)
                 return img
-            except Exception:
-                pass
+            except Exception as e:
+                return tf.zeros(shape=image_size + (3,))
 
         def set_image_shape(image, image_size, num_channels):
             image.set_shape((image_size[0], image_size[1], num_channels))
@@ -245,10 +264,10 @@ def train_in_separate_process(queue: Queue):
         val_ds_y = tf.data.Dataset.from_tensor_slices(val_y)
         val_ds_y = val_ds_y.map(lambda x: tf.one_hot(x, num_classes))
 
-        train_ds = tf.data.Dataset.zip((train_ds_x, train_ds_y)).batch(BATCH_SIZE)
+        train_ds = tf.data.Dataset.zip((train_ds_x, train_ds_y)).batch(batch_size).apply(tf.data.experimental.ignore_errors())
         # Repeat training dataset since we will be doing data augmentation to it only
         train_ds = train_ds.repeat()
-        val_ds = tf.data.Dataset.zip((val_ds_x, val_ds_y)).batch(BATCH_SIZE)
+        val_ds = tf.data.Dataset.zip((val_ds_x, val_ds_y)).batch(batch_size).apply(tf.data.experimental.ignore_errors())
 
         # Perform normalization & data augmentation
         normalization_layer = layers.experimental.preprocessing.Rescaling(1. / 255)
@@ -282,8 +301,8 @@ def train_in_separate_process(queue: Queue):
 
         model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(label_smoothing=0.1), metrics=METRICS)
 
-        steps_per_epoch = TRAIN_SIZE // BATCH_SIZE
-        validation_steps = VALIDATION_SIZE // BATCH_SIZE
+        steps_per_epoch = TRAIN_SIZE // batch_size
+        validation_steps = VALIDATION_SIZE // batch_size
 
         class JobUpdater(callbacks.Callback):
             """Callback that updates the `extra_data` column for the training job."""
@@ -340,6 +359,16 @@ def train_in_separate_process(queue: Queue):
             }
         })
         error_encountered_during_training = True
+    except tf.errors.InternalError as e:
+        # Another tensorflow error
+        update_extra_data({
+            'status_description': 'Error encountered during training',
+            'error': {
+                'title': f"Resource Exhausted Training '{model_name}'",
+                'verboseMessage': 'Model may be too largess to train on your GPU',
+            }
+        })
+        error_encountered_during_training = True
     except tf.errors.OpError as e:
         # Another tensorflow error
         update_extra_data({
@@ -359,7 +388,7 @@ def train_in_separate_process(queue: Queue):
             }
         })
         error_encountered_during_training = True
-
+    sleep(10)
     if not error_encountered_during_training:
         # No error encountered, continue evaluating trained model
         update_extra_data({'status_description': 'Evaluating model', 'status': ICTrainJobStatus.EVALUATING.value, 'history': hist.history})
@@ -373,4 +402,3 @@ def train_in_separate_process(queue: Queue):
     else:
         # Error encountered during training, don't evaluate model
         update_extra_data({'status_description': 'Cleaning up', 'status': ICTrainJobStatus.ERROR.value})
-    backend.clear_session()

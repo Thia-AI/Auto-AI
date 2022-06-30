@@ -60,6 +60,7 @@ IC_MODEL_INPUT_SIZE = {
     'extra-large': (480, 480)
 }
 
+IMAGE_TRAINING_BATCH_SIZES = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 
 # Model Statuses
 
