@@ -110,8 +110,8 @@ const ICModelContentC = React.memo((props: Props) => {
 			setModelNameValid(false);
 			return;
 		}
-		if (modelName.length >= 20) {
-			setModelNameError('Must be less than 20 characters');
+		if (modelName.length >= 40) {
+			setModelNameError('Must be less than 40 characters');
 			setModelNameValid(false);
 			return;
 		}
