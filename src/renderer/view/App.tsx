@@ -38,117 +38,115 @@ export const App = React.memo(() => {
 	return (
 		<>
 			<AuthProvider sdk={auth}>
-				<React.StrictMode>
-					<SideMenu />
-					<EngineNotificationsHandler />
-					<DevDashboard />
-					<ReduxRouter history={history}>
-						<Header />
-						<Suspense
-							fallback={
-								<Center w='full' h='full' marginTop='var(--header-height)'>
-									<Spinner color='gray.600' size='lg' />
-								</Center>
-							}>
-							<AuthWrapper unauthenticatedFallback={<UnauthenticatedRoute />}>
-								<Routes>
-									<Route path='/' element={<Main />} />
-									<Route
-										path='/models'
-										element={
-											<EngineAvailableRoute>
-												<Models />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/models/:id'
-										element={
-											<EngineAvailableRoute>
-												<Model />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/dataset/:id'
-										element={
-											<EngineAvailableRoute>
-												<Dataset />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/jobs'
-										element={
-											<EngineAvailableRoute>
-												<Jobs />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/exports'
-										element={
-											<EngineAvailableRoute>
-												<Exports />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/deployments'
-										element={
-											<EngineAvailableRoute>
-												<Deployments />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/notifications'
-										element={
-											<EngineAvailableRoute>
-												<Notifications />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/logs'
-										element={
-											<EngineAvailableRoute>
-												<Logs />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/quota'
-										element={
-											<EngineAvailableRoute>
-												<Quota />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/subscription'
-										element={
-											<EngineAvailableRoute>
-												<Subscription />
-											</EngineAvailableRoute>
-										}
-									/>
-									<Route
-										path='/help'
-										element={
-											<EngineAvailableRoute>
-												<Help />
-											</EngineAvailableRoute>
-										}
-									/>
+				<SideMenu />
+				<EngineNotificationsHandler />
+				<DevDashboard />
+				<ReduxRouter history={history}>
+					<Header />
+					<Suspense
+						fallback={
+							<Center w='full' h='full' marginTop='var(--header-height)'>
+								<Spinner color='gray.600' size='lg' />
+							</Center>
+						}>
+						<AuthWrapper unauthenticatedFallback={<UnauthenticatedRoute />}>
+							<Routes>
+								<Route path='/' element={<Main />} />
+								<Route
+									path='/models'
+									element={
+										<EngineAvailableRoute>
+											<Models />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/models/:id'
+									element={
+										<EngineAvailableRoute>
+											<Model />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/dataset/:id'
+									element={
+										<EngineAvailableRoute>
+											<Dataset />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/jobs'
+									element={
+										<EngineAvailableRoute>
+											<Jobs />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/exports'
+									element={
+										<EngineAvailableRoute>
+											<Exports />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/deployments'
+									element={
+										<EngineAvailableRoute>
+											<Deployments />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/notifications'
+									element={
+										<EngineAvailableRoute>
+											<Notifications />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/logs'
+									element={
+										<EngineAvailableRoute>
+											<Logs />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/quota'
+									element={
+										<EngineAvailableRoute>
+											<Quota />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/subscription'
+									element={
+										<EngineAvailableRoute>
+											<Subscription />
+										</EngineAvailableRoute>
+									}
+								/>
+								<Route
+									path='/help'
+									element={
+										<EngineAvailableRoute>
+											<Help />
+										</EngineAvailableRoute>
+									}
+								/>
 
-									<Route path='/settings' element={<Settings />} />
-									<Route path='*' element={<Navigate replace to='/' />} />
-								</Routes>
-							</AuthWrapper>
-						</Suspense>
-					</ReduxRouter>
-				</React.StrictMode>
+								<Route path='/settings' element={<Settings />} />
+								<Route path='*' element={<Navigate replace to='/' />} />
+							</Routes>
+						</AuthWrapper>
+					</Suspense>
+				</ReduxRouter>
 			</AuthProvider>
 		</>
 	);
