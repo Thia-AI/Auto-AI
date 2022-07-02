@@ -9,6 +9,7 @@ import Drawer from './components/drawer';
 import Menu from './components/menu';
 import Switch from './components/switch';
 import Skeleton from './components/skeleton';
+import Popover from './components/popover';
 
 export const theme = extendTheme({
 	styles: {
@@ -105,6 +106,7 @@ export const theme = extendTheme({
 		Menu,
 		Switch,
 		Skeleton,
+		Popover,
 	},
 	shadows: {
 		outline: '#D3C2FF',
