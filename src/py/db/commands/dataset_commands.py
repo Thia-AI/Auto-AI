@@ -100,6 +100,28 @@ def update_dataset_last_accessed(dataset_id: str, last_accessed_datetime: str = 
     return DBManager.get_instance().execute(cmd)
 
 
+def recalibrate_label_input_counts(dataset_id: str):
+    cmd = DBCommand(name=f"Get Distinct Labels of Dataset '{dataset_id}'",
+                    command='SELECT DISTINCT label FROM input')
+    distinct_dataset_labels_rows = DBManager.get_instance().execute(cmd)
+    labels = []
+    for distinct_dataset_label_row in distinct_dataset_labels_rows:
+        labels.append(distinct_dataset_label_row['label'])
+    # Recalibrate input_count
+    for label in labels:
+        cmd = DBCommand(name=f"Get num_inputs of label '{label}' in dataset '{dataset_id}'",
+                        command='''SELECT count() AS 'num_inputs' FROM input WHERE dataset_id = ? AND label = ?''',
+                        values=(dataset_id, label))
+        num_inputs_rows = DBManager.get_instance().execute(cmd)
+        # Only contains one row
+        num_inputs_of_label = num_inputs_rows[0]['num_inputs']
+        # Update input_count
+        cmd = DBCommand(name=f"Update input count for label '{label}'",
+                        command='''UPDATE labels SET input_count = ? WHERE dataset_id = ? AND value = ?''',
+                        values=(num_inputs_of_label, dataset_id, label))
+        DBManager.get_instance().execute(cmd)
+
+
 def increment_label_input_count(dataset_id: str, label: str):
     cmd = DBCommand(name=f"Increment Label: {label}'s input_count by 1 for Dataset: {dataset_id}",
                     command='''UPDATE labels SET input_count = input_count + 1 WHERE dataset_id = ? AND value = ?''',

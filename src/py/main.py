@@ -5,6 +5,7 @@ import json
 import os
 import tempfile
 import uuid
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -12,7 +13,6 @@ from dateutil import parser
 from flask import Flask, jsonify, request, send_from_directory, abort, make_response
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
-from datetime import datetime
 
 from config import config
 from config import constants
@@ -21,6 +21,7 @@ from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSS
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
+from dataset.jobs.update_many_input_labels_job import UpdateManyInputLabelsJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
     increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets, \
     update_dataset_last_accessed
@@ -28,7 +29,7 @@ from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_
 from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    reset_labels_of_inputs, get_input, update_input_label, get_num_inputs, get_num_labels
+    reset_labels_of_inputs, get_input, get_num_inputs, get_num_labels, update_input_label
 # Input commands
 from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
@@ -538,7 +539,6 @@ def get_all_inputs_route():
 
 
 # Input pagination routes
-
 @app.route('/dataset/<string:uuid>/inputs/cursor/next', methods=['POST'])
 def get_next_inputs_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
@@ -713,6 +713,44 @@ def update_input_label_route(input_id: str):
     decrement_label_input_count(dataset_id, req_data['previous_label'])
     update_dataset_last_accessed(dataset_id)
     return {}, 200
+
+
+@app.route('/dataset/<string:dataset_id>/inputs/update_labels_many', methods=['PUT'])
+def update_multiple_input_labels_of_dataset(dataset_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(dataset_id) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(dataset_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    if config.ENGINE_BATCH_LABELLING_RUNNING:
+        return {'Error': 'A batch labelling process is already running, wait for it to finish'}, 400
+    label_json_file = request.files.get('file', None)
+    if label_json_file is None or label_json_file.filename.strip() == '':
+        return {'Error': 'Label file not defined'}
+    label_json_file.stream.seek(0)
+    try:
+        label_dict: dict = json.loads(label_json_file.stream.read().decode())
+    except json.JSONDecodeError:
+        return {'Error': 'Error parsing label file'}, 400
+    # Check if labels in label JSON file contain labels in the dataset
+    all_labels = set(label_dict.values())
+    label_rows = get_labels(dataset_id)
+    dataset_labels_dict = {}
+    for row in label_rows:
+        label = label_from_row(row)
+        label_value = label['value']
+        dataset_labels_dict[label_value] = label
+    all_dataset_labels = set(dataset_labels_dict.keys())
+    if not all_labels.issubset(all_dataset_labels):
+        return {'Error': 'Labels file contains labels not in dataset, consider adding them first'}
+    # Generate executemany list
+    # Each item in list must be (label, dataset_id, file_name)
+    values_list = []
+    for input_name, input_label in label_dict.items():
+        values_list.append((input_label, dataset_id, input_name + '.jpg'))
+    ids = JobCreator().create(UpdateManyInputLabelsJob(values_list)).queue()
+    return {'ids': ids}, 202
 
 
 @app.route('/dataset/<string:uuid>/labels/add', methods=['POST'])

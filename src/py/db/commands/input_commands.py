@@ -13,6 +13,20 @@ def add_images_to_db_batch(values):
     DBManager.get_instance().execute(cmd)
 
 
+def update_multiple_input_labels(values: list):
+    cmd = DBCommand(name="Update Multiple Input Labels",
+                    command='''UPDATE input SET label = ? WHERE dataset_id = ? AND file_name = ?''',
+                    values=values)
+    DBManager.get_instance().execute(cmd)
+
+
+def update_input_label_v2(values: tuple):
+    cmd = DBCommand(name="Update Input Label",
+                    command='''UPDATE input SET label = ? WHERE dataset_id = ? AND file_name = ?''',
+                    values=values)
+    return DBManager.get_instance().execute(cmd)
+
+
 def get_all_inputs(limit=100):
     cmd = DBCommand(name="Get All Inputs",
                     command=f'''SELECT * FROM input ORDER BY date_created DESC LIMIT {limit}''')
