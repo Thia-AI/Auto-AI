@@ -85,6 +85,7 @@ class TrainImageClassifierJob(BaseJob):
         inputs = np.array([[make_input_path(i[0]), make_input_label(i[1])] for i in inputs])
         update_model_status(model_id, ICModelStatus.TRAINING)
         initial_extra_data = self.extra_data()
+        c.ENGINE_GPU_TASK_RUNNING = True
         for batch_size in reversed(IMAGE_TRAINING_BATCH_SIZES):
             log(f'Using batch_size: {batch_size}')
             train_data = {
@@ -122,7 +123,7 @@ class TrainImageClassifierJob(BaseJob):
                         break
                 except Exception as e:
                     log(str(e))
-
+        c.ENGINE_GPU_TASK_RUNNING = False
         # Get latest model data and update it's extra_data with a trained labels map
         rows = get_model(model_id)
         model = {}
