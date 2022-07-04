@@ -12,6 +12,7 @@ import { DatasetInputLabels } from '../labels/DatasetInputLabels';
 import { DatasetSingleInputPreview } from './DatasetSingleInputPreview';
 import { DatasetMultiInputPreview } from './DatasetMultiInputPreview';
 import { DatasetSingleInputPreviewDetails } from './DatasetSingleInputPreviewDetails';
+import { DatasetPreviewSettings } from '../DatasetPreviewSettings';
 
 interface Props {
 	pathname: string;
@@ -45,7 +46,8 @@ const DatasetInputPreviewC = React.memo((props: Props) => {
 			overflow='hidden'>
 			<Flex w='full' h='78%' minH='78%' maxH='78%' flexDir='row'>
 				<DatasetSingleInputPreview w='70%' />
-				<VStack w='30%' h='full' spacing='3'>
+				<VStack w='30%' h='full' spacing='2'>
+					<DatasetPreviewSettings />
 					<DatasetSingleInputPreviewDetails />
 					<DatasetInputLabels />
 				</VStack>
