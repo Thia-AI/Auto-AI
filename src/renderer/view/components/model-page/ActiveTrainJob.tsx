@@ -263,7 +263,6 @@ export const ActiveTrainJob = React.memo(
 		};
 
 		const refreshActiveTrainingJob = async () => {
-			console.log('calling');
 			// Get train job right away
 			await getTrainingJob();
 			// Set interval
@@ -299,7 +298,6 @@ export const ActiveTrainJob = React.memo(
 					trainingJob.extra_data?.status == TrainJobStatus.ERROR) &&
 				trainingJobIntervalID
 			) {
-				console.log('sex');
 				fetchModel();
 				clearInterval(trainingJobIntervalID);
 				setTrainingJobIntervalID(undefined);
