@@ -79,9 +79,14 @@ class Sqlite3Worker(threading.Thread):
         :param values: Tuple of values to be replaced into the ? of the query
         :return: None
         """
-        if query.lower().strip().startswith("select"):
+        if query.lower().strip().startswith("select") or query.lower().strip().startswith("update"):
             try:
-                self._sqlite3_cursor.execute(query, values)
+                if isinstance(values, list) and len(values) >= 1:
+                    # We want to execute multiple at once
+                    log("Executing Many", log_it=self.log_worker)
+                    self._sqlite3_cursor.executemany(query, values)
+                else:
+                    self._sqlite3_cursor.execute(query, values)
                 self._results[token] = self._sqlite3_cursor.fetchall()
             except sqlite3.Error as err:
                 # Put the error into the output queue since a response

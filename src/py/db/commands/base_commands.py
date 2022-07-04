@@ -1,10 +1,10 @@
-from typing import Tuple, Any
+from typing import Tuple, Any, Union
 
 from log.logger import log
 
 
 class DBCommand:
-    def __init__(self, name: str, command: str, values: Tuple[Any, ...] = ()):
+    def __init__(self, name: str, command: str, values: Union[list, Tuple[Any, ...]] = ()):
         self.__name = name
         self.__command = command
         self.__values = values
