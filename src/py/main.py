@@ -715,7 +715,7 @@ def update_input_label_route(input_id: str):
     return {}, 200
 
 
-@app.route('/dataset/<string:dataset_id>/inputs/update_labels_many', methods=['PUT'])
+@app.route('/dataset/<string:dataset_id>/inputs/update-labels-many', methods=['PUT'])
 def update_multiple_input_labels_of_dataset(dataset_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(dataset_id) != 32:
@@ -743,7 +743,7 @@ def update_multiple_input_labels_of_dataset(dataset_id: str):
         dataset_labels_dict[label_value] = label
     all_dataset_labels = set(dataset_labels_dict.keys())
     if not all_labels.issubset(all_dataset_labels):
-        return {'Error': 'Labels file contains labels not in dataset, consider adding them first'}
+        return {'Error': 'Labels file contains labels not in dataset, consider adding them first'}, 400
     # Generate executemany list
     # Each item in list must be (label, dataset_id, file_name)
     values_list = []
