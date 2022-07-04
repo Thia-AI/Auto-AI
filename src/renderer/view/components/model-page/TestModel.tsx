@@ -213,9 +213,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 		let text = 'Drop Images Or Click To Select';
 		let error = false;
 		if (isDragActive) {
-			if (isDragReject) {
-				if (draggedFiles.length > MAX_NUM_FILES) text = `Can Only Drag Up To ${MAX_NUM_FILES} Images`;
-				else text = 'Can Only Drag Images';
+			if (isDragReject && draggedFiles.length > MAX_NUM_FILES) {
+				text = `Can Only Drag Up To ${MAX_NUM_FILES} Images`;
 				error = true;
 			} else {
 				text = 'Drop Images Here...';
@@ -289,7 +288,13 @@ export const TestModel = React.memo(({ model }: Props) => {
 						borderRadius='md'
 						transition='all 250ms ease'
 						outline='none'
-						borderColor={isDragReject ? 'red.400' : inputColor}
+						borderColor={
+							isDragReject && draggedFiles.length > MAX_NUM_FILES
+								? 'red.400'
+								: isDragActive
+								? 'green.400'
+								: inputColor
+						}
 						overflow='hidden'
 						color={mode('thia.dark.700', 'thia.dark.500')}
 						{...getRootProps()}>
