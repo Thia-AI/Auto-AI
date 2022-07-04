@@ -1,6 +1,9 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineRequest } from '../../base/iEngineRequest';
 
+/**
+ * Batch labelling engine request.
+ */
 export class UpdateMultipleLabelsEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;

@@ -5,15 +5,10 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogOverlay,
-	Box,
 	Button,
 	Text,
 	Flex,
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
 	IconButton,
-	Input,
 	Menu,
 	MenuButton,
 	MenuItem,
@@ -41,7 +36,7 @@ import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
 import { Dataset, Job, Labels } from '_/renderer/view/helpers/constants/engineTypes';
-import { toast, waitTillEngineJobComplete } from '_/renderer/view/helpers/functionHelpers';
+import { toast } from '_/renderer/view/helpers/functionHelpers';
 import { formatBytesToString } from '_/renderer/view/helpers/textHelper';
 
 interface Props {
@@ -62,7 +57,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 	const [selectedLabelFile, setSelectedLabelFile] = useState<File | null>(null);
 	const [rejectedLabelFiles, setRejectedLabelFiles] = useState<FileRejection[]>([]);
 	const [uploadingLabelFile, setUploadingLabelFile] = useState(false);
-	const [batchLabelJobIntervalID, setbatchLabelJobIntervalID] = useState<number>();
+	const [batchLabelJobIntervalID, setBatchLabelJobIntervalID] = useState<number>();
 
 	const cancelUploadLabelsButtonRef = useRef(null);
 
@@ -125,7 +120,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 				// Too many files selected
 				toast({
 					title: 'Error',
-					description: `Cannot select more than 1 label file`,
+					description: 'Cannot select more than 1 label file',
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
@@ -142,7 +137,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 		return () => {
 			if (batchLabelJobIntervalID) {
 				clearInterval(batchLabelJobIntervalID);
-				setbatchLabelJobIntervalID(undefined);
+				setBatchLabelJobIntervalID(undefined);
 			}
 		};
 	}, [batchLabelJobIntervalID]);
@@ -175,7 +170,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 				batchLabelJobIntervalRetrievalTimeMS,
 				batchLabelJobID,
 			);
-			setbatchLabelJobIntervalID(intervalID);
+			setBatchLabelJobIntervalID(intervalID);
 		}
 	};
 
@@ -254,7 +249,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 		let error = false;
 		if (isDragActive) {
 			if (isDragReject && draggedFiles.length > 1) {
-				text = `Can Only Drag 1 Label File`;
+				text = 'Can Only Drag 1 Label File';
 				error = true;
 			} else {
 				text = 'Drop Label File Here...';
@@ -390,6 +385,9 @@ const mapStateToProps = (state: IAppState) => ({
 	activeDataset: state.activeDataset,
 });
 
+/**
+ * Component that renders settings for a dataset preview.
+ */
 export const DatasetPreviewSettings = connect(mapStateToProps, {
 	changeActiveDataset,
 	getNextPageInputs: getNextPageInputsAction,
