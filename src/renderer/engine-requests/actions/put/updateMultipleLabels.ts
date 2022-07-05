@@ -2,27 +2,26 @@ import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { IEngineRequest } from '../../base/iEngineRequest';
 
 /**
- * Data for adding a label.
+ * Batch labelling engine request.
  */
-export interface UpdateInputLabelData {
-	previous_label: string;
-	new_label: string;
-}
-class UpdateInputLabelEngineRequest implements IEngineRequest {
+export class UpdateMultipleLabelsEngineRequest implements IEngineRequest {
 	actionName: string;
 	engineRequest: AxiosInstance;
 	apiName: string;
 	constructor(engineRequest: AxiosInstance) {
 		this.engineRequest = engineRequest;
-		this.actionName = 'Update Input Label';
-		this.apiName = '/input';
+		this.actionName = 'Update Multiple Labels';
+		this.apiName = '/dataset';
 	}
 
-	run = async (config?: AxiosRequestConfig, data?: [string, UpdateInputLabelData]) => {
+	run = async (config?: AxiosRequestConfig, data?: [string, FormData]) => {
 		if (!data) return [true, { Error: 'Data cannot be undefined' }];
-
 		try {
-			const res = await this.engineRequest.put(`${this.apiName}/${data[0]}/update_label`, data[1], config);
+			const res = await this.engineRequest.put(
+				`${this.apiName}/${data[0]}/inputs/update-labels-many`,
+				data[1],
+				config,
+			);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;
@@ -30,5 +29,3 @@ class UpdateInputLabelEngineRequest implements IEngineRequest {
 		}
 	};
 }
-
-export { UpdateInputLabelEngineRequest };

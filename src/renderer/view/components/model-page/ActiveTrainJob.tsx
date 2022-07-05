@@ -266,8 +266,10 @@ export const ActiveTrainJob = React.memo(
 			// Get train job right away
 			await getTrainingJob();
 			// Set interval
-			const intervalID = window.setInterval(getTrainingJob, trainingJobIntervalRetrievalTimeMS);
-			setTrainingJobIntervalID(intervalID);
+			if (!trainingJobIntervalID) {
+				const intervalID = window.setInterval(getTrainingJob, trainingJobIntervalRetrievalTimeMS);
+				setTrainingJobIntervalID(intervalID);
+			}
 		};
 
 		useImperativeHandle(ref, () => ({
