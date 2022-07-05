@@ -12,7 +12,6 @@ import {
 	Box,
 	Menu,
 	MenuButton,
-	useColorModeValue as mode,
 	IconButton,
 	MenuList,
 	MenuItem,
