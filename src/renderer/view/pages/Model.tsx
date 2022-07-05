@@ -12,7 +12,6 @@ import {
 	Box,
 	Menu,
 	MenuButton,
-	useColorModeValue as mode,
 	IconButton,
 	MenuList,
 	MenuItem,
@@ -59,8 +58,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [model, setModel] = useState<ModelPage>(nullModel);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
-	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
-	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
+
 	const activeTrainJobRef = useRef<ActiveTrainJobHandle>(null);
 	const { data: user } = useUser();
 	const {
@@ -191,16 +189,9 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 								<MenuButton
 									as={IconButton}
 									aria-label='Model Options'
+									title='Model Options'
 									icon={<BsThreeDotsVertical />}
-									_hover={{
-										bg: menuButtonBGHover,
-									}}
-									_active={{
-										bg: menuButtonBGClicking,
-									}}
-									_focus={{
-										bg: menuButtonBGHover,
-									}}
+									colorScheme='thia.gray'
 									variant='ghost'
 								/>
 								<MenuList px='3'>

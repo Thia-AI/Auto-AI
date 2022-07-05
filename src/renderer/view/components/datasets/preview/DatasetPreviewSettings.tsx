@@ -27,7 +27,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import { IoCloseOutline } from 'react-icons/io5';
+import { IoCloseOutline, IoRefresh } from 'react-icons/io5';
 import { connect } from 'react-redux';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
@@ -47,8 +47,7 @@ interface Props {
 const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset, getNextPageInputs }: Props) => {
 	const { dataset } = activeDataset.value;
 	const batchLabelJobIntervalRetrievalTimeMS = 3_000;
-	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
-	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
+
 	const inputColor = mode('thia.gray.700', 'thia.gray.500');
 	const fileInformationBG = mode('thia.gray.50', 'thia.gray.700');
 	const borderColor = mode('thia.gray.200', 'thia.gray.700');
@@ -58,6 +57,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 	const [rejectedLabelFiles, setRejectedLabelFiles] = useState<FileRejection[]>([]);
 	const [uploadingLabelFile, setUploadingLabelFile] = useState(false);
 	const [batchLabelJobIntervalID, setBatchLabelJobIntervalID] = useState<number>();
+	const [datasetAndInputsRefreshing, setDatasetAndInputsRefreshing] = useState(false);
 
 	const cancelUploadLabelsButtonRef = useRef(null);
 
@@ -75,7 +75,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 
 	const refreshDatasetAndInputs = async () => {
 		if (dataset.id.length === 0) return;
-
+		setDatasetAndInputsRefreshing(true);
 		const [datasetError, datasetResData] = await EngineRequestHandler.getInstance().getDataset(dataset.id);
 		const [datasetLabelsError, datasetLabelsResData] = await EngineRequestHandler.getInstance().getDatasetLabels(
 			dataset.id,
@@ -87,6 +87,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 		// Get next pages from oldest date possible.
 		const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
 		getNextPageInputs(activeDataset.value.dataset.id, someOldDateBase64);
+		setDatasetAndInputsRefreshing(false);
 	};
 
 	const onDrop = useCallback((acceptedFiles: File[], rejected: FileRejection[]) => {
@@ -278,20 +279,23 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 	return (
 		<>
 			<Flex w='full' justify='flex-end' p='2'>
+				<IconButton
+					aria-label='Refresh Dataset'
+					title='Refresh Dataset'
+					icon={<IoRefresh />}
+					mr='2'
+					variant='ghost'
+					colorScheme='thia.gray'
+					isLoading={datasetAndInputsRefreshing}
+					onClick={async () => await refreshDatasetAndInputs()}
+				/>
 				<Menu autoSelect isLazy lazyBehavior='keepMounted' closeOnBlur closeOnSelect>
 					<MenuButton
 						as={IconButton}
-						aria-label='Model Options'
+						title='Dataset Options'
+						aria-label='Dataset Options'
 						icon={<BsThreeDotsVertical />}
-						_hover={{
-							bg: menuButtonBGHover,
-						}}
-						_active={{
-							bg: menuButtonBGClicking,
-						}}
-						_focus={{
-							bg: menuButtonBGHover,
-						}}
+						colorScheme='thia.gray'
 						variant='ghost'
 					/>
 					<MenuList px='3'>

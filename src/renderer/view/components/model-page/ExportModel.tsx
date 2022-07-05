@@ -48,8 +48,6 @@ export const ExportModel = React.memo(({ model }: Props) => {
 
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const cardBG = mode('thia.gray.50', 'thia.gray.700');
-	const menuButtonBGHover = mode('thia.gray.200', 'thia.gray.700');
-	const menuButtonBGClicking = mode('thia.gray.100', 'thia.gray.600');
 
 	useEffect(() => {
 		// Once export job has finished.
@@ -128,17 +126,10 @@ export const ExportModel = React.memo(({ model }: Props) => {
 					<Menu autoSelect isLazy lazyBehavior='keepMounted' closeOnSelect={false}>
 						<MenuButton
 							as={IconButton}
-							aria-label='Model Options'
+							aria-label='Export Options'
+							title='Export Options'
 							icon={<BsThreeDotsVertical />}
-							_hover={{
-								bg: menuButtonBGHover,
-							}}
-							_active={{
-								bg: menuButtonBGClicking,
-							}}
-							_focus={{
-								bg: menuButtonBGHover,
-							}}
+							colorScheme='thia.gray'
 							variant='ghost'
 						/>
 						<MenuList px='3'>
