@@ -107,6 +107,8 @@ class EngineIPCActionHandler {
 
 	/**
 	 * Launches **Engine**.
+	 *
+	 * @param uid UID of user signed in.
 	 */
 	launchEngine = (uid: string) => {
 		/* eslint-disable  @typescript-eslint/no-unused-vars */
