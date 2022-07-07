@@ -7,6 +7,12 @@ DEVELOPMENT = False
 bundle_dir = Path('.')
 current_dir = Path('.')
 
+"""Users"""
+# User directory name
+USERS_DIR_NAME = 'users'
+# User UID
+USER_UID = ''
+
 """Model"""
 # Model Cache path
 MODEL_CACHE = Path('.')

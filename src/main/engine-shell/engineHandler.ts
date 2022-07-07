@@ -4,6 +4,15 @@ import * as path from 'path';
 import { EngineShellDev } from './engineShellDev';
 import { EngineShellProd } from './engineShellProd';
 
+interface CreateDevEngineOptions {
+	simulateProd?: boolean;
+	uid: string;
+}
+
+interface CreateProdEngineOptions {
+	uid: string;
+}
+
 /**
  * Singleton class that handles/manages EngineShells depending on dev/prod.
  */
@@ -51,10 +60,16 @@ export class EngineHandler {
 	 * Engine .exe process rather than the .py code.
 	 * @returns A {@link EngineShellDev `development EngineShell`} or a {@link EngineShellProd `production EngineShell`} (if `simulateProd = true` environment with development **App**) instance.
 	 */
-	public createDevEngine = (window: BrowserWindow | null, simulateProd = false): EngineShellDev | EngineShellProd => {
-		if (simulateProd) return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true);
+	public createDevEngine = (
+		window: BrowserWindow | null,
+		options: CreateDevEngineOptions,
+	): EngineShellDev | EngineShellProd => {
+		const defaultCreateDevEngineOptions = { simulateProd: false };
+		const { simulateProd, uid } = { ...defaultCreateDevEngineOptions, ...options };
 
-		return new EngineShellDev(window);
+		if (simulateProd) return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true, uid);
+
+		return new EngineShellDev(window, uid);
 	};
 
 	/**
@@ -63,7 +78,8 @@ export class EngineHandler {
 	 * @param window BrowserWindow to be managed by the EngineShell.
 	 * @returns Prod EngineShell instance.
 	 */
-	public createProdEngine = (window: BrowserWindow | null): EngineShellProd => {
-		return new EngineShellProd(EngineHandler.pathToEngineProd, window);
+	public createProdEngine = (window: BrowserWindow | null, options: CreateProdEngineOptions): EngineShellProd => {
+		const { uid } = options;
+		return new EngineShellProd(EngineHandler.pathToEngineProd, window, false, uid);
 	};
 }

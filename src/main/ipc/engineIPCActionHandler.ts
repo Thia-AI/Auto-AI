@@ -79,9 +79,9 @@ class EngineIPCActionHandler {
 			}
 		});
 
-		ipcMain.handle(IPC_ENGINE_START, () => {
+		ipcMain.handle(IPC_ENGINE_START, (_, uid: string) => {
 			if (!this.engineShell) {
-				this.launchEngine();
+				this.launchEngine(uid);
 			}
 		});
 
@@ -108,12 +108,16 @@ class EngineIPCActionHandler {
 	/**
 	 * Launches **Engine**.
 	 */
-	launchEngine = () => {
+	launchEngine = (uid: string) => {
 		/* eslint-disable  @typescript-eslint/no-unused-vars */
 		if (isDev) {
-			this.engineShell = EngineHandler.getInstance().createDevEngine(this.window);
+			this.engineShell = EngineHandler.getInstance().createDevEngine(this.window, {
+				uid,
+			});
 		} else {
-			this.engineShell = EngineHandler.getInstance().createProdEngine(this.window);
+			this.engineShell = EngineHandler.getInstance().createProdEngine(this.window, {
+				uid,
+			});
 		}
 		/* eslint-enable  @typescript-eslint/no-unused-vars */
 	};

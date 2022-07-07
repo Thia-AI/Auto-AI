@@ -1,7 +1,5 @@
 test_data/**
 test.py
 test.json
-cache/**
-models/**
-datasets/**
 models_cache/**
+users/**

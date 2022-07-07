@@ -3,7 +3,7 @@ import React, { lazy, useEffect } from 'react';
 import { Center, Spinner } from '@chakra-ui/react';
 import { ipcRenderer } from 'electron';
 import { Routes, Route, Navigate } from 'react-router';
-import { useSigninCheck } from 'reactfire';
+import { useSigninCheck, useUser } from 'reactfire';
 import { IPC_ENGINE_START, IPC_ENGINE_STOP } from '_/shared/ipcChannels';
 
 // eslint-disable-next-line jsdoc/require-param
@@ -17,12 +17,13 @@ export const AuthWrapper = ({
 	unauthenticatedFallback,
 }: React.PropsWithChildren<{ unauthenticatedFallback: JSX.Element }>): JSX.Element => {
 	const { status, data: signInCheckResult } = useSigninCheck();
+	const { data: user } = useUser();
 
 	const startStopEngineOnAuthChange = async () => {
 		if (status !== 'loading') {
-			if (signInCheckResult.signedIn) {
+			if (signInCheckResult.signedIn && user) {
 				// Logged in
-				await ipcRenderer.invoke(IPC_ENGINE_START);
+				await ipcRenderer.invoke(IPC_ENGINE_START, user.uid);
 			} else {
 				// Logged out
 				await ipcRenderer.invoke(IPC_ENGINE_STOP);
@@ -31,7 +32,7 @@ export const AuthWrapper = ({
 	};
 	useEffect(() => {
 		startStopEngineOnAuthChange();
-	}, [status, signInCheckResult]);
+	}, [status, signInCheckResult, user]);
 	if (!children) {
 		throw new Error('Children must be provided');
 	}

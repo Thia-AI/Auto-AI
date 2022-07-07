@@ -14,14 +14,15 @@ export class EngineShellProd extends EngineShell {
 	 * @param enginePath Path to the location of engine.exe.
 	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
 	 * @param simulatedProd Whether production is being simulated or not.
+	 * @param uid UID of user signed in.
 	 */
-	constructor(enginePath: string, window: BrowserWindow | null, simulatedProd = false) {
+	constructor(enginePath: string, window: BrowserWindow | null, simulatedProd = false, uid: string) {
 		super(window);
 
 		if (simulatedProd) {
-			this.engine = spawn(enginePath, ['simulated']);
+			this.engine = spawn(enginePath, ['simulated', `--user=${uid}`]);
 		} else {
-			this.engine = spawn(enginePath);
+			this.engine = spawn(enginePath, [`--user=${uid}`]);
 		}
 
 		this.notifyOnceEngineHasStarted();

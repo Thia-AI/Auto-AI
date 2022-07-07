@@ -37,7 +37,6 @@ from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from decorators.verify_action import verify_action
-from env import environment
 from exports.export_model_job import ExportModelJob
 # Jobs
 from helpers.encoding import b64_encode, b64_decode
@@ -988,10 +987,20 @@ def quick_stats_route():
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Thia ML Engine')
+    parser.add_argument('environment', nargs='?')
+    parser.add_argument('-u', '--user', required=True, help='User UID')
+    args = parser.parse_args()
+    log(f'Args Passed: {args}')
+
     # https://docs.python.org/3.7/library/multiprocessing.html?highlight=process#multiprocessing.freeze_support
     from multiprocessing import freeze_support
 
     freeze_support()
+    from env import environment
+    environment.init_environment_pre_gpu(args)
+
     import tensorflow as tf
 
     io = SocketIO(app, async_mode='threading')
