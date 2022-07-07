@@ -12,7 +12,7 @@
 		"build:win-unpacked": "rimraf out && npm run prod && electron-builder build --win --x64 --dir",
 		"build:win-py": "npm run build:py && npm run build:win",
 		"build:win-py-unpacked": "npm run build:py && npm run build:win-unpacked",
-		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources --debug=all engine.spec",
+		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec",
 		"lint": "echo Lint-Check Main && npm run lint-main && echo Lint-Check Renderer && npm run lint-renderer",
 		"lint-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\"",
 		"lint-main": "eslint src/main/** -c=\"main.eslintrc.json\"",

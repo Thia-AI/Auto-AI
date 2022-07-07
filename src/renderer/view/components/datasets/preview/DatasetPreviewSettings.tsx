@@ -9,10 +9,6 @@ import {
 	Text,
 	Flex,
 	IconButton,
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuList,
 	useColorModeValue as mode,
 	useDisclosure,
 	VStack,
@@ -26,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone';
-import { BsThreeDotsVertical } from 'react-icons/bs';
+import { FiUpload } from 'react-icons/fi';
 import { IoCloseOutline, IoRefresh } from 'react-icons/io5';
 import { connect } from 'react-redux';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
@@ -289,21 +285,15 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 					isLoading={datasetAndInputsRefreshing}
 					onClick={async () => await refreshDatasetAndInputs()}
 				/>
-				<Menu autoSelect isLazy lazyBehavior='keepMounted' closeOnBlur closeOnSelect>
-					<MenuButton
-						as={IconButton}
-						title='Dataset Options'
-						aria-label='Dataset Options'
-						icon={<BsThreeDotsVertical />}
-						colorScheme='thia.gray'
-						variant='ghost'
-					/>
-					<MenuList px='3'>
-						<MenuItem rounded='md' onClick={() => openUploadLabelsDialog()}>
-							Batch Labelling
-						</MenuItem>
-					</MenuList>
-				</Menu>
+				<IconButton
+					aria-label='Dataset Batch Labelling'
+					title='Dataset Batch Labelling'
+					icon={<FiUpload />}
+					variant='ghost'
+					colorScheme='thia.gray'
+					isLoading={datasetAndInputsRefreshing}
+					onClick={() => openUploadLabelsDialog()}
+				/>
 			</Flex>
 
 			<AlertDialog

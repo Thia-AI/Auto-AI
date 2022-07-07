@@ -5,6 +5,25 @@ import { EngineShellDev } from './engineShellDev';
 import { EngineShellProd } from './engineShellProd';
 
 /**
+ * Options when creating a dev **Engine**.
+ */
+interface CreateDevEngineOptions {
+	/**
+	 * Whether we want to simulate a production environment i.e. to test how *App** will function with an
+	 * Engine .exe process rather than the .py code.
+	 */
+	simulateProd?: boolean;
+	uid: string;
+}
+
+/**
+ * Options when creating a prod **Engine**.
+ */
+interface CreateProdEngineOptions {
+	uid: string;
+}
+
+/**
  * Singleton class that handles/manages EngineShells depending on dev/prod.
  */
 export class EngineHandler {
@@ -47,23 +66,30 @@ export class EngineHandler {
 	 * Creates a development EngineShell which then will launch a development **Engine** process (or production if `simulatingProd = true` ).
 	 *
 	 * @param window BrowserWindow to be managed by the EngineShell.
-	 * @param simulateProd Whether we want to simulate a production environment i.e. to test how *App** will function with an
-	 * Engine .exe process rather than the .py code.
+	 * @param options Options when creating a dev **Engine**.
 	 * @returns A {@link EngineShellDev `development EngineShell`} or a {@link EngineShellProd `production EngineShell`} (if `simulateProd = true` environment with development **App**) instance.
 	 */
-	public createDevEngine = (window: BrowserWindow | null, simulateProd = false): EngineShellDev | EngineShellProd => {
-		if (simulateProd) return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true);
+	public createDevEngine = (
+		window: BrowserWindow | null,
+		options: CreateDevEngineOptions,
+	): EngineShellDev | EngineShellProd => {
+		const defaultCreateDevEngineOptions = { simulateProd: false };
+		const { simulateProd, uid } = { ...defaultCreateDevEngineOptions, ...options };
 
-		return new EngineShellDev(window);
+		if (simulateProd) return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true, uid);
+
+		return new EngineShellDev(window, uid);
 	};
 
 	/**
 	 * Creates a production EngineShell which then will launch a production **Engine** process.
 	 *
 	 * @param window BrowserWindow to be managed by the EngineShell.
+	 * @param options Options when creating a prod **Engine**.
 	 * @returns Prod EngineShell instance.
 	 */
-	public createProdEngine = (window: BrowserWindow | null): EngineShellProd => {
-		return new EngineShellProd(EngineHandler.pathToEngineProd, window);
+	public createProdEngine = (window: BrowserWindow | null, options: CreateProdEngineOptions): EngineShellProd => {
+		const { uid } = options;
+		return new EngineShellProd(EngineHandler.pathToEngineProd, window, false, uid);
 	};
 }

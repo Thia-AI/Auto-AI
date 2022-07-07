@@ -9,20 +9,21 @@ import { BrowserWindow } from 'electron';
 export class EngineShellDev extends EngineShell {
 	private engine: PythonShell;
 	// python options
-	private options: Options = {
-		mode: 'text',
-		pythonPath: 'python',
-		// pythonOptions: ['-u'],
-	};
 
 	/**
 	 * Instantiates a development EngineShell and starts a development **Engine** process.
 	 *
 	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
+	 * @param uid UID of user signed in.
 	 */
-	constructor(window: BrowserWindow | null) {
+	constructor(window: BrowserWindow | null, uid: string) {
 		super(window);
-		this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), this.options);
+		const options: Options = {
+			mode: 'text',
+			pythonPath: 'python',
+			args: [`--user=${uid}`],
+		};
+		this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), options);
 		this.notifyOnceEngineHasStarted();
 		this.onDataChangeSetup();
 		this.onExitSetup();
