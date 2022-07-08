@@ -1,9 +1,6 @@
 import { FirebaseOptions } from 'firebase/app';
 
-/**
- * Firebase Config.
- */
-export const firebaseConfig: FirebaseOptions = {
+const firebaseProdConfig: FirebaseOptions = {
 	apiKey: 'AIzaSyDJOaqbWCPHazZsu4uyXCcYl69bSzr-hdc',
 	authDomain: 'thia-1458b.firebaseapp.com',
 	projectId: 'thia-1458b',
@@ -13,10 +10,36 @@ export const firebaseConfig: FirebaseOptions = {
 	measurementId: 'G-PFW73XVXV6',
 };
 
-/**
- * Firebase Admin Config.
- */
-export const firebaseAdminConfig = {
+const firebaseDevConfig: FirebaseOptions = {
+	apiKey: 'AIzaSyAoiWNvP_NuTIoXQ-oghg3Ix9jWLblQXcU',
+	authDomain: 'thia-dev.firebaseapp.com',
+	projectId: 'thia-dev',
+	storageBucket: 'thia-dev.appspot.com',
+	messagingSenderId: '554589208456',
+	appId: '1:554589208456:web:33c36d197c8467b1f6443d',
+};
+
+export const getFirebaseConfig = (): FirebaseOptions => {
+	if (process.env.NODE_ENV === 'development') return firebaseDevConfig;
+	else return firebaseProdConfig;
+};
+
+interface FirebaseCustomTokenConfig {
+	serviceAccountId: string;
+	projectId: string;
+}
+
+const firebaseProdCustomTokenConfig = {
 	serviceAccountId: 'firebase-adminsdk-e60qi@thia-1458b.iam.gserviceaccount.com',
 	projectId: 'thia-1458b',
+};
+
+const firebaseDevCustomTokenConfig = {
+	serviceAccountId: 'firebase-adminsdk-blzjr@thia-dev.iam.gserviceaccount.com',
+	projectId: 'thia-dev',
+};
+
+export const getFirebaseCustomTokenConfig = (): FirebaseCustomTokenConfig => {
+	if (process.env.NODE_ENV === 'development') return firebaseDevCustomTokenConfig;
+	else return firebaseProdCustomTokenConfig;
 };
