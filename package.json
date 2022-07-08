@@ -20,7 +20,8 @@
 		"lint-fix-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix",
 		"lint-fix-dry-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\" --fix-dry-run",
 		"lint-fix-dry-main": "eslint src/main/** -c=\"main.eslintrc.json\" --fix-dry-run",
-		"deploy:functions": "firebase deploy --project thia-1458b --only functions",
+		"deploy:functions-prod": "firebase deploy --project thia-1458b --only functions",
+		"deploy:functions-dev": "firebase deploy --project thia-dev --only functions",
 		"postinstall": "patch-package"
 	},
 	"build": {
