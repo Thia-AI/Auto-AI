@@ -28,11 +28,13 @@ export const notifyEngineStoppedAction = (): IEngineStoppedAction => ({
  */
 export const getDevEngineStatusAction =
 	(): ThunkAction<void, {}, undefined, IEngineDevStatusAction> => async (dispatch) => {
-		const engineStarted = (await ipcRenderer.invoke(IPC_DEV_ENGINE_STARTED)) as boolean;
-		dispatch({
-			type: ENGINE_DEV_STATUS,
-			payload: {
-				engineStarted,
-			},
-		});
+		try {
+			const engineStarted = (await ipcRenderer.invoke(IPC_DEV_ENGINE_STARTED)) as boolean;
+			dispatch({
+				type: ENGINE_DEV_STATUS,
+				payload: {
+					engineStarted,
+				},
+			});
+		} catch (err) {}
 	};
