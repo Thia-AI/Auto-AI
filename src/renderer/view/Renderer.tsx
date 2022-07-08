@@ -18,7 +18,7 @@ import { App } from './App';
 import { configureStore } from '../state/store';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
-import { firebaseConfig } from '../firebase/firebase';
+import { getFirebaseConfig } from '../firebase/firebase';
 import { theme } from '_/shared/theming/chakraTheme';
 import { BackendRequestHandler } from '../backend-requests/backendRequestHandler';
 import BackendRequestConfig from '_/shared/backendRequestConfig';
@@ -36,6 +36,8 @@ backendRequestHandler.initInstances(BackendRequestConfig);
 
 const container = document.getElementById('app');
 const root = createRoot(container!);
+const firebaseConfig = getFirebaseConfig();
+
 root.render(
 	<>
 		<ColorModeScript initialColorMode={theme.config.initialColorMode} />

@@ -38,7 +38,7 @@ import {
 	STORE_ENCRYPTION_KEY,
 } from '_/shared/appConstants';
 import { startServer } from './server/server';
-import { firebaseAdminConfig, firebaseConfig } from '_/renderer/firebase/firebase';
+import { getFirebaseConfig, getFirebaseCustomTokenConfig } from '_/renderer/firebase/firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Server } from 'socket.io';
 import Store from 'electron-store';
@@ -46,7 +46,7 @@ import { ActivityStoreManager } from './store/activityStoreManager';
 
 const numCPUs = cpus().length;
 
-let firebaseApp: FirebaseApp | null;
+let firebaseAppProd: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
 let loginWindow: BrowserWindow | null;
 let activitiesStore: Store | null;
@@ -271,13 +271,14 @@ type ExpressMethods = 'get' | 'head' | 'post' | 'delete' | 'put' | 'connect' | '
 const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
 	const uid: string = req.body['uid'];
 	const persistence: PERSISTENCE_TYPE = req.body['persistence'];
-	if (firebaseApp) {
-		const functions = getFunctions(firebaseApp);
+	if (firebaseAppProd) {
+		const functions = getFunctions(firebaseAppProd);
 		const getToken = httpsCallable(functions, 'customToken');
+		const firebaseCustomTokenConfig = getFirebaseCustomTokenConfig();
 		const customParams = {
 			userid: uid,
-			serviceAccountId: firebaseAdminConfig.serviceAccountId,
-			projectId: firebaseAdminConfig.projectId,
+			serviceAccountId: firebaseCustomTokenConfig.serviceAccountId,
+			projectId: firebaseCustomTokenConfig.projectId,
 		};
 		try {
 			const result = await getToken(customParams);
@@ -385,7 +386,8 @@ if (!isSingleInstance) {
 				console.log('Error loading extensions: ', err);
 			}
 		}
-		firebaseApp = initializeApp(firebaseConfig);
+		const firebaseConfig = getFirebaseConfig();
+		firebaseAppProd = initializeApp(firebaseConfig);
 		await startWebServices();
 		await setupStores();
 		initRendererDev();
