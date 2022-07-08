@@ -36,5 +36,7 @@ export const getDevEngineStatusAction =
 					engineStarted,
 				},
 			});
-		} catch (err) {}
+		} catch (err) {
+			return;
+		}
 	};

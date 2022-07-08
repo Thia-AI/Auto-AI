@@ -19,6 +19,11 @@ const firebaseDevConfig: FirebaseOptions = {
 	appId: '1:554589208456:web:33c36d197c8467b1f6443d',
 };
 
+/**
+ * Gets Firebase config depending on if **App** is running in production or development.
+ *
+ * @returns Firebase config.
+ */
 export const getFirebaseConfig = (): FirebaseOptions => {
 	if (process.env.NODE_ENV === 'development') return firebaseDevConfig;
 	else return firebaseProdConfig;
@@ -39,6 +44,11 @@ const firebaseDevCustomTokenConfig = {
 	projectId: 'thia-dev',
 };
 
+/**
+ * Gets Firebase function, custom-token, config depending on if **App** is running in production or development.
+ *
+ * @returns Firebase function custom-token config.
+ */
 export const getFirebaseCustomTokenConfig = (): FirebaseCustomTokenConfig => {
 	if (process.env.NODE_ENV === 'development') return firebaseDevCustomTokenConfig;
 	else return firebaseProdCustomTokenConfig;
