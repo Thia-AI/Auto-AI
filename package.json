@@ -34,7 +34,8 @@
 		},
 		"win": {
 			"target": "nsis",
-			"asar": true
+			"asar": true,
+			"requestedExecutionLevel": "requireAdministrator"
 		},
 		"nsis": {
 			"oneClick": false,
