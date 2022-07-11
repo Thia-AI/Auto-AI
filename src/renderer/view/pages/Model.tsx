@@ -82,6 +82,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 					status: 'error',
 					duration: 1500,
 					isClosable: true,
+					uid: user.uid,
 					saveToStore: false,
 				});
 				replace('/models');
@@ -103,8 +104,9 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	};
 
 	const trainModel = async () => {
+		if (!user) return;
 		// Make sure a dataset is selected to be trained on
-		if (selectedDatasetID.value.length > 0 && user && modelID) {
+		if (selectedDatasetID.value.length > 0 && modelID) {
 			const idToken = await user.getIdToken();
 			const [error, trainModelResData] = await EngineRequestHandler.getInstance().trainModel(modelID, idToken, {
 				dataset_id: selectedDatasetID.value,
@@ -122,6 +124,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 					description: trainModelResData['Error'],
 					status: 'error',
 					duration: 1500,
+					uid: user.uid,
 					isClosable: true,
 					saveToStore: false,
 				});
@@ -134,6 +137,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				status: 'error',
 				duration: 1500,
 				isClosable: true,
+				uid: user.uid,
 				saveToStore: false,
 			});
 		}

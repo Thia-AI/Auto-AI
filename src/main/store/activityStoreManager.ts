@@ -7,6 +7,8 @@ import {
 	IPC_ACTIVITIES_STORE_GET_ACTIVITIES,
 } from '_/shared/ipcChannels';
 import { UseToastOptions } from '@chakra-ui/react';
+import { NOTIFICATIONS_STORE_FILENAME, STORE_ENCRYPTION_KEY } from '_/shared/appConstants';
+import { ToastOptions } from '_/renderer/view/helpers/functionHelpers';
 
 /**
  * Notification that is stored with `electron-store`.
@@ -42,30 +44,54 @@ export const isElectronStoreActivityArrayTypeGuard = (
  * Manager for notifications stored with `electron-store`.
  */
 export class ActivityStoreManager {
-	private store: Store;
-	constructor(store: Store) {
-		this.store = store;
+	private store!: Store;
+
+	constructor() {
 		this.initIPC();
 	}
+
+	/**
+	 * Initializes `electron-store` store if not already.
+	 *
+	 * @param uid Firebase user's `uid`.
+	 */
+	private initStoreIfNotInitialized = (uid: string, reInitStore?: boolean) => {
+		if (!this.store || reInitStore) {
+			this.store = new Store({
+				name: uid + '-' + NOTIFICATIONS_STORE_FILENAME,
+				encryptionKey: STORE_ENCRYPTION_KEY,
+			});
+		}
+	};
 
 	/**
 	 * Initializes all IPC events.
 	 */
 	initIPC = () => {
-		ipcMain.handle(IPC_ACTIVITIES_STORE_GET_ACTIVITIES, () => {
+		ipcMain.handle(IPC_ACTIVITIES_STORE_GET_ACTIVITIES, (_, uid: string) => {
+			if (!uid) throw new Error('UID not specified when accessing recent activities');
+			this.initStoreIfNotInitialized(uid);
 			const notifications = this.store.get('notifications', []);
 			return notifications;
 		});
 
-		ipcMain.handle(IPC_ACTIVITIES_STORE_ADD_ACTIVITY, (_, activityID, chakraNotification) => {
-			this.addActivity(activityID, chakraNotification);
+		ipcMain.handle(IPC_ACTIVITIES_STORE_ADD_ACTIVITY, (_, activityID, uid: string, notification: ToastOptions) => {
+			if (!uid) throw new Error('UID not specified when accessing recent activities');
+			this.initStoreIfNotInitialized(uid, notification.reInitStore);
+			if (notification.saveToStore) {
+				this.addActivity(activityID, notification);
+			}
 		});
 
-		ipcMain.handle(IPC_ACTIVITIES_STORE_DELETE_ACTIVITY, (_, activityID) => {
+		ipcMain.handle(IPC_ACTIVITIES_STORE_DELETE_ACTIVITY, (_, activityID, uid: string) => {
+			if (!uid) throw new Error('UID not specified when accessing recent activities');
+			this.initStoreIfNotInitialized(uid);
 			this.deleteActivity(activityID);
 		});
 
-		ipcMain.handle(IPC_NOTIFICATIONS_STORE_DELETE_ALL_ACTIVITIES, () => {
+		ipcMain.handle(IPC_NOTIFICATIONS_STORE_DELETE_ALL_ACTIVITIES, (_, uid: string) => {
+			if (!uid) throw new Error('UID not specified when accessing recent activities');
+			this.initStoreIfNotInitialized(uid);
 			this.deleteAllActivities();
 		});
 	};
@@ -74,13 +100,13 @@ export class ActivityStoreManager {
 	 * Adds an activity to the store.
 	 *
 	 * @param activityID Activity ID - UUIDv4.
-	 * @param chakraNotification Notification coming from Chakra UI.
+	 * @param notification Notification coming from renderer.
 	 */
-	addActivity = (activityID: string, chakraNotification: UseToastOptions) => {
+	addActivity = (activityID: string, notification: ToastOptions) => {
 		const electronStoreNotification: ElectronStoreActivity = {
-			title: chakraNotification.title as string,
-			description: chakraNotification.description as string,
-			status: chakraNotification.status,
+			title: notification.title as string,
+			description: notification.description as string,
+			status: notification.status,
 			id: activityID,
 			dateNow: Date.now(),
 		};

@@ -49,6 +49,8 @@ const LandingPage = () => {
 									status: 'success',
 									duration: 1500,
 									isClosable: false,
+									uid: userCredential.user.uid,
+									reInitStore: true,
 									saveToStore: false,
 								});
 							})

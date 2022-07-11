@@ -219,11 +219,16 @@ export const hasWhiteSpace = (s: string) => {
 
 const { ToastContainer, toast: standaloneToast } = createStandaloneToast({ theme });
 
-interface ToastOptions extends UseToastOptions {
+/**
+ * Options for custom toast.
+ */
+export interface ToastOptions extends UseToastOptions {
+	uid: string;
 	saveToStore?: boolean;
+	reInitStore?: boolean;
 }
 
-const DefaultToastOptions: ToastOptions = {
+const DefaultToastOptions = {
 	saveToStore: true,
 };
 
@@ -233,13 +238,13 @@ const DefaultToastOptions: ToastOptions = {
  * @param options Chakra UI `UseToastOptions`.
  * @returns Chakra UI toast ID.
  */
-export const toast = (options?: ToastOptions) => {
+export const toast = (options: ToastOptions) => {
 	const extendedOptions: ToastOptions = {
 		...DefaultToastOptions,
 		...options,
 	};
 	const toastID = standaloneToast(extendedOptions);
-	if (extendedOptions.saveToStore) {
+	if (extendedOptions.saveToStore || extendedOptions.reInitStore) {
 		const notificationID = uuidv4();
 		addNotificationToStore(notificationID, options)
 			.then(() => {

@@ -66,7 +66,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 	});
 
 	const cancelJob = async (jobID: string | null) => {
-		if (jobID) {
+		if (jobID && user) {
 			const [cancelJobError, cancelJobResData] = await EngineRequestHandler.getInstance().cancelJob(jobID);
 			if (!cancelJobError && cancelJobResData['job_found']) {
 				if (cancelJobResData['job_cancelled_successfully']) {
@@ -77,6 +77,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 						status: 'info',
 						duration: 1500,
 						isClosable: false,
+						uid: user.uid,
 					});
 				} else {
 					// Job failed to cancel
@@ -86,6 +87,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
+						uid: user.uid,
 					});
 				}
 			}
@@ -93,7 +95,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 	};
 
 	useEffect(() => {
-		if (rejectedFiles.length > 0) {
+		if (rejectedFiles.length > 0 && user) {
 			if (rejectedFiles[0].errors[0].code == ErrorCode.FileInvalidType) {
 				// Invalid file type
 				toast({
@@ -102,6 +104,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 					saveToStore: false,
 				});
 			} else if (rejectedFiles[0].errors[0].code == ErrorCode.TooManyFiles) {
@@ -112,13 +115,14 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 					saveToStore: false,
 				});
 			}
 			// Reset
 			setRejectedFiles([]);
 		}
-	}, [rejectedFiles]);
+	}, [rejectedFiles, user]);
 
 	useEffect(() => {
 		setSelectedFiles([]);
@@ -129,7 +133,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 		return () => {
 			cancelJob(testJobID);
 		};
-	}, [testJobID]);
+	}, [testJobID, user]);
 
 	useEffect(() => {
 		return () => {
@@ -139,7 +143,8 @@ export const TestModel = React.memo(({ model }: Props) => {
 	}, [selectedFiles]);
 
 	const testModel = async () => {
-		if (selectedFiles.length > 0 && user) {
+		if (!user) return;
+		if (selectedFiles.length > 0) {
 			setTestRunning(true);
 			const formData = new FormData();
 			for (let i = 0; i < selectedFiles.length; i++) {
@@ -163,6 +168,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 				});
 				setTestRunning(false);
 				return;
@@ -178,6 +184,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 				});
 				setTestRunning(false);
 				setTestJobID(null);
@@ -204,6 +211,7 @@ export const TestModel = React.memo(({ model }: Props) => {
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
+				uid: user.uid,
 				saveToStore: false,
 			});
 		}

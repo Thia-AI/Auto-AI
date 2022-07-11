@@ -48,6 +48,7 @@ const DeleteModelC = React.memo(({ dialogOpen, model, onClose, replace, changeSe
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 				});
 				setModelDeleting(false);
 				return;

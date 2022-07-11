@@ -4,6 +4,7 @@ import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputLeftEle
 import { AiFillDatabase } from 'react-icons/ai';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { toast, waitTillEngineJobComplete } from '../../helpers/functionHelpers';
+import { useUser } from 'reactfire';
 
 /**
  * Dev panel deleting dataset inputs component.
@@ -12,11 +13,14 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 	const [value, setValue] = useState('');
 	const [inputsDeleting, setInputsDeleting] = useState(false);
 
+	const { data: user } = useUser();
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(e.target.value);
 	};
 
 	const deleteInputs = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		if (!user) return;
 		e.preventDefault();
 		setInputsDeleting(true);
 		const [deleteInputsErr, deleteInputsRes] = await EngineRequestHandler.getInstance().deleteAllInputsFromDataset(
@@ -29,6 +33,7 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
+				uid: user.uid,
 			});
 			setInputsDeleting(false);
 			return;
@@ -42,6 +47,7 @@ export const DevDeleteDatasetInputs = React.memo(() => {
 			status: 'success',
 			duration: 1500,
 			isClosable: false,
+			uid: user.uid,
 		});
 	};
 	return (

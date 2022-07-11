@@ -120,6 +120,7 @@ const DragNDropC = React.memo(
 						status: 'error',
 						duration: 1500,
 						isClosable: true,
+						uid: user.uid,
 					});
 					setImagesUploading(false);
 					return;
@@ -138,6 +139,7 @@ const DragNDropC = React.memo(
 					status: 'info',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 				});
 				await refreshDataset();
 				updateFiles([]);

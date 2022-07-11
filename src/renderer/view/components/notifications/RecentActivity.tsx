@@ -14,6 +14,7 @@ import {
 import React from 'react';
 import { AiOutlineClear } from 'react-icons/ai';
 import ReactTooltip from 'react-tooltip';
+import { useUser } from 'reactfire';
 import { ElectronStoreActivity } from '_/main/store/activityStoreManager';
 import { deleteActivity } from '../../helpers/ipcHelpers';
 import { capitalizeFirstLetter } from '../../helpers/textHelper';
@@ -46,6 +47,8 @@ export const RecentActivity = React.memo(({ activity, refreshActivitiesList }: P
 
 	const activityTitleMaxWidth = useBreakpointValue({ base: '80%', lg: '85%', xl: '88%', '2xl': '90%' });
 
+	const { data: user } = useUser();
+
 	const indicatorColor = (): BackgroundProps['bg'] => {
 		switch (activity.status) {
 			case 'error':
@@ -62,9 +65,10 @@ export const RecentActivity = React.memo(({ activity, refreshActivitiesList }: P
 	};
 
 	const clearActivity = async (e: React.MouseEvent<SVGElement, MouseEvent>) => {
+		if (!user) return;
 		// Stop event from bubbling (stops accordion from opening)
 		e.stopPropagation();
-		await deleteActivity(activity.id);
+		await deleteActivity(activity.id, user.uid);
 		await refreshActivitiesList();
 	};
 	return (

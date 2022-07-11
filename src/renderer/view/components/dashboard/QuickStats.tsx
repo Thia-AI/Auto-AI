@@ -7,6 +7,7 @@ import { toast } from '../../helpers/functionHelpers';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
+import { useUser } from 'reactfire';
 
 interface Props {
 	engineStarted: IEngineStatusReducer;
@@ -18,7 +19,10 @@ const QuickStatsC = React.memo(({ engineStarted }: Props) => {
 
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
+	const { data: user } = useUser();
+
 	const loadData = async () => {
+		if (!user) return;
 		setStatsLoaded(false);
 		const [quickStatsErr, quickStatsRes] = await EngineRequestHandler.getInstance().getQuickStats();
 		if (quickStatsErr) {
@@ -28,6 +32,7 @@ const QuickStatsC = React.memo(({ engineStarted }: Props) => {
 				status: 'error',
 				duration: 1500,
 				isClosable: true,
+				uid: user.uid,
 			});
 			setStatsLoaded(true);
 			return;
@@ -39,7 +44,7 @@ const QuickStatsC = React.memo(({ engineStarted }: Props) => {
 		if (engineStarted.value) {
 			loadData();
 		}
-	}, [engineStarted]);
+	}, [engineStarted, user]);
 
 	const renderSpinner = () => {
 		if (!statsLoaded) {

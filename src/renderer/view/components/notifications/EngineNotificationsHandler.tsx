@@ -17,6 +17,7 @@ import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { AxiosError } from 'axios';
 import { IPC_CONNECT_SOCKET, IPC_ENGINE_JOB_FINISHED, IPC_NOTIFICATIONS_SHOW_NOTIFICATION } from '_/shared/ipcChannels';
 import { toast } from '../../helpers/functionHelpers';
+import { useUser } from 'reactfire';
 
 interface Props {
 	notifications: IJobNotification[];
@@ -37,6 +38,8 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 	}
 
 	const [notificationMap, setNotificationMap] = useState<INotificationMap>({});
+	const { data: user } = useUser();
+
 	const setupSocket = async () => {
 		await ipcRenderer.invoke(IPC_CONNECT_SOCKET);
 	};
@@ -84,6 +87,7 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 
 	// For each time notifications change
 	useEffect(() => {
+		if (!user) return;
 		const newNotifMap: INotificationMap = {};
 		// Get new notifications
 		for (let i = 0; i < notifications.length; i++) {
@@ -107,6 +111,7 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 							status: 'error',
 							duration: notif.dismissAfter,
 							isClosable: false,
+							uid: user.uid,
 						});
 					}
 				}
@@ -124,6 +129,7 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 							status: 'error',
 							duration: notif.dismissAfter,
 							isClosable: false,
+							uid: user.uid,
 						});
 					}
 				}
@@ -139,6 +145,7 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 						status: 'success',
 						duration: notif.dismissAfter,
 						isClosable: false,
+						uid: user.uid,
 					});
 				}
 			}
@@ -146,7 +153,7 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 			newNotifMap[notif.job.id] = notif;
 		}
 		setNotificationMap(newNotifMap);
-	}, [notifications]);
+	}, [notifications, user]);
 
 	return <></>;
 });

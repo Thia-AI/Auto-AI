@@ -241,6 +241,7 @@ const ExtraModelTypeButton = React.memo(
 						status: 'error',
 						duration: 1500,
 						isClosable: false,
+						uid: user.uid,
 					});
 					setExporting(false);
 					setIsDisabled(false);

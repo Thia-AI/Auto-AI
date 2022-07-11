@@ -73,7 +73,7 @@ const LabelsListC = React.memo(
 		const onDragEnd = async (result: DropResult) => {
 			const { destination, source } = result;
 
-			if (!destination || destination.index === source.index || !activeDataset.value.dataset) return;
+			if (!destination || destination.index === source.index || !activeDataset.value.dataset || !user) return;
 
 			const initialLabels = labels.slice();
 			const labelsCpy = labels.slice();
@@ -95,6 +95,7 @@ const LabelsListC = React.memo(
 					status: 'error',
 					duration: 1250,
 					isClosable: false,
+					uid: user.uid,
 				});
 				setLabels(initialLabels);
 				return;
@@ -123,8 +124,7 @@ const LabelsListC = React.memo(
 		};
 
 		const deleteLabel = async (label: string) => {
-			if (activeDataset.value.dataset.id.length == 0) return;
-			if (!user) return;
+			if (activeDataset.value.dataset.id.length == 0 || !user) return;
 			setIsLabelDeleting(true);
 			const idToken = await user.getIdToken();
 			const [deleteLabelErr, deleteLabelRes] = await EngineRequestHandler.getInstance().deleteLabelFromDataset(
@@ -142,6 +142,7 @@ const LabelsListC = React.memo(
 					status: 'error',
 					duration: 1500,
 					isClosable: true,
+					uid: user.uid,
 				});
 				setIsLabelDeleting(false);
 				return;
@@ -159,6 +160,7 @@ const LabelsListC = React.memo(
 				status: 'success',
 				duration: 1500,
 				isClosable: false,
+				uid: user.uid,
 			});
 			openCloseDeleteLabel('');
 		};

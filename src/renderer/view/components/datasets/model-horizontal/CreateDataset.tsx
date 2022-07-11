@@ -99,6 +99,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 					status: 'error',
 					duration: 1500,
 					isClosable: true,
+					uid: user.uid,
 					saveToStore: false,
 				});
 			}
@@ -123,6 +124,7 @@ const CreateDatasetC = React.memo(({ onClose, isOpen, refreshDataset }: Props) =
 				status: 'error',
 				duration: 1500,
 				isClosable: false,
+				uid: user.uid,
 			});
 			setDatasetCreating(false);
 			return;
