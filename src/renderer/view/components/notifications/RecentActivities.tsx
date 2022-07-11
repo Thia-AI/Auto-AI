@@ -16,6 +16,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { VscClearAll } from 'react-icons/vsc';
 import ReactTooltip from 'react-tooltip';
+import { useUser } from 'reactfire';
 import { ElectronStoreActivity, isElectronStoreActivityArrayTypeGuard } from '_/main/store/activityStoreManager';
 import { useVerticalScrollbar } from '../../helpers/hooks/scrollbar';
 import { deleteAllActivities, getAllActivities } from '../../helpers/ipcHelpers';
@@ -27,16 +28,21 @@ import { RecentActivity } from './RecentActivity';
 export const RecentActivities = React.memo(() => {
 	const [activities, setActivities] = useState<ElectronStoreActivity[]>([]);
 	const [activitiesLoaded, setActivitiesLoaded] = useState(false);
+
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const clearActivitiesColor = mode('thia.gray.700', 'thia.gray.300');
 	const clearActivitiesHoverColor = mode('thia.purple.400', 'thia.purple.300');
+
 	const scrollBarSX = useVerticalScrollbar('6px');
 	const noActivitiesHeadingSize = useBreakpointValue({ base: '6xl', lg: '7xl', xl: '8xl', '2xl': '9xl' });
 
+	const { data: user } = useUser();
+
 	const fetchActivities = async () => {
+		if (!user) return;
 		setActivitiesLoaded(false);
-		const activities = await getAllActivities('arraySortedByDate');
+		const activities = await getAllActivities('arraySortedByDate', user.uid);
 		if (isElectronStoreActivityArrayTypeGuard(activities)) {
 			setActivities(activities);
 		}
@@ -44,10 +50,11 @@ export const RecentActivities = React.memo(() => {
 	};
 	useEffect(() => {
 		fetchActivities();
-	}, []);
+	}, [user]);
 
 	const clearAllActivities = async () => {
-		await deleteAllActivities();
+		if (!user) return;
+		await deleteAllActivities(user.uid);
 		await fetchActivities();
 	};
 

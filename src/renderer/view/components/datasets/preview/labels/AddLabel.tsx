@@ -46,8 +46,7 @@ const AddLabelC = React.memo(
 		};
 
 		const addLabel = async () => {
-			if (!activeDataset.value.dataset) return;
-			if (!user) return;
+			if (!activeDataset.value.dataset || !user) return;
 			if (!isInputValid) {
 				toast({
 					title: 'Failed to add label',
@@ -55,6 +54,7 @@ const AddLabelC = React.memo(
 					status: 'error',
 					duration: 1250,
 					isClosable: true,
+					uid: user.uid,
 					saveToStore: false,
 				});
 				return;
@@ -77,6 +77,7 @@ const AddLabelC = React.memo(
 					status: 'error',
 					duration: 1500,
 					isClosable: true,
+					uid: user.uid,
 				});
 				resetLabelValue();
 				setLabelUploading(false);
@@ -89,6 +90,7 @@ const AddLabelC = React.memo(
 				status: 'success',
 				duration: 1500,
 				isClosable: false,
+				uid: user.uid,
 			});
 			resetLabelValue();
 			setLabelUploading(false);
@@ -106,7 +108,7 @@ const AddLabelC = React.memo(
 			return () => {
 				window.removeEventListener('keypress', addLabelOnEnter);
 			};
-		}, [activeDataset, labelValue, inputError, isInputValid, isInputFocused]);
+		}, [activeDataset, labelValue, inputError, isInputValid, isInputFocused, user]);
 
 		return (
 			<InputGroup w='93%'>

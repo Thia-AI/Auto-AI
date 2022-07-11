@@ -25,6 +25,7 @@ import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone';
 import { FiUpload } from 'react-icons/fi';
 import { IoCloseOutline, IoRefresh } from 'react-icons/io5';
 import { connect } from 'react-redux';
+import { useUser } from 'reactfire';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { getNextPageInputsAction } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { changeActiveDataset } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
@@ -56,6 +57,8 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 	const [datasetAndInputsRefreshing, setDatasetAndInputsRefreshing] = useState(false);
 
 	const cancelUploadLabelsButtonRef = useRef(null);
+
+	const { data: user } = useUser();
 
 	const {
 		isOpen: isUploadLabelsDialogOpen,
@@ -102,7 +105,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 
 	// Rejected file error informing
 	useEffect(() => {
-		if (rejectedLabelFiles.length > 0) {
+		if (rejectedLabelFiles.length > 0 && user) {
 			if (rejectedLabelFiles[0].errors[0].code == ErrorCode.FileInvalidType) {
 				// Invalid file type
 				toast({
@@ -111,6 +114,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 					saveToStore: false,
 				});
 			} else if (rejectedLabelFiles[0].errors[0].code == ErrorCode.TooManyFiles) {
@@ -121,13 +125,14 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 					status: 'error',
 					duration: 1500,
 					isClosable: false,
+					uid: user.uid,
 					saveToStore: false,
 				});
 			}
 			// Reset
 			setRejectedLabelFiles([]);
 		}
-	}, [rejectedLabelFiles]);
+	}, [rejectedLabelFiles, user]);
 
 	// Clear interval when unmounting
 	useEffect(() => {
@@ -172,7 +177,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 	};
 
 	const uploadLabelsFile = async () => {
-		if (selectedLabelFile && dataset.id.length > 0) {
+		if (selectedLabelFile && dataset.id.length > 0 && user) {
 			const formData = new FormData();
 			formData.append('file', selectedLabelFile);
 			const [batchLabelError, batchLabelResData] = await EngineRequestHandler.getInstance().updateMultipleLabels(
@@ -186,6 +191,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 					status: 'error',
 					duration: 2500,
 					isClosable: false,
+					uid: user.uid,
 				});
 				return;
 			}
@@ -197,6 +203,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 				status: 'warning',
 				duration: 5000,
 				isClosable: true,
+				uid: user.uid,
 				saveToStore: false,
 			});
 			const batchLabelJobID: string = batchLabelResData['ids'][0];

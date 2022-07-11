@@ -82,6 +82,7 @@ const DeleteDatasetC = React.memo((props: Props) => {
 										status: 'error',
 										duration: 1500,
 										isClosable: false,
+										uid: user.uid,
 									});
 									props.openCloseDeleteDataset(nullDataset);
 									setDatasetDeleting(false);
