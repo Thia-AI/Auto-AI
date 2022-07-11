@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-from dateutil import parser
+from dateutil import parser as date_parser
 from flask import Flask, jsonify, request, send_from_directory, abort, make_response
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
@@ -562,7 +562,7 @@ def get_next_inputs_route(uuid: str):
 
     limit = req_data['limit'] if 'limit' in req_data else constants.INPUT_PAGINATION_DEFAULT_LIMIT
     # Get the next page inputs
-    parsed_datetime = str(parser.parse(b64_decode(req_data['current_cursor_date'])))
+    parsed_datetime = str(date_parser.parse(b64_decode(req_data['current_cursor_date'])))
     rows = pagination_get_next_page_inputs(uuid, parsed_datetime, limit + 1)
     inputs = []
     is_end_of_table = len(rows) != limit + 1
@@ -615,7 +615,7 @@ def get_prev_inputs_route(uuid: str):
         return {'Error': f'limit provided is not in range 0 - {constants.INPUT_PAGINATION_LIMIT_MAX}'}, 400
     limit = req_data['limit'] if 'limit' in req_data else constants.INPUT_PAGINATION_DEFAULT_LIMIT
     # Get the previous page inputs
-    parsed_datetime = str(parser.parse(b64_decode(req_data['current_cursor_date'])))
+    parsed_datetime = str(date_parser.parse(b64_decode(req_data['current_cursor_date'])))
     rows = pagination_get_prev_page_inputs(uuid, parsed_datetime, limit + 1)
     inputs = []
     is_end_of_table = len(rows) != limit + 1
@@ -993,7 +993,6 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--user', required=True, help='User UID')
     args = parser.parse_args()
     log(f'Args Passed: {args}')
-
     # https://docs.python.org/3.7/library/multiprocessing.html?highlight=process#multiprocessing.freeze_support
     from multiprocessing import freeze_support
 
@@ -1002,6 +1001,8 @@ if __name__ == '__main__':
     environment.init_environment_pre_gpu(args)
 
     import tensorflow as tf
+
+    app.config['user'] = args.user
 
     io = SocketIO(app, async_mode='threading')
     io.on_namespace(jobs_namespace)

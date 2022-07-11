@@ -14,7 +14,7 @@ import { IActiveDatasetInputsPreviewIDReducer } from '_/renderer/state/active-da
 import { sleep } from '_/renderer/view/helpers/functionHelpers';
 
 interface Props {
-	input: Input;
+	input?: Input;
 	activeDataset: IActiveDatasetReducer;
 	setActivePreviewID: (previewID: number) => ISetActiveDatasetInputsPreviewIDAction;
 	cellID: number;
@@ -27,13 +27,16 @@ const PaginationCellC = React.memo(
 		const ref = useRef<HTMLDivElement>(null);
 		const [isSelectedCell, setIsSelectedCell] = useState(false);
 		const [label, setLabel] = useState<Label>(nullLabel);
-		const [imageLoaded, imageSrc] = useProgressiveImage(`${ENGINE_URL}/dataset/${datasetID}/input/${input.id}`, {
-			readyToLoad: datasetID!.length > 0 && input.id.length > 0,
-		});
+		const [imageLoaded, imageSrc] = useProgressiveImage(
+			`${ENGINE_URL}/dataset/${datasetID}/input/${input ? input.id : ''}`,
+			{
+				readyToLoad: (datasetID!.length > 0 && input && input.id.length > 0) ?? false,
+			},
+		);
 		const brightness = mode('15%', '10%');
 
 		useEffect(() => {
-			if (datasetID) {
+			if (datasetID && input) {
 				// Update the label each time the input changes (if dataset is loaded that is)
 				setLabel(activeDataset.value.labels[input.label]);
 			}
