@@ -54,6 +54,7 @@ export class ActivityStoreManager {
 	 * Initializes `electron-store` store if not already.
 	 *
 	 * @param uid Firebase user's `uid`.
+	 * @param reInitStore Whether to re-initialize store.
 	 */
 	private initStoreIfNotInitialized = (uid: string, reInitStore?: boolean) => {
 		if (!this.store || reInitStore) {
