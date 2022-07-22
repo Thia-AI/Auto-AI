@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useLocation } from 'react-router-dom';
-import { Box, VStack } from '@chakra-ui/react';
+import { Box, Center, Heading, useBreakpointValue, VStack } from '@chakra-ui/react';
 import { push, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { To } from 'history';
 import { connect } from 'react-redux';
@@ -24,6 +24,7 @@ const ModelsC = ({ push, changeSelectedPage }: Props) => {
 	const [models, setModels] = useState<Model[]>([]);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
+	const noModelsHeadingSize = useBreakpointValue({ base: '6xl', lg: '7xl', xl: '8xl', '2xl': '9xl' });
 
 	useEffect(() => {
 		changeSelectedPage(MODELS_PAGE);
@@ -63,14 +64,29 @@ const ModelsC = ({ push, changeSelectedPage }: Props) => {
 
 	const render = () => {
 		if (isLoaded) {
-			return renderModels();
-		} else return renderSkeleton();
+			if (models.length > 0) {
+				return (
+					<VStack spacing='4' pb='4'>
+						{renderModels()}
+					</VStack>
+				);
+			} else {
+				return (
+					<Center w='full' h='full'>
+						<Heading fontSize={noModelsHeadingSize}>No Models</Heading>
+					</Center>
+				);
+			}
+		} else
+			return (
+				<VStack spacing='4' pb='4'>
+					{renderSkeleton()}
+				</VStack>
+			);
 	};
 	return (
 		<Box w='full' h='full' marginTop='var(--header-height)' pt='4' overflowY='auto' sx={verticalScrollBarSX}>
-			<VStack spacing='4' pb='4'>
-				{render()}
-			</VStack>
+			{render()}
 		</Box>
 	);
 };

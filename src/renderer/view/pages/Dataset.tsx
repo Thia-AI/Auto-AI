@@ -1,16 +1,6 @@
 import React, { useEffect } from 'react';
 
-import {
-	Box,
-	HStack,
-	Skeleton,
-	VStack,
-	Text,
-	Badge,
-	Spacer,
-	useMediaQuery,
-	useColorModeValue as mode,
-} from '@chakra-ui/react';
+import { Box, HStack, VStack, Text, Badge, Spacer, useMediaQuery, useColorModeValue as mode } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -28,6 +18,7 @@ import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAc
 import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import ErrorBoundaryReplace from '../components/error-boundaries/ErrorBoundaryReplace';
+import { BackButton } from '../components/routing/BackButton';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -86,19 +77,17 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 			marginTop='var(--header-height)'
 			overflowY='auto'
 			sx={verticalScrollbar}>
-			<VStack alignItems='flex-start' ml='4'>
-				<Skeleton w='400px' isLoaded={activeDataset.value.dataset !== undefined}>
-					<HStack pt='1' alignItems='center'>
-						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1}>
-							{activeDataset.value.dataset?.name}:
-						</Text>
-						<Badge fontSize='sm' colorScheme='purple' ml='1'>
-							{getVerboseModelType(activeDataset.value.dataset?.type)}
-						</Badge>
-					</HStack>
-				</Skeleton>
+			<HStack pt='1' w='full' alignItems='center'>
+				<BackButton />
+				<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1}>
+					{activeDataset.value.dataset?.name}:
+				</Text>
+				<Badge fontSize='sm' colorScheme='purple' ml='1'>
+					{getVerboseModelType(activeDataset.value.dataset?.type)}
+				</Badge>
+				<Spacer />
 				<InteractiveCopyBadge badgeID={activeDataset.value.dataset?.id} />
-			</VStack>
+			</HStack>
 			<Box
 				w={isLargerThan1280 ? '90%' : 'full'}
 				py='6'

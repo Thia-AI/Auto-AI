@@ -42,6 +42,7 @@ import { toast } from '../helpers/functionHelpers';
 import { To } from 'history';
 import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { useUser } from 'reactfire';
+import { BackButton } from '../components/routing/BackButton';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -181,6 +182,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				sx={verticalScrollBarSX}>
 				<Skeleton w='full' mb='6' isLoaded={model.id.length != 0}>
 					<HStack pt='1' alignItems='center'>
+						<BackButton />
 						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1} ml='4'>
 							{model.model_name}:
 						</Text>
