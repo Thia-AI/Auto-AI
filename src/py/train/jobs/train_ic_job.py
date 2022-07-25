@@ -36,6 +36,24 @@ class TrainImageClassifierJob(BaseJob):
     def __init__(self, args: [str, str]):
         super().__init__(args, job_name='Image Classification Training', initial_status='Initialization',
                          progress_max=1)
+        self.train_process: Optional[Process] = None
+        self.exit_flag = False
+
+    @overrides
+    def exit(self):
+        self.exit_flag = True
+        if self.train_process is not None:
+            self.train_process.terminate()
+        (model_id, _) = self.arg
+        extra_data = {
+            'status': ICTrainJobStatus.CANCELLED.value,
+            'status_description': 'Cancelled'
+        }
+        # Set model and training job as cancelled
+        update_model_status(model_id, ICModelStatus.CANCELLED)
+        self.update_extra_data(extra_data)
+        self.set_job_cancelled()
+        super().exit()
 
     @overrides
     def run(self):
@@ -87,6 +105,7 @@ class TrainImageClassifierJob(BaseJob):
         initial_extra_data = self.extra_data()
         c.ENGINE_GPU_TASK_RUNNING = True
         for batch_size in reversed(IMAGE_TRAINING_BATCH_SIZES):
+            is_last_iteration = batch_size == IMAGE_TRAINING_BATCH_SIZES[0]
             log(f'Using batch_size: {batch_size}')
             train_data = {
                 'job_id': self.id(),
@@ -99,9 +118,9 @@ class TrainImageClassifierJob(BaseJob):
                 'current_extra_data': initial_extra_data,
                 'batch_size': batch_size
             }
-            p = Process(target=train_in_separate_process, args=(train_data,))
-            p.start()
-            p.join()
+            self.train_process = Process(target=train_in_separate_process, args=(train_data,))
+            self.train_process.start()
+            self.train_process.join()
 
             job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
 
@@ -114,16 +133,21 @@ class TrainImageClassifierJob(BaseJob):
                     job_updater_json_filepath.unlink()
                     if extra_data.get('error', None) is not None:
                         # Error encountered, delete model_checkpoints directory if it exists
-                        model_checkpoint_dir: Pth = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME
+                        model_checkpoint_dir: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME
                         if model_checkpoint_dir.is_dir():
                             shutil.rmtree(str(model_checkpoint_dir.absolute()), ignore_errors=False, onerror=delete_directory_backup)
-                    else:
-                        # Update extra_data and break out of loop
-                        self.update_extra_data(extra_data)
+                    elif extra_data.get('error', None) is None or is_last_iteration:
+                        # If there was no error during training or this is the last iteration
+                        if not self.exit_flag:
+                            # Update extra_data only if exit flag is not set
+                            self.update_extra_data(extra_data)
                         break
                 except Exception as e:
                     log(str(e))
         c.ENGINE_GPU_TASK_RUNNING = False
+        # Check if training process exited due to training job being cancelled
+        if self.exit_flag:
+            return
         # Get latest model data and update it's extra_data with a trained labels map
         rows = get_model(model_id)
         model = {}

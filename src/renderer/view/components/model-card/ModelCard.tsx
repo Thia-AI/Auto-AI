@@ -50,6 +50,7 @@ export const ModelCard = React.memo(({ model, onClick, isLoaded }: Props) => {
 			case ModelStatus.STARTING_TRAINING:
 				return 'green';
 			case ModelStatus.ERROR:
+			case ModelStatus.CANCELLED:
 				return 'red';
 			default:
 				return 'gray';

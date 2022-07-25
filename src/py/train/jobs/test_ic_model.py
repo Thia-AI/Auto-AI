@@ -30,9 +30,9 @@ class TestImageClassificationModelJob(BaseJob, ABC):
     def exit(self):
         if self.test_process is not None:
             self.test_process.terminate()
-        self.set_job_cancelled()
         # Remove temporary directory created
         shutil.rmtree(self.arg[0].absolute(), ignore_errors=True)
+        self.set_job_cancelled()
         super().exit()
 
     @overrides

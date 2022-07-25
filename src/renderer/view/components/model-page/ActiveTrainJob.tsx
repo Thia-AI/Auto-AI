@@ -16,6 +16,7 @@ import {
 	Wrap,
 	Flex,
 	useColorMode,
+	IconButton,
 } from '@chakra-ui/react';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import isValidHTMLProp from '@emotion/is-prop-valid';
@@ -25,8 +26,10 @@ import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { nullTrainJob, TrainJob, TrainJobStatus } from '../../helpers/constants/engineTypes';
 import { InteractiveCopyBadge } from '../interactive/InteractiveCopyBadge';
-import { argmin } from '../../helpers/functionHelpers';
+import { argmin, toast } from '../../helpers/functionHelpers';
 import { StatWithLearnMore } from '../stats/StatWithLearnMore';
+import { ImCancelCircle } from 'react-icons/im';
+import { useUser } from 'reactfire';
 
 /**
  * useImperativeHandle data.
@@ -74,6 +77,7 @@ export const ActiveTrainJob = React.memo(
 		const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 		const [accuracySeries, setAccuracySeries] = useState<ApexChartSeriesItem[]>([]);
 		const [lossSeries, setLossSeries] = useState<ApexChartSeriesItem[]>([]);
+		const { data: user } = useUser();
 
 		const { colorMode } = useColorMode();
 		const sectionTextColor = mode('thia.gray.700', 'thia.gray.300');
@@ -244,6 +248,7 @@ export const ActiveTrainJob = React.memo(
 					case TrainJobStatus.EVALUATING:
 						return 'orange';
 					case TrainJobStatus.ERROR:
+					case TrainJobStatus.CANCELLED:
 						return 'red';
 					default:
 						return 'thia.gray';
@@ -272,6 +277,39 @@ export const ActiveTrainJob = React.memo(
 			}
 		};
 
+		const cancelTraining = async () => {
+			const trainingJobStatus = trainingJob.extra_data?.status;
+			if (
+				(trainingJobStatus === TrainJobStatus.STARTING_TRAINING ||
+					trainingJobStatus === TrainJobStatus.TRAINING) &&
+				user
+			) {
+				const [_, cancelJobResData] = await EngineRequestHandler.getInstance().cancelJob(trainJobID);
+				if (cancelJobResData['job_cancelled_successfully']) {
+					// Job cancelled successfully
+					toast({
+						title: 'Train Job Cancelled',
+						description: 'Training job cancelled successfully',
+						status: 'info',
+						duration: 1500,
+						isClosable: false,
+						uid: user.uid,
+					});
+				} else {
+					// Job failed to cancel
+					toast({
+						title: 'Train Job Cancellation Failed',
+						description: 'Failed to cancel training job successfully',
+						status: 'error',
+						duration: 1500,
+						isClosable: false,
+						uid: user.uid,
+					});
+				}
+				await refreshActiveTrainingJob();
+			}
+		};
+
 		useImperativeHandle(ref, () => ({
 			refreshActiveTrainingJob,
 		}));
@@ -293,9 +331,11 @@ export const ActiveTrainJob = React.memo(
 		// Clear interval when evaluated
 		useEffect(() => {
 			// If training job's status is EVALUATED, clear interval
+			const trainingJobStatus = trainingJob.extra_data?.status;
 			if (
-				(trainingJob.extra_data?.status == TrainJobStatus.EVALUATED ||
-					trainingJob.extra_data?.status == TrainJobStatus.ERROR) &&
+				(trainingJobStatus == TrainJobStatus.EVALUATED ||
+					trainingJobStatus == TrainJobStatus.ERROR ||
+					trainingJobStatus == TrainJobStatus.CANCELLED) &&
 				trainingJobIntervalID
 			) {
 				fetchModel();
@@ -345,6 +385,7 @@ export const ActiveTrainJob = React.memo(
 					case TrainJobStatus.EVALUATING:
 						return <Progress size='xs' colorScheme='orange' isIndeterminate />;
 					case TrainJobStatus.ERROR:
+					case TrainJobStatus.CANCELLED:
 						return <Progress value={100} size='xs' colorScheme='red' />;
 					default:
 						return <Progress size='xs' isIndeterminate />;
@@ -466,11 +507,25 @@ export const ActiveTrainJob = React.memo(
 								</Text>
 							</Box>
 							<Spacer />
-							<InteractiveCopyBadge
-								badgeID={trainJobID}
-								fontSize='0.825rem'
-								hoverLabel='Copy Training Job ID'
-							/>
+							<VStack alignItems='flex-end'>
+								<IconButton
+									aria-label='Cancel Training'
+									title='Cancel Training'
+									icon={<ImCancelCircle />}
+									variant='ghost'
+									colorScheme='thia.gray'
+									// isDisabled={
+									// 	trainingJob.extra_data?.status !== TrainJobStatus.TRAINING &&
+									// 	trainingJob.extra_data?.status !== TrainJobStatus.STARTING_TRAINING
+									// }
+									onClick={cancelTraining}
+								/>
+								<InteractiveCopyBadge
+									badgeID={trainJobID}
+									fontSize='0.825rem'
+									hoverLabel='Copy Training Job ID'
+								/>
+							</VStack>
 						</HStack>
 						<Box
 							bg={evaluationCardBG}

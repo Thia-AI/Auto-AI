@@ -101,7 +101,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	const canTrainModel = () => {
 		const status = model.model_status;
-		return status == ModelStatus.IDLE || status == ModelStatus.ERROR;
+		return status == ModelStatus.IDLE || status == ModelStatus.ERROR || status == ModelStatus.CANCELLED;
 	};
 
 	const trainModel = async () => {
