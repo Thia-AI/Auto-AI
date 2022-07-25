@@ -17,6 +17,7 @@ import {
 	Flex,
 	useColorMode,
 	IconButton,
+	useDisclosure,
 } from '@chakra-ui/react';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import isValidHTMLProp from '@emotion/is-prop-valid';
@@ -30,6 +31,7 @@ import { argmin, toast } from '../../helpers/functionHelpers';
 import { StatWithLearnMore } from '../stats/StatWithLearnMore';
 import { ImCancelCircle } from 'react-icons/im';
 import { useUser } from 'reactfire';
+import { CancelTraining } from './CancelTraining';
 
 /**
  * useImperativeHandle data.
@@ -74,6 +76,7 @@ export const ActiveTrainJob = React.memo(
 		const [trainingJob, setTrainingJob] = useState<TrainJob>(nullTrainJob);
 		const [trainingJobIntervalID, setTrainingJobIntervalID] = useState<number>();
 		const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
+		const [isTrainingCancelling, setIsTrainingCancelling] = useState(false);
 		const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 		const [accuracySeries, setAccuracySeries] = useState<ApexChartSeriesItem[]>([]);
 		const [lossSeries, setLossSeries] = useState<ApexChartSeriesItem[]>([]);
@@ -87,6 +90,12 @@ export const ActiveTrainJob = React.memo(
 		const trainingJobProgressTextColor = mode('thia.gray.700', 'thia.gray.300');
 		const graphBestPointBG = mode('var(--chakra-colors-thia-purple-450)', 'var(--chakra-colors-thia-purple-400)');
 		const graphBestPointColor = mode('var(--chakra-colors-thia-gray-100)', 'var(--chakra-colors-thia-gray-100)');
+
+		const {
+			isOpen: isCancelTrainingDialogOpen,
+			onOpen: openCancelTrainingDialog,
+			onClose: closeCancelTrainingDialog,
+		} = useDisclosure();
 
 		const roundPercentage = (element: number) => {
 			return Number((element * 100).toFixed(2));
@@ -284,6 +293,7 @@ export const ActiveTrainJob = React.memo(
 					trainingJobStatus === TrainJobStatus.TRAINING) &&
 				user
 			) {
+				setIsTrainingCancelling(true);
 				const [_, cancelJobResData] = await EngineRequestHandler.getInstance().cancelJob(trainJobID);
 				if (cancelJobResData['job_cancelled_successfully']) {
 					// Job cancelled successfully
@@ -307,6 +317,7 @@ export const ActiveTrainJob = React.memo(
 					});
 				}
 				await refreshActiveTrainingJob();
+				setIsTrainingCancelling(false);
 			}
 		};
 
@@ -485,6 +496,12 @@ export const ActiveTrainJob = React.memo(
 		const render = () => {
 			return (
 				<>
+					<CancelTraining
+						dialogOpen={isCancelTrainingDialogOpen}
+						onClose={closeCancelTrainingDialog}
+						cancelTraining={cancelTraining}
+						isTrainingBeingCancelled={isTrainingCancelling}
+					/>
 					<Box
 						w={isLargerThan1280 ? '90%' : 'full'}
 						py='6'
@@ -514,11 +531,11 @@ export const ActiveTrainJob = React.memo(
 									icon={<ImCancelCircle />}
 									variant='ghost'
 									colorScheme='thia.gray'
-									// isDisabled={
-									// 	trainingJob.extra_data?.status !== TrainJobStatus.TRAINING &&
-									// 	trainingJob.extra_data?.status !== TrainJobStatus.STARTING_TRAINING
-									// }
-									onClick={cancelTraining}
+									isDisabled={
+										trainingJob.extra_data?.status !== TrainJobStatus.TRAINING &&
+										trainingJob.extra_data?.status !== TrainJobStatus.STARTING_TRAINING
+									}
+									onClick={openCancelTrainingDialog}
 								/>
 								<InteractiveCopyBadge
 									badgeID={trainJobID}
