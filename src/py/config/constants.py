@@ -30,10 +30,9 @@ DATASET_LABELS_SPLITTER: Final = '|'
 DATASET_UNLABELLED_LABEL: str = 'unlabelled'
 
 # Jobs
-CANCELLABLE_JOBS = ['Image Classification Test']
 IMAGE_CLASSIFICATION_TEST_JOB_NAME = 'Image Classification Test'
 IMAGE_CLASSIFICATION_TRAINING_JOB_NAME = 'Image Classification Training'
-
+CANCELLABLE_JOBS = [IMAGE_CLASSIFICATION_TEST_JOB_NAME, IMAGE_CLASSIFICATION_TRAINING_JOB_NAME]
 GPU_JOBS = [IMAGE_CLASSIFICATION_TEST_JOB_NAME, IMAGE_CLASSIFICATION_TRAINING_JOB_NAME]
 
 # Database
@@ -130,6 +129,7 @@ class ICModelStatus(AutoNameEnum):
     STARTING_TRAINING = auto()
     TRAINED = auto()
     RETRAINING = auto()
+    CANCELLED = auto()
     ERROR = auto()
 
 
@@ -140,4 +140,5 @@ class ICTrainJobStatus(AutoNameEnum):
     TRAINED = auto()
     EVALUATING = auto()
     EVALUATED = auto()
+    CANCELLED = auto()
     ERROR = auto()

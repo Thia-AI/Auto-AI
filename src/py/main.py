@@ -137,7 +137,7 @@ def get_train_job_route(uuid: str):
     for row in rows:
         job = dict(job_from_row(row))
 
-    if 'model_name' in job['extra_data']:
+    if job.get('extra_data', None) is not None and 'model_name' in job['extra_data']:
         # Training has passed initialization start
         extra_data_path = config.MODEL_DIR / job['extra_data']['model_name'] / config.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
         if extra_data_path.is_file():
@@ -145,7 +145,9 @@ def get_train_job_route(uuid: str):
             # and overwrite it.
             try:
                 with open(extra_data_path.absolute(), 'r') as f:
-                    extra_data = json.load(f)
+                    extra_data: dict = json.load(f)
+                    # Remove error as any errors found when training isn't complete, are temporary errors
+                    extra_data.pop('error', None)
                     job.update({'extra_data': extra_data})
             except:
                 return job
