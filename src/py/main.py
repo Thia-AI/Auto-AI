@@ -34,7 +34,7 @@ from db.commands.input_commands import get_all_inputs, pagination_get_next_page_
 from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models, update_model_dataset_trained_on
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from decorators.verify_action import verify_action
 from exports.export_model_job import ExportModelJob
@@ -258,12 +258,13 @@ def get_active_model_exports_route(model_id: str):
 def train_model_route(model_id):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
-    req_data_format = {
-        'dataset_id': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
-    }
-    error_obj = validate_req_json(req_data, req_data_format)
-    if error_obj is not None:
-        return {'Error': error_obj}, 400
+    # TODO: Implement optional body keys
+    # req_data_format = {
+    #     'dataset_id': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+    # }
+    # error_obj = validate_req_json(req_data, req_data_format)
+    # if error_obj is not None:
+    #     return {'Error': error_obj}, 400
 
     if len(model_id) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
@@ -280,7 +281,12 @@ def train_model_route(model_id):
     if status == ICModelStatus.TRAINED.value:
         return {'Error': 'Model has already been trained'}, 400
 
-    dataset_id = req_data['dataset_id']
+    if model['dataset_trained_on'] is not None:
+        dataset_id = model['dataset_trained_on']
+    else:
+        dataset_id = req_data['dataset_id']
+    if dataset_id is None:
+        return {'Error': 'dataset_id is not provided'}, 400
 
     if len(dataset_id) != 32:
         return {'Error': "ID of dataset is of incorrect length"}, 400
@@ -293,6 +299,8 @@ def train_model_route(model_id):
     input_labels = inputs[:, 1]
     if constants.DATASET_UNLABELLED_LABEL in input_labels:
         return {'Error': 'Dataset contains unlabelled inputs'}, 400
+    # Update dataset the model is being trained on
+    update_model_dataset_trained_on(model_id, dataset_id)
     # Delete extra_data.json file from model directory if it contains it before training
     extra_data_file_path = config.MODEL_DIR / model['model_name'] / config.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
     try:

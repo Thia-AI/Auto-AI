@@ -97,6 +97,12 @@ class BaseJob(ABC, Thread, EnforceOverrides):
     def date_started(self) -> datetime:
         return self.__date_started
 
+    def override_date_started(self, new_date, update_db=True):
+        self.__date_started = new_date
+        if update_db:
+            from db.commands.job_commands import update_job
+            update_job(self)
+
     def date_finished(self):
         return self.__date_finished
 

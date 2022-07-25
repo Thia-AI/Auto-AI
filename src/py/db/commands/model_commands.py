@@ -31,6 +31,13 @@ def update_model_status(model_id: str, status: ICModelStatus):
     DBManager.get_instance().execute(cmd)
 
 
+def update_model_dataset_trained_on(model_id: str, dataset_id: str):
+    cmd = DBCommand(name=f"Update Model: {model_id}'s dataset_trained_on to {dataset_id}",
+                    command=f'''UPDATE models SET dataset_trained_on = ? WHERE id = ?''',
+                    values=(dataset_id, model_id))
+    DBManager.get_instance().execute(cmd)
+
+
 def update_model_extra_data(model_id: str, new_extra_data: dict):
     try:
         extra_data = json.dumps(new_extra_data)

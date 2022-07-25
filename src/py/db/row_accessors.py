@@ -74,6 +74,7 @@ def model_from_row(row):
         'date_last_accessed': row['date_last_accessed'],
         'model_status': row['model_status'],
         'latest_train_job_id': row['latest_train_job_id'],
+        'dataset_trained_on': row['dataset_trained_on'],
         'extra_data': extra_data_obj
     }
 

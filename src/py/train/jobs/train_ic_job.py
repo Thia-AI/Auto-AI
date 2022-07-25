@@ -18,9 +18,10 @@ from config import config as c
 from config import constants
 from config.constants import ICModelStatus, ICTrainJobStatus, IMAGE_TRAINING_BATCH_SIZES
 from db.commands.dataset_commands import get_dataset, get_labels
+from db.commands.job_commands import get_job
 from db.commands.input_commands import get_train_data_from_all_inputs
 from db.commands.model_commands import get_model, update_model_status, update_model_extra_data
-from db.row_accessors import dataset_from_row, model_from_row, label_from_row
+from db.row_accessors import dataset_from_row, model_from_row, label_from_row, job_from_row
 from job.base_job import BaseJob
 from log.logger import log
 from train import effnetv2_model
@@ -69,7 +70,23 @@ class TrainImageClassifierJob(BaseJob):
         model = {}
         for row in rows:
             model = model_from_row(row)
-        # TODO: Check here if already training and exit if so.
+        resuming_training = False
+        if model['model_status'] == ICModelStatus.CANCELLED.value and model['latest_train_job_id'] is not None:
+            resuming_training = True
+            # Copy previous training job's date_started
+            rows = get_job(model['latest_train_job_id'])
+            previous_train_job = {}
+            for row in rows:
+                previous_train_job = job_from_row(row)
+            # If previous training job exists
+            if bool(previous_train_job):
+                self.override_date_started(previous_train_job['date_started'])
+                extra_data = dict(previous_train_job['extra_data'])
+                # Remove status and status_description
+                extra_data.pop('status', None)
+                extra_data.pop('status_description', None)
+                self.update_extra_data(extra_data)
+
         # Extra data update here, so that we can get the train-time extra_data.json location
         # in get_train_job route.
         extra_data = {

@@ -107,18 +107,21 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const trainModel = async () => {
 		if (!user) return;
 		// Make sure a dataset is selected to be trained on
-		if (selectedDatasetID.value.length > 0 && modelID) {
+		if (modelID) {
 			const idToken = await user.getIdToken();
+			// If resuming training, don't provide a dataset_id
+			const dataset_id = model.model_status === ModelStatus.CANCELLED ? undefined : selectedDatasetID.value;
 			const [error, trainModelResData] = await EngineRequestHandler.getInstance().trainModel(modelID, idToken, {
-				dataset_id: selectedDatasetID.value,
+				dataset_id,
 			});
 			if (!error) {
-				// Add toast
 				resetSelectedDataset();
 				await fetchModel();
-				if (activeTrainJobRef.current) {
-					await activeTrainJobRef.current.refreshActiveTrainingJob();
-				}
+				setTimeout(async () => {
+					if (activeTrainJobRef.current) {
+						await activeTrainJobRef.current.refreshActiveTrainingJob();
+					}
+				}, 500);
 			} else {
 				toast({
 					title: 'Cannot train model',
@@ -130,17 +133,6 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 					saveToStore: false,
 				});
 			}
-		} else {
-			// Dataset isn't selected
-			toast({
-				title: 'No dataset selected',
-				description: 'Select a dataset to train on',
-				status: 'error',
-				duration: 1500,
-				isClosable: true,
-				uid: user.uid,
-				saveToStore: false,
-			});
 		}
 	};
 
@@ -226,7 +218,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 						isDisabled={!canTrainModel()}
 						isLoading={!dataLoaded}
 						onClick={trainModel}>
-						Train
+						{model.model_status === ModelStatus.CANCELLED ? 'Resume Training' : 'Train'}
 					</Button>
 				</Center>
 			</VStack>
