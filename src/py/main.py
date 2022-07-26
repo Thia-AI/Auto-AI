@@ -309,9 +309,8 @@ def train_model_route(model_id):
     except Exception as e:
         log(e)
     # Train
-    ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
+    ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id, model['latest_train_job_id']])).queue()
     update_model_train_job_id(model_id, ids[0])
-    update_model_status(model_id, ICModelStatus.STARTING_TRAINING)
     return {'ids': ids}, 202
 
 

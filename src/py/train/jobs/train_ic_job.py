@@ -18,8 +18,8 @@ from config import config as c
 from config import constants
 from config.constants import ICModelStatus, ICTrainJobStatus, IMAGE_TRAINING_BATCH_SIZES
 from db.commands.dataset_commands import get_dataset, get_labels
-from db.commands.job_commands import get_job
 from db.commands.input_commands import get_train_data_from_all_inputs
+from db.commands.job_commands import get_job
 from db.commands.model_commands import get_model, update_model_status, update_model_extra_data
 from db.row_accessors import dataset_from_row, model_from_row, label_from_row, job_from_row
 from job.base_job import BaseJob
@@ -34,7 +34,7 @@ def delete_directory_backup(action, name, exc):
 
 
 class TrainImageClassifierJob(BaseJob):
-    def __init__(self, args: [str, str]):
+    def __init__(self, args: [str, str, str]):
         super().__init__(args, job_name='Image Classification Training', initial_status='Initialization',
                          progress_max=1)
         self.train_process: Optional[Process] = None
@@ -45,7 +45,31 @@ class TrainImageClassifierJob(BaseJob):
         self.exit_flag = True
         if self.train_process is not None:
             self.train_process.terminate()
-        (model_id, _) = self.arg
+        (model_id, _, _) = self.arg
+        rows = get_model(model_id)
+        model = {}
+        for row in rows:
+            model = model_from_row(row)
+        job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
+
+        if job_updater_json_filepath.is_file():
+            # Get extra_data from the file itself
+            job_updater_json_file = open(job_updater_json_filepath.absolute())
+            try:
+                extra_data = json.load(job_updater_json_file)
+                job_updater_json_file.close()
+                job_updater_json_filepath.unlink()
+                if extra_data.get('error', None) is not None:
+                    # Error encountered, delete model_checkpoints directory if it exists
+                    model_checkpoint_dir: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME
+                    if model_checkpoint_dir.is_dir():
+                        shutil.rmtree(str(model_checkpoint_dir.absolute()), ignore_errors=False, onerror=delete_directory_backup)
+                else:
+                    # If there was no error during training
+                    self.update_extra_data(extra_data)
+            except Exception as e:
+                log(str(e))
+        # Update status to cancelled
         extra_data = {
             'status': ICTrainJobStatus.CANCELLED.value,
             'status_description': 'Cancelled'
@@ -65,16 +89,16 @@ class TrainImageClassifierJob(BaseJob):
         }
         self.update_extra_data(extra_data)
 
-        (model_id, dataset_id) = self.arg
+        (model_id, dataset_id, previous_train_job_id) = self.arg
         rows = get_model(model_id)
         model = {}
         for row in rows:
             model = model_from_row(row)
-        resuming_training = False
+        resume_training = False
         if model['model_status'] == ICModelStatus.CANCELLED.value and model['latest_train_job_id'] is not None:
-            resuming_training = True
+            resume_training = True
             # Copy previous training job's date_started
-            rows = get_job(model['latest_train_job_id'])
+            rows = get_job(previous_train_job_id)
             previous_train_job = {}
             for row in rows:
                 previous_train_job = job_from_row(row)
@@ -87,6 +111,7 @@ class TrainImageClassifierJob(BaseJob):
                 extra_data.pop('status_description', None)
                 self.update_extra_data(extra_data)
 
+        update_model_status(model_id, ICModelStatus.STARTING_TRAINING)
         # Extra data update here, so that we can get the train-time extra_data.json location
         # in get_train_job route.
         extra_data = {
@@ -124,6 +149,10 @@ class TrainImageClassifierJob(BaseJob):
         for batch_size in reversed(IMAGE_TRAINING_BATCH_SIZES):
             is_last_iteration = batch_size == IMAGE_TRAINING_BATCH_SIZES[0]
             log(f'Using batch_size: {batch_size}')
+            extra_data = {
+                'batch_size': batch_size
+            }
+            self.update_extra_data(extra_data)
             train_data = {
                 'job_id': self.id(),
                 'num_classes': num_classes,
@@ -133,11 +162,15 @@ class TrainImageClassifierJob(BaseJob):
                 'model_name': model['model_name'],
                 'model_type': model['model_type_extra'],
                 'current_extra_data': initial_extra_data,
-                'batch_size': batch_size
+                'batch_size': batch_size,
+                'resume_training': resume_training
             }
             self.train_process = Process(target=train_in_separate_process, args=(train_data,))
             self.train_process.start()
             self.train_process.join()
+            # Check if training process exited due to training job being cancelled
+            if self.exit_flag:
+                return
 
             job_updater_json_filepath: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
 
@@ -148,23 +181,15 @@ class TrainImageClassifierJob(BaseJob):
                     extra_data = json.load(job_updater_json_file)
                     job_updater_json_file.close()
                     job_updater_json_filepath.unlink()
-                    if extra_data.get('error', None) is not None:
-                        # Error encountered, delete model_checkpoints directory if it exists
-                        model_checkpoint_dir: Path = c.MODEL_DIR / model['model_name'] / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME
-                        if model_checkpoint_dir.is_dir():
-                            shutil.rmtree(str(model_checkpoint_dir.absolute()), ignore_errors=False, onerror=delete_directory_backup)
-                    elif extra_data.get('error', None) is None or is_last_iteration:
+                    if extra_data.get('error', None) is None or is_last_iteration:
                         # If there was no error during training or this is the last iteration
-                        if not self.exit_flag:
-                            # Update extra_data only if exit flag is not set
-                            self.update_extra_data(extra_data)
+                        # Update extra_data only if exit flag is not set
+                        self.update_extra_data(extra_data)
                         break
                 except Exception as e:
                     log(str(e))
         c.ENGINE_GPU_TASK_RUNNING = False
-        # Check if training process exited due to training job being cancelled
-        if self.exit_flag:
-            return
+
         # Get latest model data and update it's extra_data with a trained labels map
         rows = get_model(model_id)
         model = {}
@@ -219,15 +244,16 @@ def update_local_extra_data(data_to_update: dict, extra_data: dict, file: tf.io.
 
 
 def train_in_separate_process(train_data):
-    job_id, num_classes, inputs, model_cache_path, model_dir, model_name, model_type, current_extra_data, batch_size = itemgetter('job_id',
-                                                                                                                                  'num_classes',
-                                                                                                                                  'inputs',
-                                                                                                                                  'model_cache_path',
-                                                                                                                                  'model_dir',
-                                                                                                                                  'model_name',
-                                                                                                                                  'model_type',
-                                                                                                                                  'current_extra_data',
-                                                                                                                                  'batch_size')(
+    job_id, num_classes, inputs, model_cache_path, model_dir, model_name, model_type, current_extra_data, batch_size, resume_training = itemgetter(
+        'job_id',
+        'num_classes',
+        'inputs',
+        'model_cache_path',
+        'model_dir',
+        'model_name',
+        'model_type',
+        'current_extra_data',
+        'batch_size', 'resume_training')(
         train_data)
 
     job_updater_json_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
@@ -323,15 +349,8 @@ def train_in_separate_process(train_data):
         val_ds = val_ds.map(lambda temp_images, temp_labels: (normalization_layer(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
 
         update_extra_data({'status_description': 'Building model'})
-        model = models.Sequential([
-            layers.InputLayer(input_shape=IMAGE_SIZE + (3,)),
-            effnetv2_model.get_model(effnet_model_name, save_path=model_cache_path, include_top=False),
-            layers.Dropout(rate=0.2),
-            layers.Dense(2, activation='softmax')
-        ])
 
-        model.build((None,) + IMAGE_SIZE + (3,))
-        model.summary()
+        cp_callback_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
 
         METRICS = [
             metrics.BinaryAccuracy(name='accuracy'),
@@ -340,8 +359,21 @@ def train_in_separate_process(train_data):
             metrics.AUC(name='auc'),
             metrics.AUC(name='prc', curve='PR'),
         ]
+        if resume_training and cp_callback_filepath.exists() and cp_callback_filepath.is_dir():
+            log('Loading from training checkpoint')
+            model = models.load_model(cp_callback_filepath)
+        else:
+            model = models.Sequential([
+                layers.InputLayer(input_shape=IMAGE_SIZE + (3,)),
+                effnetv2_model.get_model(effnet_model_name, save_path=model_cache_path, include_top=False),
+                layers.Dropout(rate=0.2),
+                layers.Dense(2, activation='softmax')
+            ])
 
-        model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(label_smoothing=0.1), metrics=METRICS)
+            model.build((None,) + IMAGE_SIZE + (3,))
+            model.compile(optimizer=optimizers.Adam(), loss=losses.CategoricalCrossentropy(label_smoothing=0.1), metrics=METRICS)
+
+        model.summary()
 
         steps_per_epoch = TRAIN_SIZE // batch_size
         validation_steps = VALIDATION_SIZE // batch_size
@@ -352,8 +384,8 @@ def train_in_separate_process(train_data):
             def __init__(self, extra_data, filepath: Path):
                 self.json_file = tf.io.gfile.GFile('')
                 self.metrics = None
-                self.history = defaultdict(list)
                 self.extra_data = dict(extra_data)
+                self.history = self.extra_data.get('history', defaultdict(list))
                 self.filepath = filepath
                 super(JobUpdater, self).__init__()
 
@@ -377,7 +409,6 @@ def train_in_separate_process(train_data):
                 with self.json_file as f:
                     json.dump(self.extra_data, f)
 
-        cp_callback_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
         cp_callback = callbacks.ModelCheckpoint(filepath=cp_callback_filepath.absolute(), monitor='val_loss', mode='min', save_best_only=True)
         early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 

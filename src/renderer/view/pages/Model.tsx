@@ -107,6 +107,18 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const trainModel = async () => {
 		if (!user) return;
 		// Make sure a dataset is selected to be trained on
+		if (selectedDatasetID.value.length === 0 && model.model_status !== ModelStatus.CANCELLED) {
+			toast({
+				title: 'Error',
+				description: 'No dataset was selected',
+				status: 'error',
+				duration: 1500,
+				uid: user.uid,
+				isClosable: true,
+				saveToStore: false,
+			});
+			return;
+		}
 		if (modelID) {
 			const idToken = await user.getIdToken();
 			// If resuming training, don't provide a dataset_id

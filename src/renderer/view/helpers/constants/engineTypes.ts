@@ -277,6 +277,7 @@ export interface TrainJob extends Job {
 			recall: number;
 		};
 		model_id?: string;
+		batch_size?: string;
 		model_name?: string;
 		status?: PossibleTrainJobStatuses;
 		status_description?: string;
