@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 from config import config
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
-    POSSIBLE_MODEL_TYPES
+    POSSIBLE_MODEL_TYPES, ICTrainJobStatus
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -148,6 +148,10 @@ def get_train_job_route(uuid: str):
                     extra_data: dict = json.load(f)
                     # Remove error as any errors found when training isn't complete, are temporary errors
                     extra_data.pop('error', None)
+                    if extra_data['status'] == ICTrainJobStatus.ERROR.value:
+                        extra_data['status'] = ICTrainJobStatus.STARTING_TRAINING.value
+                        extra_data['status_description'] = 'Reducing batch size and retrying'
+                    log(extra_data['status'])
                     job.update({'extra_data': extra_data})
             except:
                 return job
