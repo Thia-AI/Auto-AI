@@ -127,7 +127,6 @@ def get_job_route(uuid: str):
 @app.route('/job/train/<string:uuid>', methods=['GET'])
 def get_train_job_route(uuid: str):
     # TODO: Add check to see whether job is a training job or not.
-    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
@@ -151,7 +150,6 @@ def get_train_job_route(uuid: str):
                     if extra_data['status'] == ICTrainJobStatus.ERROR.value:
                         extra_data['status'] = ICTrainJobStatus.STARTING_TRAINING.value
                         extra_data['status_description'] = 'Reducing batch size and retrying'
-                    log(extra_data['status'])
                     job.update({'extra_data': extra_data})
             except:
                 return job
@@ -427,7 +425,6 @@ def get_model_labels_csv_route(model_id: str):
 @verify_action()
 def get_model_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
-    print(get_model_route.action_verification_id)
     if len(uuid) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(uuid)

@@ -348,7 +348,7 @@ def train_in_separate_process(train_data):
         train_ds = train_ds.map(lambda temp_images, temp_labels: (preprocessing_model(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
         val_ds = val_ds.map(lambda temp_images, temp_labels: (normalization_layer(temp_images), temp_labels)).prefetch(tf.data.AUTOTUNE)
 
-        update_extra_data({'status_description': 'Building model'})
+        update_extra_data({'status_description': 'Creating model'})
 
         cp_callback_filepath: Path = model_dir / model_name / c.MODEL_TRAINING_CHECKPOINT_DIR_NAME / c.MODEL_TRAINING_CHECKPOINT_NAME
 
@@ -381,20 +381,25 @@ def train_in_separate_process(train_data):
         class JobUpdater(callbacks.Callback):
             """Callback that updates the `extra_data` column for the training job."""
 
-            def __init__(self, extra_data, filepath: Path):
+            def __init__(self, extra_data, filepath: Path, batches_per_epoch: np.int64):
                 self.json_file = tf.io.gfile.GFile('')
                 self.metrics = None
                 self.extra_data = dict(extra_data)
                 self.history = self.extra_data.get('history', defaultdict(list))
                 self.filepath = filepath
+                self.batch_progress = 0
+                self.batches_per_epoch = int(batches_per_epoch)
                 super(JobUpdater, self).__init__()
+
+            def save_extra_data(self):
+                with self.json_file as f:
+                    json.dump(self.extra_data, f)
 
             def on_train_begin(self, logs=None):
                 self.json_file = tf.io.gfile.GFile(self.filepath.absolute(), 'w')
-                self.extra_data.update({'status': ICTrainJobStatus.TRAINING.value, 'status_description': 'Fitting model'})
                 # Save that training has started
-                with self.json_file as f:
-                    json.dump(self.extra_data, f)
+                self.extra_data.update({'status': ICTrainJobStatus.TRAINING.value, 'status_description': 'Building model'})
+                self.save_extra_data()
 
             def on_epoch_end(self, epoch, logs=None):
                 logs = logs or {}
@@ -404,15 +409,32 @@ def train_in_separate_process(train_data):
 
                 for key in self.metrics:
                     self.history[key].append(logs[key])
-                self.extra_data.update({'history': self.history})
-                # Save to file
-                with self.json_file as f:
-                    json.dump(self.extra_data, f)
+                self.extra_data.update({
+                    'history': self.history,
+                    'status_description': "Saving model, do not cancel training or else save will be lost"
+                })
+                self.save_extra_data()
+
+            def on_epoch_begin(self, epoch, logs=None):
+                self.batch_progress = 0
+                self.extra_data.update({
+                    'batch_progress': self.batch_progress,
+                    'batches_per_epoch': self.batches_per_epoch,
+                    'status_description': 'Training model'
+                })
+                self.save_extra_data()
+
+            def on_batch_end(self, epoch, logs=None):
+                self.batch_progress += 1
+                if self.batch_progress >= self.batches_per_epoch:
+                    self.extra_data.update({'status_description': 'Evaluating on the validation dataset partition'})
+                self.extra_data.update({'batch_progress': self.batch_progress})
+                self.save_extra_data()
 
         cp_callback = callbacks.ModelCheckpoint(filepath=cp_callback_filepath.absolute(), monitor='val_loss', mode='min', save_best_only=True)
         early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 
-        job_updater = JobUpdater(current_extra_data, job_updater_json_filepath)
+        job_updater = JobUpdater(current_extra_data, job_updater_json_filepath, steps_per_epoch)
 
         CALLBACKS = [
             job_updater,
@@ -453,6 +475,7 @@ def train_in_separate_process(train_data):
         })
         error_encountered_during_training = True
     except Exception as e:
+        log(e)
         update_extra_data({
             'status_description': 'Error encountered during training',
             'error': {
