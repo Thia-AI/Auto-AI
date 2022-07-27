@@ -246,7 +246,7 @@ export const toast = (options: ToastOptions) => {
 	const toastID = standaloneToast(extendedOptions);
 	if (extendedOptions.saveToStore || extendedOptions.reInitStore) {
 		const notificationID = uuidv4();
-		addNotificationToStore(notificationID, options)
+		addNotificationToStore(notificationID, extendedOptions)
 			.then(() => {
 				return toastID;
 			})

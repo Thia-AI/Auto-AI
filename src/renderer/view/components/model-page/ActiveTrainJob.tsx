@@ -72,7 +72,7 @@ interface ApexChartSeriesItem {
  */
 export const ActiveTrainJob = React.memo(
 	forwardRef<ActiveTrainJobHandle, Props>(({ trainJobID, fetchModel }: Props, ref) => {
-		const trainingJobIntervalRetrievalTimeMS = 2_000;
+		const trainingJobIntervalRetrievalTimeMS = 750;
 		const [trainingJob, setTrainingJob] = useState<TrainJob>(nullTrainJob);
 		const [trainingJobIntervalID, setTrainingJobIntervalID] = useState<number>();
 		const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
@@ -390,9 +390,21 @@ export const ActiveTrainJob = React.memo(
 					case TrainJobStatus.TRAINED:
 					case TrainJobStatus.EVALUATED:
 						return <Progress value={100} size='xs' colorScheme='thia.purple' />;
-					case TrainJobStatus.TRAINING:
 					case TrainJobStatus.STARTING_TRAINING:
 						return <Progress size='xs' colorScheme='green' isIndeterminate />;
+					case TrainJobStatus.TRAINING:
+						if (trainingJob.extra_data.batch_progress && trainingJob.extra_data.batches_per_epoch) {
+							return (
+								<Progress
+									size='xs'
+									value={trainingJob.extra_data.batch_progress}
+									max={trainingJob.extra_data.batches_per_epoch}
+									colorScheme='green'
+								/>
+							);
+						}
+						return <Progress size='xs' colorScheme='green' isIndeterminate />;
+
 					case TrainJobStatus.EVALUATING:
 						return <Progress size='xs' colorScheme='orange' isIndeterminate />;
 					case TrainJobStatus.ERROR:
@@ -406,7 +418,7 @@ export const ActiveTrainJob = React.memo(
 			return <Progress size='xs' isIndeterminate />;
 		};
 
-		const getEpochsText = (): string => {
+		const getTrainingText = (): string => {
 			if (trainingJob.extra_data?.status) {
 				switch (trainingJob.extra_data.status) {
 					case TrainJobStatus.EVALUATING:
@@ -414,6 +426,11 @@ export const ActiveTrainJob = React.memo(
 					case TrainJobStatus.STARTING_TRAINING:
 					case TrainJobStatus.TRAINING:
 					case TrainJobStatus.TRAINED:
+						if (trainingJob.extra_data.batch_size) {
+							return `Epochs: ${trainingJob.extra_data.history?.accuracy.length ?? 0} Batch Size: ${
+								trainingJob.extra_data.batch_size
+							}`;
+						}
 						return `Epochs: ${trainingJob.extra_data.history?.accuracy.length ?? 0}`;
 					default:
 						return '';
@@ -568,7 +585,7 @@ export const ActiveTrainJob = React.memo(
 											pr='1.5'
 											fontFamily='mono'
 											color={trainingJobProgressTextColor}>
-											{getEpochsText()}
+											{getTrainingText()}
 										</Text>
 									</Skeleton>
 								</HStack>

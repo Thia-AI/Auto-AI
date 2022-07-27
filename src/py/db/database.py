@@ -65,6 +65,7 @@ class DBManager(object):
                 date_last_accessed datetime not null,
                 model_status text not null, 
                 latest_train_job_id varchar(32),
+                dataset_trained_on varchar(32),
                 extra_data json
             )''')
             # Datasets

@@ -5,7 +5,10 @@ import { IEngineRequest } from '../../base/iEngineRequest';
  * Data for training a model.
  */
 export interface ITrainModelData {
-	dataset_id: string;
+	/**
+	 * `dataset_id` is only optional when resuming training.
+	 */
+	dataset_id?: string;
 }
 
 class TrainModelEngineRequest implements IEngineRequest {

@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 from config import config
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
-    POSSIBLE_MODEL_TYPES
+    POSSIBLE_MODEL_TYPES, ICTrainJobStatus
 from dataset.jobs.create_dataset_job import CreateDatasetJob
 from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromDatasetJob
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
@@ -34,7 +34,7 @@ from db.commands.input_commands import get_all_inputs, pagination_get_next_page_
 from db.commands.input_commands import get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models, update_model_dataset_trained_on
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from decorators.verify_action import verify_action
 from exports.export_model_job import ExportModelJob
@@ -127,7 +127,6 @@ def get_job_route(uuid: str):
 @app.route('/job/train/<string:uuid>', methods=['GET'])
 def get_train_job_route(uuid: str):
     # TODO: Add check to see whether job is a training job or not.
-    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
@@ -148,6 +147,9 @@ def get_train_job_route(uuid: str):
                     extra_data: dict = json.load(f)
                     # Remove error as any errors found when training isn't complete, are temporary errors
                     extra_data.pop('error', None)
+                    if extra_data['status'] == ICTrainJobStatus.ERROR.value:
+                        extra_data['status'] = ICTrainJobStatus.STARTING_TRAINING.value
+                        extra_data['status_description'] = 'Reducing batch size and retrying'
                     job.update({'extra_data': extra_data})
             except:
                 return job
@@ -258,12 +260,13 @@ def get_active_model_exports_route(model_id: str):
 def train_model_route(model_id):
     log(f"ACCEPTED [{request.method}] {request.path}")
     req_data = request.get_json()
-    req_data_format = {
-        'dataset_id': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
-    }
-    error_obj = validate_req_json(req_data, req_data_format)
-    if error_obj is not None:
-        return {'Error': error_obj}, 400
+    # TODO: Implement optional body keys
+    # req_data_format = {
+    #     'dataset_id': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+    # }
+    # error_obj = validate_req_json(req_data, req_data_format)
+    # if error_obj is not None:
+    #     return {'Error': error_obj}, 400
 
     if len(model_id) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
@@ -280,7 +283,12 @@ def train_model_route(model_id):
     if status == ICModelStatus.TRAINED.value:
         return {'Error': 'Model has already been trained'}, 400
 
-    dataset_id = req_data['dataset_id']
+    if model['dataset_trained_on'] is not None:
+        dataset_id = model['dataset_trained_on']
+    else:
+        dataset_id = req_data['dataset_id']
+    if dataset_id is None:
+        return {'Error': 'dataset_id is not provided'}, 400
 
     if len(dataset_id) != 32:
         return {'Error': "ID of dataset is of incorrect length"}, 400
@@ -293,6 +301,8 @@ def train_model_route(model_id):
     input_labels = inputs[:, 1]
     if constants.DATASET_UNLABELLED_LABEL in input_labels:
         return {'Error': 'Dataset contains unlabelled inputs'}, 400
+    # Update dataset the model is being trained on
+    update_model_dataset_trained_on(model_id, dataset_id)
     # Delete extra_data.json file from model directory if it contains it before training
     extra_data_file_path = config.MODEL_DIR / model['model_name'] / config.MODEL_TRAINING_TIME_EXTRA_DATA_NAME
     try:
@@ -301,9 +311,8 @@ def train_model_route(model_id):
     except Exception as e:
         log(e)
     # Train
-    ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id])).queue()
+    ids = JobCreator().create(TrainImageClassifierJob([model_id, dataset_id, model['latest_train_job_id']])).queue()
     update_model_train_job_id(model_id, ids[0])
-    update_model_status(model_id, ICModelStatus.STARTING_TRAINING)
     return {'ids': ids}, 202
 
 
@@ -416,7 +425,6 @@ def get_model_labels_csv_route(model_id: str):
 @verify_action()
 def get_model_route(uuid: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
-    print(get_model_route.action_verification_id)
     if len(uuid) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(uuid)
