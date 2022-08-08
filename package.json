@@ -1,18 +1,20 @@
 {
 	"name": "thia",
 	"version": "1.0.0",
-	"description": "Cloud AI but on your desktop!",
+	"description": "AutoML using your own hardware",
 	"main": "./dist/main.bundle.js",
 	"scripts": {
 		"start": "electron --trace-warnings ./dist/main.bundle.js",
 		"dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color --stats-error-details",
 		"prod": "rimraf dist && cross-env NODE_ENV=production webpack --color",
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
-		"build:win": "rimraf out && npm run prod && electron-builder build --win --x64",
-		"build:win-unpacked": "rimraf out && npm run prod && electron-builder build --win --x64 --dir",
+		"build:win": "rimraf out && npm run prod && electron-builder build --win --x64 --publish never",
+		"build:win-unpacked": "rimraf out && npm run prod && electron-builder build --win --x64 --dir --publish never",
 		"build:win-py": "npm run build:py && npm run build:win",
 		"build:win-py-unpacked": "npm run build:py && npm run build:win-unpacked",
 		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec",
+		"publish": "npm run build:py && npm run prod && rimraf out && electron-builder build --win --x64 --publish always",
+		"publish:no-py": "npm run prod && rimraf out && electron-builder build --win --x64 --publish always",
 		"lint": "echo Lint-Check Main && npm run lint-main && echo Lint-Check Renderer && npm run lint-renderer",
 		"lint-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\"",
 		"lint-main": "eslint src/main/** -c=\"main.eslintrc.json\"",
@@ -31,6 +33,10 @@
 		"directories": {
 			"app": "./dist/",
 			"output": "./out/"
+		},
+		"publish": {
+			"provider": "s3",
+			"bucket": "thia-app-downloads"
 		},
 		"win": {
 			"target": "nsis",
