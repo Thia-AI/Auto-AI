@@ -1001,6 +1001,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Thia ML Engine')
     parser.add_argument('environment', nargs='?')
     parser.add_argument('-u', '--user', required=True, help='User UID')
+    parser.add_argument('-ud', '--user-data', required=True, help='User Data Path')
     args = parser.parse_args()
     log(f'Args Passed: {args}')
     # https://docs.python.org/3.7/library/multiprocessing.html?highlight=process#multiprocessing.freeze_support

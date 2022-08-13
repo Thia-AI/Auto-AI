@@ -13,6 +13,7 @@ from log.logger import log
 
 def init_environment_pre_gpu(args) -> None:
     config.USER_UID = args.user
+    user_data = Path(args.user_data)
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         # Production
         config.bundle_dir = Path(sys._MEIPASS)  # pylint: disable=no-member,protected-access
@@ -21,12 +22,12 @@ def init_environment_pre_gpu(args) -> None:
         if args.environment == 'simulated':
             """When Engine is ran in simulated mode during App development"""
             # Model
-            config.MODEL_CACHE = config.current_dir / 'src' / 'py' / config.MODEL_CACHE_DIR_NAME
-            config.MODEL_DIR = config.current_dir / 'src' / 'py' / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
+            config.MODEL_CACHE = user_data / config.MODEL_CACHE_DIR_NAME
+            config.MODEL_DIR = user_data / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
             # Dataset
-            config.DATASET_DIR = config.current_dir / 'src' / 'py' / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
+            config.DATASET_DIR = user_data / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
             # Database
-            config.DATABASE_LOCATION = config.current_dir / 'src' / 'py' / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
+            config.DATABASE_LOCATION = user_data / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
             # CUDA
             config.CUDA_PATH = config.current_dir / 'extraResources' / 'engine' / 'CUDA'
             # External dependencies
@@ -34,12 +35,12 @@ def init_environment_pre_gpu(args) -> None:
         else:
             """When Engine is ran in actual production environment"""
             # Model
-            config.MODEL_CACHE = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.MODEL_CACHE_DIR_NAME
-            config.MODEL_DIR = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
+            config.MODEL_CACHE = user_data / config.MODEL_CACHE_DIR_NAME
+            config.MODEL_DIR = user_data / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
             # Dataset
-            config.DATASET_DIR = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
+            config.DATASET_DIR = user_data / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
             # Database
-            config.DATABASE_LOCATION = config.current_dir / 'resources' / 'extraResources' / 'engine' / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
+            config.DATABASE_LOCATION = user_data / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
             # CUDA
             config.CUDA_PATH = config.current_dir / 'resources' / 'extraResources' / 'engine' / 'CUDA'
             # External dependencies
@@ -52,12 +53,12 @@ def init_environment_pre_gpu(args) -> None:
         if args.environment == 'pycharm':
             """When Engine is ran in development mode via PyCharm"""
             # Model
-            config.MODEL_CACHE = config.current_dir / config.MODEL_CACHE_DIR_NAME
-            config.MODEL_DIR = config.current_dir / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
+            config.MODEL_CACHE = user_data / config.MODEL_CACHE_DIR_NAME
+            config.MODEL_DIR = user_data / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
             # Dataset
-            config.DATASET_DIR = config.current_dir / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
+            config.DATASET_DIR = user_data / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
             # Database
-            config.DATABASE_LOCATION = config.current_dir / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
+            config.DATABASE_LOCATION = user_data / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
             # CUDA
             config.CUDA_PATH = config.current_dir.absolute().parent.parent / 'CUDA'
             # External dependencies
@@ -66,12 +67,12 @@ def init_environment_pre_gpu(args) -> None:
         else:
             """When Engine is ran in development mode via App"""
             # Model
-            config.MODEL_CACHE = config.current_dir / 'src' / 'py' / config.MODEL_CACHE_DIR_NAME
-            config.MODEL_DIR = config.current_dir / 'src' / 'py' / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
+            config.MODEL_CACHE = user_data / config.MODEL_CACHE_DIR_NAME
+            config.MODEL_DIR = user_data / config.USERS_DIR_NAME / args.user / config.MODEL_DIR_NAME
             # Dataset
-            config.DATASET_DIR = config.current_dir / 'src' / 'py' / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
+            config.DATASET_DIR = user_data / config.USERS_DIR_NAME / args.user / config.DATASET_DIR_NAME
             # Database
-            config.DATABASE_LOCATION = config.current_dir / 'src' / 'py' / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
+            config.DATABASE_LOCATION = user_data / config.USERS_DIR_NAME / args.user / config.DATABASE_DIR_NAME / config.DATABASE_FILE_NAME
             # CUDA
             config.CUDA_PATH = config.current_dir.parent.parent.parent / 'CUDA'
             # External dependencies

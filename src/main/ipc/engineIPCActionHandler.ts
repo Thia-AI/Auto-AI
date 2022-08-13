@@ -115,6 +115,7 @@ class EngineIPCActionHandler {
 		if (isDev) {
 			this.engineShell = EngineHandler.getInstance().createDevEngine(this.window, {
 				uid,
+				simulateProd: true,
 			});
 		} else {
 			this.engineShell = EngineHandler.getInstance().createProdEngine(this.window, {

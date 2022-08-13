@@ -1,7 +1,10 @@
 import * as path from 'path';
 import { Options, PythonShell } from 'python-shell';
 import { EngineShell } from './base/engineShell';
-import { BrowserWindow } from 'electron';
+import log from 'electron-log';
+import { app, BrowserWindow } from 'electron';
+
+const engineLog = log.scope('engine');
 
 /**
  * Class for creating a development EngineShell.
@@ -21,7 +24,7 @@ export class EngineShellDev extends EngineShell {
 		const options: Options = {
 			mode: 'text',
 			pythonPath: 'python',
-			args: [`--user=${uid}`],
+			args: [`--user=${uid}`, `--user-data=${app.getPath('userData')}`],
 		};
 		this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), options);
 		this.notifyOnceEngineHasStarted();
@@ -42,7 +45,7 @@ export class EngineShellDev extends EngineShell {
 	 * Shuts down dev engine.
 	 */
 	shutDownEngine(): void {
-		console.log('Shutting down engine');
+		engineLog.info('Shutting down engine');
 		this.shutDownEngineUniversal();
 		this.engine.kill();
 		this.notifyRendererThatEngineHasStopped();

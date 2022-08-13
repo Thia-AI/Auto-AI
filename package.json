@@ -1,6 +1,6 @@
 {
 	"name": "thia",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"description": "AutoML using your own hardware",
 	"main": "./dist/main.bundle.js",
 	"scripts": {
@@ -8,13 +8,14 @@
 		"dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color --stats-error-details",
 		"prod": "rimraf dist && cross-env NODE_ENV=production webpack --color",
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
-		"build:win": "rimraf out && npm run prod && electron-builder build --win --x64 --publish never",
-		"build:win-unpacked": "rimraf out && npm run prod && electron-builder build --win --x64 --dir --publish never",
-		"build:win-py": "npm run build:py && npm run build:win",
-		"build:win-py-unpacked": "npm run build:py && npm run build:win-unpacked",
-		"build:py": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec",
-		"publish": "npm run build:py && npm run prod && rimraf out && electron-builder build --win --x64 --publish always",
-		"publish:no-py": "npm run prod && rimraf out && electron-builder build --win --x64 --publish always",
+		"build:app": "npm run prod && rimraf out && electron-builder build --win --x64 --publish never",
+		"build:app-unpacked": "npm run prod && rimraf out && electron-builder build --win --x64 --dir --publish never",
+		"build": "npm run build:py && npm run build:win",
+		"build:unpacked": "npm run build:py && npm run build:win-unpacked",
+		"build:engine": "rimraf build-py && rimraf extraResources/engine && pyinstaller --workpath=./build-py --distpath=./extraResources engine.spec",
+		"publish": "rimraf out && electron-builder --win --x64 --publish always",
+		"publish:dev": "rimraf out && electron-builder --win --x64  --publish always --config.win.publish.endpoint=http://localhost:9000 --config.win.publish.bucket=test-bucket",
+		"tests": "electron-publish",
 		"lint": "echo Lint-Check Main && npm run lint-main && echo Lint-Check Renderer && npm run lint-renderer",
 		"lint-renderer": "eslint src/renderer/** -c=\"renderer.eslintrc.json\"",
 		"lint-main": "eslint src/main/** -c=\"main.eslintrc.json\"",
@@ -34,14 +35,14 @@
 			"app": "./dist/",
 			"output": "./out/"
 		},
-		"publish": {
-			"provider": "s3",
-			"bucket": "thia-app-downloads"
-		},
 		"win": {
 			"target": "nsis",
 			"asar": true,
-			"requestedExecutionLevel": "requireAdministrator"
+			"requestedExecutionLevel": "requireAdministrator",
+			"publish": {
+				"provider": "s3",
+				"bucket": "thia-app-downloads"
+			}
 		},
 		"nsis": {
 			"oneClick": false,
@@ -58,7 +59,7 @@
 		],
 		"afterPack": "./electron-builder/hooks/afterPack.js"
 	},
-	"author": "Ritesh Ahlawat",
+	"author": "Thia AI",
 	"license": "SEE LICENSE IN LICENSE",
 	"dependencies": {
 		"@chakra-ui/icons": "^1.0.13",
@@ -93,7 +94,9 @@
 		"debounce": "^1.2.1",
 		"electron-is-dev": "^2.0.0",
 		"electron-localshortcut": "^3.2.1",
+		"electron-log": "^4.4.8",
 		"electron-store": "^8.0.1",
+		"electron-updater": "^5.2.1",
 		"express": "^4.17.3",
 		"firebase": "^9.6.8",
 		"firebase-functions": "^3.19.0",

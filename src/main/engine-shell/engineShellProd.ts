@@ -1,5 +1,5 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 
 import { EngineShell } from './base/engineShell';
 
@@ -20,9 +20,9 @@ export class EngineShellProd extends EngineShell {
 		super(window);
 
 		if (simulatedProd) {
-			this.engine = spawn(enginePath, ['simulated', `--user=${uid}`]);
+			this.engine = spawn(enginePath, ['simulated', `--user=${uid}`, `--user-data=${app.getPath('userData')}`]);
 		} else {
-			this.engine = spawn(enginePath, [`--user=${uid}`]);
+			this.engine = spawn(enginePath, [`--user=${uid}`, `--user-data=${app.getPath('userData')}`]);
 		}
 
 		this.notifyOnceEngineHasStarted();

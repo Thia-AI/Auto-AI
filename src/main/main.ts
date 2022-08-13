@@ -4,11 +4,13 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, protocol, shell } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol, shell, dialog } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Express, Response, Request } from 'express';
+import { autoUpdater } from 'electron-updater';
+import log, { ElectronLog } from 'electron-log';
 import { cpus } from 'os';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
@@ -53,6 +55,11 @@ const workerMap: WorkerMap = {};
 const workerTaskQueue: WorkerTask[] = [];
 
 const isDev = require('electron-is-dev');
+
+autoUpdater.logger = log;
+autoUpdater.autoDownload = false;
+const autoUpdaterLogger = autoUpdater.logger as ElectronLog;
+autoUpdaterLogger.transports.file.level = 'info';
 
 export const APP_NAME = 'Thia';
 
@@ -378,6 +385,7 @@ if (!isSingleInstance) {
 				console.log('Error loading extensions: ', err);
 			}
 		}
+
 		const firebaseConfig = getFirebaseConfig();
 		firebaseAppProd = initializeApp(firebaseConfig);
 		await startWebServices();
@@ -396,8 +404,46 @@ if (!isSingleInstance) {
 			const worker = createWorker();
 			availableWorkers.push(worker);
 		}
+		await autoUpdater.checkForUpdates();
 	});
 }
+
+autoUpdater.on('update-available', () => {
+	log.info('Update available');
+	dialog
+		.showMessageBox({
+			type: 'question',
+			title: 'Found Updates',
+			message: 'Found updates, do you want update now?',
+			buttons: ['Sure', 'No'],
+		})
+		.then((buttonIndex) => {
+			if (buttonIndex.response === 0) {
+				autoUpdater.downloadUpdate();
+			}
+		});
+});
+
+autoUpdater.on('update-not-available', () => {
+	log.info('Update not available');
+	dialog.showMessageBox({
+		type: 'info',
+		title: 'No Updates',
+		message: 'Current version is up-to-date.',
+	});
+});
+
+autoUpdater.on('update-downloaded', () => {
+	log.info('Update downloaded');
+	dialog
+		.showMessageBox({
+			title: 'Install Updates',
+			message: 'Updates downloaded, application will be quit for update...',
+		})
+		.then(() => {
+			setImmediate(() => autoUpdater.quitAndInstall());
+		});
+});
 
 /**
  * Sends task to next available workers and sends status update to renderer.

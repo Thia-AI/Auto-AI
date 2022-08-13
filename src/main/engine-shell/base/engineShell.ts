@@ -1,8 +1,11 @@
 import { AxiosError } from 'axios';
 import { BrowserWindow } from 'electron';
+import log from 'electron-log';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { IPC_ENGINE_STARTED, IPC_ENGINE_STOPPED } from '_/shared/ipcChannels';
+
+const engineLog = log.scope('engine');
 
 /**
  * Base class for creating an EngineShell to deploy and manage **Engine**'s state.
@@ -49,7 +52,7 @@ export abstract class EngineShell {
 	 */
 	protected onExitUniversal = (exitCode: number | null, exitSignal: string | NodeJS.Signals | null) => {
 		RUNTIME_GLOBALS.engineRunning = false;
-		console.log(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
+		engineLog.info(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
 	};
 
 	/**
@@ -66,8 +69,7 @@ export abstract class EngineShell {
 	 * @param data Message that was outputted from stdout.
 	 */
 	protected onDataChangeUniversal = (data: string) => {
-		const date = new Date();
-		console.log(`Engine[${date.toLocaleDateString()}-${date.toLocaleTimeString()}]: ${data}`);
+		engineLog.info(data);
 	};
 
 	/**
@@ -95,7 +97,7 @@ export abstract class EngineShell {
 			const initialTime = new Date().getTime();
 			try {
 				await EngineRequestConfig.get('/devices', { timeout });
-				console.log('Engine Connected');
+				engineLog.info('Engine Connected');
 				this.notifyRendererThatEngineHasStarted();
 				this.engineCheckTimeoutId = undefined;
 				this.resetEngineCheckTimeout();
@@ -104,14 +106,14 @@ export abstract class EngineShell {
 				this.engineCheckRetries++;
 				this.engineCheckTimeout += this.engineCheckTimeoutIncreaseAmount;
 				const err = error as AxiosError;
-				console.log(err.code);
-				console.log(err.message);
+				engineLog.error(err.code);
+				engineLog.error(err.message);
 			}
 			const afterTime = new Date().getTime();
 			// sleep for difference
 			await sleep(Math.abs(timeout - (afterTime - initialTime)));
 		}
-		console.log('Engine Failed to Start after Retries');
+		engineLog.error('Engine Failed to Start after Retries');
 		clearTimeout(this.engineCheckTimeoutId);
 		this.engineCheckTimeoutId = undefined;
 		this.resetEngineCheckTimeout();

@@ -1,6 +1,4 @@
 test_data/**
 test.py
 test.json
-models_cache/**
-users/**
 **/runConfigurations/**
