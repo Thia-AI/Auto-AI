@@ -1,11 +1,12 @@
 {
 	"name": "thia",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"description": "AutoML using your own hardware",
 	"main": "./dist/main.bundle.js",
 	"scripts": {
 		"start": "electron --trace-warnings ./dist/main.bundle.js",
-		"dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color --stats-error-details",
+		"dev:app": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color --stats-error-details",
+		"dev": "concurrently --kill-others \"minio server minio/minio-data\" \"npm run dev:app\"",
 		"prod": "rimraf dist && cross-env NODE_ENV=production webpack --color",
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
 		"build:app": "npm run prod && rimraf out && electron-builder build --win --x64 --publish never",
@@ -46,6 +47,7 @@
 		},
 		"nsis": {
 			"oneClick": false,
+			"perMachine": true,
 			"allowToChangeInstallationDirectory": true,
 			"deleteAppDataOnUninstall": true,
 			"license": "LICENSE",
@@ -147,6 +149,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.8.1",
 		"@typescript-eslint/parser": "^5.8.1",
 		"asarmor": "^2.0.0",
+		"concurrently": "^7.3.0",
 		"copy-webpack-plugin": "^10.2.0",
 		"cross-env": "^7.0.3",
 		"css-loader": "^6.5.1",
