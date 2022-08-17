@@ -31,6 +31,7 @@ import {
 import { useSigninCheck } from 'reactfire';
 import { IMenuOpenCloseAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { openCloseSideMenu } from '_/renderer/state/side-menu/SideModelAction';
+import { UpdateIndicator } from './UpdateIndicator';
 
 interface Props {
 	maximizedClass: IHeaderMaximizedChangedReducer;
@@ -151,6 +152,9 @@ const HeaderC = React.memo(
 					<Flex w='full' h='full'>
 						<Hamburger />
 						<Spacer />
+						<Center mr='3'>
+							<UpdateIndicator />
+						</Center>
 						<Center mr='5'>
 							<StatusIndicator onColor='pulse-green' offColor='pulse-red' />
 						</Center>

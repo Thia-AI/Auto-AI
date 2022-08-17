@@ -1,12 +1,13 @@
 {
 	"name": "thia",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "AutoML using your own hardware",
 	"main": "./dist/main.bundle.js",
 	"scripts": {
 		"start": "electron --trace-warnings ./dist/main.bundle.js",
 		"dev:app": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --color --stats-error-details",
-		"dev": "concurrently --kill-others \"minio server minio/minio-data\" \"npm run dev:app\"",
+		"dev": "concurrently --kill-others \"npm run minio\" \"npm run dev:app\"",
+		"minio": "minio server minio/minio-data",
 		"prod": "rimraf dist && cross-env NODE_ENV=production webpack --color",
 		"test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
 		"build:app": "npm run prod && rimraf out && electron-builder build --win --x64 --publish never",

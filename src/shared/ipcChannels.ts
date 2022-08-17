@@ -5,6 +5,47 @@
  */
 export const IPC_RUNTIME_IS_DEV = 'runtime:isDev';
 
+// Auto Update
+/**
+ * Used to check if there's an update available.
+ */
+export const IPC_AUTO_UPDATE_CHECK = 'autoUpdate:check';
+
+/**
+ * Informs **renderer** about an update not being available.
+ */
+export const IPC_INFORM_UPDATE_NOT_AVAILABLE = 'autoUpdate:informUpdateNotAvailable';
+
+/**
+ * Informs **renderer** about an update being available.
+ */
+export const IPC_INFORM_UPDATE_AVAILABLE = 'autoUpdate:informUpdateAvailable';
+
+/**
+ * Informs **main** to install the recent update.
+ */
+export const IPC_AUTO_UPDATE_INSTALL_UPDATE = 'autoUpdate:installUpdate';
+
+/**
+ * Progress information when downloading an update.
+ */
+export const IPC_AUTO_UPDATE_DOWNLOAD_PROGRESS_INFO = 'autoUpdate:downloadProgressInfo';
+
+/**
+ * When the download is cancelled.
+ */
+export const IPC_AUTO_UPDATE_DOWNLOAD_CANCELLED = 'autoUpdate:downloadCancelled';
+
+/**
+ * When there is an error updating.
+ */
+export const IPC_AUTO_UPDATE_ERROR = 'autoUpdate:error';
+
+/**
+ * Gets app version.
+ */
+export const IPC_GET_APP_VERSION = 'app:getVersion';
+
 // NOTIFICATIONS
 
 /**

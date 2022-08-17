@@ -1,0 +1,4 @@
+provider: s3
+bucket: test-bucket
+endpoint: http://localhost:9000
+updaterCacheDirName: thia-updater

@@ -1,7 +1,11 @@
 import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import {
+	IPC_AUTO_UPDATE_CHECK,
+	IPC_AUTO_UPDATE_INSTALL_UPDATE,
 	IPC_DRAG_AND_DROP_SELECT_FOLDER,
 	IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES,
+	IPC_GET_APP_VERSION,
 	IPC_NOTIFICATIONS_SHOW_NOTIFICATION,
 	IPC_SHOW_CLOSE_WINDOW_DIALOG,
 	IPC_SHOW_LOGIN_WINDOW,
@@ -124,6 +128,19 @@ class WindowIPCActions {
 
 		this.window.on('unmaximize', () => {
 			this.window.webContents.send(IPC_WINDOW_UNMAXIMIZED);
+		});
+
+		// Auto Update
+		ipcMain.handle(IPC_AUTO_UPDATE_CHECK, async () => {
+			await autoUpdater.checkForUpdates();
+		});
+
+		ipcMain.handle(IPC_AUTO_UPDATE_INSTALL_UPDATE, async () => {
+			await autoUpdater.downloadUpdate();
+		});
+
+		ipcMain.handle(IPC_GET_APP_VERSION, () => {
+			return app.getVersion();
 		});
 	};
 }

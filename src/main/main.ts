@@ -4,7 +4,7 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, protocol, shell, dialog } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol, shell } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { FirebaseApp, initializeApp } from 'firebase/app';
@@ -31,7 +31,12 @@ import {
 	IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER,
 	IPC_DEV_COPY_ID_TOKEN,
 	IPC_DEV_COPY_UID,
+	IPC_INFORM_UPDATE_NOT_AVAILABLE,
 	IPC_DEV_TOGGLE_COLOR_MODE,
+	IPC_INFORM_UPDATE_AVAILABLE,
+	IPC_AUTO_UPDATE_DOWNLOAD_PROGRESS_INFO,
+	IPC_AUTO_UPDATE_DOWNLOAD_CANCELLED,
+	IPC_AUTO_UPDATE_ERROR,
 } from '_/shared/ipcChannels';
 import { LOGIN_WINDOW_LOGIN_WORKFLOW_COMPLETE, PERSISTENCE_TYPE } from '_/shared/appConstants';
 import { startServer } from './server/server';
@@ -60,6 +65,20 @@ autoUpdater.logger = log;
 autoUpdater.autoDownload = false;
 const autoUpdaterLogger = autoUpdater.logger as ElectronLog;
 autoUpdaterLogger.transports.file.level = 'info';
+
+// Disable IPC logging
+if (log.transports.ipc) {
+	log.transports.ipc.level = false;
+}
+
+if (isDev) {
+	/**
+	 * Resolve logging path to correct path in dev mode.
+	 *
+	 * @returns Path to log file.
+	 */
+	log.transports.file.resolvePath = () => path.join(app.getPath('userData'), 'logs', 'main.log');
+}
 
 export const APP_NAME = 'Thia';
 
@@ -373,6 +392,7 @@ if (!isSingleInstance) {
 	// This method will be called when Electron has finished
 	// initialization and is ready to create browser windows.
 	// Some APIs can only be used after this event occurs.
+
 	app.whenReady().then(async () => {
 		if (isDev) {
 			try {
@@ -384,6 +404,17 @@ if (!isSingleInstance) {
 			} catch (err) {
 				console.log('Error loading extensions: ', err);
 			}
+			autoUpdater.updateConfigPath = path.join(__dirname, '../', 'dev-app-update.yml');
+			Object.defineProperty(app, 'isPackaged', {
+				/**
+				 * Override getter for app.isPackaged in development mode.
+				 *
+				 * @returns True.
+				 */
+				get() {
+					return true;
+				},
+			});
 		}
 
 		const firebaseConfig = getFirebaseConfig();
@@ -404,47 +435,42 @@ if (!isSingleInstance) {
 			const worker = createWorker();
 			availableWorkers.push(worker);
 		}
-		await autoUpdater.checkForUpdates();
 	});
 }
 
-autoUpdater.on('update-available', () => {
-	log.info('Update available');
-	dialog
-		.showMessageBox({
-			type: 'question',
-			title: 'Found Updates',
-			message: 'Found updates, do you want update now?',
-			buttons: ['Sure', 'No'],
-		})
-		.then((buttonIndex) => {
-			if (buttonIndex.response === 0) {
-				autoUpdater.downloadUpdate();
-			}
-		});
+autoUpdater.on('update-available', (updateInfo) => {
+	log.info(`Update ${updateInfo.version} available`);
+
+	mainWindow?.webContents.send(IPC_INFORM_UPDATE_AVAILABLE, updateInfo.version);
 });
 
-autoUpdater.on('update-not-available', () => {
-	log.info('Update not available');
-	dialog.showMessageBox({
-		type: 'info',
-		title: 'No Updates',
-		message: 'Current version is up-to-date.',
-	});
+autoUpdater.on('update-not-available', (updateInfo) => {
+	log.info(`Update ${updateInfo.version} not available`);
+	mainWindow?.webContents.send(IPC_INFORM_UPDATE_NOT_AVAILABLE, updateInfo.version);
 });
 
-autoUpdater.on('update-downloaded', () => {
-	log.info('Update downloaded');
-	dialog
-		.showMessageBox({
-			title: 'Install Updates',
-			message: 'Updates downloaded, application will be quit for update...',
-		})
-		.then(() => {
-			setImmediate(() => autoUpdater.quitAndInstall());
-		});
+autoUpdater.on('download-progress', (progressInfo) => {
+	let downloadLog = 'Download speed: ' + progressInfo.bytesPerSecond;
+	downloadLog = downloadLog + ' - Downloaded ' + progressInfo.percent + '%';
+	downloadLog = downloadLog + ' (' + progressInfo.transferred + '/' + progressInfo.total + ')';
+	log.debug(downloadLog);
+	mainWindow?.webContents.send(IPC_AUTO_UPDATE_DOWNLOAD_PROGRESS_INFO, progressInfo);
 });
 
+autoUpdater.on('update-downloaded', async () => {
+	log.info('Update downloaded, quitting and installing');
+	await autoUpdater.quitAndInstall(false, true);
+});
+
+autoUpdater.on('update-cancelled', () => {
+	log.warn('Update cancelled');
+	mainWindow?.webContents.send(IPC_AUTO_UPDATE_DOWNLOAD_CANCELLED);
+});
+
+autoUpdater.on('error', (error) => {
+	log.error(`Error with auto update. Name: ${error.name}, Cause: ${error.cause}, Message: ${error.message}`);
+	mainWindow?.webContents.send(IPC_AUTO_UPDATE_ERROR, error);
+});
 /**
  * Sends task to next available workers and sends status update to renderer.
  */
