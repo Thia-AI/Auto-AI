@@ -72,7 +72,7 @@ const EngineNotificationsHandlerC = React.memo(({ notifications, sendNotificatio
 			const [_wasError, job] = await getJobIDStatus(jobID);
 			sendNotification({
 				job: job as Job,
-				dismissAfter: 1250,
+				dismissAfter: 3500,
 			});
 		});
 	}, []);

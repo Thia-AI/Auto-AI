@@ -18,7 +18,7 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 	const previewPanelTextColor = mode('thia.gray.600', 'thia.gray.400');
 	const previewBG = mode('thia.gray.100', 'thia.gray.750');
 	const borderColor = mode('thia.gray.150', 'thia.gray.700');
-	const gridHeight = 520;
+	const gridHeight = 385;
 	const itemHeight = 125;
 	const itemWidth = 125;
 	const gridContainerPadding = 12;

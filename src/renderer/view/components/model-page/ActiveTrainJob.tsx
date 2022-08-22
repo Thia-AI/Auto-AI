@@ -158,7 +158,7 @@ export const ActiveTrainJob = React.memo(
 					text: 'Accuracy',
 				},
 				labels: {
-					formatter: (val) => `${val}%`,
+					formatter: (val) => `${val.toFixed(2)}%`,
 				},
 			},
 			title: {
