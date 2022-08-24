@@ -5,6 +5,7 @@ import { Box, Heading, useRadio, UseRadioProps, Text, Link, useColorModeValue as
 interface Props extends UseRadioProps {
 	children: React.ReactNode;
 	description: string;
+	learnMoreLink: string;
 	isDisabled?: boolean;
 	title?: string;
 }
@@ -58,8 +59,7 @@ export const ICModelRadioCard = React.memo((props: Props) => {
 				<Text mt='1' fontSize='13px' fontWeight='thin' as='p' maxW='250px' textAlign='left'>
 					{props.description}
 				</Text>
-				{/* // TODO: Change this URL to a prop that redirects to thia documentation for that specific image classification model type */}
-				<Link fontSize='xs' href='https://google.ca'>
+				<Link fontSize='xs' href={props.learnMoreLink}>
 					Learn more
 				</Link>
 			</Box>

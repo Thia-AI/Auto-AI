@@ -32,6 +32,7 @@ import { changeActiveDataset } from '_/renderer/state/active-dataset-page/Active
 import { IChangeActiveDatasetAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
+import { LEARN_MORE_BATCH_LABELLING } from '_/renderer/view/helpers/constants/documentationConstants';
 import { Dataset, Job, Labels } from '_/renderer/view/helpers/constants/engineTypes';
 import { toast } from '_/renderer/view/helpers/functionHelpers';
 import { formatBytesToString } from '_/renderer/view/helpers/textHelper';
@@ -323,7 +324,7 @@ const DatasetPreviewSettingsC = React.memo(({ activeDataset, changeActiveDataset
 								labelling quicker, upload a labels JSON file to quickly label your entire dataset.
 							</Text>
 
-							<Link fontSize='sm' href='https://google.ca'>
+							<Link fontSize='sm' href={LEARN_MORE_BATCH_LABELLING}>
 								Learn more about the format of the file here
 							</Link>
 							{renderLabelFileInformation()}

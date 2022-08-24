@@ -21,13 +21,14 @@ interface Props {
 	statDescription: string;
 	statTitle: string;
 	percentage?: boolean;
+	learnMoreLink: string;
 }
 
 /**
  * Displays a statistic.
  */
 export const StatWithLearnMore = React.memo(
-	({ label, value, percentage = false, statDescription, statTitle }: Props) => {
+	({ label, value, percentage = false, statDescription, statTitle, learnMoreLink }: Props) => {
 		const statBG = mode('thia.gray.50', 'thia.gray.800');
 		const statShadow = mode('sm', 'lg-dark');
 		const borderColor = mode('thia.gray.200', 'thia.gray.600');
@@ -68,8 +69,7 @@ export const StatWithLearnMore = React.memo(
 								<Text pt='1.5' fontWeight='thin'>
 									{statDescription}
 								</Text>
-								{/* // TODO: Change this URL to a prop that redirects to thia documentation for that specific metric */}
-								<Link href='https://google.ca'>Learn more</Link>
+								<Link href={learnMoreLink}>Learn more</Link>
 							</Box>
 						</ReactTooltip>
 					</HStack>

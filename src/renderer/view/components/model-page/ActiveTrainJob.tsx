@@ -32,6 +32,13 @@ import { StatWithLearnMore } from '../stats/StatWithLearnMore';
 import { ImCancelCircle } from 'react-icons/im';
 import { useUser } from 'reactfire';
 import { CancelTraining } from './CancelTraining';
+import {
+	LEARN_MORE_EVALUATION_METRIC_ACCURACY,
+	LEARN_MORE_EVALUATION_METRIC_AU_PRC,
+	LEARN_MORE_EVALUATION_METRIC_LOG_LOSS,
+	LEARN_MORE_EVALUATION_METRIC_PRECISION,
+	LEARN_MORE_EVALUATION_METRIC_RECALL,
+} from '../../helpers/constants/documentationConstants';
 
 /**
  * useImperativeHandle data.
@@ -476,6 +483,7 @@ export const ActiveTrainJob = React.memo(
 								statTitle='Area Under Precision Recall Curve'
 								statDescription='Usually between 0.5-1.0, higher values inidicate a more accurate model.'
 								value={roundNumber(trainingJob.extra_data.evaluation_result.prc)}
+								learnMoreLink={LEARN_MORE_EVALUATION_METRIC_AU_PRC}
 							/>
 							<StatWithLearnMore
 								label='Accuracy'
@@ -483,6 +491,7 @@ export const ActiveTrainJob = React.memo(
 								statDescription='Percentage of predictions that were correct.'
 								percentage
 								value={roundPercentage(trainingJob.extra_data.evaluation_result.accuracy)}
+								learnMoreLink={LEARN_MORE_EVALUATION_METRIC_ACCURACY}
 							/>
 
 							<StatWithLearnMore
@@ -491,6 +500,7 @@ export const ActiveTrainJob = React.memo(
 								statDescription='Percentage of positive predictions that were correct.'
 								percentage
 								value={roundPercentage(trainingJob.extra_data.evaluation_result.precision)}
+								learnMoreLink={LEARN_MORE_EVALUATION_METRIC_PRECISION}
 							/>
 							<StatWithLearnMore
 								label='Recall'
@@ -498,12 +508,14 @@ export const ActiveTrainJob = React.memo(
 								statDescription='Percentage of total relevant predictions. Also known as "true positive rate".'
 								percentage
 								value={roundPercentage(trainingJob.extra_data.evaluation_result.recall)}
+								learnMoreLink={LEARN_MORE_EVALUATION_METRIC_RECALL}
 							/>
 							<StatWithLearnMore
 								label='Log Loss'
 								statTitle='Log Loss'
 								statDescription='Cross-entropy between predictions and true value. Log loss is between 0-infinity, lower values indicates a more accurate model.'
 								value={roundNumber(trainingJob.extra_data.evaluation_result.loss)}
+								learnMoreLink={LEARN_MORE_EVALUATION_METRIC_LOG_LOSS}
 							/>
 						</Wrap>
 					</Box>

@@ -28,6 +28,7 @@ import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/acti
 import { MODELS_PAGE } from '_view_helpers/constants/pageConstants';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { useUser } from 'reactfire';
+import { LEARN_MORE_IMAGE_CLASSIFICATION } from '_/renderer/view/helpers/constants/documentationConstants';
 
 interface Props {
 	openCloseModelSelectionAction: () => IOpenCloseModelSelectionAction;
@@ -60,6 +61,13 @@ const ICModelContentC = React.memo((props: Props) => {
 		'Large model, accurate but slow. Best suited for high-accuracy requirements.',
 		'Extremely large model, extremely accurate but very slow. Best suited for accuracy-critical requirements.',
 	];
+	const modelTypeRadioLearnMoreLinks = [
+		'https://thia.tech/docs/creating-a-model/image-classification#extra-small',
+		'https://thia.tech/docs/creating-a-model/image-classification#small',
+		'https://thia.tech/docs/creating-a-model/image-classification#medium',
+		'https://thia.tech/docs/creating-a-model/image-classification#large',
+		'https://thia.tech/docs/creating-a-model/image-classification#extra-large',
+	];
 
 	const [modelTypeValue, setModelTypeValue] = useState(modelTypeRadioOptions[2]);
 
@@ -84,6 +92,10 @@ const ICModelContentC = React.memo((props: Props) => {
 		'Each image can be assigned with more than one label.',
 	];
 
+	const labellingTypeLearnMoreLinks = [
+		'https://thia.tech/docs/creating-a-model/image-classification#single-label',
+		'https://thia.tech/docs/creating-a-model/image-classification#multi-label',
+	];
 	const [labellingType, setLabellingType] = useState(labellingTypeRadioOptions[0]);
 
 	const { getRootProps: getLabellingTypeRootProps, getRadioProps: getLabellingTypeRadioProps } = useRadioGroup({
@@ -210,8 +222,7 @@ const ICModelContentC = React.memo((props: Props) => {
 					Instead of developing the expertise of deep learning, which is undergoing rapid improvements each
 					day, let Thia handle it.
 				</Text>
-				{/* // TODO: Change this URL to a prop that redirects to thia documentation for that specific model type */}
-				<Link fontSize='sm' href='https://google.ca'>
+				<Link fontSize='sm' href={LEARN_MORE_IMAGE_CLASSIFICATION}>
 					Learn more
 				</Link>
 			</VStack>
@@ -248,7 +259,8 @@ const ICModelContentC = React.memo((props: Props) => {
 							<ICModelRadioCard
 								key={value}
 								{...modelTypeRadio}
-								description={modelTypeRadioDescriptions[i]}>
+								description={modelTypeRadioDescriptions[i]}
+								learnMoreLink={modelTypeRadioLearnMoreLinks[i]}>
 								{value}
 							</ICModelRadioCard>
 						);
@@ -274,7 +286,8 @@ const ICModelContentC = React.memo((props: Props) => {
 								{...labellingTypeRadio}
 								isDisabled={labellingTypeRadioDisabled[i]}
 								title={labellingTypeRadioTitle[i]}
-								description={labellingTypeRadioDescriptions[i]}>
+								description={labellingTypeRadioDescriptions[i]}
+								learnMoreLink={labellingTypeLearnMoreLinks[i]}>
 								{value}
 							</ICModelRadioCard>
 						);
