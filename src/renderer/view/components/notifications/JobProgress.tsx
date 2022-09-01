@@ -72,7 +72,7 @@ const JobProgressC = React.memo((props: Props) => {
 						</Text>
 						<Spacer />
 						<Text fontSize='sm' color={jobNameColor} as='p' pr='2'>
-							{job.progress}/{job.progress_max}
+							{job.progress}/{job.progress_max - 1}
 						</Text>
 					</HStack>
 					<Progress
@@ -82,7 +82,7 @@ const JobProgressC = React.memo((props: Props) => {
 						w='full'
 						colorScheme='thia.purple'
 						min={0}
-						max={job.progress_max}
+						max={job.progress_max - 1}
 						value={job.progress}
 						size='sm'
 					/>
