@@ -1,5 +1,7 @@
 from enum import Enum, auto
-
+import os
+import sys
+from log.logger import log
 from typing import Final, List, Any
 
 # Request Body Constants
@@ -40,6 +42,7 @@ NUM_INSTANCES = 'NUM_INSTANCES'
 
 # Backend
 BACKEND_PROD_BASE_URL = 'https://api.thia.tech'
+BACKEND_LOCAL_PROD_BASE_URL = 'http://127.0.0.1:3000'
 BACKEND_DEV_BASE_URL = 'http://127.0.0.1:3987'
 
 # Map for our image classification model names to a EfficientNetV2 model

@@ -1,3 +1,4 @@
+import os
 import sys
 from functools import wraps
 from uuid import uuid4
@@ -5,8 +6,8 @@ from uuid import uuid4
 import requests
 from flask import request
 
+from config.constants import BACKEND_DEV_BASE_URL, BACKEND_PROD_BASE_URL, BACKEND_LOCAL_PROD_BASE_URL
 from log.logger import log
-from config.constants import BACKEND_DEV_BASE_URL, BACKEND_PROD_BASE_URL
 
 
 def get_server_url() -> str:
@@ -14,10 +15,17 @@ def get_server_url() -> str:
         # Production
         if len(sys.argv) > 1 and sys.argv[1] == 'simulated':
             """Engine is ran in simulated mode during App development"""
-            return BACKEND_DEV_BASE_URL
+            server_url = BACKEND_PROD_BASE_URL
+        elif os.getenv('THIA_LOCAL_BACKEND', 0) == '1':
+            """Local backend env variable is set, use local backend instead"""
+            log('WARNING: Using local backend')
+            server_url = BACKEND_LOCAL_PROD_BASE_URL
         else:
-            return BACKEND_PROD_BASE_URL
-    return BACKEND_DEV_BASE_URL
+            server_url = BACKEND_PROD_BASE_URL
+
+    else:
+        server_url = BACKEND_DEV_BASE_URL
+    return server_url
 
 
 def verify_action(expires_in=None):
@@ -40,7 +48,7 @@ def verify_action(expires_in=None):
                     # print(engine_request_body)
                 r = requests.post(f'{server_url}/auth/verify-action', headers={
                     'Authorization': authorization_header
-                }, data=backend_request_data)
+                }, json=backend_request_data)
                 if r.ok:
                     out = f(*args, **kwargs)
                     if out[-1] == 200:
@@ -52,7 +60,7 @@ def verify_action(expires_in=None):
                     # Return error received from backend
                     try:
                         backend_response = r.json()
-                        # print(backend_response)
+                        log(backend_response)
                         return {'Error': backend_response['message']}, 400
                     except requests.exceptions.JSONDecodeError:
                         return {'Error': 'Failed to verify action'}, 400
