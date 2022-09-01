@@ -21,7 +21,7 @@ import EngineRequestConfig from '_/shared/engineRequestConfig';
 import { getFirebaseConfig } from '../firebase/firebase';
 import { theme } from '_/shared/theming/chakraTheme';
 import { BackendRequestHandler } from '../backend-requests/backendRequestHandler';
-import BackendRequestConfig from '_/shared/backendRequestConfig';
+import { getBackendRequestConfig } from '_/shared/backendRequestConfig';
 import { ToastContainer } from './helpers/functionHelpers';
 
 /**
@@ -32,7 +32,7 @@ export const store = configureStore();
 const engineRequestHandler = EngineRequestHandler.getInstance();
 const backendRequestHandler = BackendRequestHandler.getInstance();
 engineRequestHandler.initInstances(EngineRequestConfig);
-backendRequestHandler.initInstances(BackendRequestConfig);
+backendRequestHandler.initInstances(getBackendRequestConfig());
 
 const container = document.getElementById('app');
 const root = createRoot(container!);

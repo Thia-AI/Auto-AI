@@ -14,10 +14,10 @@ import '@fontsource/open-sans';
 import '@fontsource/jetbrains-mono';
 
 import { BackendRequestHandler } from '_/renderer/backend-requests/backendRequestHandler';
-import BackendRequestConfig from '_/shared/backendRequestConfig';
+import { getBackendRequestConfig } from '_/shared/backendRequestConfig';
 
 const backendRequestHandler = BackendRequestHandler.getInstance();
-backendRequestHandler.initInstances(BackendRequestConfig);
+backendRequestHandler.initInstances(getBackendRequestConfig(true));
 
 const container = document.getElementById('app');
 const root = createRoot(container!);
