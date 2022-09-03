@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, dialog, Notification, app } from 'electron';
+import { ipcMain, BrowserWindow, dialog, Notification, app, MessageBoxReturnValue } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import {
 	IPC_AUTO_UPDATE_CHECK,
@@ -39,13 +39,17 @@ class WindowIPCActions {
 		return this._loginWindow;
 	}
 
+	closeApp = () => {
+		this.window.close();
+		app.quit();
+	};
+
 	/**
 	 * Sets up IPC actions for the main window.
 	 */
 	private initIPCActions = () => {
 		ipcMain.handle(IPC_WINDOW_CLOSED, async () => {
-			this.window.close();
-			app.quit();
+			this.closeApp();
 		});
 		ipcMain.handle(IPC_WINDOW_UNMAXIMIZE, async () => {
 			this.window.unmaximize();
@@ -64,17 +68,28 @@ class WindowIPCActions {
 		});
 
 		// Header
-		ipcMain.handle(IPC_SHOW_CLOSE_WINDOW_DIALOG, async () => {
-			const res = await dialog.showMessageBox({
-				title: 'Thia',
-				message: 'Are you sure you want to quit?',
-				detail: "This will stop the AI Engine and all it's processes.",
-				type: 'info',
-				buttons: ['Yes', 'Cancel'],
-			});
+		ipcMain.handle(
+			IPC_SHOW_CLOSE_WINDOW_DIALOG,
+			async (_, engineStarted: boolean): Promise<MessageBoxReturnValue> => {
+				if (engineStarted) {
+					const res = await dialog.showMessageBox({
+						title: 'Thia',
+						message: 'Are you sure you want to quit?',
+						detail: "This will stop the AI Engine and all it's processes.",
+						type: 'info',
+						buttons: ['Yes', 'Cancel'],
+					});
 
-			return res;
-		});
+					return res;
+				} else {
+					// Engine hasn't started don't need to ask user for confirmation
+					return {
+						response: 0,
+						checkboxChecked: false,
+					};
+				}
+			},
+		);
 
 		// DragNDrop
 		ipcMain.handle(IPC_DRAG_AND_DROP_SELECT_MULTIPLE_FILES, async () => {

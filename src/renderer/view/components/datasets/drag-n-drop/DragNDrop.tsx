@@ -112,11 +112,14 @@ const DragNDropC = React.memo(
 					{
 						files: filesCpy,
 					},
+					{
+						timeout: 20_000,
+					},
 				);
 				if (uploadImageErr) {
 					toast({
 						title: 'Upload failed',
-						description: 'Failed to upload images to dataset',
+						description: uploadImageRes['Error'],
 						status: 'error',
 						duration: 1500,
 						isClosable: true,

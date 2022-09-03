@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 
-import { Box, Button, Center, Heading, chakra, Flex } from '@chakra-ui/react';
+import { Box, Button, Center, Heading, chakra, Flex, HStack, VStack } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
 import { IPC_SEND_AUTH_CREDENTIAL_TO_MAIN_RENDERER, IPC_SHOW_LOGIN_WINDOW } from '_/shared/ipcChannels';
 import { persistenceMap, PERSISTENCE_TYPE } from '_/shared/appConstants';
+import AppScreenshot from '_utils/images/app_screenshot.jpg';
 
 import { motion } from 'framer-motion';
 
@@ -66,7 +67,7 @@ const LandingPage = () => {
 		);
 	}, []);
 	return (
-		<Box w='100%' m='auto' pos='relative'>
+		<VStack overflowY='auto'>
 			<Box
 				as={motion.div}
 				top='50%'
@@ -74,6 +75,7 @@ const LandingPage = () => {
 				bg='white'
 				pos='absolute'
 				filter='blur(120px)'
+				overflowY='auto'
 				initial='initial'
 				animate='animate'
 				variants={variants}
@@ -82,31 +84,39 @@ const LandingPage = () => {
 			/>
 			<motion.div
 				initial={{ opacity: 0, scale: 0.95, y: '2%' }}
+				style={{ overflowY: 'auto' }}
 				animate={{ opacity: 1, scale: 1, y: '0%' }}
 				transition={{ transition: 'ease', duration: 1 }}>
-				<Box overflowX='hidden' overflowY='hidden'>
-					<Flex pt={12} px={{ base: 0, xl: 20 }} flexDir='column' justify='space-evenly' align='center'>
-						<Heading px={10} fontSize={{ base: '3xl', md: '5xl' }} lineHeight='shorter' textAlign='center'>
-							AutoML ran within your ecosystem
+				<Box overflowX='hidden' overflowY='auto'>
+					<VStack pt={12} px={{ base: 0, xl: 20 }} justify='space-evenly' align='center' overflowY='auto'>
+						<Heading
+							px={10}
+							fontSize={{ base: '3xl', md: '5xl' }}
+							lineHeight='shorter'
+							textAlign='center'
+							fontFamily='Poppins'>
+							AutoML ran on your hardware
 						</Heading>
 
-						<Box display='block' rounded='xl'>
-							<Center w='full' h='full' pb='20px'>
-								<chakra.img
-									src='../public/app_screenshot.jpg'
-									borderRadius='md'
-									alt='App Screenshot'
-									width={{ base: '80%', xl: '75%' }}
-								/>
-							</Center>
-						</Box>
-						<Button mt='3' colorScheme='thia.purple' onClick={showLoginWindow}>
+						<Center pb='20px'>
+							<chakra.img
+								src={AppScreenshot}
+								borderRadius='md'
+								alt='App Screenshot'
+								width={{ base: '80%', xl: '70%' }}
+							/>
+						</Center>
+						<Button
+							mt='3'
+							colorScheme='thia.purple'
+							onClick={showLoginWindow}
+							w={{ base: '80%', xl: '70%' }}>
 							Get Started
 						</Button>
-					</Flex>
+					</VStack>
 				</Box>
 			</motion.div>
-		</Box>
+		</VStack>
 	);
 };
 

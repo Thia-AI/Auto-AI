@@ -32,6 +32,7 @@ import { useSigninCheck } from 'reactfire';
 import { IMenuOpenCloseAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { openCloseSideMenu } from '_/renderer/state/side-menu/SideModelAction';
 import { UpdateIndicator } from './UpdateIndicator';
+import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 
 interface Props {
 	maximizedClass: IHeaderMaximizedChangedReducer;
@@ -40,6 +41,7 @@ interface Props {
 	notifyEngineStopped: () => IEngineStoppedAction;
 	getDevReloadEngineStatus: () => void;
 	openCloseSideMenu: () => IMenuOpenCloseAction;
+	engineStarted: IEngineStatusReducer;
 }
 
 const HeaderC = React.memo(
@@ -50,6 +52,7 @@ const HeaderC = React.memo(
 		notifyEngineStopped,
 		getDevReloadEngineStatus,
 		openCloseSideMenu,
+		engineStarted,
 	}: Props) => {
 		const { data: signInCheckResult } = useSigninCheck();
 
@@ -81,7 +84,10 @@ const HeaderC = React.memo(
 		const closeWindow = async (event: MouseEvent) => {
 			event.preventDefault();
 
-			const res: MessageBoxReturnValue = await ipcRenderer.invoke(IPC_SHOW_CLOSE_WINDOW_DIALOG);
+			const res: MessageBoxReturnValue = await ipcRenderer.invoke(
+				IPC_SHOW_CLOSE_WINDOW_DIALOG,
+				engineStarted.value,
+			);
 
 			if (res.response == 0) {
 				await ipcRenderer.invoke(IPC_WINDOW_CLOSED);
@@ -229,11 +235,10 @@ const HeaderC = React.memo(
 	},
 );
 
-const mapStateToProps = (state: IAppState) => {
-	return {
-		maximizedClass: state.headerMaximizedClass,
-	};
-};
+const mapStateToProps = (state: IAppState) => ({
+	maximizedClass: state.headerMaximizedClass,
+	engineStarted: state.engineStarted,
+});
 
 HeaderC.displayName = 'Header';
 
