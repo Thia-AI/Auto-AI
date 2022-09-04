@@ -39,6 +39,9 @@ class WindowIPCActions {
 		return this._loginWindow;
 	}
 
+	/**
+	 * Closes Thia.
+	 */
 	closeApp = () => {
 		this.window.close();
 		app.quit();

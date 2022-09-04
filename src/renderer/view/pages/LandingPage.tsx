@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Box, Button, Center, Heading, chakra, Flex, HStack, VStack } from '@chakra-ui/react';
+import { Box, Button, Center, Heading, chakra, VStack } from '@chakra-ui/react';
 import { useAuth } from 'reactfire';
 import { signInWithCustomToken, setPersistence } from 'firebase/auth';
 import { ipcRenderer } from 'electron';
