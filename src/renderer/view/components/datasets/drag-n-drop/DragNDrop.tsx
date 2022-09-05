@@ -87,6 +87,12 @@ const DragNDropC = React.memo(
 			}
 		};
 
+		const refreshDatasetPageInputs = (datasetID: string) => {
+			// Reset active dataset inputs for previewing.
+			const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
+			getNextPageInputs(datasetID, someOldDateBase64);
+		};
+
 		/**
 		 * Uploads files to dataset.
 		 *
@@ -148,9 +154,7 @@ const DragNDropC = React.memo(
 				updateFiles([]);
 				await sleep(300);
 				if (activeDatasetInputs.value.length < MAX_INPUTS_PER_PAGE) {
-					// Reset active dataset inputs for previewing.
-					const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
-					getNextPageInputs(datasetID, someOldDateBase64);
+					refreshDatasetPageInputs(datasetID);
 				}
 			}
 		};
@@ -222,7 +226,12 @@ const DragNDropC = React.memo(
 				<JobProgress
 					jobID={uploadJobID}
 					initialJob={uploadJob}
-					clearJobIDState={() => setUploadJobID(undefined)}
+					clearJobIDState={async () => {
+						setUploadJobID(undefined);
+						await refreshDataset();
+						const datasetID = pathname.split('/').pop() ?? '';
+						refreshDatasetPageInputs(datasetID);
+					}}
 				/>
 				<DragNDropPreview directory={fileDirectory} />
 				<DatasetLabelInputPreview />
