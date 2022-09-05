@@ -20,18 +20,29 @@ import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inp
 import { MAX_INPUTS_PER_PAGE } from '_/shared/engineConstants';
 import { sleep, toast } from '_/renderer/view/helpers/functionHelpers';
 import { useUser } from 'reactfire';
+import { IDatasetFetchingAction } from '_/renderer/state/active-dataset-page/model/actionTypes';
+import { datasetFetchingAction } from '_/renderer/state/active-dataset-page/ActiveDatasetActions';
 
 interface Props {
 	files: string[];
 	updateFiles: (files: string[]) => IUpdateDatasetPreviewFilesAction;
 	pathname: string;
 	getNextPageInputs: (datasetID: string, cursorDate: string) => void;
+	setDatasetFetching: (value: boolean) => IDatasetFetchingAction;
 	activeDatasetInputs: IActiveDatasetInputsReducer;
 	refreshDataset: () => Promise<void>;
 }
 
 const DragNDropC = React.memo(
-	({ files, updateFiles, pathname, getNextPageInputs, activeDatasetInputs, refreshDataset }: Props) => {
+	({
+		files,
+		updateFiles,
+		pathname,
+		getNextPageInputs,
+		activeDatasetInputs,
+		refreshDataset,
+		setDatasetFetching,
+	}: Props) => {
 		const [fileDirectory, setFileDirectory] = useState('');
 		const [imagesUploading, setImagesUploading] = useState(false);
 		const inputColor = mode('thia.gray.700', 'thia.gray.300');
@@ -168,6 +179,15 @@ const DragNDropC = React.memo(
 			}
 		};
 
+		const onJobFinished = async () => {
+			setUploadJobID(undefined);
+			setDatasetFetching(true);
+			await refreshDataset();
+			const datasetID = pathname.split('/').pop() ?? '';
+			refreshDatasetPageInputs(datasetID);
+			setDatasetFetching(false);
+		};
+
 		return (
 			<Flex w='full' alignItems='flex-start' flexDir='column'>
 				<HStack w='full' mb='2'>
@@ -223,16 +243,7 @@ const DragNDropC = React.memo(
 						</Button>
 					</VStack>
 				</HStack>
-				<JobProgress
-					jobID={uploadJobID}
-					initialJob={uploadJob}
-					clearJobIDState={async () => {
-						setUploadJobID(undefined);
-						await refreshDataset();
-						const datasetID = pathname.split('/').pop() ?? '';
-						refreshDatasetPageInputs(datasetID);
-					}}
-				/>
+				<JobProgress jobID={uploadJobID} initialJob={uploadJob} onJobFinished={onJobFinished} />
 				<DragNDropPreview directory={fileDirectory} />
 				<DatasetLabelInputPreview />
 			</Flex>
@@ -254,4 +265,5 @@ const mapStateToProps = (state: IAppState) => ({
 export const DragNDrop = connect(mapStateToProps, {
 	updateFiles: updateDatasetPreviewFilesAction,
 	getNextPageInputs: getNextPageInputsAction,
+	setDatasetFetching: datasetFetchingAction,
 })(DragNDropC);

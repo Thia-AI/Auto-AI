@@ -7,12 +7,12 @@ import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHa
 
 interface Props {
 	jobID?: string;
-	clearJobIDState: () => void;
+	onJobFinished: () => void;
 	initialJob: Job;
 }
 
 const JobProgressC = React.memo((props: Props) => {
-	const { jobID, clearJobIDState, initialJob } = props;
+	const { jobID, onJobFinished, initialJob } = props;
 
 	const intervalTime = 750;
 	const [intervalID, setIntervalID] = useState<number>();
@@ -43,7 +43,7 @@ const JobProgressC = React.memo((props: Props) => {
 					if (!err) {
 						const resDataJob = resData as Job;
 						if (resDataJob.has_finished) {
-							clearJobIDState();
+							onJobFinished();
 							return;
 						}
 						setJob(resDataJob);
