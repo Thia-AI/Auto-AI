@@ -26,8 +26,8 @@ import {
 } from './dataset-list/model/reducerTypes';
 import { notificationsReducer } from './notifications/NotificationReducers';
 import { INotificationsReducer } from './notifications/model/reducerTypes';
-import { activeDatasetReducer } from './active-dataset-page/ActiveDatasetReducers';
-import { IActiveDatasetReducer } from './active-dataset-page/model/reducerTypes';
+import { activeDatasetReducer, datasetFetchingReducer } from './active-dataset-page/ActiveDatasetReducers';
+import { IActiveDatasetReducer, IDatasetFetchingReducer } from './active-dataset-page/model/reducerTypes';
 import {
 	activeDatasetInputsPreviewIDReducer,
 	activeDatasetInputsReducer,
@@ -69,6 +69,7 @@ const createRootReducer = (history) =>
 		activeDatasetInputsPreviewID: activeDatasetInputsPreviewIDReducer,
 		nextPageCursor: nextPageCursorReducer,
 		previousPageCursor: previousPageCursorReducer,
+		datasetFetching: datasetFetchingReducer,
 	});
 
 /**
@@ -94,6 +95,7 @@ export interface IAppState {
 	activeDatasetInputsPreviewID: IActiveDatasetInputsPreviewIDReducer;
 	nextPageCursor: INextPageCursorReducer;
 	previousPageCursor: IPreviousPageCursorReducer;
+	datasetFetching: IDatasetFetchingReducer;
 }
 
 export default createRootReducer;

@@ -1,5 +1,5 @@
 import { Dataset, Label, Labels } from '_/renderer/view/helpers/constants/engineTypes';
-import { CHANGE_ACTIVE_DATASET, UPDATE_ACTIVE_DATASET_LABEL } from '_state/types';
+import { CHANGE_ACTIVE_DATASET, DATASET_FETCHING, UPDATE_ACTIVE_DATASET_LABEL } from '_state/types';
 
 /**
  * When we want to change the active dataset (for Dataset page).
@@ -20,5 +20,15 @@ export interface IUpdateDatasetLabelAction {
 	payload: {
 		labelValue: string;
 		label: Label;
+	};
+}
+
+/**
+ * When dataset is being fetched.
+ */
+export interface IDatasetFetchingAction {
+	type: typeof DATASET_FETCHING;
+	payload: {
+		value: boolean;
 	};
 }

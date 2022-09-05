@@ -9,3 +9,10 @@ export interface IActiveDatasetReducer {
 		labels: Labels;
 	};
 }
+
+/**
+ * When a dataset is being fetched.
+ */
+export interface IDatasetFetchingReducer {
+	value: boolean;
+}
