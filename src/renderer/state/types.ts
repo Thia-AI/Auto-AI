@@ -108,6 +108,11 @@ export const CHANGE_ACTIVE_DATASET = 'CHANGE_ACTIVE_DATASET';
  */
 export const UPDATE_ACTIVE_DATASET_LABEL = 'UPDATE_ACTIVE_DATASET_LABEL';
 
+/**
+ * When dataset/dataset inputs are being fetched.
+ */
+export const DATASET_FETCHING = 'DATASET_FETCHING';
+
 // Active Dataset Inputs
 
 /**

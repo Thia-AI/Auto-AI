@@ -1,7 +1,7 @@
 import { nullDataset } from '_/renderer/view/helpers/constants/engineTypes';
-import { CHANGE_ACTIVE_DATASET, UPDATE_ACTIVE_DATASET_LABEL } from '_state/types';
-import { IChangeActiveDatasetAction, IUpdateDatasetLabelAction } from './model/actionTypes';
-import { IActiveDatasetReducer } from './model/reducerTypes';
+import { CHANGE_ACTIVE_DATASET, DATASET_FETCHING, UPDATE_ACTIVE_DATASET_LABEL } from '_state/types';
+import { IChangeActiveDatasetAction, IDatasetFetchingAction, IUpdateDatasetLabelAction } from './model/actionTypes';
+import { IActiveDatasetReducer, IDatasetFetchingReducer } from './model/reducerTypes';
 
 const initialActiveDatasetState: IActiveDatasetReducer = {
 	value: {
@@ -33,6 +33,29 @@ export const activeDatasetReducer = (
 			};
 			stateCopy.value.labels[action.payload.labelValue] = action.payload.label;
 			return stateCopy;
+		default:
+			return state;
+	}
+};
+
+const initialDatasetFetchingState: IDatasetFetchingReducer = {
+	value: false,
+};
+
+/**
+ * State for when a dataset is being fetched.
+ *
+ * @ts
+ */
+export const datasetFetchingReducer = (
+	state = initialDatasetFetchingState,
+	action: IDatasetFetchingAction,
+): IDatasetFetchingReducer => {
+	switch (action.type) {
+		case DATASET_FETCHING:
+			return {
+				value: action.payload.value,
+			};
 		default:
 			return state;
 	}
