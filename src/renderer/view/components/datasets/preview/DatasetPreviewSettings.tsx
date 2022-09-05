@@ -64,7 +64,6 @@ const DatasetPreviewSettingsC = React.memo(
 		const [rejectedLabelFiles, setRejectedLabelFiles] = useState<FileRejection[]>([]);
 		const [uploadingLabelFile, setUploadingLabelFile] = useState(false);
 		const [batchLabelJobIntervalID, setBatchLabelJobIntervalID] = useState<number>();
-		const [_, _s] = useState(false);
 
 		const cancelUploadLabelsButtonRef = useRef(null);
 
