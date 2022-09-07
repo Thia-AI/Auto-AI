@@ -76,6 +76,11 @@ export const RecentActivities = React.memo(() => {
 		await fetchActivities();
 	};
 
+	// Clears sizeMap on new activities
+	useEffect(() => {
+		sizeMap.current = {};
+	}, [activities]);
+
 	const renderActivities = () => {
 		if (activities.length == 0) {
 			return (
