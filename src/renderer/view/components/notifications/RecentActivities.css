@@ -1,5 +1,6 @@
 .list-dark::-webkit-scrollbar {
 	width: 6px;
+	height: 6px;
 	background: var(--chakra-colors-thia-gray-600);
 }
 

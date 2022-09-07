@@ -118,7 +118,7 @@ export const RecentActivity = React.memo(({ data, index, style }: Props) => {
 						id='clearActivity'
 						className='tooltip'
 						delayShow={300}
-						place='bottom'
+						place='left'
 						globalEventOff='mouseout'>
 						<Box as='span'>Clear Activity</Box>
 					</ReactTooltip>
