@@ -1,5 +1,4 @@
 import {
-	Accordion,
 	Box,
 	Center,
 	Divider,
@@ -13,14 +12,16 @@ import {
 	useColorModeValue as mode,
 	VStack,
 } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { VariableSizeList as List } from 'react-window';
 import { VscClearAll } from 'react-icons/vsc';
 import ReactTooltip from 'react-tooltip';
 import { useUser } from 'reactfire';
+import AutoSizer from '../autosizer/AutoSizer.jsx';
 import { ElectronStoreActivity, isElectronStoreActivityArrayTypeGuard } from '_/main/store/activityStoreManager';
-import { useVerticalScrollbar } from '../../helpers/hooks/scrollbar';
 import { deleteAllActivities, getAllActivities } from '../../helpers/ipcHelpers';
 import { RecentActivity } from './RecentActivity';
+import './RecentActivities.css';
 
 /**
  * Component that renders the recent notificatiopns on the dashboard.
@@ -33,9 +34,26 @@ export const RecentActivities = React.memo(() => {
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const clearActivitiesColor = mode('thia.gray.700', 'thia.gray.300');
 	const clearActivitiesHoverColor = mode('thia.purple.400', 'thia.purple.300');
-
-	const scrollBarSX = useVerticalScrollbar('6px');
+	const listClass = mode('list-light', 'list-dark');
 	const noActivitiesHeadingSize = useBreakpointValue({ base: '6xl', lg: '7xl', xl: '8xl', '2xl': '9xl' });
+
+	const listRef = useRef<List>(null);
+	const listInnerRef = useRef<HTMLDivElement>(null);
+
+	interface SizeMap {
+		[key: number]: number;
+	}
+
+	const sizeMap = useRef<SizeMap>({});
+
+	const setSize = useCallback((index: number, size) => {
+		if (listRef.current) {
+			sizeMap.current = { ...sizeMap.current, [index]: size };
+			listRef.current.resetAfterIndex(index);
+		}
+	}, []);
+
+	const getSize = (index: number) => sizeMap.current[index] || 60;
 
 	const { data: user } = useUser();
 
@@ -58,6 +76,11 @@ export const RecentActivities = React.memo(() => {
 		await fetchActivities();
 	};
 
+	// Clears sizeMap on new activities
+	useEffect(() => {
+		sizeMap.current = {};
+	}, [activities]);
+
 	const renderActivities = () => {
 		if (activities.length == 0) {
 			return (
@@ -69,25 +92,26 @@ export const RecentActivities = React.memo(() => {
 			);
 		}
 		return (
-			<Skeleton
-				w='full'
-				h='full'
-				pr='2'
-				isLoaded={activitiesLoaded}
-				overflowY='auto'
-				sx={scrollBarSX}
-				maxH='full'>
-				<Accordion allowMultiple allowToggle>
-					{activities.map((activity) => {
-						return (
-							<RecentActivity
-								key={activity.id}
-								activity={activity}
-								refreshActivitiesList={fetchActivities}
-							/>
-						);
-					})}
-				</Accordion>
+			<Skeleton w='full' h='full' pr='2' isLoaded={activitiesLoaded} overflowY='auto' maxH='full'>
+				<AutoSizer>
+					{({ height, width }) => (
+						<List
+							height={height}
+							itemCount={activities.length}
+							itemSize={getSize}
+							innerRef={listInnerRef}
+							width={width}
+							itemData={{
+								activities,
+								refreshActivitiesList: fetchActivities,
+								setSize,
+							}}
+							ref={listRef}
+							className={listClass}>
+							{RecentActivity}
+						</List>
+					)}
+				</AutoSizer>
 			</Skeleton>
 		);
 	};

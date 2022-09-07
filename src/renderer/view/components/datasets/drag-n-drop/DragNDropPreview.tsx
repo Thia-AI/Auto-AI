@@ -1,7 +1,7 @@
 import { Box, Center, Text, useColorModeValue as mode } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import { FixedSizeGrid } from 'react-window';
-import AutoSizer from './AutoSizer.jsx';
+import { FixedSizeGrid as Grid } from 'react-window';
+import AutoSizer from '../../autosizer/AutoSizer.jsx';
 import { DragNDropPreviewCell } from './PreviewCell';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
@@ -18,6 +18,7 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 	const previewPanelTextColor = mode('thia.gray.600', 'thia.gray.400');
 	const previewBG = mode('thia.gray.100', 'thia.gray.750');
 	const borderColor = mode('thia.gray.150', 'thia.gray.700');
+	const gridClass = mode('grid-light', 'grid-dark');
 	const gridHeight = 385;
 	const itemHeight = 125;
 	const itemWidth = 125;
@@ -53,8 +54,8 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 							</Center>
 						);
 					return (
-						<FixedSizeGrid
-							className='drag-drop-preview'
+						<Grid
+							className={gridClass}
 							style={{
 								overflowY: 'hidden',
 								background: previewBG,
@@ -67,7 +68,7 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 							width={width}
 							itemData={createItemData}>
 							{DragNDropPreviewCell}
-						</FixedSizeGrid>
+						</Grid>
 					);
 				}}
 			</AutoSizer>

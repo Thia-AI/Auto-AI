@@ -1,33 +1,30 @@
-import {
-	AccordionButton,
-	AccordionIcon,
-	AccordionItem,
-	AccordionPanel,
-	Box,
-	Spacer,
-	BackgroundProps,
-	Text,
-	useColorModeValue as mode,
-	Icon,
-	useBreakpointValue,
-} from '@chakra-ui/react';
-import React from 'react';
+import { Box, BackgroundProps, Text, useColorModeValue as mode, Icon, HStack, Divider } from '@chakra-ui/react';
+import React, { useEffect, useRef } from 'react';
 import { AiOutlineClear } from 'react-icons/ai';
 import ReactTooltip from 'react-tooltip';
 import { useUser } from 'reactfire';
+import { areEqual } from 'react-window';
 import { ElectronStoreActivity } from '_/main/store/activityStoreManager';
 import { deleteActivity } from '../../helpers/ipcHelpers';
 import { capitalizeFirstLetter } from '../../helpers/textHelper';
 
-interface Props {
-	activity: ElectronStoreActivity;
+interface ActivityData {
+	activities: ElectronStoreActivity[];
 	refreshActivitiesList: () => Promise<void>;
+	setSize: (index: number, size: number) => void;
+}
+interface Props {
+	data: ActivityData;
+	style: React.CSSProperties;
+	index: number;
 }
 
 /**
  * Component that renders a single recent notification.
  */
-export const RecentActivity = React.memo(({ activity, refreshActivitiesList }: Props) => {
+export const RecentActivity = React.memo(({ data, index, style }: Props) => {
+	const { activities, refreshActivitiesList, setSize } = data;
+	const activity = activities[index];
 	const borderColor = mode(
 		'var(--chakra-colors-thia-gray-200) !important',
 		'var(--chakra-colors-thia-gray-600) !important',
@@ -45,9 +42,15 @@ export const RecentActivity = React.memo(({ activity, refreshActivitiesList }: P
 	const clearActivityColor = mode('thia.gray.700', 'thia.gray.300');
 	const clearActivityHoverColor = mode('thia.purple.400', 'thia.purple.300');
 
-	const activityTitleMaxWidth = useBreakpointValue({ base: '80%', lg: '85%', xl: '88%', '2xl': '90%' });
+	const activityRef = useRef<HTMLDivElement | null>(null);
 
 	const { data: user } = useUser();
+
+	useEffect(() => {
+		if (activityRef.current) {
+			setSize(index, activityRef.current.getBoundingClientRect().height + 4);
+		}
+	}, [setSize, index, activityRef.current]);
 
 	const indicatorColor = (): BackgroundProps['bg'] => {
 		switch (activity.status) {
@@ -71,61 +74,64 @@ export const RecentActivity = React.memo(({ activity, refreshActivitiesList }: P
 		await deleteActivity(activity.id, user.uid);
 		await refreshActivitiesList();
 	};
+
 	return (
-		<AccordionItem
-			w='full'
-			mt='2'
-			shadow={shadow}
-			border='none'
-			borderWidth='1px'
-			borderStyle='solid'
-			borderColor={borderColor}
-			borderRadius='md'>
-			<AccordionButton>
-				<Box
-					w='11px'
-					h='11px'
-					borderRadius='50%'
-					bg={indicatorColor()}
-					mr='1'
-					title={capitalizeFirstLetter(activity.status ?? '')}
-				/>
-				<Box flex='1' textAlign='left' maxW={activityTitleMaxWidth}>
-					<Text fontSize='sm' title={activity.title} fontWeight='700' noOfLines={1}>
-						{activity.title}
+		<Box w='full' px='1' py='0.5' style={style} ref={activityRef}>
+			<Box
+				w='full'
+				px='2'
+				pt='1'
+				shadow={shadow}
+				border='none'
+				borderWidth='1px'
+				borderStyle='solid'
+				borderColor={borderColor}
+				borderRadius='md'>
+				<HStack w='full'>
+					<Box
+						w='11px'
+						h='11px'
+						borderRadius='50%'
+						bg={indicatorColor()}
+						mr='1'
+						title={capitalizeFirstLetter(activity.status ?? '')}
+					/>
+					<Box flex='1' textAlign='left' maxW='full'>
+						<Text fontSize='sm' title={activity.title} fontWeight='700' noOfLines={1}>
+							{activity.title}
+						</Text>
+					</Box>
+					<Icon
+						data-tip
+						data-for='clearActivity'
+						cursor='pointer'
+						willChange='transform, color'
+						transition='all 200ms'
+						as={AiOutlineClear}
+						mx='1'
+						outline='none'
+						color={clearActivityColor}
+						onClick={clearActivity}
+						_hover={{ color: clearActivityHoverColor, transform: 'scale(1.1)' }}
+					/>
+					<ReactTooltip
+						id='clearActivity'
+						className='tooltip'
+						delayShow={300}
+						place='left'
+						globalEventOff='mouseout'>
+						<Box as='span'>Clear Activity</Box>
+					</ReactTooltip>
+				</HStack>
+				<Divider mt='1' />
+				<Box py='1'>
+					<Text fontSize='xs' userSelect='text' color={descriptionColor}>
+						{activity.description}
 					</Text>
 				</Box>
-				<Spacer />
-				<Icon
-					data-tip
-					data-for='clearActivity'
-					cursor='pointer'
-					willChange='transform, color'
-					transition='all 200ms'
-					as={AiOutlineClear}
-					mx='1'
-					outline='none'
-					color={clearActivityColor}
-					onClick={clearActivity}
-					_hover={{ color: clearActivityHoverColor, transform: 'scale(1.1)' }}
-				/>
-				<ReactTooltip
-					id='clearActivity'
-					className='tooltip'
-					delayShow={300}
-					place='bottom'
-					globalEventOff='mouseout'>
-					<Box as='span'>Clear Activity</Box>
-				</ReactTooltip>
-				<AccordionIcon />
-			</AccordionButton>
-			<AccordionPanel py='2'>
-				<Text fontSize='xs' userSelect='text' color={descriptionColor}>
-					{activity.description}
-				</Text>
-			</AccordionPanel>
-		</AccordionItem>
+			</Box>
+		</Box>
 	);
-});
+}, areEqual);
 
 RecentActivity.displayName = 'RecentActivity';

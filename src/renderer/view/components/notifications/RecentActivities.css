@@ -1,17 +1,18 @@
-.grid-dark::-webkit-scrollbar {
+.list-dark::-webkit-scrollbar {
+	width: 6px;
 	height: 6px;
 	background: var(--chakra-colors-thia-gray-600);
 }
 
-.grid-dark::-webkit-scrollbar-thumb {
+.list-dark::-webkit-scrollbar-thumb {
 	background: var(--chakra-colors-thia-gray-950);
 }
 
-.grid-light::-webkit-scrollbar {
-	height: 6px;
+.list-light::-webkit-scrollbar {
+	width: 6px;
 	background: var(--chakra-colors-thia-gray-100);
 }
 
-.grid-light::-webkit-scrollbar-thumb {
+.list-light::-webkit-scrollbar-thumb {
 	background: var(--chakra-colors-thia-gray-950);
 }
