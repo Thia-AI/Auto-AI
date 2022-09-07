@@ -1,20 +1,5 @@
-import {
-	AccordionButton,
-	AccordionIcon,
-	AccordionItem,
-	AccordionPanel,
-	Box,
-	Spacer,
-	BackgroundProps,
-	Text,
-	useColorModeValue as mode,
-	Icon,
-	useBreakpointValue,
-	VStack,
-	HStack,
-	Divider,
-} from '@chakra-ui/react';
-import React, { useEffect, useRef, useState } from 'react';
+import { Box, BackgroundProps, Text, useColorModeValue as mode, Icon, HStack, Divider } from '@chakra-ui/react';
+import React, { useEffect, useRef } from 'react';
 import { AiOutlineClear } from 'react-icons/ai';
 import ReactTooltip from 'react-tooltip';
 import { useUser } from 'reactfire';
@@ -22,7 +7,6 @@ import { areEqual } from 'react-window';
 import { ElectronStoreActivity } from '_/main/store/activityStoreManager';
 import { deleteActivity } from '../../helpers/ipcHelpers';
 import { capitalizeFirstLetter } from '../../helpers/textHelper';
-import { useIntersectionObserverRef } from 'rooks';
 
 interface ActivityData {
 	activities: ElectronStoreActivity[];

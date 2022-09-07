@@ -1,9 +1,7 @@
 import {
-	Accordion,
 	Box,
 	Center,
 	Divider,
-	ExpandedIndex,
 	Heading,
 	HStack,
 	Icon,
@@ -21,12 +19,9 @@ import ReactTooltip from 'react-tooltip';
 import { useUser } from 'reactfire';
 import AutoSizer from '../autosizer/AutoSizer.jsx';
 import { ElectronStoreActivity, isElectronStoreActivityArrayTypeGuard } from '_/main/store/activityStoreManager';
-import { useVerticalScrollbar } from '../../helpers/hooks/scrollbar';
 import { deleteAllActivities, getAllActivities } from '../../helpers/ipcHelpers';
 import { RecentActivity } from './RecentActivity';
 import './RecentActivities.css';
-
-const Row = ({ index, style }) => <div style={style}>Row {index}</div>;
 
 /**
  * Component that renders the recent notificatiopns on the dashboard.
