@@ -47,6 +47,8 @@ const DatasetSingleInputPreviewC = React.memo(
 		const datasetID = activeDataset.value.dataset?.id;
 		const activeInput = activeDatasetInputs.value[previewInputID.value] ?? nullInput;
 		const [maxScale, setMaxScale] = useState(1);
+		const [zoomInButtonDisabled, setZoomInButtonDisabled] = useState(false);
+		const [zoomOutButtonDisabled, setZoomOutButtonDisabled] = useState(true);
 		// Load only once active input has been received
 		const [imageLoaded, imageSrc] = useProgressiveImage(
 			`${ENGINE_URL}/dataset/${datasetID}/input/${activeInput.id}`,
@@ -81,6 +83,8 @@ const DatasetSingleInputPreviewC = React.memo(
 			}
 
 			setTransform(newPositionX, newPositionY, 1, ANIMATION_TIME, 'easeInOutCubic');
+			setZoomOutButtonDisabled(true);
+			setZoomInButtonDisabled(false);
 		};
 
 		const resetImageOnWindowResize = (e: UIEvent) => {
@@ -130,6 +134,22 @@ const DatasetSingleInputPreviewC = React.memo(
 			);
 		};
 
+		const handleZoomChange = (scale: number, previousScale: number) => {
+			if (scale > previousScale) {
+				// Zoomed in
+				if (scale === maxScale) {
+					setZoomInButtonDisabled(true);
+				}
+				setZoomOutButtonDisabled(false);
+			} else {
+				// Zoomed out
+				if (scale === 1) {
+					setZoomOutButtonDisabled(true);
+				}
+				setZoomInButtonDisabled(false);
+			}
+		};
+
 		const renderPreview = () => {
 			return (
 				<Box
@@ -146,14 +166,16 @@ const DatasetSingleInputPreviewC = React.memo(
 						maxScale={maxScale}
 						panning={{ velocityDisabled: false }}
 						pinch={{ disabled: true }}>
-						{({ resetTransform, centerView, zoomIn, zoomOut, setTransform }) => {
+						{({ resetTransform, centerView, zoomIn, zoomOut, setTransform, state }) => {
 							setTransformRef.current = setTransform;
+							handleZoomChange(state.scale, state.previousScale);
 							return (
 								<Box position='relative' w='full' h='full'>
 									<HStack position='absolute' zIndex={2} right='2' top='2'>
 										<Button
 											colorScheme='thia.purple'
 											size={buttonSize}
+											isDisabled={zoomInButtonDisabled}
 											onClick={() => {
 												zoomIn();
 											}}>
@@ -162,6 +184,7 @@ const DatasetSingleInputPreviewC = React.memo(
 										<Button
 											colorScheme='thia.purple'
 											size={buttonSize}
+											isDisabled={zoomOutButtonDisabled}
 											onClick={() => {
 												zoomOut(0.5, ANIMATION_TIME, 'easeInOutCubic');
 											}}>
