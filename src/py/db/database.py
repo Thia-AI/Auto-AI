@@ -90,7 +90,6 @@ class DBManager(object):
             self.__connection.execute('''CREATE TABLE IF NOT EXISTS labels (
                 id varchar(32) not null primary key,
                 value varchar(32) not null,
-                input_count integer default 0,
                 dataset_id varchar(32) not null,
                 color text not null,
                 foreign key (dataset_id) references datasets(id)

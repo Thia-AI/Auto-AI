@@ -102,7 +102,7 @@ class BulkFileTransferJob(BaseJob):
                     log(f"Copying File '{file_p.name}' failed")
             else:
                 log(f"{file_p.name} does not exist")
-        update_label_input_count('unlabelled', dataset_id, 'rgb(1, 8, 20)', num_files_transferred)
+        update_label_input_count('unlabelled', dataset_id, 'rgb(1, 8, 20)')
         self.set_status("Updating DB Records")
         update_job(self)
         add_images_to_db_batch(values_to_add_to_inputs_table)
