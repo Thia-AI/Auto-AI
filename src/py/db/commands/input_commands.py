@@ -4,6 +4,7 @@ from config.constants import NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 from db.row_accessors import input_from_row
+from log.logger import log
 
 
 def add_images_to_db_batch(values):
@@ -43,6 +44,15 @@ def get_train_data_from_all_inputs(dataset_id: str):
         row_input = input_from_row(row)
         inputs.append([row_input['file_name'], row_input['label']])
     return np.array(inputs)
+
+
+def get_num_inputs_in_dataset(dataset_id: str, label: str):
+    cmd = DBCommand(name=f"Get Num Inputs Dataset: {dataset_id} and label: {label}",
+                    command=f'''SELECT COUNT(*) as num_inputs FROM input where dataset_id = ? and label = ?''',
+                    values=(dataset_id, label))
+    rows = DBManager.get_instance().execute(cmd)
+    for row in rows:
+        return row['num_inputs']
 
 
 def get_input(uuid: str):

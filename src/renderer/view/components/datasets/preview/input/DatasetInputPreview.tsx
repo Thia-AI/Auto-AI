@@ -6,34 +6,32 @@ import {
 	resetActiveDatasetInputsAction,
 } from '_/renderer/state/active-dataset-inputs/ActiveDatasetInputsActions';
 import { IResetActiveDatasetInputsAction } from '_/renderer/state/active-dataset-inputs/model/actionTypes';
-import { IActiveDatasetInputsReducer } from '_/renderer/state/active-dataset-inputs/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
 import { DatasetInputLabels } from '../labels/DatasetInputLabels';
 import { DatasetSingleInputPreview } from './DatasetSingleInputPreview';
 import { DatasetMultiInputPreview } from './DatasetMultiInputPreview';
 import { DatasetSingleInputPreviewDetails } from './DatasetSingleInputPreviewDetails';
 import { DatasetPreviewSettings } from '../DatasetPreviewSettings';
+import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 
 interface Props {
-	pathname: string;
-	activeDatasetInputs: IActiveDatasetInputsReducer;
+	activeDataset: IActiveDatasetReducer;
 	getNextPageInputs: (datasetID: string, cursorDate: string) => void;
 	resetPageInputs: () => IResetActiveDatasetInputsAction;
 }
 
-const DatasetInputPreviewC = React.memo((props: Props) => {
-	// Dataset ID from pathname. Pathname should be /dataset/<dataset-id>
-	const datasetID: string = props.pathname.split('/').pop()!;
-
+const DatasetInputPreviewC = React.memo(({ getNextPageInputs, activeDataset, resetPageInputs }: Props) => {
 	useEffect(() => {
-		// Get next pages from oldest date possible.
-		const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
-		props.getNextPageInputs(datasetID, someOldDateBase64);
-		return () => {
-			// Reset active inputs.
-			props.resetPageInputs();
-		};
-	}, []);
+		if (activeDataset.value.dataset.id.length > 0) {
+			// Get next pages from oldest date possible.
+			const someOldDateBase64 = Buffer.from(new Date(0).toLocaleString()).toString('base64');
+			getNextPageInputs(activeDataset.value.dataset.id, someOldDateBase64);
+			return () => {
+				// Reset active inputs.
+				resetPageInputs();
+			};
+		}
+	}, [activeDataset.value]);
 
 	return (
 		<Flex
@@ -60,8 +58,7 @@ const DatasetInputPreviewC = React.memo((props: Props) => {
 DatasetInputPreviewC.displayName = 'DatasetInputPreview';
 
 const mapStateToProps = (state: IAppState) => ({
-	activeDatasetInputs: state.activeDatasetInputs,
-	pathname: state.router.location.pathname,
+	activeDataset: state.activeDataset,
 });
 
 /**

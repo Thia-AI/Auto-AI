@@ -90,10 +90,12 @@ def input_from_row(row):
 
 
 def label_from_row(row):
+    from db.commands.input_commands import get_num_inputs_in_dataset
+
     return {
         'id': row['id'],
         'dataset_id': row['dataset_id'],
         'value': row['value'],
-        'input_count': row['input_count'],
-        'color': row['color']
+        'color': row['color'],
+        'input_count': get_num_inputs_in_dataset(row['dataset_id'], row['value'])
     }

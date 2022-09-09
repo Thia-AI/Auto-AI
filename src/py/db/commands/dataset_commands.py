@@ -45,7 +45,7 @@ def add_label(label: str, dataset_id: str, color: str):
     DBManager.get_instance().execute(cmd)
 
 
-def update_label_input_count(label: str, dataset_id: str, color: str, input_count: int):
+def update_label_input_count(label: str, dataset_id: str, color: str):
     cmd = DBCommand(name=f"Get labels from Dataset: {dataset_id}",
                     command="SELECT * FROM labels WHERE dataset_id = ? AND value = ?",
                     values=(dataset_id, label))
@@ -53,13 +53,8 @@ def update_label_input_count(label: str, dataset_id: str, color: str, input_coun
     if rows is None or len(rows) == 0:
         # No label exists, add it
         cmd = DBCommand(name=f"Add Label: {label}, for Dataset: {dataset_id}",
-                        command=f'''INSERT INTO labels (id, value, input_count, dataset_id, color) VALUES (?, ?, ?, ?, ?)''',
-                        values=(uuid.uuid4().hex, label, input_count, dataset_id, color))
-    else:
-        # Label exists, update count
-        cmd = DBCommand(name=f"Add Label: {label}, for Dataset: {dataset_id}",
-                        command=f'''UPDATE labels SET input_count = input_count + ? WHERE value = ? AND dataset_id = ?''',
-                        values=(input_count, label, dataset_id))
+                        command=f'''INSERT INTO labels (id, value, dataset_id, color) VALUES (?, ?, ?, ?)''',
+                        values=(uuid.uuid4().hex, label, dataset_id, color))
     DBManager.get_instance().execute(cmd)
 
 
@@ -98,49 +93,6 @@ def update_dataset_last_accessed(dataset_id: str, last_accessed_datetime: str = 
                     command='''UPDATE datasets SET date_last_accessed = ? WHERE id = ?''',
                     values=(last_accessed_datetime, dataset_id))
     return DBManager.get_instance().execute(cmd)
-
-
-def recalibrate_label_input_counts(dataset_id: str):
-    cmd = DBCommand(name=f"Get Distinct Labels of Dataset '{dataset_id}'",
-                    command='SELECT DISTINCT label FROM input')
-    distinct_dataset_labels_rows = DBManager.get_instance().execute(cmd)
-    labels = []
-    for distinct_dataset_label_row in distinct_dataset_labels_rows:
-        labels.append(distinct_dataset_label_row['label'])
-    # Recalibrate input_count
-    for label in labels:
-        cmd = DBCommand(name=f"Get num_inputs of label '{label}' in dataset '{dataset_id}'",
-                        command='''SELECT count() AS 'num_inputs' FROM input WHERE dataset_id = ? AND label = ?''',
-                        values=(dataset_id, label))
-        num_inputs_rows = DBManager.get_instance().execute(cmd)
-        # Only contains one row
-        num_inputs_of_label = num_inputs_rows[0]['num_inputs']
-        # Update input_count
-        cmd = DBCommand(name=f"Update input count for label '{label}'",
-                        command='''UPDATE labels SET input_count = ? WHERE dataset_id = ? AND value = ?''',
-                        values=(num_inputs_of_label, dataset_id, label))
-        DBManager.get_instance().execute(cmd)
-
-
-def increment_label_input_count(dataset_id: str, label: str):
-    cmd = DBCommand(name=f"Increment Label: {label}'s input_count by 1 for Dataset: {dataset_id}",
-                    command='''UPDATE labels SET input_count = input_count + 1 WHERE dataset_id = ? AND value = ?''',
-                    values=(dataset_id, label))
-    DBManager.get_instance().execute(cmd)
-
-
-def decrement_label_input_count(dataset_id: str, label: str):
-    cmd = DBCommand(name=f"Decrement Label: {label}'s input_count by 1 for Dataset: {dataset_id}",
-                    command='''UPDATE labels SET input_count = input_count - 1 WHERE dataset_id = ? AND value = ?''',
-                    values=(dataset_id, label))
-    DBManager.get_instance().execute(cmd)
-
-
-def add_label_input_count(dataset_id: str, label: str, amount_to_add: int):
-    cmd = DBCommand(name=f"Add Label: {label}'s input_count by {amount_to_add} for Dataset: {dataset_id}",
-                    command='''UPDATE labels SET input_count = input_count + ? WHERE dataset_id = ? AND value = ?''',
-                    values=(amount_to_add, dataset_id, label))
-    DBManager.get_instance().execute(cmd)
 
 
 def delete_all_labels(dataset_id: str):

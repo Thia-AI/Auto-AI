@@ -38,9 +38,9 @@ const PaginationCellC = React.memo(
 		useEffect(() => {
 			if (datasetID && input) {
 				// Update the label each time the input changes (if dataset is loaded that is)
-				setLabel(activeDataset.value.labels[input.label]);
+				setLabel(activeDataset.value.labels[input.label] ?? nullLabel);
 			}
-		}, [datasetID, input]);
+		}, [datasetID, input, activeDataset]);
 
 		const checkIfPaginationCellIsSelected = async () => {
 			if (cellID == selectedInputPreviewID.value) {

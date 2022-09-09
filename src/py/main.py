@@ -23,15 +23,14 @@ from dataset.jobs.delete_all_inputs_from_dataset_job import DeleteAllInputsFromD
 from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from dataset.jobs.update_many_input_labels_job import UpdateManyInputLabelsJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
-    increment_label_input_count, decrement_label_input_count, update_labels_of_dataset, add_label_input_count, get_num_datasets, \
+    update_labels_of_dataset, get_num_datasets, \
     update_dataset_last_accessed
 # Export commands
 from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
+# Input commands
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    reset_labels_of_inputs, get_input, get_num_inputs, get_num_labels, update_input_label
-# Input commands
-from db.commands.input_commands import get_train_data_from_all_inputs
+    reset_labels_of_inputs, get_input, get_num_inputs, get_num_labels, update_input_label, get_train_data_from_all_inputs
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
 from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models, update_model_dataset_trained_on
@@ -716,10 +715,6 @@ def update_input_label_route(input_id: str):
 
     # Set input label to new label
     update_input_label(input_id, req_data['new_label'])
-    # Increment current label input count
-    increment_label_input_count(dataset_id, req_data['new_label'])
-    # Decrement old label input count
-    decrement_label_input_count(dataset_id, req_data['previous_label'])
     update_dataset_last_accessed(dataset_id)
     return {}, 200
 
@@ -840,14 +835,6 @@ def remove_label_from_dataset(uuid: str):
     labels = curr_labels.split(constants.DATASET_LABELS_SPLITTER)
     if req_data['label'] not in labels:
         return {'Error': f"label '{req_data['label']}' doesn't exist"}
-
-    # Transfer input count from label to delete to unlabelled
-    rows = get_label(uuid, req_data['label'])
-    label = {}
-    for row in rows:
-        label = label_from_row(row)
-    input_count_to_transfer = label['input_count']
-    add_label_input_count(uuid, 'unlabelled', input_count_to_transfer)
     # Remove from labels
     delete_label(req_data['label'], uuid)
     labels.remove(req_data['label'])
