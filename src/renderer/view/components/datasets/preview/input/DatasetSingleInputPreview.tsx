@@ -6,11 +6,13 @@ import {
 	Center,
 	chakra,
 	HStack,
+	Icon,
 	Image,
 	LayoutProps,
 	Spinner,
 	useBreakpointValue,
 	useColorModeValue as mode,
+	useDisclosure,
 } from '@chakra-ui/react';
 import { IAppState } from '_/renderer/state/reducers';
 import { connect } from 'react-redux';
@@ -30,6 +32,8 @@ import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { resolutionToMegapixels } from '_/renderer/view/helpers/functionHelpers';
+import { BsTrash } from 'react-icons/bs';
+import { DeleteImageDialog } from './DeleteImageDialog';
 
 interface Props {
 	activeDatasetInputs: IActiveDatasetInputsReducer;
@@ -49,6 +53,11 @@ const DatasetSingleInputPreviewC = React.memo(
 		const [maxScale, setMaxScale] = useState(1);
 		const [zoomInButtonDisabled, setZoomInButtonDisabled] = useState(false);
 		const [zoomOutButtonDisabled, setZoomOutButtonDisabled] = useState(true);
+		const {
+			isOpen: isDeleteImageDialogOpen,
+			onClose: closeDeleteImageDialog,
+			onOpen: openDeleteImageDialog,
+		} = useDisclosure();
 		// Load only once active input has been received
 		const [imageLoaded, imageSrc] = useProgressiveImage(
 			`${ENGINE_URL}/dataset/${datasetID}/input/${activeInput.id}`,
@@ -137,13 +146,13 @@ const DatasetSingleInputPreviewC = React.memo(
 		const handleZoomChange = (scale: number, previousScale: number) => {
 			if (scale > previousScale) {
 				// Zoomed in
-				if (scale === maxScale) {
+				if (scale >= maxScale) {
 					setZoomInButtonDisabled(true);
 				}
 				setZoomOutButtonDisabled(false);
 			} else {
 				// Zoomed out
-				if (scale === 1) {
+				if (scale <= 1) {
 					setZoomOutButtonDisabled(true);
 				}
 				setZoomInButtonDisabled(false);
@@ -204,6 +213,13 @@ const DatasetSingleInputPreviewC = React.memo(
 											}}>
 											Reset
 										</Button>
+										<Button
+											colorScheme='red'
+											size={buttonSize}
+											title='Delete Image'
+											onClick={openDeleteImageDialog}>
+											<Icon as={BsTrash} />
+										</Button>
 									</HStack>
 									<TransformComponent
 										wrapperStyle={{
@@ -242,6 +258,12 @@ const DatasetSingleInputPreviewC = React.memo(
 							);
 						}}
 					</TransformWrapper>
+					<DeleteImageDialog
+						isOpen={isDeleteImageDialogOpen}
+						onClose={closeDeleteImageDialog}
+						activeInput={activeInput}
+						datasetID={datasetID}
+					/>
 				</Box>
 			);
 		};

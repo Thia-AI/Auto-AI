@@ -4,7 +4,6 @@ from config.constants import NUM_INSTANCES
 from db.commands.base_commands import DBCommand
 from db.database import DBManager
 from db.row_accessors import input_from_row
-from log.logger import log
 
 
 def add_images_to_db_batch(values):
@@ -128,3 +127,10 @@ def get_num_labels():
     rows = DBManager.get_instance().execute(cmd)
     for row in rows:
         return row[NUM_INSTANCES]
+
+
+def delete_input(input_id: str):
+    cmd = DBCommand(name=f"Delete Input {input_id}",
+                    command='''DELETE FROM input WHERE ID = ?''',
+                    values=(input_id,))
+    DBManager.get_instance().execute(cmd)
