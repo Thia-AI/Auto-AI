@@ -262,6 +262,7 @@ const DatasetSingleInputPreviewC = React.memo(
 						isOpen={isDeleteImageDialogOpen}
 						onClose={closeDeleteImageDialog}
 						activeInput={activeInput}
+						datasetID={datasetID}
 					/>
 				</Box>
 			);

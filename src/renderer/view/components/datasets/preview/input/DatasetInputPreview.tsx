@@ -31,7 +31,7 @@ const DatasetInputPreviewC = React.memo(({ getNextPageInputs, activeDataset, res
 				resetPageInputs();
 			};
 		}
-	}, [activeDataset.value]);
+	}, [activeDataset.value.dataset.id]);
 
 	return (
 		<Flex
