@@ -30,6 +30,7 @@ import { DeleteModelEngineRequest } from './actions/delete/deleteModel';
 import { GetQuickStatsEngineRequest } from './actions/get/getQuickStats';
 import { DownloadLabelsCSVEngineRequest } from './actions/get/downloadLabelsCsv';
 import { UpdateMultipleLabelsEngineRequest } from './actions/put/updateMultipleLabels';
+import { DeleteInputEngineRequest } from './actions/delete/deleteInput';
 
 /**
  * Class that manages all Engine Requests.
@@ -63,6 +64,7 @@ export class EngineRequestHandler {
 	private deleteDatasetER!: DeleteDatasetEngineRequest;
 	private deleteAllInputsFromDatasetER!: DeleteAllInputsFromDatasetEngineRequest;
 	private uploadImagetoDatasetER!: UploadImageToDatasetEngineRequest;
+	private deleteInputER!: DeleteInputEngineRequest;
 	// Dataset Labels
 	private addLabelToDatasetER!: AddLabelEngineRequest;
 	private deleteLabelFromDatasetER!: DeleteLabelEngineRequest;
@@ -136,6 +138,7 @@ export class EngineRequestHandler {
 		this.updateInputLabelER = new UpdateInputLabelEngineRequest(this.engineRequest);
 		this.downloadLabelsER = new DownloadLabelsCSVEngineRequest(this.engineRequest);
 		this.updateMultipleLabelsER = new UpdateMultipleLabelsEngineRequest(this.engineRequest);
+		this.deleteInputER = new DeleteInputEngineRequest(this.engineRequest);
 		// Telemetry
 		this.getGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
 		this.getQuickStatsER = new GetQuickStatsEngineRequest(this.engineRequest);
@@ -312,5 +315,9 @@ export class EngineRequestHandler {
 
 	public updateMultipleLabels = async (datasetID: string, formData: FormData, config?: AxiosRequestConfig) => {
 		return this.updateMultipleLabelsER.run(config, [datasetID, formData]);
+	};
+
+	public deleteInput = async (idToken: string, datasetID: string, inputID: string, config?: AxiosRequestConfig) => {
+		return this.deleteInputER.run(config, [idToken, datasetID, inputID]);
 	};
 }
