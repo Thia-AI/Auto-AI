@@ -30,10 +30,10 @@ from db.commands.export_commands import add_export_to_db, get_active_model_expor
 # Input commands
 from db.commands.input_commands import get_all_inputs, pagination_get_next_page_inputs, \
     pagination_get_prev_page_preview_inputs, pagination_get_prev_page_inputs, pagination_get_next_page_preview_inputs, \
-    reset_labels_of_inputs, get_input, get_num_inputs, get_num_labels, update_input_label, get_train_data_from_all_inputs
+    reset_labels_of_inputs, get_input, get_num_inputs, get_num_labels, update_input_label, get_train_data_from_all_inputs, delete_input
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model, update_model_train_job_id, update_model_status, get_num_models, update_model_dataset_trained_on
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, get_num_models, update_model_dataset_trained_on
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from decorators.verify_action import verify_action
 from exports.export_model_job import ExportModelJob
@@ -895,7 +895,7 @@ def update_labels_from_dataset(uuid: str):
     labels_new = constants.DATASET_LABELS_SPLITTER.join(labels_new_split)
     update_labels_of_dataset(uuid, labels_new)
 
-    # Return back dataset that was updated
+    # Return dataset that was updated
     rows = get_dataset(uuid)
     dataset = {}
     for row in rows:
@@ -907,6 +907,35 @@ def update_labels_from_dataset(uuid: str):
         label_value = label['value']
         labels_out[label_value] = label
     return {'dataset': dataset, 'labels': labels_out}, 200
+
+
+@app.route('/dataset/<string:dataset_id>/input/<string:input_id>', methods=['DELETE'])
+@verify_action()
+def delete_input_from_dataset(dataset_id: str, input_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(dataset_id) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    if len(input_id) != 32:
+        return {'Error': "ID of input is of incorrect length"}, 400
+    rows = get_dataset(dataset_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    # So that pycharm doesn't throw a warning saying dataset_name is referenced before assignment
+    dataset_name = ''
+    for row in rows:
+        dataset_name: str = row['name']
+    rows = get_input(input_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of input does not exist"}, 400
+    dataset_input = {}
+    for row in rows:
+        dataset_input = input_from_row(row)
+    # Delete input from file system
+    dataset_input_path = config.DATASET_DIR / dataset_name / config.DATASET_INPUT_DIR_NAME / dataset_input['file_name']
+    dataset_input_path.unlink(missing_ok=True)
+    # Delete input from db
+    delete_input(input_id)
+    return {'input': dataset_input}, 200
 
 
 @app.route('/dataset/<string:dataset_id>/input/<string:input_id>', methods=['GET'])
@@ -985,6 +1014,7 @@ def quick_stats_route():
 
 if __name__ == '__main__':
     import argparse
+
     parser = argparse.ArgumentParser(description='Thia ML Engine')
     parser.add_argument('environment', nargs='?')
     parser.add_argument('-u', '--user', required=True, help='User UID')
@@ -996,6 +1026,7 @@ if __name__ == '__main__':
 
     freeze_support()
     from env import environment
+
     environment.init_environment_pre_gpu(args)
 
     import tensorflow as tf
