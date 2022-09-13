@@ -10,7 +10,7 @@ const engineLog = log.scope('engine');
  * Class for creating a development EngineShell.
  */
 export class EngineShellDev extends EngineShell {
-	private engine: PythonShell;
+	private engine!: PythonShell;
 	// python options
 
 	/**
@@ -18,18 +18,23 @@ export class EngineShellDev extends EngineShell {
 	 *
 	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
 	 * @param uid UID of user signed in.
+	 * @param dontRunEngine Whether we don't want to start an Engine process. Use this if running
+	 * Engine process separately (running on PyCharm for example).
+	 *
 	 */
-	constructor(window: BrowserWindow | null, uid: string) {
+	constructor(window: BrowserWindow | null, uid: string, dontRunEngine?: boolean) {
 		super(window);
 		const options: Options = {
 			mode: 'text',
 			pythonPath: 'python',
 			args: [`--user=${uid}`, `--user-data=${app.getPath('userData')}`],
 		};
-		this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), options);
+		if (!dontRunEngine) {
+			this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), options);
+			this.onDataChangeSetup();
+			this.onExitSetup();
+		}
 		this.notifyOnceEngineHasStarted();
-		this.onDataChangeSetup();
-		this.onExitSetup();
 	}
 
 	/**

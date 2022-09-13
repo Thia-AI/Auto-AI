@@ -13,6 +13,11 @@ interface CreateDevEngineOptions {
 	 * Engine .exe process rather than the .py code.
 	 */
 	simulateProd?: boolean;
+	/**
+	 * Whether we don't want to start an Engine process. Use this if running Engine process separately
+	 * (running on PyCharm for example).
+	 */
+	dontStartEngine?: boolean;
 	uid: string;
 }
 
@@ -74,11 +79,11 @@ export class EngineHandler {
 		options: CreateDevEngineOptions,
 	): EngineShellDev | EngineShellProd => {
 		const defaultCreateDevEngineOptions = { simulateProd: false };
-		const { simulateProd, uid } = { ...defaultCreateDevEngineOptions, ...options };
+		const { simulateProd, uid, dontStartEngine } = { ...defaultCreateDevEngineOptions, ...options };
 
 		if (simulateProd) return new EngineShellProd(EngineHandler.pathToEngineProdSimulated, window, true, uid);
 
-		return new EngineShellDev(window, uid);
+		return new EngineShellDev(window, uid, dontStartEngine);
 	};
 
 	/**
