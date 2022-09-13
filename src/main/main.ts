@@ -351,7 +351,7 @@ const initRendererDev = () => {
  */
 const registerShortcuts = (win: BrowserWindow) => {
 	// Dev shortcuts
-	if (isDev) {
+	if (isEmulatedDev) {
 		// Opens dev dashboard on renderer
 		register(win, 'Ctrl+Shift+Q', () => {
 			win.webContents.send(IPC_DEV_TOGGLE_DEV_DASHBOARD);
