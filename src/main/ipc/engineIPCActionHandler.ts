@@ -71,12 +71,8 @@ class EngineIPCActionHandler {
 			this.socket.connect();
 		});
 
-		ipcMain.handle(IPC_ENGINE_STOP, () => {
-			if (this.engineShell) {
-				console.log('ENGINE_STOP CALLED');
-				this.engineShell.shutDownEngine();
-				this.engineShell = null;
-			}
+		ipcMain.handle(IPC_ENGINE_STOP, async () => {
+			await this.shutDownEngine();
 		});
 
 		ipcMain.handle(IPC_ENGINE_START, (_, uid: string) => {
@@ -103,6 +99,18 @@ class EngineIPCActionHandler {
 					}
 				});
 		});
+	};
+
+	/**
+	 * Shuts down **Engine**.
+	 *
+	 * @param notifyRenderer Whether to notifyRenderer that **Engine** has closed.
+	 */
+	shutDownEngine = async (notifyRenderer = true) => {
+		if (this.engineShell) {
+			await this.engineShell.shutDownEngine(notifyRenderer);
+			this.engineShell = null;
+		}
 	};
 
 	/**

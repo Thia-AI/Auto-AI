@@ -191,10 +191,11 @@ const createWindow = (): void => {
 	});
 
 	// Emitted when the window is closed.
-	mainWindow.on('closed', () => {
+	mainWindow.on('closed', async () => {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
+		await engineIPCActionHandler.shutDownEngine(false);
 		app.exit(1);
 	});
 
@@ -351,7 +352,7 @@ const initRendererDev = () => {
  */
 const registerShortcuts = (win: BrowserWindow) => {
 	// Dev shortcuts
-	if (isDev) {
+	if (isEmulatedDev) {
 		// Opens dev dashboard on renderer
 		register(win, 'Ctrl+Shift+Q', () => {
 			win.webContents.send(IPC_DEV_TOGGLE_DEV_DASHBOARD);

@@ -139,7 +139,7 @@ export abstract class EngineShell {
 	/**
 	 * Abstract method that shuts down engine.
 	 */
-	abstract shutDownEngine(): void;
+	abstract shutDownEngine(notifyRenderer: boolean): void;
 }
 
 /**

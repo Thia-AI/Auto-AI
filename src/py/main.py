@@ -7,14 +7,20 @@ import tempfile
 import uuid
 from datetime import datetime
 from pathlib import Path
+import sys
 
 import numpy as np
 from dateutil import parser as date_parser
 from flask import Flask, jsonify, request, send_from_directory, abort, make_response
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
+from multiprocessing import current_process
 
 from config import config
+from env import environment
+
+environment.init_common_env(sys.argv[1])
+
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
     POSSIBLE_MODEL_TYPES, ICTrainJobStatus
@@ -1012,8 +1018,13 @@ def quick_stats_route():
            }, 200
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and current_process().name == 'MainProcess':
+    log('PARSING ARGS')
     import argparse
+    # https://docs.python.org/3.7/library/multiprocessing.html?highlight=process#multiprocessing.freeze_support
+    from multiprocessing import freeze_support
+
+    freeze_support()
 
     parser = argparse.ArgumentParser(description='Thia ML Engine')
     parser.add_argument('environment', nargs='?')
@@ -1021,11 +1032,7 @@ if __name__ == '__main__':
     parser.add_argument('-ud', '--user-data', required=True, help='User Data Path')
     args = parser.parse_args()
     log(f'Args Passed: {args}')
-    # https://docs.python.org/3.7/library/multiprocessing.html?highlight=process#multiprocessing.freeze_support
-    from multiprocessing import freeze_support
 
-    freeze_support()
-    from env import environment
 
     environment.init_environment_pre_gpu(args)
 

@@ -38,11 +38,32 @@ def get_binaries(mydir):
         binaries.append((f, f, 'BINARY'))
     return binaries
 
+from PyInstaller.utils.hooks import collect_all
+all_datas = []
+all_binaries = []
+all_hiddenimports = []
+packages = [
+        'tensorflow',
+        'tensorflow_core',
+        'tensorflow_estimator'
+    ]
+print('Collecting TensorFlow Packages...')
+for package in packages:
+    datas, binaries, hiddenimports = collect_all(package)
+    all_datas.extend(datas)
+    all_binaries.extend(binaries)
+    all_hiddenimports.extend(hiddenimports)
+
+print(f'Num Datas: {len(all_datas)}')
+print(f'Num Binaries: {len(all_binaries)}')
+print(f'Num Hidden Imports: {len(all_hiddenimports)}')
+print(all_binaries)
+
 a = Analysis(['src\\py\\main.py'],
              pathex=[spec_root],
-             binaries=[],
-             datas=[],
-             hiddenimports=['engineio.async_drivers.gevent'],
+             binaries=all_binaries,
+             datas=all_datas,
+             hiddenimports=all_hiddenimports + ['engineio.async_drivers.gevent'],
              hookspath=[],
              runtime_hooks=[],
              excludes=['torch', 'matplotlib'],
