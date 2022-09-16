@@ -49,11 +49,13 @@ export class EngineShellDev extends EngineShell {
 	/**
 	 * Shuts down dev engine.
 	 */
-	shutDownEngine(): void {
+	shutDownEngine(notifyRenderer = true) {
 		engineLog.info('Shutting down engine');
 		this.shutDownEngineUniversal();
 		this.engine.kill();
-		this.notifyRendererThatEngineHasStopped();
+		if (notifyRenderer) {
+			this.notifyRendererThatEngineHasStopped();
+		}
 	}
 
 	/**
