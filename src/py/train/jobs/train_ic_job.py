@@ -498,3 +498,4 @@ def train_in_separate_process(train_data):
     else:
         # Error encountered during training, don't evaluate model
         update_extra_data({'status_description': 'Cleaning up', 'status': ICTrainJobStatus.ERROR.value})
+    sleep(10)

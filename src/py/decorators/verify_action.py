@@ -15,7 +15,7 @@ def get_server_url() -> str:
         # Production
         if len(sys.argv) > 1 and sys.argv[1] == 'simulated':
             """Engine is ran in simulated mode during App development"""
-            server_url = BACKEND_PROD_BASE_URL
+            server_url = BACKEND_DEV_BASE_URL
         elif os.getenv('THIA_LOCAL_BACKEND', 0) == '1':
             """Local backend env variable is set, use local backend instead"""
             log('WARNING: Using local backend')
