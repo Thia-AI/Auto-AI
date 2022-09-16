@@ -18,9 +18,7 @@ export class EngineShellDev extends EngineShell {
 	 *
 	 * @param window BrowserWindow that EngineShell will refer to for sending back notifications.
 	 * @param uid UID of user signed in.
-	 * @param dontRunEngine Whether we don't want to start an Engine process. Use this if running
-	 * Engine process separately (running on PyCharm for example).
-	 *
+	 * @param dontRunEngine Whether we don't want to start an Engine process. Use this if running Engine process separately (running on PyCharm for example).
 	 */
 	constructor(window: BrowserWindow | null, uid: string, dontRunEngine?: boolean) {
 		super(window);
@@ -48,6 +46,8 @@ export class EngineShellDev extends EngineShell {
 
 	/**
 	 * Shuts down dev engine.
+	 *
+	 * @param notifyRenderer Whether to notify renderer that **Engine** exited.
 	 */
 	shutDownEngine(notifyRenderer = true) {
 		engineLog.info('Shutting down engine');

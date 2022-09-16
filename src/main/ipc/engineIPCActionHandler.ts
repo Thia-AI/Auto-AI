@@ -101,6 +101,11 @@ class EngineIPCActionHandler {
 		});
 	};
 
+	/**
+	 * Shuts down **Engine**.
+	 *
+	 * @param notifyRenderer Whether to notifyRenderer that **Engine** has closed.
+	 */
 	shutDownEngine = async (notifyRenderer = true) => {
 		if (this.engineShell) {
 			await this.engineShell.shutDownEngine(notifyRenderer);

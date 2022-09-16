@@ -6,19 +6,15 @@ import { isEmulatedDev } from '../helpers/dev';
 
 import { EngineShell } from './base/engineShell';
 
+/**
+ * Windows `tasklist` command result.
+ */
 interface WindowsTaskListResult {
 	imageName: string;
 	pid: number;
 	sessionName: string;
 	sessionNumber: number;
 	memUsage: number;
-}
-
-interface WindowsTaskListResultVerbose extends WindowsTaskListResult {
-	status: 'Running' | 'Suspended' | 'Not Responding' | 'Unknown';
-	username: string;
-	cpuTime: number;
-	windowTitle: string;
 }
 
 const engineLog = log.scope('engine');
@@ -40,10 +36,17 @@ export class EngineShellProd extends EngineShell {
 		super(window);
 		this.engine = null;
 		// Kill any Engine processes before spawning one ourselves
-		this.killAnyRunningEngineProcessAndSpawnEngine(simulatedProd, enginePath, uid);
+		this.init(simulatedProd, enginePath, uid);
 	}
 
-	killAnyRunningEngineProcessAndSpawnEngine = (simulatedProd: boolean, enginePath: string, uid: string) => {
+	/**
+	 * Kills any previously running **Engine** processes and spawns a new **Engine**.
+	 *
+	 * @param simulatedProd Whether to simulate production.
+	 * @param enginePath Location of **Engine** path.
+	 * @param uid UID of user.
+	 */
+	init = (simulatedProd: boolean, enginePath: string, uid: string) => {
 		(async () => {
 			await this.killAnyRunningEngineProcess();
 			const enclosedEnginePath = `"${enginePath}"`;
@@ -63,11 +66,11 @@ export class EngineShellProd extends EngineShell {
 				engineArgsSimulated.unshift('/b');
 			}
 			if (simulatedProd) {
-				this.engine = spawn(`start ""`, engineArgsSimulated, {
+				this.engine = spawn('start ""', engineArgsSimulated, {
 					shell: true,
 				});
 			} else {
-				this.engine = spawn(`start ""`, engineArgs, {
+				this.engine = spawn('start ""', engineArgs, {
 					shell: true,
 				});
 			}
@@ -77,6 +80,9 @@ export class EngineShellProd extends EngineShell {
 		})();
 	};
 
+	/**
+	 * Kills any running **Engine** processes.
+	 */
 	killAnyRunningEngineProcess = async () => {
 		const taskListResults = (await tasklist({
 			filter: ['IMAGENAME eq engine.exe'],
@@ -105,6 +111,8 @@ export class EngineShellProd extends EngineShell {
 
 	/**
 	 * Shuts down production engine.
+	 *
+	 * @param notifyRenderer Whether to notify renderer that **Engine** exited.
 	 */
 	async shutDownEngine(notifyRenderer = true) {
 		if (!this.engine) return;
