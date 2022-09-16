@@ -1,6 +1,8 @@
 import { ipcMain, BrowserWindow, dialog } from 'electron';
 import { Socket } from 'socket.io-client';
 import { writeFile } from 'fs';
+import log from 'electron-log';
+
 const isDev = require('electron-is-dev');
 
 import {
@@ -46,16 +48,16 @@ class EngineIPCActionHandler {
 	 */
 	private initSocketEvents = (socket: Socket) => {
 		socket.on('connect', () => {
-			this.logCSIO('Connected:', socket.id);
+			this.logCSIO(`Connected: ${socket.id}`);
 		});
 
 		socket.on('disconnect', () => {
-			this.logCSIO('Disconnected:', socket.id);
+			this.logCSIO(`Disconnected: ${socket.id}`);
 		});
 
 		socket.on('jobFinished', (jobID: string) => {
 			// Job has finished, let the renderer know
-			this.logCSIO('Job Finished:', jobID);
+			this.logCSIO(`Job Finished: ${jobID}`);
 			this.window.webContents.send(IPC_ENGINE_JOB_FINISHED, jobID);
 		});
 	};
@@ -94,7 +96,7 @@ class EngineIPCActionHandler {
 						try {
 							await writeFile(filePath, csvData, { encoding: 'utf-8' }, () => {});
 						} catch (err) {
-							console.log(err);
+							log.error(err);
 						}
 					}
 				});
@@ -137,10 +139,9 @@ class EngineIPCActionHandler {
 	 * Logs Client-Side Socket-IO events.
 	 *
 	 * @param message Logging message.
-	 * @param optionalParams The {@link Console.log `console.log`}'s optional parameters.
 	 */
-	private logCSIO = (message?: any, ...optionalParams: any[]) => {
-		console.log('[CLIENT-SIO]:', message, ...optionalParams);
+	private logCSIO = (message?: any) => {
+		log.info(`[CLIENT-SIO]: ${message}`);
 	};
 	/* eslint-enable @typescript-eslint/no-explicit-any */
 }
