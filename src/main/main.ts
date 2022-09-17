@@ -236,7 +236,7 @@ const createWorker = () => {
 			// Nothing
 		});
 	browserWindowWorker.on('closed', () => {
-		console.log('Background Worker Closed');
+		log.info('Background Worker Closed');
 	});
 	browserWindowWorker.webContents.once('did-finish-load', () => {
 		workerMap[browserWindowWorker.webContents.getOSProcessId()] = browserWindowWorker;
@@ -310,7 +310,7 @@ const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
 			loginWindow?.hide();
 			mainWindow?.focus();
 		} catch (error) {
-			console.log('ERROR:', error);
+			log.error(error);
 		}
 		res.status(200).send();
 		return;
@@ -328,7 +328,7 @@ const apiPostLoginToken = async (req: Request, res: Response, io: Server) => {
  * @param extraParams Extra parameters that are passed to the `apiRouteFunction`.
  */
 const registerServerAPI = (server: Express, method: ExpressMethods, url: string, apiRouteFunction, ...extraParams) => {
-	console.log('Registering Server API');
+	log.info('Registering Server API');
 	server[method](url, (req, res) => {
 		return apiRouteFunction(req, res, ...extraParams);
 	});
@@ -401,9 +401,9 @@ if (!isSingleInstance) {
 					loadExtensionOptions: { allowFileAccess: true },
 					forceDownload: true,
 				});
-				console.log('Extension loaded:', extension);
+				log.info('Extension loaded:', extension);
 			} catch (err) {
-				console.log('Error loading extensions: ', err);
+				log.error('Error loading extensions: ' + err);
 			}
 			autoUpdater.updateConfigPath = path.join(__dirname, '../', 'dev-app-update.yml');
 			Object.defineProperty(app, 'isPackaged', {

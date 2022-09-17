@@ -5,6 +5,7 @@ import { pki, asn1, md, util } from 'node-forge';
 import express, { Request, Response, NextFunction, Express } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import log from 'electron-log';
 import path from 'path';
 import { parse } from 'url';
 import { Server } from 'socket.io';
@@ -68,11 +69,11 @@ export const startServer = () => {
 			const io = new Server(webTLS);
 
 			webTLS.listen(webAppConfig.port, () => {
-				console.log('TLS server started on port ', (webTLS?.address() as object)['port']);
+				log.info('TLS server started on port', (webTLS?.address() as object)['port']);
 				resolve([appServer, io]);
 			});
 		} catch (error) {
-			console.error('Error starting web server: ', error);
+			log.error('Error starting web server: ', error);
 			reject(error);
 		}
 	});
