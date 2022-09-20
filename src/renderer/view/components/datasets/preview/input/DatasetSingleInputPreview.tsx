@@ -30,10 +30,11 @@ import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import { ReactZoomPanPinchHandlers, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { resolutionToMegapixels } from '_/renderer/view/helpers/functionHelpers';
 import { BsTrash } from 'react-icons/bs';
 import { DeleteImageDialog } from './DeleteImageDialog';
+import { SingleInputPreviewWrapperChild } from './SingleInputPreviewWrapperChild';
 
 interface Props {
 	activeDatasetInputs: IActiveDatasetInputsReducer;
@@ -73,9 +74,11 @@ const DatasetSingleInputPreviewC = React.memo(
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const setTransformRef = useRef<any | null>(null);
 
-		const buttonSize = useBreakpointValue({ base: 'xs', xl: 'sm' }) ?? '';
-
-		const resetImage = (image: HTMLImageElement, container: HTMLDivElement, setTransform: (...any) => void) => {
+		const resetImage = (
+			image: HTMLImageElement,
+			container: HTMLDivElement,
+			setTransform: ReactZoomPanPinchHandlers['setTransform'],
+		) => {
 			const containerWidth = Math.round(container.getBoundingClientRect().width);
 			const containerHeight = Math.round(container.getBoundingClientRect().height);
 			let newPositionY = Math.abs(containerHeight - image.height) / 2;
@@ -113,21 +116,7 @@ const DatasetSingleInputPreviewC = React.memo(
 				};
 			}
 		}, [imgRef.current, containerRef.current]);
-		const megapixelToScale = (megapixels: number) => {
-			if (megapixels < 4) {
-				return 2;
-			} else if (megapixels < 8) {
-				return 3;
-			} else if (megapixels < 12) {
-				return 4;
-			} else if (megapixels < 22) {
-				return 4.5;
-			} else if (megapixels < 48) {
-				return 5;
-			} else {
-				return 6;
-			}
-		};
+
 		useEffect(() => {
 			setInputPreviewID(0);
 			return () => {
@@ -177,84 +166,25 @@ const DatasetSingleInputPreviewC = React.memo(
 						pinch={{ disabled: true }}>
 						{({ resetTransform, centerView, zoomIn, zoomOut, setTransform, state }) => {
 							setTransformRef.current = setTransform;
-							handleZoomChange(state.scale, state.previousScale);
 							return (
-								<Box position='relative' w='full' h='full'>
-									<HStack position='absolute' zIndex={2} right='2' top='2'>
-										<Button
-											colorScheme='thia.purple'
-											size={buttonSize}
-											isDisabled={zoomInButtonDisabled}
-											onClick={() => {
-												zoomIn();
-											}}>
-											+
-										</Button>
-										<Button
-											colorScheme='thia.purple'
-											size={buttonSize}
-											isDisabled={zoomOutButtonDisabled}
-											onClick={() => {
-												zoomOut(0.5, ANIMATION_TIME, 'easeInOutCubic');
-											}}>
-											-
-										</Button>
-										<Button
-											colorScheme='thia.purple'
-											size={buttonSize}
-											onClick={async () => {
-												if (imgRef.current && containerRef.current) {
-													resetImage(imgRef.current, containerRef.current, setTransform);
-												} else {
-													// Shittier version
-													resetTransform(0);
-													centerView(undefined, ANIMATION_TIME, 'easeInOutCubic');
-												}
-											}}>
-											Reset
-										</Button>
-										<Button
-											colorScheme='red'
-											size={buttonSize}
-											title='Delete Image'
-											onClick={openDeleteImageDialog}>
-											<Icon as={BsTrash} />
-										</Button>
-									</HStack>
-									<TransformComponent
-										wrapperStyle={{
-											height: '100%',
-											width: '100%',
-											zIndex: 1,
-											cursor: 'grab',
-										}}>
-										<chakra.img
-											ref={imgRef}
-											onLoad={(e) => {
-												// When image has initially loaded or image src has changed (and been loaded)
-												const img = e.target as HTMLImageElement;
-												// Change max scale depending on the resolution of the image
-
-												setMaxScale(
-													megapixelToScale(
-														resolutionToMegapixels(img.naturalWidth, img.naturalHeight),
-													),
-												);
-												if (containerRef.current) {
-													resetImage(img, containerRef.current, setTransform);
-												} else {
-													// Shittier version
-													resetTransform(0);
-													centerView(undefined, ANIMATION_TIME, 'easeInOutCubic');
-												}
-											}}
-											h='100%'
-											w='100%'
-											src={imageSrc}
-											objectFit='cover'
-										/>
-									</TransformComponent>
-								</Box>
+								<SingleInputPreviewWrapperChild
+									resetTransform={resetTransform}
+									centerView={centerView}
+									zoomIn={zoomIn}
+									zoomOut={zoomOut}
+									setTransform={setTransform}
+									state={state}
+									animationTime={ANIMATION_TIME}
+									zoomInButtonDisabled={zoomInButtonDisabled}
+									zoomOutButtonDisabled={zoomOutButtonDisabled}
+									imgRef={imgRef}
+									containerRef={containerRef}
+									resetImage={resetImage}
+									openDeleteImageDialog={openDeleteImageDialog}
+									setMaxScale={setMaxScale}
+									imageSrc={imageSrc}
+									handleZoomChange={handleZoomChange}
+								/>
 							);
 						}}
 					</TransformWrapper>
