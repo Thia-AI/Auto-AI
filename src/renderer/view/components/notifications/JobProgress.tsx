@@ -80,7 +80,6 @@ const JobProgressC = React.memo((props: Props) => {
 						borderRadius='sm'
 						my='2'
 						w='full'
-						colorScheme='thia.purple'
 						min={0}
 						max={job.progress_max - 1}
 						value={job.progress}
