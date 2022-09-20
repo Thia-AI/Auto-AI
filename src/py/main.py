@@ -119,7 +119,6 @@ def get_jobs_route():
 
 @app.route('/job/<string:uuid>', methods=['GET'])
 def get_job_route(uuid: str):
-    log(f"ACCEPTED [{request.method}] {request.path}")
     if len(uuid) != 32:
         return {'Error': "ID of job is of incorrect length"}, 400
     rows = get_job(uuid)
