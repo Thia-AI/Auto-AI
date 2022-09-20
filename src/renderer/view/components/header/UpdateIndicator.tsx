@@ -171,12 +171,7 @@ export const UpdateIndicator = React.memo(() => {
 							%)
 						</Text>
 					</HStack>
-					<Progress
-						colorScheme='thia.purple'
-						size='xs'
-						max={downloadProgressInfo.total}
-						value={downloadProgressInfo.transferred}
-					/>
+					<Progress size='xs' max={downloadProgressInfo.total} value={downloadProgressInfo.transferred} />
 				</Box>
 			);
 		}

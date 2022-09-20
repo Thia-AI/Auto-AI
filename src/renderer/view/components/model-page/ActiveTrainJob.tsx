@@ -396,7 +396,7 @@ export const ActiveTrainJob = React.memo(
 				switch (trainingJob.extra_data.status) {
 					case TrainJobStatus.TRAINED:
 					case TrainJobStatus.EVALUATED:
-						return <Progress value={100} size='xs' colorScheme='thia.purple' />;
+						return <Progress value={100} size='xs' />;
 					case TrainJobStatus.STARTING_TRAINING:
 						return <Progress size='xs' colorScheme='green' isIndeterminate />;
 					case TrainJobStatus.TRAINING:

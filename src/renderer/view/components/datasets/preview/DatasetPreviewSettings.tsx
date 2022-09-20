@@ -278,7 +278,6 @@ const DatasetPreviewSettingsC = React.memo(
 					<Progress
 						w='full'
 						size='xs'
-						colorScheme='thia.purple'
 						max={batchLabelJob?.progress_max ?? 100}
 						value={batchLabelJob?.progress ?? 0}
 					/>
