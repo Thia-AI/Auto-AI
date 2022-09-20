@@ -1,19 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-	Box,
-	Button,
-	Center,
-	chakra,
-	HStack,
-	Icon,
-	Image,
-	LayoutProps,
-	Spinner,
-	useBreakpointValue,
-	useColorModeValue as mode,
-	useDisclosure,
-} from '@chakra-ui/react';
+import { Box, Center, Image, LayoutProps, Spinner, useColorModeValue as mode, useDisclosure } from '@chakra-ui/react';
 import { IAppState } from '_/renderer/state/reducers';
 import { connect } from 'react-redux';
 import { debounce } from 'debounce';
@@ -30,9 +17,7 @@ import { ENGINE_URL } from '_/renderer/engine-requests/constants';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
 import { nullInput } from '_/renderer/view/helpers/constants/engineTypes';
 import { IActiveDatasetReducer } from '_/renderer/state/active-dataset-page/model/reducerTypes';
-import { ReactZoomPanPinchHandlers, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
-import { resolutionToMegapixels } from '_/renderer/view/helpers/functionHelpers';
-import { BsTrash } from 'react-icons/bs';
+import { ReactZoomPanPinchHandlers, TransformWrapper } from 'react-zoom-pan-pinch';
 import { DeleteImageDialog } from './DeleteImageDialog';
 import { SingleInputPreviewWrapperChild } from './SingleInputPreviewWrapperChild';
 
