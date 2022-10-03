@@ -2,24 +2,28 @@ import csv
 import glob
 import io as py_io
 import json
+import mimetypes
 import os
+import sys
 import tempfile
+import urllib.parse
 import uuid
 from datetime import datetime
+from multiprocessing import current_process
 from pathlib import Path
-import sys
 
 import numpy as np
 from dateutil import parser as date_parser
-from flask import Flask, jsonify, request, send_from_directory, abort, make_response
+from flask import Flask, jsonify, request, send_from_directory, abort, make_response, send_file
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
-from multiprocessing import current_process
 
 from config import config
 from env import environment
 
 environment.init_common_env(sys.argv[1])
+
+import pyvips
 
 from config import constants
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
@@ -370,6 +374,26 @@ def test_model_route(model_id: str):
     ids = JobCreator().create(TestImageClassificationModelJob([temp_dir, filenames, model['model_name'], model['extra_data'],
                                                                model['model_type_extra']])).queue()
     return {'ids': ids}, 202
+
+
+@app.route('/fetch-image', methods=['GET'])
+def fetch_image_route():
+    file_path = request.args.get('file_path')
+    desired_width = request.args.get('width')
+    if file_path is None:
+        return {'Error': "`file_path` query parameter missing"}, 400
+    if desired_width is None:
+        return {'Error': "`width` query parameter missing"}, 400
+    desired_width = int(desired_width)
+    file_path = urllib.parse.unquote(file_path)
+    (mimetype, _) = mimetypes.guess_type(file_path)
+    try:
+        image = pyvips.Image.new_from_file(file_path, memory=True)
+        width_scale = desired_width / image.width
+        image = image.resize(width_scale)
+        return send_file(py_io.BytesIO(image.write_to_buffer('.jpg')), mimetype=mimetype)
+    except pyvips.error.Error:
+        return {'Error': 'Error loading file from disk'}, 400
 
 
 @app.route('/models', methods=['GET'])
@@ -1031,7 +1055,6 @@ if __name__ == '__main__' and current_process().name == 'MainProcess':
     parser.add_argument('-ud', '--user-data', required=True, help='User Data Path')
     args = parser.parse_args()
     log(f'Args Passed: {args}')
-
 
     environment.init_environment_pre_gpu(args)
 

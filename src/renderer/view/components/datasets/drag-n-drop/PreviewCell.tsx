@@ -21,6 +21,8 @@ import { IAppState } from '_/renderer/state/reducers';
 import { updateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/DatasetListActions';
 import { IUpdateDatasetPreviewFilesAction } from '_/renderer/state/dataset-list/model/actionTypes';
 import { useProgressiveImage } from '_/renderer/view/helpers/hooks/progressiveImage';
+import { ENGINE_URL } from '_/renderer/engine-requests/constants';
+import { DragNDropPreviewItemWidth } from './DragNDropPreview';
 
 interface Data {
 	rowCount: number;
@@ -59,7 +61,10 @@ const DragNDropPreviewCellC = React.memo((props: CellProps) => {
 	const file_path = file_paths[itemIndex];
 	const file_name = parse(file_path).name;
 
-	const [imageLoaded, imageSrc] = useProgressiveImage(`file://${(directory + file_path).replace(/\\/g, '/')}`);
+	const [imageLoaded, imageSrc] = useProgressiveImage(
+		ENGINE_URL +
+			`/fetch-image?file_path=${encodeURIComponent(directory + file_path)}&width=${DragNDropPreviewItemWidth}`,
+	);
 
 	// TODO: Add lazy loading of background image
 	const renderLoading = () => {

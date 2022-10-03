@@ -12,6 +12,12 @@ interface DragProps {
 	files: string[];
 	directory: string;
 }
+
+/**
+ * Width of an item to be previewed.
+ */
+export const DragNDropPreviewItemWidth = 125;
+
 const DragNDropPreviewC = React.memo((props: DragProps) => {
 	const { files, directory } = props;
 
@@ -21,7 +27,6 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 	const gridClass = mode('grid-light', 'grid-dark');
 	const gridHeight = 385;
 	const itemHeight = 125;
-	const itemWidth = 125;
 	const gridContainerPadding = 12;
 	const rowCount = Math.round(gridHeight / itemHeight);
 	const columnCount = files.length / rowCount + 1;
@@ -61,7 +66,7 @@ const DragNDropPreviewC = React.memo((props: DragProps) => {
 								background: previewBG,
 							}}
 							columnCount={columnCount}
-							columnWidth={itemWidth}
+							columnWidth={DragNDropPreviewItemWidth}
 							height={height}
 							rowCount={rowCount}
 							rowHeight={itemHeight}

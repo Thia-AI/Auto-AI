@@ -101,6 +101,10 @@ const mainConfig = lodash.cloneDeep(commonConfig);
 mainConfig.entry = srcPaths('src', 'main', 'main.ts');
 mainConfig.target = 'electron-main';
 mainConfig.output.filename = 'main.bundle.js';
+mainConfig.module.rules.push({
+	test: /\.node$/,
+	loader: 'node-loader',
+});
 mainConfig.plugins.push(
 	new CopyPlugin({
 		patterns: [
