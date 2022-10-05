@@ -29,8 +29,10 @@ export class EngineShellDev extends EngineShell {
 		};
 		if (!dontRunEngine) {
 			this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), options);
+			this.notifyRendererThatEngineIsStarting();
 			this.onDataChangeSetup();
 			this.onExitSetup();
+			this.onErrorSetup();
 		}
 		this.notifyOnceEngineHasStarted();
 	}
@@ -65,6 +67,13 @@ export class EngineShellDev extends EngineShell {
 		this.engine.end((err, exitCode, exitSignal) => {
 			if (err) throw err;
 			this.onExitUniversal(exitCode, exitSignal);
+		});
+	};
+
+	private onErrorSetup = () => {
+		this.engine.on('pythonError', (error) => {
+			engineLog.error(error);
+			this.notifyRendererThatEngineHasStopped();
 		});
 	};
 }

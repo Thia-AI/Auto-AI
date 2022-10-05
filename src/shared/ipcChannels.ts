@@ -131,6 +131,11 @@ export const IPC_CONNECT_SOCKET = 'engine:connectSocket';
 export const IPC_ENGINE_STARTED = 'engine:started';
 
 /**
+ * Used for notifying **renderer** that the **Engine** process is starting up.
+ */
+export const IPC_ENGINE_STARTING = 'engine:starting';
+
+/**
  * Used when **renderer** notifies **main** that it wants the **Engine** process to start.
  */
 export const IPC_ENGINE_START = 'engine:start';

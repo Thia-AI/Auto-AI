@@ -1,25 +1,33 @@
-.pulse-green {
+.green {
 	animation: pulse-green 2s infinite;
 }
 
-.pulse-green-once {
+.green-once {
 	animation: pulse-green 2s 1;
 }
 
-.pulse-teal {
+.teal {
 	animation: pulse-teal 2s infinite;
 }
 
-.pulse-teal-once {
+.teal-once {
 	animation: pulse-teal 2s 1;
 }
 
-.pulse-red {
+.red {
 	animation: pulse-red 2s infinite;
 }
 
-.pulse-red-once {
+.red-once {
 	animation: pulse-red 2s 1;
+}
+
+.purple {
+	animation: pulse-purple 2s infinite;
+}
+
+.purple-once {
+	animation: pulse-purple 2s 1;
 }
 
 @keyframes pulse-red {
@@ -67,6 +75,20 @@
 @keyframes pulse-teal {
 	0% {
 		box-shadow: 0 0 0 0 rgba(42, 150, 223, 0.7);
+	}
+
+	70% {
+		box-shadow: 0 0 0 10px rgba(42, 150, 223, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(42, 150, 223, 0);
+	}
+}
+
+@keyframes pulse-purple {
+	0% {
+		box-shadow: 0 0 0 0 rgba(123, 71, 255, 0.7);
 	}
 
 	70% {

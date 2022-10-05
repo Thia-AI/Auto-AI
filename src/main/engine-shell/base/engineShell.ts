@@ -3,7 +3,7 @@ import { BrowserWindow } from 'electron';
 import log from 'electron-log';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
-import { IPC_ENGINE_STARTED, IPC_ENGINE_STOPPED } from '_/shared/ipcChannels';
+import { IPC_ENGINE_STARTED, IPC_ENGINE_STARTING, IPC_ENGINE_STOPPED } from '_/shared/ipcChannels';
 
 const engineLog = log.scope('engine');
 
@@ -134,6 +134,13 @@ export abstract class EngineShell {
 	protected notifyRendererThatEngineHasStopped = () => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		this.window?.webContents.send(IPC_ENGINE_STOPPED);
+	};
+
+	/**
+	 * Notifies **renderer** that the **Engine** process is starting.
+	 */
+	protected notifyRendererThatEngineIsStarting = () => {
+		this.window?.webContents.send(IPC_ENGINE_STARTING);
 	};
 
 	/**

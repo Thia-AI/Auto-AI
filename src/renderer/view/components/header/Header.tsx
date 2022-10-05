@@ -1,4 +1,4 @@
-import React, { useEffect, MouseEvent } from 'react';
+import React, { useEffect, MouseEvent, useState } from 'react';
 import { ipcRenderer, MessageBoxReturnValue } from 'electron';
 import { connect } from 'react-redux';
 import { Box, Center, Flex, Spacer } from '@chakra-ui/react';
@@ -18,6 +18,7 @@ import {
 import { StatusIndicator } from './StatusIndicator';
 import {
 	IPC_ENGINE_STARTED,
+	IPC_ENGINE_STARTING,
 	IPC_ENGINE_STOPPED,
 	IPC_RUNTIME_IS_DEV,
 	IPC_SHOW_CLOSE_WINDOW_DIALOG,
@@ -55,6 +56,14 @@ const HeaderC = React.memo(
 		engineStarted,
 	}: Props) => {
 		const { data: signInCheckResult } = useSigninCheck();
+
+		const [engineStarting, setEngineStarting] = useState(false);
+
+		useEffect(() => {
+			if (engineStarted) {
+				setEngineStarting(false);
+			}
+		}, [engineStarted.value]);
 
 		useEffect(() => {
 			initToggleMaxRestoreButtons();
@@ -149,6 +158,11 @@ const HeaderC = React.memo(
 
 			ipcRenderer.on(IPC_ENGINE_STOPPED, () => {
 				notifyEngineStopped();
+				setEngineStarting(false);
+			});
+
+			ipcRenderer.on(IPC_ENGINE_STARTING, () => {
+				setEngineStarting(true);
 			});
 		};
 
@@ -162,7 +176,12 @@ const HeaderC = React.memo(
 							<UpdateIndicator />
 						</Center>
 						<Center mr='5'>
-							<StatusIndicator onColor='pulse-green' offColor='pulse-red' />
+							<StatusIndicator
+								onColor='green'
+								offColor='red'
+								startingColor='purple'
+								engineStarting={engineStarting}
+							/>
 						</Center>
 					</Flex>
 				);
