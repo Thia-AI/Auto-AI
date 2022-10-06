@@ -110,6 +110,17 @@ export class EngineShellProd extends EngineShell {
 	};
 
 	/**
+	 * Overriden method for setting up listener for when dev **Engine** process exits.
+	 */
+	protected onExitSetup = () => {
+		if (this.engine) {
+			this.engine.on('exit', (code, signal) => {
+				this.onExitUniversal(code, signal);
+			});
+		}
+	};
+
+	/**
 	 * Shuts down production engine.
 	 *
 	 * @param notifyRenderer Whether to notify renderer that **Engine** exited.
