@@ -65,7 +65,6 @@ export class EngineShellDev extends EngineShell {
 	 */
 	protected onExitSetup = () => {
 		this.engine.end((err, exitCode, exitSignal) => {
-			if (err) throw err;
 			this.onExitUniversal(exitCode, exitSignal);
 		});
 	};
@@ -73,10 +72,11 @@ export class EngineShellDev extends EngineShell {
 	/**
 	 * When dev **Engine** process exits unexpectedly.
 	 */
-	private onErrorSetup = () => {
+	protected onErrorSetup = () => {
 		this.engine.on('pythonError', (error) => {
 			engineLog.error(error);
 			this.notifyRendererThatEngineHasStopped(true);
+			this.onExitUniversal(error.exitCode, error.message);
 		});
 	};
 }

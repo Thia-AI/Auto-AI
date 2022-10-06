@@ -39,10 +39,15 @@ export abstract class EngineShell {
 	 */
 	protected onDataChangeSetup = () => {};
 	/**
-	 * Setting up listener for when **Engine** process exit's unexpectedly.
+	 * Setting up listener for when **Engine** process exits.
 	 * To be overriden.
 	 */
 	protected onExitSetup = () => {};
+
+	/**
+	 * Setting up listener for when **Engine** process exits unexpectedly.
+	 */
+	protected onErrorSetup = () => {};
 
 	/**
 	 * Universal method to be ran each time an **Engine** process exits.
@@ -50,7 +55,7 @@ export abstract class EngineShell {
 	 * @param exitCode The exit code for why the **Engine** process exited.
 	 * @param exitSignal The exit signal for why the **Engine** process exited.
 	 */
-	protected onExitUniversal = (exitCode: number | null, exitSignal: string | NodeJS.Signals | null) => {
+	protected onExitUniversal = (exitCode?: number | null, exitSignal?: string | NodeJS.Signals | null) => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		engineLog.info(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
 	};
