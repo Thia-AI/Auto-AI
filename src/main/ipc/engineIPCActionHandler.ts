@@ -11,6 +11,7 @@ import {
 	IPC_ENGINE_SAVE_LABELS_CSV,
 	IPC_ENGINE_START,
 	IPC_ENGINE_STOP,
+	IPC_ENGINE_STOPPED,
 	IPC_RUNTIME_IS_DEV,
 } from '_/shared/ipcChannels';
 
@@ -81,6 +82,10 @@ class EngineIPCActionHandler {
 			if (!this.engineShell) {
 				this.launchEngine(uid);
 			}
+		});
+
+		ipcMain.handle(IPC_ENGINE_STOPPED, () => {
+			this.engineShell = null;
 		});
 
 		ipcMain.handle(IPC_ENGINE_SAVE_LABELS_CSV, async (e, fileName: string, csvData: string) => {

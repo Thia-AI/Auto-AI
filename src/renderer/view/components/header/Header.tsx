@@ -29,11 +29,12 @@ import {
 	IPC_WINDOW_UNMAXIMIZE,
 	IPC_WINDOW_UNMAXIMIZED,
 } from '_/shared/ipcChannels';
-import { useSigninCheck } from 'reactfire';
+import { useSigninCheck, useUser } from 'reactfire';
 import { IMenuOpenCloseAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { openCloseSideMenu } from '_/renderer/state/side-menu/SideModelAction';
 import { UpdateIndicator } from './UpdateIndicator';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
+import { toast } from '../../helpers/functionHelpers';
 
 interface Props {
 	maximizedClass: IHeaderMaximizedChangedReducer;
@@ -56,6 +57,7 @@ const HeaderC = React.memo(
 		engineStarted,
 	}: Props) => {
 		const { data: signInCheckResult } = useSigninCheck();
+		const { data: user } = useUser();
 
 		const [engineStarting, setEngineStarting] = useState(false);
 
@@ -68,7 +70,7 @@ const HeaderC = React.memo(
 		useEffect(() => {
 			initToggleMaxRestoreButtons();
 			checkForEngineStart();
-		}, []);
+		}, [user]);
 
 		useEffect(() => {
 			const openSideMenu = (event: KeyboardEvent) => {
@@ -156,9 +158,22 @@ const HeaderC = React.memo(
 				notifyEngineStarted();
 			});
 
-			ipcRenderer.on(IPC_ENGINE_STOPPED, () => {
+			ipcRenderer.on(IPC_ENGINE_STOPPED, async (_, error: boolean) => {
 				notifyEngineStopped();
 				setEngineStarting(false);
+				await ipcRenderer.invoke(IPC_ENGINE_STOPPED);
+				console.log('sex is bad');
+				console.log(error, user);
+				if (error && user) {
+					toast({
+						title: 'Engine Stopped Unexpectedly',
+						description: 'Click the status indicator at the top to relaunch Engine ',
+						status: 'error',
+						duration: 4500,
+						isClosable: true,
+						uid: user.uid,
+					});
+				}
 			});
 
 			ipcRenderer.on(IPC_ENGINE_STARTING, () => {

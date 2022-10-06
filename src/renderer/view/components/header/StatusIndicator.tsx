@@ -8,11 +8,16 @@ import {
 	PopoverTrigger,
 	HStack,
 	Text,
+	Button,
+	VStack,
 } from '@chakra-ui/react';
+import { ipcRenderer } from 'electron';
 import React from 'react';
 import { connect } from 'react-redux';
+import { useUser } from 'reactfire';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
+import { IPC_ENGINE_START } from '_/shared/ipcChannels';
 
 import './StatusIndicator.css';
 
@@ -37,6 +42,8 @@ interface Props {
 }
 
 const StatusIndicatorC = React.memo(({ engineStarted, onColor, offColor, engineStarting, startingColor }: Props) => {
+	const { data: user } = useUser();
+
 	return (
 		<Popover isLazy lazyBehavior='keepMounted' arrowSize={4} closeOnEsc={false} arrowPadding={12}>
 			<PopoverTrigger>
@@ -63,21 +70,36 @@ const StatusIndicatorC = React.memo(({ engineStarted, onColor, offColor, engineS
 			<PopoverContent mt='1' w='fit-content'>
 				<PopoverArrow />
 				<PopoverBody>
-					<HStack spacing='2'>
-						<Text fontSize='xs'>Engine Status: </Text>
-						<Badge
-							transition='all 300ms ease'
-							variant='outline'
-							colorScheme={
-								engineStarted.value
-									? pulseColorToChakraMap[onColor]
-									: engineStarting
-									? pulseColorToChakraMap[startingColor]
-									: pulseColorToChakraMap[offColor]
-							}>
-							{engineStarted.value ? 'Online' : engineStarting ? 'Launching' : 'Offline'}
-						</Badge>
-					</HStack>
+					<VStack>
+						<HStack spacing='2'>
+							<Text fontSize='xs'>Engine Status: </Text>
+							<Badge
+								transition='all 300ms ease'
+								variant='outline'
+								colorScheme={
+									engineStarted.value
+										? pulseColorToChakraMap[onColor]
+										: engineStarting
+										? pulseColorToChakraMap[startingColor]
+										: pulseColorToChakraMap[offColor]
+								}>
+								{engineStarted.value ? 'Online' : engineStarting ? 'Launching' : 'Offline'}
+							</Badge>
+						</HStack>
+						<Button
+							size='xs'
+							w='full'
+							py='3.5'
+							colorScheme='thia.purple'
+							onClick={async () => {
+								if (user) {
+									await ipcRenderer.invoke(IPC_ENGINE_START, user.uid);
+								}
+							}}
+							disabled={engineStarting || engineStarted.value}>
+							Launch Engine
+						</Button>
+					</VStack>
 				</PopoverBody>
 			</PopoverContent>
 		</Popover>

@@ -61,7 +61,7 @@ export class EngineShellDev extends EngineShell {
 	}
 
 	/**
-	 * Overriden method for setting up listener for when dev **Engine** process exit's unexpectedly.
+	 * Overriden method for setting up listener for when dev **Engine** process exits.
 	 */
 	protected onExitSetup = () => {
 		this.engine.end((err, exitCode, exitSignal) => {
@@ -70,10 +70,13 @@ export class EngineShellDev extends EngineShell {
 		});
 	};
 
+	/**
+	 * When dev **Engine** process exits unexpectedly.
+	 */
 	private onErrorSetup = () => {
 		this.engine.on('pythonError', (error) => {
 			engineLog.error(error);
-			this.notifyRendererThatEngineHasStopped();
+			this.notifyRendererThatEngineHasStopped(true);
 		});
 	};
 }

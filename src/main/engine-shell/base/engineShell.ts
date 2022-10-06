@@ -130,10 +130,12 @@ export abstract class EngineShell {
 
 	/**
 	 * Notifies **renderer** that the **Engine** process has stopped.
+	 *
+	 * @param error Whether **Engine** process exited due to an error.
 	 */
-	protected notifyRendererThatEngineHasStopped = () => {
+	protected notifyRendererThatEngineHasStopped = (error = false) => {
 		RUNTIME_GLOBALS.engineRunning = false;
-		this.window?.webContents.send(IPC_ENGINE_STOPPED);
+		this.window?.webContents.send(IPC_ENGINE_STOPPED, error);
 	};
 
 	/**

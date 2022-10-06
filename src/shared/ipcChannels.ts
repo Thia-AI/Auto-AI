@@ -141,7 +141,7 @@ export const IPC_ENGINE_STARTING = 'engine:starting';
 export const IPC_ENGINE_START = 'engine:start';
 
 /**
- * Used for notifying **renderer** that the **Engine** process has stopped.
+ * Used for notifying **renderer** and **main** that the **Engine** process has stopped.
  */
 export const IPC_ENGINE_STOPPED = 'engine:stopped';
 
