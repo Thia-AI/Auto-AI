@@ -3,7 +3,7 @@ import { BrowserWindow } from 'electron';
 import log from 'electron-log';
 import { RUNTIME_GLOBALS } from '../../config/runtimeGlobals';
 import EngineRequestConfig from '_/shared/engineRequestConfig';
-import { IPC_ENGINE_STARTED, IPC_ENGINE_STOPPED } from '_/shared/ipcChannels';
+import { IPC_ENGINE_STARTED, IPC_ENGINE_STARTING, IPC_ENGINE_STOPPED } from '_/shared/ipcChannels';
 
 const engineLog = log.scope('engine');
 
@@ -18,6 +18,7 @@ export abstract class EngineShell {
 	private engineCheckTimeoutInitial: number;
 	private engineCheckTimeoutIncreaseAmount: number;
 	private stopWaitingForEngineStartFlag: boolean;
+	protected intervalTimer?: ReturnType<typeof setInterval>;
 
 	/**
 	 * Instantiate an **Engine** Shell.
@@ -39,10 +40,15 @@ export abstract class EngineShell {
 	 */
 	protected onDataChangeSetup = () => {};
 	/**
-	 * Setting up listener for when **Engine** process exit's unexpectedly.
+	 * Setting up listener for when **Engine** process exits.
 	 * To be overriden.
 	 */
 	protected onExitSetup = () => {};
+
+	/**
+	 * Setting up listener for when **Engine** process exits unexpectedly.
+	 */
+	protected onErrorSetup = () => {};
 
 	/**
 	 * Universal method to be ran each time an **Engine** process exits.
@@ -50,9 +56,12 @@ export abstract class EngineShell {
 	 * @param exitCode The exit code for why the **Engine** process exited.
 	 * @param exitSignal The exit signal for why the **Engine** process exited.
 	 */
-	protected onExitUniversal = (exitCode: number | null, exitSignal: string | NodeJS.Signals | null) => {
+	protected onExitUniversal = (exitCode?: number | null, exitSignal?: string | NodeJS.Signals | null) => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		engineLog.info(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
+		if (this.intervalTimer) {
+			clearInterval(this.intervalTimer);
+		}
 	};
 
 	/**
@@ -130,10 +139,22 @@ export abstract class EngineShell {
 
 	/**
 	 * Notifies **renderer** that the **Engine** process has stopped.
+	 *
+	 * @param error Whether **Engine** process exited due to an error.
 	 */
-	protected notifyRendererThatEngineHasStopped = () => {
+	protected notifyRendererThatEngineHasStopped = (error = false) => {
 		RUNTIME_GLOBALS.engineRunning = false;
-		this.window?.webContents.send(IPC_ENGINE_STOPPED);
+		this.window?.webContents.send(IPC_ENGINE_STOPPED, error);
+		if (this.intervalTimer) {
+			clearInterval(this.intervalTimer);
+		}
+	};
+
+	/**
+	 * Notifies **renderer** that the **Engine** process is starting.
+	 */
+	protected notifyRendererThatEngineIsStarting = () => {
+		this.window?.webContents.send(IPC_ENGINE_STARTING);
 	};
 
 	/**

@@ -29,6 +29,7 @@ export class EngineShellDev extends EngineShell {
 		};
 		if (!dontRunEngine) {
 			this.engine = new PythonShell(path.join(__dirname, '..', 'src', 'py', 'main.py'), options);
+			this.notifyRendererThatEngineIsStarting();
 			this.onDataChangeSetup();
 			this.onExitSetup();
 		}
@@ -59,12 +60,23 @@ export class EngineShellDev extends EngineShell {
 	}
 
 	/**
-	 * Overriden method for setting up listener for when dev **Engine** process exit's unexpectedly.
+	 * Overriden method for setting up listener for when dev **Engine** process exits.
 	 */
 	protected onExitSetup = () => {
 		this.engine.end((err, exitCode, exitSignal) => {
-			if (err) throw err;
 			this.onExitUniversal(exitCode, exitSignal);
+		});
+		this.onErrorSetup();
+	};
+
+	/**
+	 * When dev **Engine** process exits unexpectedly.
+	 */
+	protected onErrorSetup = () => {
+		this.engine.on('pythonError', (error) => {
+			engineLog.error(error);
+			this.notifyRendererThatEngineHasStopped(true);
+			this.onExitUniversal(error.exitCode, error.message);
 		});
 	};
 }

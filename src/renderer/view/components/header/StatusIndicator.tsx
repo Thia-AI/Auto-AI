@@ -8,48 +8,98 @@ import {
 	PopoverTrigger,
 	HStack,
 	Text,
+	Button,
+	VStack,
 } from '@chakra-ui/react';
+import { ipcRenderer } from 'electron';
 import React from 'react';
 import { connect } from 'react-redux';
+import { useUser } from 'reactfire';
 import { IEngineStatusReducer } from '_/renderer/state/engine-status/model/reducerTypes';
 import { IAppState } from '_/renderer/state/reducers';
+import { IPC_ENGINE_START } from '_/shared/ipcChannels';
 
 import './StatusIndicator.css';
 
+type PulseColors = 'green' | 'red' | 'teal' | 'purple';
+
+type PulseColorToChakraMap = {
+	[key in PulseColors]: string;
+};
+
+const pulseColorToChakraMap: PulseColorToChakraMap = {
+	green: 'green',
+	red: 'red',
+	teal: 'teal',
+	purple: 'thia.purple',
+};
 interface Props {
-	onColor: 'pulse-green' | 'pulse-red' | 'pulse-teal';
-	offColor: 'pulse-green' | 'pulse-red' | 'pulse-teal';
+	onColor: PulseColors;
+	offColor: PulseColors;
+	startingColor: PulseColors;
 	engineStarted: IEngineStatusReducer;
+	engineStarting: boolean;
 }
 
-const StatusIndicatorC = React.memo((props: Props) => {
+const StatusIndicatorC = React.memo(({ engineStarted, onColor, offColor, engineStarting, startingColor }: Props) => {
+	const { data: user } = useUser();
+
 	return (
 		<Popover isLazy lazyBehavior='keepMounted' arrowSize={4} closeOnEsc={false} arrowPadding={12}>
 			<PopoverTrigger>
 				<Box
-					className={`${props.engineStarted.value ? props.onColor + '-once' : props.offColor}`}
+					className={`${
+						engineStarted.value ? onColor + '-once' : engineStarting ? startingColor : offColor + '-once'
+					}`}
 					w='13px'
 					h='13px'
 					css={{ '-webkit-app-region': 'no-drag', transition: 'all 300ms ease' }}
 					transform='scale(1)'
 					borderRadius='50%'
 					_hover={{ transform: 'scale(1.15)' }}
-					bg={props.engineStarted.value ? 'green.500' : 'red.500'}
+					bg={
+						engineStarted.value
+							? `${pulseColorToChakraMap[onColor]}.500`
+							: engineStarting
+							? `${pulseColorToChakraMap[startingColor]}.400`
+							: `${pulseColorToChakraMap[offColor]}.500`
+					}
 				/>
 			</PopoverTrigger>
 
 			<PopoverContent mt='1' w='fit-content'>
 				<PopoverArrow />
 				<PopoverBody>
-					<HStack spacing='2'>
-						<Text fontSize='xs'>Engine Status: </Text>
-						<Badge
-							transition='all 300ms ease'
-							variant='outline'
-							colorScheme={props.engineStarted.value ? 'green' : 'red'}>
-							{props.engineStarted.value ? 'Online' : 'Offline'}
-						</Badge>
-					</HStack>
+					<VStack>
+						<HStack spacing='2'>
+							<Text fontSize='xs'>Engine Status: </Text>
+							<Badge
+								transition='all 300ms ease'
+								variant='outline'
+								colorScheme={
+									engineStarted.value
+										? pulseColorToChakraMap[onColor]
+										: engineStarting
+										? pulseColorToChakraMap[startingColor]
+										: pulseColorToChakraMap[offColor]
+								}>
+								{engineStarted.value ? 'Online' : engineStarting ? 'Launching' : 'Offline'}
+							</Badge>
+						</HStack>
+						<Button
+							size='xs'
+							w='full'
+							py='3.5'
+							colorScheme='thia.purple'
+							onClick={async () => {
+								if (user) {
+									await ipcRenderer.invoke(IPC_ENGINE_START, user.uid);
+								}
+							}}
+							disabled={engineStarting || engineStarted.value}>
+							Launch Engine
+						</Button>
+					</VStack>
 				</PopoverBody>
 			</PopoverContent>
 		</Popover>
