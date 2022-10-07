@@ -408,6 +408,29 @@ def get_models_route():
     return {'models': models}, 200
 
 
+@app.route('/models-cache', methods=['GET'])
+def list_model_cache():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    out = []
+    dirs = set(os.listdir(config.MODEL_CACHE))
+    for verbose_model_name, model_name in constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP.items():
+        if model_name in dirs:
+            model_dir_path = config.MODEL_CACHE / model_name
+            model_zipped_dir_path = config.MODEL_CACHE / (model_name + '.tar.gz')
+
+            model_dir_unzipped_size = sum(f.stat().st_size for f in model_dir_path.glob('**/*') if f.is_file())
+            model_dir_zipped_size = os.stat(model_zipped_dir_path).st_size if model_zipped_dir_path.is_file() else 0
+
+            out.append({
+                'verboseModelName': verbose_model_name,
+                'modelName': model_name,
+                'cache_size': model_dir_unzipped_size + model_dir_zipped_size,
+                'path': str(model_dir_path.absolute())
+            })
+    sorted(out, key=lambda model: constants.MODEL_TYPE_SORTING_WEIGHT[model['verboseModelName']])
+    return jsonify(out)
+
+
 @app.route('/model/<string:model_id>/labels-csv', methods=['GET'])
 def get_model_labels_csv_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")

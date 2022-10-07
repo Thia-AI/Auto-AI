@@ -1,7 +1,4 @@
 from enum import Enum, auto
-import os
-import sys
-from log.logger import log
 from typing import Final, List, Any
 
 # Request Body Constants
@@ -52,6 +49,14 @@ IC_MODEL_TYPE_TO_EFFICIENTNET_MAP = {
     'medium': 'efficientnetv2-s',
     'large': 'efficientnetv2-m',
     'extra-large': 'efficientnetv2-l'
+}
+
+MODEL_TYPE_SORTING_WEIGHT = {
+    'extra-small': 0,
+    'small': 1,
+    'medium': 2,
+    'large': 3,
+    'extra-large': 4
 }
 
 IC_MODEL_INPUT_SIZE = {
