@@ -32,7 +32,6 @@ export class EngineShellDev extends EngineShell {
 			this.notifyRendererThatEngineIsStarting();
 			this.onDataChangeSetup();
 			this.onExitSetup();
-			this.onErrorSetup();
 		}
 		this.notifyOnceEngineHasStarted();
 	}
@@ -67,6 +66,7 @@ export class EngineShellDev extends EngineShell {
 		this.engine.end((err, exitCode, exitSignal) => {
 			this.onExitUniversal(exitCode, exitSignal);
 		});
+		this.onErrorSetup();
 	};
 
 	/**

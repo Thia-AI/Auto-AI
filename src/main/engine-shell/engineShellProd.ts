@@ -2,6 +2,7 @@ import { spawn, ChildProcessWithoutNullStreams, ChildProcess } from 'child_proce
 import { app, BrowserWindow } from 'electron';
 import log from 'electron-log';
 import { tasklist } from 'tasklist';
+import { RUNTIME_GLOBALS } from '../config/runtimeGlobals';
 import { isEmulatedDev } from '../helpers/dev';
 
 import { EngineShell } from './base/engineShell';
@@ -74,9 +75,10 @@ export class EngineShellProd extends EngineShell {
 					shell: true,
 				});
 			}
-			this.notifyOnceEngineHasStarted();
+			this.notifyRendererThatEngineIsStarting();
 			this.onDataChangeSetup();
 			this.onExitSetup();
+			this.notifyOnceEngineHasStarted();
 		})();
 	};
 
@@ -84,9 +86,7 @@ export class EngineShellProd extends EngineShell {
 	 * Kills any running **Engine** processes.
 	 */
 	killAnyRunningEngineProcess = async () => {
-		const taskListResults = (await tasklist({
-			filter: ['IMAGENAME eq engine.exe'],
-		})) as WindowsTaskListResult[];
+		const taskListResults = await this.searchEngineProcesses();
 		for (const taskListResult of taskListResults) {
 			try {
 				engineLog.log(`Killing Engine process: ${taskListResult.imageName} with PID: ${taskListResult.pid}`);
@@ -95,6 +95,17 @@ export class EngineShellProd extends EngineShell {
 				engineLog.error(`Failed to kill process: ${taskListResult.imageName} with PID: ${taskListResult.pid}`);
 			}
 		}
+	};
+
+	/**
+	 * Searches for `engine.exe` in Windows processes.
+	 *
+	 * @returns List of Windows tasks that match with `engine.exe`.
+	 */
+	private searchEngineProcesses = async () => {
+		return (await tasklist({
+			filter: ['IMAGENAME eq engine.exe'],
+		})) as WindowsTaskListResult[];
 	};
 
 	/**
@@ -113,11 +124,16 @@ export class EngineShellProd extends EngineShell {
 	 * Overriden method for setting up listener for when dev **Engine** process exits.
 	 */
 	protected onExitSetup = () => {
-		if (this.engine) {
-			this.engine.on('exit', (code, signal) => {
-				this.onExitUniversal(code, signal);
-			});
-		}
+		this.intervalTimer = setInterval(async () => {
+			if (RUNTIME_GLOBALS.engineRunning) {
+				// Process is running (on our end), check to see if it actually still is
+				const taskResults = await this.searchEngineProcesses();
+				if (taskResults.length === 0) {
+					RUNTIME_GLOBALS.engineRunning = false;
+					this.notifyRendererThatEngineHasStopped(true);
+				}
+			}
+		}, 500);
 	};
 
 	/**

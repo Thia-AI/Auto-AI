@@ -18,6 +18,7 @@ export abstract class EngineShell {
 	private engineCheckTimeoutInitial: number;
 	private engineCheckTimeoutIncreaseAmount: number;
 	private stopWaitingForEngineStartFlag: boolean;
+	protected intervalTimer?: ReturnType<typeof setInterval>;
 
 	/**
 	 * Instantiate an **Engine** Shell.
@@ -58,6 +59,9 @@ export abstract class EngineShell {
 	protected onExitUniversal = (exitCode?: number | null, exitSignal?: string | NodeJS.Signals | null) => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		engineLog.info(`Engine Stopped, exit code was '${exitCode}', exit signal was '${exitSignal}'`);
+		if (this.intervalTimer) {
+			clearInterval(this.intervalTimer);
+		}
 	};
 
 	/**
@@ -141,6 +145,9 @@ export abstract class EngineShell {
 	protected notifyRendererThatEngineHasStopped = (error = false) => {
 		RUNTIME_GLOBALS.engineRunning = false;
 		this.window?.webContents.send(IPC_ENGINE_STOPPED, error);
+		if (this.intervalTimer) {
+			clearInterval(this.intervalTimer);
+		}
 	};
 
 	/**
