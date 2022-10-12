@@ -33,3 +33,9 @@ export const LEARN_MORE_EVALUATION_METRIC_LOG_LOSS = 'https://thia.tech/docs/eva
  */
 export const LEARN_MORE_BATCH_LABELLING =
 	'https://thia.tech/docs/creating-a-dataset/labelling-a-dataset#batch-labelling';
+
+/**
+ * Learn more link for managing model cache.
+ */
+export const LEARN_MORE_MANAGE_MODEL_CACHE =
+	'https://thia.tech/docs/creating-a-dataset/labelling-a-dataset#batch-labelling';

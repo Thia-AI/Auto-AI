@@ -17,6 +17,9 @@ import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAc
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { SETTINGS_PAGE } from '../helpers/constants/pageConstants';
 
+import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
+import { ModelsCacheManager } from '../components/settings/ModelCacheManager';
+
 interface Props {
 	changeSelectedPage: (pageNumber: number) => IChangeSelectedPageAction;
 }
@@ -29,6 +32,7 @@ interface Props {
 const Settings = React.memo(({ changeSelectedPage }: Props) => {
 	const [isLargerThan1280] = useMediaQuery('(min-width: 1280px)');
 	const sectionBG = mode('thia.gray.50', 'thia.gray.700');
+
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
 	const { colorMode, toggleColorMode } = useColorMode();
 	const textColor = mode('thia.gray.700', 'thia.gray.300');
@@ -39,10 +43,9 @@ const Settings = React.memo(({ changeSelectedPage }: Props) => {
 	}, []);
 
 	return (
-		<VStack
+		<Box
 			px='6'
 			w='full'
-			spacing='4'
 			h='full'
 			alignItems='flex-start'
 			marginTop='var(--header-height)'
@@ -69,7 +72,7 @@ const Settings = React.memo(({ changeSelectedPage }: Props) => {
 
 				<HStack w='full'>
 					<Box>
-						<Heading as='h6' fontSize='18px'>
+						<Heading as='h5' fontSize='18px'>
 							Dark Mode
 						</Heading>
 						<Text color={textColor} fontSize='13px' pt='1'>
@@ -84,8 +87,10 @@ const Settings = React.memo(({ changeSelectedPage }: Props) => {
 						colorScheme='thia.purple'
 					/>
 				</HStack>
+
+				<ModelsCacheManager />
 			</VStack>
-		</VStack>
+		</Box>
 	);
 });
 

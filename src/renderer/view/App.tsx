@@ -141,7 +141,14 @@ export const App = React.memo(() => {
 									}
 								/>
 
-								<Route path='/settings' element={<Settings />} />
+								<Route
+									path='/settings'
+									element={
+										<EngineAvailableRoute>
+											<Settings />
+										</EngineAvailableRoute>
+									}
+								/>
 								<Route path='*' element={<Navigate replace to='/' />} />
 							</Routes>
 						</AuthWrapper>

@@ -346,3 +346,17 @@ export const nullTestJob: TestJob = {
 	date_finished: '',
 	extra_data: null,
 };
+
+/**
+ * Model cache object. Array of model cache objects are returned from `/models-cache`.
+ */
+export interface ModelsCache {
+	cacheSize: number;
+	modelName: string;
+	path: string;
+	verboseModelName: string;
+}
+
+export interface EngineRequestError {
+	Error: string;
+}

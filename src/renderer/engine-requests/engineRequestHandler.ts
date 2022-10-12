@@ -31,6 +31,9 @@ import { GetQuickStatsEngineRequest } from './actions/get/getQuickStats';
 import { DownloadLabelsCSVEngineRequest } from './actions/get/downloadLabelsCsv';
 import { UpdateMultipleLabelsEngineRequest } from './actions/put/updateMultipleLabels';
 import { DeleteInputEngineRequest } from './actions/delete/deleteInput';
+import { GetModelsCacheEngineRequest } from './actions/get/getModelsCache';
+import { DeleteModelCacheEngineRequest } from './actions/delete/deleteModelCache';
+import { DeleteEntireModelCacheEngineRequest } from './actions/delete/deleteEntireModelCache';
 
 /**
  * Class that manages all Engine Requests.
@@ -77,6 +80,10 @@ export class EngineRequestHandler {
 	// Telemetry
 	private getGPUStateER!: GetTelemetryGPUStateEngineRequest;
 	private getQuickStatsER!: GetQuickStatsEngineRequest;
+	// Model Cache
+	private getModelsCacheER!: GetModelsCacheEngineRequest;
+	private deleteModelCacheER!: DeleteModelCacheEngineRequest;
+	private deleteEntireModelCacheER!: DeleteEntireModelCacheEngineRequest;
 
 	/**
 	 * Private constructor.
@@ -142,6 +149,10 @@ export class EngineRequestHandler {
 		// Telemetry
 		this.getGPUStateER = new GetTelemetryGPUStateEngineRequest(this.engineRequest);
 		this.getQuickStatsER = new GetQuickStatsEngineRequest(this.engineRequest);
+		// Model Cache
+		this.getModelsCacheER = new GetModelsCacheEngineRequest(this.engineRequest);
+		this.deleteModelCacheER = new DeleteModelCacheEngineRequest(this.engineRequest);
+		this.deleteEntireModelCacheER = new DeleteEntireModelCacheEngineRequest(this.engineRequest);
 	};
 
 	/**
@@ -319,5 +330,17 @@ export class EngineRequestHandler {
 
 	public deleteInput = async (idToken: string, datasetID: string, inputID: string, config?: AxiosRequestConfig) => {
 		return this.deleteInputER.run(config, [idToken, datasetID, inputID]);
+	};
+
+	public getModelsCache = async (config?: AxiosRequestConfig) => {
+		return this.getModelsCacheER.run(config);
+	};
+
+	public deleteModelCache = async (modelType: string, config?: AxiosRequestConfig) => {
+		return this.deleteModelCacheER.run(config, modelType);
+	};
+
+	public deleteEntireModelCache = async (config?: AxiosRequestConfig) => {
+		return this.deleteEntireModelCacheER.run(config);
 	};
 }
