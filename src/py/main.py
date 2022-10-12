@@ -26,6 +26,7 @@ environment.init_common_env(sys.argv[1])
 import pyvips
 
 from config import constants
+from helpers.fs import rmtree
 from config.constants import ICModelStatus, POSSIBLE_IC_MODEL_EXPORT_TYPES, POSSIBLE_IC_MODEL_LABELLING_TYPES, POSSIBLE_IC_MODEL_TYPES, \
     POSSIBLE_MODEL_TYPES, ICTrainJobStatus
 from dataset.jobs.create_dataset_job import CreateDatasetJob
@@ -406,6 +407,55 @@ def get_models_route():
         models.append(model)
 
     return {'models': models}, 200
+
+
+@app.route('/models-cache', methods=['GET'])
+def list_model_cache():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    out = []
+    if not config.MODEL_CACHE.is_dir():
+        return jsonify([])
+    dirs = set(os.listdir(config.MODEL_CACHE))
+    for verbose_model_name, model_name in constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP.items():
+        if model_name in dirs:
+            model_dir_path = config.MODEL_CACHE / model_name
+            model_zipped_dir_path = config.MODEL_CACHE / (model_name + '.tar.gz')
+
+            model_dir_unzipped_size = sum(f.stat().st_size for f in model_dir_path.glob('**/*') if f.is_file())
+            model_dir_zipped_size = os.stat(model_zipped_dir_path).st_size if model_zipped_dir_path.is_file() else 0
+
+            out.append({
+                'verboseModelName': verbose_model_name,
+                'modelName': model_name,
+                'cacheSize': model_dir_unzipped_size + model_dir_zipped_size,
+                'path': str(model_dir_path.absolute())
+            })
+    sorted(out, key=lambda model: constants.MODEL_TYPE_SORTING_WEIGHT[model['verboseModelName']])
+    return jsonify(out)
+
+
+@app.route('/models-cache/<string:model_name>', methods=['DELETE'])
+def delete_model_cache(model_name: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    model_cache_dir_name = constants.IC_MODEL_TYPE_TO_EFFICIENTNET_MAP.get(model_name, None)
+    if model_cache_dir_name is None:
+        return {'Error': f"model: '{model_name}' is not a valid model type"}, 404
+    model_cache_dir = config.MODEL_CACHE / model_cache_dir_name
+    model_cache_zipped = config.MODEL_CACHE / (model_cache_dir_name + '.tar.gz')
+    # Delete zipped model if it exists, regardless if it hasn't been zipped
+    model_cache_zipped.unlink(missing_ok=True)
+    if not model_cache_dir.is_dir():
+        return {'Error': f"Cache for model: '{model_name}' does not exist"}, 404
+    # Delete model cache dir
+    rmtree(model_cache_dir)
+    return '', 204
+
+
+@app.route('/models-cache', methods=['DELETE'])
+def delete_entire_models_cache():
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    rmtree(config.MODEL_CACHE)
+    return '', 204
 
 
 @app.route('/model/<string:model_id>/labels-csv', methods=['GET'])
