@@ -106,7 +106,7 @@ export const ModelsCacheManager = React.memo(() => {
 		if (modelsCache && modelsCache.length > 0) {
 			return (
 				<VStack w='full' px='2' pt='2'>
-					{modelsCache?.map((modelCache, index) => (
+					{modelsCache?.map((modelCache) => (
 						<ModelCacheCard
 							{...modelCache}
 							key={modelCache['modelName']}

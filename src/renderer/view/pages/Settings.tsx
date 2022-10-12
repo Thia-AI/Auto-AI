@@ -17,7 +17,6 @@ import { changeSelectedPageAction } from '_/renderer/state/side-menu/SideModelAc
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import { SETTINGS_PAGE } from '../helpers/constants/pageConstants';
 
-import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { ModelsCacheManager } from '../components/settings/ModelCacheManager';
 
 interface Props {

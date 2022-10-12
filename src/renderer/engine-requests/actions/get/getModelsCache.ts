@@ -12,7 +12,7 @@ class GetModelsCacheEngineRequest implements IEngineRequest {
 		this.actionName = 'Get Model Cache';
 		this.apiName = '/models-cache';
 	}
-
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	run = async (config?: AxiosRequestConfig): Promise<[false, ModelsCache[]] | [true, any]> => {
 		try {
 			const res = await this.engineRequest.get(`${this.apiName}`, config);

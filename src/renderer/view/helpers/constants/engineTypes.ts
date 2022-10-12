@@ -357,6 +357,9 @@ export interface ModelsCache {
 	verboseModelName: string;
 }
 
+/**
+ * Object returned by Engine when there is an error.
+ */
 export interface EngineRequestError {
 	Error: string;
 }
