@@ -37,5 +37,4 @@ export const LEARN_MORE_BATCH_LABELLING =
 /**
  * Learn more link for managing model cache.
  */
-export const LEARN_MORE_MANAGE_MODEL_CACHE =
-	'https://thia.tech/docs/creating-a-dataset/labelling-a-dataset#batch-labelling';
+export const LEARN_MORE_MANAGE_MODEL_CACHE = 'https://thia.tech/docs/settings#managing-model-cache';
