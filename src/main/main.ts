@@ -45,7 +45,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Server } from 'socket.io';
 import { ActivityStoreManager } from './store/activityStoreManager';
 
-const numCPUs = cpus().length;
+const numCPUs = cpus().length; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 let firebaseAppProd: FirebaseApp | null;
 let mainWindow: BrowserWindow | null;
@@ -211,6 +211,7 @@ const createWindow = (): void => {
  *
  * @returns Hidden renderer worker.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createWorker = () => {
 	const browserWindowWorker = new BrowserWindow({
 		show: false,
@@ -430,12 +431,12 @@ if (!isSingleInstance) {
 			callback(pathname);
 		});
 		// Create worker for each cpu
-		initWorkerIPC();
+		// initWorkerIPC();
 
-		for (let i = 0; i < numCPUs; i++) {
-			const worker = createWorker();
-			availableWorkers.push(worker);
-		}
+		// for (let i = 0; i < numCPUs; i++) {
+		// 	const worker = createWorker();
+		// 	availableWorkers.push(worker);
+		// }
 	});
 }
 
@@ -488,6 +489,7 @@ const doTask = () => {
 /**
  * Initializes worker IPC handles.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const initWorkerIPC = () => {
 	ipcMain.handle(IPC_WORKER_READY, (event) => {
 		availableWorkers.push(workerMap[event.sender.getOSProcessId()]);
