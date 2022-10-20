@@ -23,7 +23,7 @@ import { useParams } from 'react-router-dom';
 import { getVerboseModelType } from '_view_helpers/modelHelper';
 import { EngineRequestHandler } from '_/renderer/engine-requests/engineRequestHandler';
 import { HorizontalDatasetPreview } from '../components/datasets/model-horizontal/HorizontalDatasetPreview';
-import { Model as ModelPage, ModelStatus, nullModel } from '../helpers/constants/engineTypes';
+import { Model, ModelStatus, nullModel } from '../helpers/constants/engineTypes';
 import { connect } from 'react-redux';
 import { IAppState } from '_/renderer/state/reducers';
 import { ISelectedDatasetReducer } from '_/renderer/state/choose-dataset-train/model/reducerTypes';
@@ -43,6 +43,8 @@ import { To } from 'history';
 import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { useUser } from 'reactfire';
 import { BackButton } from '../components/routing/BackButton';
+import { EditableModelName } from '../components/model-page/EditableModelName';
+import { string } from 'yup';
 
 interface Props {
 	selectedDatasetID: ISelectedDatasetReducer;
@@ -57,7 +59,7 @@ type ModelPageParams = {
 const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeSelectedPage, replace }: Props) => {
 	const { id: modelID } = useParams<ModelPageParams>();
 	const [dataLoaded, setDataLoaded] = useState(false);
-	const [model, setModel] = useState<ModelPage>(nullModel);
+	const [model, setModel] = useState<Model>(nullModel);
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
 
 	const activeTrainJobRef = useRef<ActiveTrainJobHandle>(null);
@@ -172,6 +174,19 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 		}
 	};
 
+	const renameModel = (newModelName: string) => {
+		if (!user) return;
+		toast({
+			title: 'Renaming Success',
+			description: `Renamed model '${model.model_name}' to '${newModelName}'`,
+			status: 'success',
+			duration: 3500,
+			isClosable: true,
+			uid: user.uid,
+			saveToStore: false,
+		});
+	};
+
 	return (
 		<>
 			<VStack
@@ -185,14 +200,22 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				overflowY='auto'
 				sx={verticalScrollBarSX}>
 				<Skeleton w='full' mb='6' isLoaded={model.id.length != 0}>
-					<HStack pt='1' alignItems='center'>
+					<HStack pt='1' alignItems='baseline'>
 						<BackButton />
-						<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1} ml='4'>
-							{model.model_name}:
-						</Text>
 						<Badge fontSize='sm' colorScheme='purple' ml='1'>
 							{getVerboseModelType(model.model_type)}
 						</Badge>
+
+						<EditableModelName
+							model={model}
+							validationSchema={string()
+								.required('Cannot be empty')
+								.min(3, 'Must be at least 3 characters long')
+								.max(39, 'Must be less than 40 characters')
+								.matches(/^\S+$/, 'No whitespace')
+								.matches(/^[a-zA-Z0-9-_]+$/, 'Alphanumeric characters only')}
+							onSuccess={renameModel}
+						/>
 						<Spacer />
 						<Box>
 							<Menu autoSelect isLazy lazyBehavior='keepMounted' closeOnSelect={false}>
