@@ -1,4 +1,4 @@
-import { mode, cssVar, SystemStyleFunction } from '@chakra-ui/theme-tools';
+import { mode, cssVar, SystemStyleFunction, StyleFunctionProps } from '@chakra-ui/theme-tools';
 
 const $popperBg = cssVar('popper-bg');
 const $arrowShadowColor = cssVar('popper-arrow-shadow-color');
@@ -16,7 +16,7 @@ const baseStyleContent: SystemStyleFunction = (props) => {
 };
 
 export default {
-	baseStyle: (props) => ({
+	baseStyle: (props: StyleFunctionProps) => ({
 		content: baseStyleContent(props),
 		arrow: {
 			borderColor: mode('thia.gray.400', 'inherit')(props),

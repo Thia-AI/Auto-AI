@@ -1,4 +1,4 @@
-import { mode } from '@chakra-ui/theme-tools';
+import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools';
 
 const activeLabelStyles = {
 	transform: 'scale(0.85) translateY(-24px)',
@@ -6,7 +6,7 @@ const activeLabelStyles = {
 
 export default {
 	variants: {
-		floating: (props) => ({
+		floating: (props: StyleFunctionProps) => ({
 			container: {
 				_focusWithin: {
 					label: {

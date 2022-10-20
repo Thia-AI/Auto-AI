@@ -1,9 +1,9 @@
-import { mode } from '@chakra-ui/theme-tools';
+import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools';
 
 // TODO: Have purple color for the menu items
 
 export default {
-	baseStyle: (props) => ({
+	baseStyle: (props: StyleFunctionProps) => ({
 		list: {
 			bg: mode('thia.gray.50', 'thia.gray.700')(props),
 			boxShadow: mode('xl', 'lg')(props),

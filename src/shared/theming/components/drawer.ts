@@ -1,6 +1,6 @@
-import { mode } from '@chakra-ui/theme-tools';
+import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools';
 export default {
-	baseStyle: (props) => ({
+	baseStyle: (props: StyleFunctionProps) => ({
 		dialog: {
 			bg: mode('thia.gray.50', 'thia.gray.900')(props),
 		},
