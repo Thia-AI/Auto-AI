@@ -22,7 +22,6 @@ def get_server_url() -> str:
             server_url = BACKEND_LOCAL_PROD_BASE_URL
         else:
             server_url = BACKEND_PROD_BASE_URL
-
     else:
         server_url = BACKEND_DEV_BASE_URL
     return server_url
@@ -41,17 +40,18 @@ def verify_action(expires_in=None):
                     'path': request.path,
                     'method': request.method,
                 }
-                if request.method in ['PUT', 'POST', 'DELETE']:
+                if request.method in ['PUT', 'POST', 'DELETE', 'PATCH']:
                     engine_request_body = request.get_json()
                     if engine_request_body is not None:
                         backend_request_data.update(engine_request_body)
-                    # print(engine_request_body)
+                    # print(backend_request_data)
                 r = requests.post(f'{server_url}/auth/verify-action', headers={
                     'Authorization': authorization_header
                 }, json=backend_request_data)
                 if r.ok:
                     out = f(*args, **kwargs)
-                    if out[-1] == 200:
+                    # out is either a tuple containing (response_data_as_dict, status_code) or a flask.Response object
+                    if (hasattr(out, "__getitem__") and out[-1] == 200) or out.status_code == 200:
                         # Action does not dispatch a job (isn't asynchronous)
                         # Inform backend of completed action
                         update_backend_action_completed(backend_request_data, auth_header=authorization_header)
@@ -60,7 +60,6 @@ def verify_action(expires_in=None):
                     # Return error received from backend
                     try:
                         backend_response = r.json()
-                        log(backend_response)
                         return {'Error': backend_response['message']}, 400
                     except requests.exceptions.JSONDecodeError:
                         return {'Error': 'Failed to verify action'}, 400
@@ -70,7 +69,6 @@ def verify_action(expires_in=None):
             except requests.exceptions.ConnectionError:
                 return {'Error': 'Failed to connect to API'}, 502
             except Exception as e:
-                log(e)
                 return {'Error': 'Error occurred when verifying action'}, 500
 
         return wrapper
