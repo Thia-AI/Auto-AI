@@ -174,17 +174,30 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 		}
 	};
 
-	const renameModel = (newModelName: string) => {
+	const renameModel = async (newModelName: string) => {
 		if (!user) return;
-		toast({
-			title: 'Renaming Success',
-			description: `Renamed model '${model.model_name}' to '${newModelName}'`,
-			status: 'success',
-			duration: 3500,
-			isClosable: true,
-			uid: user.uid,
-			saveToStore: false,
+		const [isError, resData] = await EngineRequestHandler.getInstance().renameModel(model.id, {
+			new_model_name: newModelName,
 		});
+		if (!isError) {
+			toast({
+				title: 'Renaming Success',
+				description: `Renamed model '${model.model_name}' to '${newModelName}'`,
+				status: 'success',
+				duration: 3500,
+				isClosable: true,
+				uid: user.uid,
+			});
+			await fetchModel();
+		} else {
+			toast({
+				title: `Error When Renaming Model to ${newModelName}`,
+				description: resData.Error,
+				status: 'error',
+				isClosable: true,
+				uid: user.uid,
+			});
+		}
 	};
 
 	return (
