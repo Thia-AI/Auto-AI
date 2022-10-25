@@ -177,7 +177,8 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 
 	const renameModel = async (newModelName: string) => {
 		if (!user) return;
-		const [isError, resData] = await EngineRequestHandler.getInstance().renameModel(model.id, {
+		const idToken = await user.getIdToken();
+		const [isError, resData] = await EngineRequestHandler.getInstance().renameModel(model.id, idToken, {
 			new_model_name: newModelName,
 		});
 		if (!isError) {

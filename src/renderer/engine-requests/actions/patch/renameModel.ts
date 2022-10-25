@@ -22,12 +22,23 @@ class RenameModelEngineRequest implements IEngineRequest {
 
 	run = async (
 		config?: AxiosRequestConfig,
-		data?: [string, IRenameModelData],
+		data?: [string, string, IRenameModelData],
 	): Promise<[false, Model] | [true, EngineRequestError]> => {
 		if (!data) return [true, { Error: 'Data cannot be undefined' }];
 
 		try {
-			const res = await this.engineRequest.patch(`${this.apiName}/${data[0]}/rename`, data[1], config);
+			const extendedAxiosConfig: AxiosRequestConfig = {
+				...config,
+				headers: {
+					Authorization: `Bearer ${data[1]}`,
+				},
+			};
+
+			const res = await this.engineRequest.patch(
+				`${this.apiName}/${data[0]}/rename`,
+				data[2],
+				extendedAxiosConfig,
+			);
 			return [false, res.data];
 		} catch (_err) {
 			const err = _err as AxiosError;

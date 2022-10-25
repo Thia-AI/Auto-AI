@@ -347,7 +347,12 @@ export class EngineRequestHandler {
 		return this.deleteEntireModelCacheER.run(config);
 	};
 
-	public renameModel = async (modelID: string, renameModelData: IRenameModelData, config?: AxiosRequestConfig) => {
-		return this.renameModelER.run(config, [modelID, renameModelData]);
+	public renameModel = async (
+		modelID: string,
+		idToken: string,
+		renameModelData: IRenameModelData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.renameModelER.run(config, [modelID, idToken, renameModelData]);
 	};
 }
