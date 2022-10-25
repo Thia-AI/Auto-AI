@@ -13,7 +13,7 @@ class UpdateLabelsOrderEngineRequest implements IEngineRequest {
 	}
 
 	run = async (config?: AxiosRequestConfig, data?: [string, object]) => {
-		if (!data) return [false, { Error: 'Data cannot be undefined' }];
+		if (!data) return [true, { Error: 'Data cannot be undefined' }];
 
 		try {
 			const res = await this.engineRequest.patch(`${this.apiName}/${data[0]}/labels/order`, data[1], config);

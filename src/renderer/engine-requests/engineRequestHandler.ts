@@ -34,6 +34,7 @@ import { DeleteInputEngineRequest } from './actions/delete/deleteInput';
 import { GetModelsCacheEngineRequest } from './actions/get/getModelsCache';
 import { DeleteModelCacheEngineRequest } from './actions/delete/deleteModelCache';
 import { DeleteEntireModelCacheEngineRequest } from './actions/delete/deleteEntireModelCache';
+import { IRenameModelData, RenameModelEngineRequest } from './actions/patch/renameModel';
 
 /**
  * Class that manages all Engine Requests.
@@ -57,6 +58,7 @@ export class EngineRequestHandler {
 	private exportModelER!: ExportModelEngineRequest;
 	private getActiveModelExportsER!: GetActiveModelExportsEngineRequest;
 	private deleteModelER!: DeleteModelEngineRequest;
+	private renameModelER!: RenameModelEngineRequest;
 	// Datasets
 	private createDatasetER!: CreateDatasetEngineRequest;
 	private getDatasetsER!: GetDatasetsEngineRequest;
@@ -126,6 +128,7 @@ export class EngineRequestHandler {
 		this.exportModelER = new ExportModelEngineRequest(this.engineRequest);
 		this.getActiveModelExportsER = new GetActiveModelExportsEngineRequest(this.engineRequest);
 		this.deleteModelER = new DeleteModelEngineRequest(this.engineRequest);
+		this.renameModelER = new RenameModelEngineRequest(this.engineRequest);
 		// Datasets
 		this.createDatasetER = new CreateDatasetEngineRequest(this.engineRequest);
 		this.getDatasetsER = new GetDatasetsEngineRequest(this.engineRequest);
@@ -342,5 +345,9 @@ export class EngineRequestHandler {
 
 	public deleteEntireModelCache = async (config?: AxiosRequestConfig) => {
 		return this.deleteEntireModelCacheER.run(config);
+	};
+
+	public renameModel = async (modelID: string, renameModelData: IRenameModelData, config?: AxiosRequestConfig) => {
+		return this.renameModelER.run(config, [modelID, renameModelData]);
 	};
 }
