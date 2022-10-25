@@ -435,11 +435,15 @@ def list_model_cache():
 
 
 @app.route('/model/<string:model_id>/rename', methods=['PATCH'])
+@verify_action()
 def rename_model_route(model_id: str):
     log(f"ACCEPTED [{request.method}] {request.path}")
     if len(model_id) != 32:
         return {'Error': "ID of model is of incorrect length"}, 400
     rows = get_model(model_id)
+    model = {}
+    for row in rows:
+        model = model_from_row(row)
     if rows is None or len(rows) == 0:
         return {'Error': "ID of model does not exist"}, 400
 
@@ -452,10 +456,11 @@ def rename_model_route(model_id: str):
         return {'Error': error_obj}, 400
     new_model_name = req_data['new_model_name']
     rename_model(model_id, new_model_name)
-    model = {}
-    for row in rows:
-        model = model_from_row(row)
+    previous_model_name = model['model_name']
+    # Update previously fetched model
     model['model_name'] = new_model_name
+    # Rename model directory
+    os.rename(config.MODEL_DIR / previous_model_name, config.MODEL_DIR / new_model_name)
     return jsonify(model)
 
 
