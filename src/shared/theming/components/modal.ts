@@ -1,7 +1,7 @@
-import { mode } from '@chakra-ui/theme-tools';
+import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools';
 
 export default {
-	baseStyle: (props) => ({
+	baseStyle: (props: StyleFunctionProps) => ({
 		header: {
 			fontWeight: {
 				base: 500,

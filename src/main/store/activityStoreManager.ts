@@ -15,7 +15,8 @@ import { ToastOptions } from '_/renderer/view/helpers/functionHelpers';
  */
 export interface ElectronStoreActivity {
 	title?: string;
-	description?: string;
+	// TODO: Description should only be a string. Create function to extract all error responses from an error message
+	description?: string | { [key: string]: string[] };
 	status?: UseToastOptions['status'];
 	id: string;
 	dateNow: number;

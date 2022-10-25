@@ -138,7 +138,8 @@
 		"socket.io-client": "^4.4.1",
 		"tasklist": "^5.0.0",
 		"uuid": "^8.3.2",
-		"webpack-node-externals": "^3.0.0"
+		"webpack-node-externals": "^3.0.0",
+		"yup": "^0.32.11"
 	},
 	"devDependencies": {
 		"@svgr/webpack": "^6.2.1",

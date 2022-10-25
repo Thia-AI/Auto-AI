@@ -126,7 +126,7 @@ export const RecentActivity = React.memo(({ data, index, style }: Props) => {
 				<Divider mt='1' />
 				<Box py='1'>
 					<Text fontSize='xs' userSelect='text' color={descriptionColor}>
-						{activity.description}
+						{typeof activity.description === 'string' ? activity.description : 'Unknown error'}
 					</Text>
 				</Box>
 			</Box>
