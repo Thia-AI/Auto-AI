@@ -35,7 +35,7 @@ from dataset.jobs.delete_dataset_job import DeleteDatasetJob
 from dataset.jobs.update_many_input_labels_job import UpdateManyInputLabelsJob
 from db.commands.dataset_commands import get_dataset, get_datasets, get_dataset_by_name, add_label, delete_label, get_labels, get_label, \
     update_labels_of_dataset, get_num_datasets, \
-    update_dataset_last_accessed
+    update_dataset_last_accessed, rename_dataset
 # Export commands
 from db.commands.export_commands import add_export_to_db, get_active_model_exports, get_num_exports
 # Input commands
@@ -641,6 +641,36 @@ def delete_all_inputs_from_dataset_route(uuid: str):
         return {'Error': "ID of dataset does not exist"}, 400
     ids = JobCreator().create(DeleteAllInputsFromDatasetJob(uuid)).queue()
     return {'ids': ids}, 202
+
+
+@app.route('/dataset/<string:dataset_id>/rename', methods=['PATCH'])
+@verify_action()
+def rename_dataset_route(dataset_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(dataset_id) != 32:
+        return {'Error': "ID of dataset is of incorrect length"}, 400
+    rows = get_dataset(dataset_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of dataset does not exist"}, 400
+    dataset = {}
+    for row in rows:
+        dataset = dataset_from_row(row)
+
+    req_data = request.get_json()
+    req_data_format = {
+        'new_dataset_name': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    new_dataset_name = req_data['new_dataset_name']
+    rename_dataset(dataset_id, new_dataset_name)
+    previous_dataset_name = dataset['name']
+    # Update previously fetched dataset
+    dataset['name'] = new_dataset_name
+    # Rename dataset directory
+    os.rename(config.DATASET_DIR / previous_dataset_name, config.DATASET_DIR / new_dataset_name)
+    return jsonify(dataset)
 
 
 @app.route('/inputs', methods=['GET'])
