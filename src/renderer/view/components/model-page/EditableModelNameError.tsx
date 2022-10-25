@@ -1,10 +1,14 @@
 import React from 'react';
-import { Box, Text, useColorModeValue } from '@chakra-ui/react';
+import { Text, useColorModeValue } from '@chakra-ui/react';
 
 interface Props {
 	error: string;
 	isError: boolean;
 }
+
+/**
+ * Component that displays an editable input's error message.
+ */
 export const EditableModelNameError = React.memo(({ isError, error }: Props) => {
 	const color = useColorModeValue('red.600', 'red.400');
 	return isError ? (
@@ -13,3 +17,5 @@ export const EditableModelNameError = React.memo(({ isError, error }: Props) => 
 		</Text>
 	) : null;
 });
+
+EditableModelNameError.displayName = 'EditableModelNameError';

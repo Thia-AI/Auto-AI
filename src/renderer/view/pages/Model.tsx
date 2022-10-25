@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import {
 	Center,
 	VStack,
-	Text,
 	HStack,
 	Badge,
 	Skeleton,

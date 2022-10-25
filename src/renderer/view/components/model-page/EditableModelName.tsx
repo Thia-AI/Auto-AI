@@ -6,19 +6,15 @@ import {
 	Editable,
 	EditableInput,
 	EditablePreview,
-	FormErrorMessage,
 	IconButton,
 	Input,
-	Text,
-	Tooltip,
-	useColorModeValue,
 	useEditableControls,
 } from '@chakra-ui/react';
 import { Model } from '../../helpers/constants/engineTypes';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import ReactTooltip from 'react-tooltip';
-import { string, ValidationError } from 'yup';
-import { hasWhiteSpace, toast } from '../../helpers/functionHelpers';
+import { ValidationError } from 'yup';
+import { toast } from '../../helpers/functionHelpers';
 import { EditableModelNameError } from './EditableModelNameError';
 import { useUser } from 'reactfire';
 import { RequiredStringSchema } from 'yup/lib/string';
@@ -29,6 +25,10 @@ interface Props {
 	validationSchema: RequiredStringSchema<string | undefined, AnyObject>;
 	onSuccess: (newValue: string) => void | Promise<void>;
 }
+
+/**
+ * Editable input that acts as a text when not editing.
+ */
 export const EditableModelName = React.memo(({ model, validationSchema, onSuccess }: Props) => {
 	const [value, setValue] = useState(model.model_name);
 	const [validValue, setValidValue] = useState(model.model_name);
@@ -95,8 +95,10 @@ export const EditableModelName = React.memo(({ model, validationSchema, onSucces
 	);
 });
 
+EditableModelName.displayName = 'EditableModelName';
+
 const EditableControls = () => {
-	const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
+	const { isEditing, getSubmitButtonProps, getCancelButtonProps } = useEditableControls();
 
 	return isEditing ? (
 		<ButtonGroup justifyContent='end' size='sm' w='full' spacing={2} mt={2}>
