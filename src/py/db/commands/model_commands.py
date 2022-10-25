@@ -54,8 +54,15 @@ def update_model_extra_data(model_id: str, new_extra_data: dict):
 
 def update_model_train_job_id(model_id: str, training_job_id: str):
     cmd = DBCommand(name=f"Update Model: {model_id}'s training job id to '{training_job_id}'",
-                    command=f'''UPDATE models SET latest_train_job_id = ? WHERE id = ?''',
+                    command='''UPDATE models SET latest_train_job_id = ? WHERE id = ?''',
                     values=(training_job_id, model_id))
+    DBManager.get_instance().execute(cmd)
+
+
+def rename_model(model_id: str, new_model_name: str):
+    cmd = DBCommand(name=f"Update Model: {model_id}'s name to '{new_model_name}'",
+                    command='''UPDATE models SET model_name = ? WHERE id = ?''',
+                    values=(new_model_name, model_id))
     DBManager.get_instance().execute(cmd)
 
 

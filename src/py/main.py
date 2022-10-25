@@ -44,7 +44,7 @@ from db.commands.input_commands import get_all_inputs, pagination_get_next_page_
     reset_labels_of_inputs, get_input, get_num_inputs, get_num_labels, update_input_label, get_train_data_from_all_inputs, delete_input
 # DB commands
 from db.commands.job_commands import get_jobs, get_job
-from db.commands.model_commands import get_models, get_model, update_model_train_job_id, get_num_models, update_model_dataset_trained_on
+from db.commands.model_commands import get_models, get_model, update_model_train_job_id, get_num_models, update_model_dataset_trained_on, rename_model
 from db.row_accessors import dataset_from_row, job_from_row, model_from_row, input_from_row, label_from_row, export_from_row
 from decorators.verify_action import verify_action
 from exports.export_model_job import ExportModelJob
@@ -432,6 +432,31 @@ def list_model_cache():
             })
     sorted(out, key=lambda model: constants.MODEL_TYPE_SORTING_WEIGHT[model['verboseModelName']])
     return jsonify(out)
+
+
+@app.route('/model/<string:model_id>/rename', methods=['PATCH'])
+def rename_model_route(model_id: str):
+    log(f"ACCEPTED [{request.method}] {request.path}")
+    if len(model_id) != 32:
+        return {'Error': "ID of model is of incorrect length"}, 400
+    rows = get_model(model_id)
+    if rows is None or len(rows) == 0:
+        return {'Error': "ID of model does not exist"}, 400
+
+    req_data = request.get_json()
+    req_data_format = {
+        'new_model_name': constants.REQ_HELPER_REQUIRED + constants.REQ_HELPER_SPLITTER + constants.REQ_HELPER_STRING_NON_EMPTY,
+    }
+    error_obj = validate_req_json(req_data, req_data_format)
+    if error_obj is not None:
+        return {'Error': error_obj}, 400
+    new_model_name = req_data['new_model_name']
+    rename_model(model_id, new_model_name)
+    model = {}
+    for row in rows:
+        model = model_from_row(row)
+    model['model_name'] = new_model_name
+    return jsonify(model)
 
 
 @app.route('/models-cache/<string:model_name>', methods=['DELETE'])
