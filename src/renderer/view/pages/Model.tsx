@@ -42,7 +42,7 @@ import { To } from 'history';
 import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { useUser } from 'reactfire';
 import { BackButton } from '../components/routing/BackButton';
-import { EditableModelName } from '../components/model-page/EditableModelName';
+import { EditableModelName, EditableModelNameHandle } from '../components/model-page/EditableModelName';
 import { string } from 'yup';
 
 interface Props {
@@ -62,6 +62,8 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 	const verticalScrollBarSX = useVerticalScrollbar('10px');
 
 	const activeTrainJobRef = useRef<ActiveTrainJobHandle>(null);
+	const editableModelNameRef = useRef<EditableModelNameHandle>(null);
+
 	const { data: user } = useUser();
 	const {
 		isOpen: deleteModelDialogOpen,
@@ -196,6 +198,8 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				isClosable: true,
 				uid: user.uid,
 			});
+			// Reset editable value because an error happened in it's onSuccess method
+			editableModelNameRef.current?.resetEditableValue(model.model_name);
 		}
 	};
 
@@ -219,6 +223,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 						</Badge>
 
 						<EditableModelName
+							ref={editableModelNameRef}
 							model={model}
 							validationSchema={string()
 								.required('Cannot be empty')
