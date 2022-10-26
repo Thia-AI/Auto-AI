@@ -42,7 +42,7 @@ import { To } from 'history';
 import { replace, UpdateLocationAction } from '@lagunovsky/redux-react-router';
 import { useUser } from 'reactfire';
 import { BackButton } from '../components/routing/BackButton';
-import { EditableModelName, EditableModelNameHandle } from '../components/model-page/EditableModelName';
+import { Editable, EditableModelNameHandle } from '../components/editable/Editable';
 import { string } from 'yup';
 
 interface Props {
@@ -196,6 +196,7 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				title: `Error When Renaming Model to ${newModelName}`,
 				description: resData.Error,
 				status: 'error',
+				duration: 3500,
 				isClosable: true,
 				uid: user.uid,
 			});
@@ -216,16 +217,16 @@ const ModelPage = React.memo(({ selectedDatasetID, resetSelectedDataset, changeS
 				py='4'
 				overflowY='auto'
 				sx={verticalScrollBarSX}>
-				<Skeleton w='full' mb='6' isLoaded={model.id.length != 0}>
+				<Skeleton w='full' mb='7' isLoaded={model.id.length != 0}>
 					<HStack pt='1' alignItems='baseline'>
 						<BackButton />
 						<Badge fontSize='sm' colorScheme='purple' ml='1'>
 							{getVerboseModelType(model.model_type)}
 						</Badge>
 
-						<EditableModelName
+						<Editable
 							ref={editableModelNameRef}
-							model={model}
+							initialValue={model.model_name}
 							validationSchema={string()
 								.required('Cannot be empty')
 								.min(3, 'Must be at least 3 characters long')

@@ -1,9 +1,9 @@
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 import {
 	Box,
 	ButtonGroup,
-	Editable,
+	Editable as ChakraEditable,
 	EditableInput,
 	EditablePreview,
 	IconButton,
@@ -15,7 +15,7 @@ import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import ReactTooltip from 'react-tooltip';
 import { ValidationError } from 'yup';
 import { toast } from '../../helpers/functionHelpers';
-import { EditableModelNameError } from './EditableModelNameError';
+import { EditableErrorText } from './EditableErrorText';
 import { useUser } from 'reactfire';
 import { RequiredStringSchema } from 'yup/lib/string';
 import { AnyObject } from 'yup/lib/types';
@@ -28,7 +28,7 @@ export interface EditableModelNameHandle {
 }
 
 interface Props {
-	model: Model;
+	initialValue: string;
 	validationSchema: RequiredStringSchema<string | undefined, AnyObject>;
 	onSuccess: (newValue: string) => void | Promise<void>;
 }
@@ -36,17 +36,21 @@ interface Props {
 /**
  * Editable input that acts as a text when not editing.
  */
-export const EditableModelName = React.memo(
-	forwardRef<EditableModelNameHandle, Props>(({ model, validationSchema, onSuccess }: Props, ref) => {
-		const [value, setValue] = useState(model.model_name);
-		const [validValue, setValidValue] = useState(model.model_name);
+export const Editable = React.memo(
+	forwardRef<EditableModelNameHandle, Props>(({ initialValue, validationSchema, onSuccess }: Props, ref) => {
+		const [value, setValue] = useState(initialValue);
+		const [validValue, setValidValue] = useState(initialValue);
 
-		const [modelNameError, setModelNameError] = useState('');
+		const [error, setError] = useState('');
 
 		const resetValue = (newValue: string) => {
 			setValue(newValue);
 			setValidValue(newValue);
 		};
+
+		useEffect(() => {
+			resetValue(initialValue);
+		}, [initialValue]);
 
 		useImperativeHandle(ref, () => ({
 			resetEditableValue: resetValue,
@@ -60,28 +64,28 @@ export const EditableModelName = React.memo(
 			try {
 				const valid = await validationSchema.validate(nextValue);
 				setValidValue(valid);
-				setModelNameError('');
+				setError('');
 			} catch (_err) {
 				const err = _err as ValidationError;
-				setModelNameError(err.message);
+				setError(err.message);
 			}
 		};
 
 		const onSubmit = async () => {
 			if (!user) return;
-			if (modelNameError.length > 0) {
+			if (error.length > 0) {
 				// Error, notify and reset
 				toast({
 					title: 'Failed Renaming',
-					description: modelNameError,
+					description: error,
 					status: 'error',
 					duration: 3500,
 					isClosable: true,
 					uid: user.uid,
 					saveToStore: false,
 				});
-				setModelNameError('');
-				setValue(model.model_name);
+				setError('');
+				setValue(initialValue);
 			} else {
 				await onSuccess(validValue);
 			}
@@ -89,31 +93,31 @@ export const EditableModelName = React.memo(
 
 		return (
 			<Box>
-				<Editable
+				<ChakraEditable
 					selectAllOnFocus={false}
 					h='30px'
 					submitOnBlur={false}
 					value={value}
 					onChange={onChange}
 					onSubmit={onSubmit}>
-					<EditablePreview py={2} px={4} data-tip data-for={`rename-${model.model_name}-tooltip`} />
+					<EditablePreview py={2} px={4} data-tip data-for={`rename-${initialValue}-tooltip`} />
 					<Input py={2} px={4} colorScheme='thia.gray' as={EditableInput} />
 					<ReactTooltip
-						id={`rename-${model.model_name}-tooltip`}
+						id={`rename-${initialValue}-tooltip`}
 						className='tooltip'
 						place='bottom'
 						globalEventOff='mouseout'>
 						<Box as='span'>Click to rename</Box>
 					</ReactTooltip>
 					<EditableControls />
-				</Editable>
-				<EditableModelNameError isError={modelNameError.length > 0} error={modelNameError} />
+				</ChakraEditable>
+				<EditableErrorText isError={error.length > 0} error={error} />
 			</Box>
 		);
 	}),
 );
 
-EditableModelName.displayName = 'EditableModelName';
+Editable.displayName = 'EditableModelName';
 
 const EditableControls = () => {
 	const { isEditing, getSubmitButtonProps, getCancelButtonProps } = useEditableControls();
