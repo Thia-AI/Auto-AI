@@ -35,6 +35,7 @@ import { GetModelsCacheEngineRequest } from './actions/get/getModelsCache';
 import { DeleteModelCacheEngineRequest } from './actions/delete/deleteModelCache';
 import { DeleteEntireModelCacheEngineRequest } from './actions/delete/deleteEntireModelCache';
 import { IRenameModelData, RenameModelEngineRequest } from './actions/patch/renameModel';
+import { IRenameDatasetData, RenameDatasetEngineRequest } from './actions/patch/renameDataset';
 
 /**
  * Class that manages all Engine Requests.
@@ -70,6 +71,7 @@ export class EngineRequestHandler {
 	private deleteAllInputsFromDatasetER!: DeleteAllInputsFromDatasetEngineRequest;
 	private uploadImagetoDatasetER!: UploadImageToDatasetEngineRequest;
 	private deleteInputER!: DeleteInputEngineRequest;
+	private renameDatasetER!: RenameDatasetEngineRequest;
 	// Dataset Labels
 	private addLabelToDatasetER!: AddLabelEngineRequest;
 	private deleteLabelFromDatasetER!: DeleteLabelEngineRequest;
@@ -139,6 +141,7 @@ export class EngineRequestHandler {
 		this.deleteDatasetER = new DeleteDatasetEngineRequest(this.engineRequest);
 		this.uploadImagetoDatasetER = new UploadImageToDatasetEngineRequest(this.engineRequest);
 		this.deleteAllInputsFromDatasetER = new DeleteAllInputsFromDatasetEngineRequest(this.engineRequest);
+		this.renameDatasetER = new RenameDatasetEngineRequest(this.engineRequest);
 		// Dataset Labels
 		this.addLabelToDatasetER = new AddLabelEngineRequest(this.engineRequest);
 		this.updateLabelsOrderER = new UpdateLabelsOrderEngineRequest(this.engineRequest);
@@ -354,5 +357,14 @@ export class EngineRequestHandler {
 		config?: AxiosRequestConfig,
 	) => {
 		return this.renameModelER.run(config, [modelID, idToken, renameModelData]);
+	};
+
+	public renameDataset = async (
+		datasetID: string,
+		idToken: string,
+		renameDatasetData: IRenameDatasetData,
+		config?: AxiosRequestConfig,
+	) => {
+		return this.renameDatasetER.run(config, [datasetID, idToken, renameDatasetData]);
 	};
 }
