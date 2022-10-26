@@ -10,7 +10,6 @@ import {
 	Input,
 	useEditableControls,
 } from '@chakra-ui/react';
-import { Model } from '../../helpers/constants/engineTypes';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import ReactTooltip from 'react-tooltip';
 import { ValidationError } from 'yup';
