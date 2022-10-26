@@ -58,6 +58,13 @@ def update_label_input_count(label: str, dataset_id: str, color: str):
     DBManager.get_instance().execute(cmd)
 
 
+def rename_dataset(dataset_id: str, new_dataset_name: str):
+    cmd = DBCommand(name=f"Update Dataset: {dataset_id}'s name to '{new_dataset_name}'",
+                    command='''UPDATE datasets SET name = ? WHERE id = ?''',
+                    values=(new_dataset_name, dataset_id))
+    DBManager.get_instance().execute(cmd)
+
+
 def delete_label(label: str, dataset_id: str):
     cmd = DBCommand(name=f"Delete Label: {label}, from Dataset: {dataset_id}",
                     command="DELETE FROM labels WHERE dataset_id = ? AND value = ?",

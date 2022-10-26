@@ -51,7 +51,7 @@ def verify_action(expires_in=None):
                 if r.ok:
                     out = f(*args, **kwargs)
                     # out is either a tuple containing (response_data_as_dict, status_code) or a flask.Response object
-                    if (hasattr(out, "__getitem__") and out[-1] == 200) or out.status_code == 200:
+                    if (hasattr(out, "__getitem__") and out[-1] == 200) or (not hasattr(out, "__getitem__") and out.status_code == 200):
                         # Action does not dispatch a job (isn't asynchronous)
                         # Inform backend of completed action
                         update_backend_action_completed(backend_request_data, auth_header=authorization_header)

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { Box, HStack, VStack, Text, Badge, Spacer, useMediaQuery, useColorModeValue as mode } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
@@ -19,6 +19,10 @@ import { MODELS_PAGE } from '../helpers/constants/pageConstants';
 import { IChangeSelectedPageAction } from '_/renderer/state/side-menu/model/actionTypes';
 import ErrorBoundaryReplace from '../components/error-boundaries/ErrorBoundaryReplace';
 import { BackButton } from '../components/routing/BackButton';
+import { Editable, EditableModelNameHandle } from '../components/editable/Editable';
+import { string } from 'yup';
+import { useUser } from 'reactfire';
+import { toast } from '../helpers/functionHelpers';
 
 interface Props {
 	activeDataset: IActiveDatasetReducer;
@@ -38,6 +42,10 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 	const verticalScrollbar = useVerticalScrollbar('10px');
 	const borderColor = mode('thia.gray.200', 'thia.gray.600');
 	const cardBG = mode('thia.gray.50', 'thia.gray.700');
+
+	const { data: user } = useUser();
+
+	const editableDatasetNameRef = useRef<EditableModelNameHandle>(null);
 
 	const refreshDataset = async () => {
 		if (!datasetID) return;
@@ -66,6 +74,36 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 		};
 	}, []);
 
+	const renameDataset = async (newDatasetName: string) => {
+		if (!user || !datasetID) return;
+		const idToken = await user.getIdToken();
+		const [isError, resData] = await EngineRequestHandler.getInstance().renameDataset(datasetID, idToken, {
+			new_dataset_name: newDatasetName,
+		});
+		if (!isError) {
+			toast({
+				title: 'Renaming Success',
+				description: `Renamed dataset '${activeDataset.value.dataset?.name}' to '${newDatasetName}'`,
+				status: 'success',
+				duration: 3500,
+				isClosable: true,
+				uid: user.uid,
+			});
+			await refreshDataset();
+		} else {
+			toast({
+				title: `Error When Renaming Dataset to ${newDatasetName}`,
+				description: resData.Error,
+				status: 'error',
+				duration: 3500,
+				isClosable: true,
+				uid: user.uid,
+			});
+			// Reset editable value because an error happened in it's onSuccess method
+			editableDatasetNameRef.current?.resetEditableValue(activeDataset.value.dataset?.name);
+		}
+	};
+
 	return (
 		<VStack
 			py='2'
@@ -77,14 +115,24 @@ const DatasetPage = React.memo(({ activeDataset, changeActiveDataset, changeSele
 			marginTop='var(--header-height)'
 			overflowY='auto'
 			sx={verticalScrollbar}>
-			<HStack pt='1' w='full' alignItems='center'>
+			<HStack pt='1' w='full' mb='7' alignItems='baseline'>
 				<BackButton />
-				<Text pb='1' as='h3' fontWeight='bold' fontSize='lg' noOfLines={1}>
-					{activeDataset.value.dataset?.name}:
-				</Text>
 				<Badge fontSize='sm' colorScheme='purple' ml='1'>
 					{getVerboseModelType(activeDataset.value.dataset?.type)}
 				</Badge>
+
+				<Editable
+					ref={editableDatasetNameRef}
+					initialValue={activeDataset.value.dataset?.name}
+					validationSchema={string()
+						.required('Cannot be empty')
+						.min(3, 'Must be at least 3 characters long')
+						.max(39, 'Must be less than 40 characters')
+						.matches(/^\S+$/, 'No whitespace')
+						.matches(/^[a-zA-Z0-9-_]+$/, 'Alphanumeric characters only')}
+					onSuccess={renameDataset}
+				/>
+
 				<Spacer />
 				<InteractiveCopyBadge badgeID={activeDataset.value.dataset?.id} />
 			</HStack>

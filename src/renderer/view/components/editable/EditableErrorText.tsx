@@ -9,7 +9,7 @@ interface Props {
 /**
  * Component that displays an editable input's error message.
  */
-export const EditableModelNameError = React.memo(({ isError, error }: Props) => {
+export const EditableErrorText = React.memo(({ isError, error }: Props) => {
 	const color = useColorModeValue('red.600', 'red.400');
 	return isError ? (
 		<Text mt='3' color={color} fontSize='13px' noOfLines={2} maxW='200px'>
@@ -18,4 +18,4 @@ export const EditableModelNameError = React.memo(({ isError, error }: Props) => 
 	) : null;
 });
 
-EditableModelNameError.displayName = 'EditableModelNameError';
+EditableErrorText.displayName = 'EditableModelNameError';
