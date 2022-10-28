@@ -4,7 +4,7 @@
 import * as path from 'path';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app, ipcMain, protocol, shell } from 'electron';
+import { BrowserWindow, app, ipcMain, protocol, shell, BrowserWindowConstructorOptions } from 'electron';
 import { register } from 'electron-localshortcut';
 import { io } from 'socket.io-client';
 import { FirebaseApp, initializeApp } from 'firebase/app';
@@ -12,6 +12,7 @@ import { Express, Response, Request } from 'express';
 import { autoUpdater } from 'electron-updater';
 import log, { ElectronLog } from 'electron-log';
 import { cpus } from 'os';
+import Store from 'electron-store';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 import { menu } from './menu/menu';
@@ -89,6 +90,8 @@ const engineJobsSIOConnection = io('http://localhost:8442/jobs', {
 	autoConnect: false,
 });
 
+const universalConfig = new Store();
+
 /**
  * Sets the app user model to Thia (used in windows to register the app name).
  */
@@ -116,7 +119,7 @@ const createWindow = (): void => {
 		autoHideMenuBar: true,
 	});
 	// Create the main browser window.
-	mainWindow = new BrowserWindow({
+	const mainWindowOptions: BrowserWindowConstructorOptions = {
 		height: 768,
 		width: 955,
 		minHeight: 650,
@@ -135,7 +138,11 @@ const createWindow = (): void => {
 			backgroundThrottling: false,
 			nativeWindowOpen: true,
 		},
-	});
+	};
+
+	Object.assign(mainWindowOptions, universalConfig.get('winBounds'));
+
+	mainWindow = new BrowserWindow(mainWindowOptions);
 
 	// Shows BrowerWindow once page is fully loaded
 	mainWindow.once('ready-to-show', () => {
@@ -188,6 +195,10 @@ const createWindow = (): void => {
 
 	loginWindow?.loadURL('https://localhost:8443/login/login.html').finally(() => {
 		// No action
+	});
+
+	mainWindow.on('close', () => {
+		universalConfig.set('winBounds', mainWindow?.getBounds());
 	});
 
 	// Emitted when the window is closed.
