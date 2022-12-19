@@ -1,12 +1,15 @@
-<p align="center">
-  <a href="https://thia.tech">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://thia.tech/logo/thia-icon.svg">
-      <img src="https://thia.tech/logo/thia-icon.svg" height="128">
-    </picture>
-    <h1 align=center>Thia</h1>
-  </a>
-</p>
+<div align="center">
+    <div>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://thia.tech/logo/thia-icon.svg">
+        <img src="https://thia.tech/logo/thia-icon.svg" height="128">
+      </picture>
+      <h1 align=center>Thia</h1>
+      <a href="https://thia.tech">Website</a>
+    </div>
+</div>
+
+<br />
 
 ![Build Status](https://github.com/Thia-AI/Auto-AI/actions/workflows/main.yml/badge.svg) ![Version](https://img.shields.io/badge/Version-alpha-red)
 
