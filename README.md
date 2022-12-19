@@ -12,9 +12,9 @@
 
 <br />
 
-An Auto-ML application that runs on your **OWN** computer instead of some server in the cloud.
+An Auto-ML application that runs on your **OWN** ecosystem instead of some server in the cloud.
 
-![Image](./doc/images/thia_dataset_preview.png)
+![image](https://user-images.githubusercontent.com/15899753/208352477-ef647bb8-bb6d-4e62-96a1-f421e9eaa375.png)
 
 <br />
 <br />
@@ -24,64 +24,13 @@ Thia will be the hub to train, serve, and monitor your ML models. Our ML Engine 
 
 ![yes](./doc/images/how_thia_works.png)
 
-## Pricing
+## Status
 
-Free while we are still in Pre-Alpha/Alpha. When we are in Beta and onwards, expect a tiered payment model. **However**, since this is running on your hardware, our pricing will be **drastically** lower than other cloud auto-ml providers _(see an example near the end)_.
-
-## Brief Roadmap
-
-#### Alpha (MVP)
-
-For the MVP we need to be able to:
-
-1. Create a dataset
-2. Train an Image classification model
-3. Export the model in format of choice.
-
-##### <u>Tasks to be completed</u>
-
-✅ UI & Architecture
-<br />
-✅ App & Engine Packaging
-<br />
-✅ Image Classification Dataset
-<br />
-❌ Image Classification Model Training _(eta March 2022)_
-<br />
-❌ Image Classification Model Export _(eta April 2022)_
-<br />
-
-#### Beta
-
-For the beta release we need to be able to:
-
-1. Train models on a remote Ubuntu VM
-2. Export models for serving to a remote Ubuntu VM
-3. Train an Object Detection model
-
-##### <u>Tasks to be completed</u>
-
-❌ Get Funding
-<br />
-❌ Expand Team
-<br />
-❌ App Signing
-<br />
-❌ UI Rework
-<br />
-❌ Remote VM Management
-<br />
-❌ Object Detection Model Training
-<br />
-❌ Highly Optimized Model Exporting via TensorRT
-<br />
-❌ Website & APIs Up
-<br />
-❌ Authn & Authz
+We have currently stopped development as we are performing customer discovery (yes we did things completely backwards).
 
 ## About
 
-Currently Thia is a passion project of mine (hoping to get some funding after the MVP is done) that I came up with after I received an absolutely ridiculous bill from Google Cloud:
+Thia was a passion project of mine that I came up with after I received an absolutely ridiculous bill from Google Cloud:
 
 ![yes](./doc/images/automl_pricing_example.png)
 
