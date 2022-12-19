@@ -4,7 +4,7 @@
       <source media="(prefers-color-scheme: dark)" srcset="https://thia.tech/logo/thia-icon.svg">
       <img src="https://thia.tech/logo/thia-icon.svg" height="128">
     </picture>
-    <h1 align=center>Thia Auto-ML</h1>
+    <h1 align=center>Thia</h1>
   </a>
 </p>
 
@@ -12,7 +12,7 @@
 
 <br />
 
-An Auto-ML application that runs on your **OWN** ecosystem instead of some server in the cloud.
+Thia is an Auto-ML application that runs within your **OWN** ecosystem instead of some server in the cloud.
 
 ![image](https://user-images.githubusercontent.com/15899753/208352477-ef647bb8-bb6d-4e62-96a1-f421e9eaa375.png)
 
