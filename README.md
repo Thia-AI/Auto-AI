@@ -4,7 +4,7 @@
         <source media="(prefers-color-scheme: dark)" srcset="https://thia.tech/logo/thia-icon.svg">
         <img src="https://thia.tech/logo/thia-icon.svg" height="128">
       </picture>
-      <h1 align=center>Thia</h1>
+      <h1 align=center>Thia [NO LONGER IN DEVELOPMENT]</h1>
       <a href="https://thia.tech">Website</a>
     </div>
 </div>
@@ -40,10 +40,6 @@ Thia was a passion project of mine that I came up with after I received an absol
 This was for a hackathon I was partaking in where I needed a model to detect individual roofs of houses from satellite images. The training was done twice and took about half a day each with 8 nodes in parallel. This is where cloud auto-ml providers get you; training is never quick, and you can kiss your wallet goodbye if you need to retrain when you get more data.
 
 Commercial GPUs now are so powerful and so common (thanks to crypto and games) that almost everyone has access to a GPU and if they don't they can rent a relatively cheap machine that does have one from the [multitude of providers](https://geekflare.com/best-cloud-gpu-platforms/ 'List of some GPU providers ') out there. So why are there no auto-ml solutions that can run on your own hardware? _(sarcasm)_.
-
-## Contributing
-
-While I'm not actively looking for any help on this project yet, I will have to soon. If you or anyone you know would be interested in joining, [get in touch](https://www.linkedin.com/in/ritesh-ahlawat/ 'My LinkedIn') with me :D.
 
 > #### ℹ️ Built with:
 > - ElectronJS (TypeScript)
