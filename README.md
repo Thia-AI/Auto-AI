@@ -15,7 +15,7 @@
 
 <br />
 
-Thia is an Auto-ML application that runs within your **OWN** ecosystem instead of some server in the cloud.
+Thia is an Auto-ML application that uses your own hardware instead of some server in the cloud.
 
 ![image](https://user-images.githubusercontent.com/15899753/208352477-ef647bb8-bb6d-4e62-96a1-f421e9eaa375.png)
 
@@ -23,7 +23,7 @@ Thia is an Auto-ML application that runs within your **OWN** ecosystem instead o
 <br />
 <br />
 
-Thia will be the hub to train, serve, and monitor your ML models. Our ML Engine runs on **YOUR** computer _(and of your remote linux machines in the future)_ so **YOU** are in control of your own private data. The only time the app communicates with our servers will be for [Authn and Authz](https://www.cloudflare.com/en-ca/learning/access-management/authn-vs-authz/ 'Learn about the difference'), everything else will be packaged in the installer.
+The ML Engine runs on **YOUR** GPU so **YOU** are in control of your own private data. The only time the app communicates with our servers will be for [Authn and Authz](https://www.cloudflare.com/en-ca/learning/access-management/authn-vs-authz/ 'Learn about the difference'), everything else will be packaged in the installer.
 
 ![yes](./doc/images/how_thia_works.png)
 
